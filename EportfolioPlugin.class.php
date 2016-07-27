@@ -17,7 +17,7 @@ class EportfolioPlugin extends StudIPPlugin implements SystemPlugin {
 
         $navigation = new AutoNavigation(_('ePortfolio'));
         $navigation->setURL(PluginEngine::GetURL($this, array(), 'show'));
-        $navigation->setImage(Assets::image_path('blank.gif'));
+        $navigation->setImage(Assets::image_path('admin'));
         Navigation::addItem('/eportfolioplugin', $navigation);
     }
 

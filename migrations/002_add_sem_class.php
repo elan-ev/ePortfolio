@@ -37,23 +37,29 @@ class AddSemClass extends Migration
     {
         $db = DBManager::get();
         $name = "ePortfolio";
+        $nameType = "ePortfolio";
         $id = -2;
 
         if($this->validateUniqueness($name)) {
-			$statement = $db->prepare("INSERT INTO sem_classes SET name = ?, mkdate = UNIX_TIMESTAMP(), chdate = UNIX_TIMESTAMP()");
-			$statement->execute(array($name));
-			$id = $db->lastInsertId();
-	    } else {
-			// We already got a type with that name, should be a previous installation ...
-            $statement = $db->prepare('SELECT id FROM sem_classes WHERE name = ?');
-            $statement->execute(array($name));
-            $id = $statement->fetchColumn();
-		}
+    			$statement = $db->prepare("INSERT INTO sem_classes SET name = ?, mkdate = UNIX_TIMESTAMP(), chdate = UNIX_TIMESTAMP()");
+    			$statement->execute(array($name));
+    			$id = $db->lastInsertId();
 
-		if($id === -2) {
-			$message = sprintf('Ung�ltige id (id=%d)', $id);
-            throw new Exception($message);
-		}
+          //Insert sem_type
+          $statementSemTypes = $db->prepare("INSERT INTO sem_types SET name = ?, class = $id, mkdate = UNIX_TIMESTAMP(), chdate = UNIX_TIMESTAMP()");
+          $statementSemTypes->execute(array($nameType));
+
+    	    } else {
+    			// We already got a type with that name, should be a previous installation ...
+                $statement = $db->prepare('SELECT id FROM sem_classes WHERE name = ?');
+                $statement->execute(array($name));
+                $id = $statement->fetchColumn();
+    		}
+
+    		if($id === -2) {
+    			$message = sprintf('Ung�ltige id (id=%d)', $id);
+                throw new Exception($message);
+    		}
 
 
         $sem_class = SemClass::getDefaultSemClass();
@@ -62,31 +68,15 @@ class AddSemClass extends Migration
 
         // Setting Mooc-courses default datafields: mooc should not to be disabled, courseware and mooc should be active
         $current_modules = $sem_class->getModules(); // get modules
-        $current_modules['Mooc']['activated'] = '1'; // set values
+        $current_modules['Mooc']['activated'] = '0'; // set values
         $current_modules['Mooc']['sticky'] = '1'; // sticky = 1 -> can't be chosen in "more"-field of course
         $current_modules['Courseware']['activated'] = '1';
-        $current_modules['Courseware']['sticky'] = '0';
-        $current_modules['VipsPlugin']['activated'] = '1';
-        $current_modules['VipsPlugin']['sticky'] = '0';
+        $current_modules['Courseware']['sticky'] = '1';
+
 
         $sem_class->setModules($current_modules); // set modules
 
         $sem_class->store();
-
-
-        // set Mooc-Plugin as not choosable in all other sem-classes
-        // foreach ($GLOBALS['SEM_CLASS'] as $sc) {
-        //     if ($sc['name'] == $name) continue;                                 // do not overwrite mooc-class
-        //
-        //     $modules = $sc->getModules();                                       // get modules
-        //     $modules['Mooc']['activated'] = '1';                                // set values
-        //     $modules['Mooc']['sticky'] = '1';                                   // sticky = 1 -> disable on plus-page in seminar
-        //
-        //     $sc->setModules($current_modules);                                  // set modules
-        //     $sc->store();
-        // }
-
-        // $GLOBALS['SEM_CLASS'] = SemClass::refreshClasses();
 
         return $id;
     }
