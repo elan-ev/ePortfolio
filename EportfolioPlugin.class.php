@@ -3,11 +3,8 @@ require 'bootstrap.php';
 
 /**
  * EportfolioPlugin.class.php
- *
- * ...
- *
  * @author  Marcel Kipp
- * @version 0.1a
+ * @version 0.1
  */
 
 class EportfolioPlugin extends StudIPPlugin implements SystemPlugin {
@@ -19,6 +16,8 @@ class EportfolioPlugin extends StudIPPlugin implements SystemPlugin {
         $navigation->setURL(PluginEngine::GetURL($this, array(), 'show'));
         $navigation->setImage(Assets::image_path('admin'));
         Navigation::addItem('/eportfolioplugin', $navigation);
+        Navigation::activateItem("/eportfolioplugin");
+
     }
 
     public function initialize () {

@@ -11,8 +11,6 @@ class AddSemClass extends Migration
 
     public function up () {
         $id = $this->insertSemClass();
-        // $this->addSemTypes($id);
-        // $this->addConfigOption($id);
         SimpleORMap::expireTableScheme();
     }
 
@@ -22,16 +20,24 @@ class AddSemClass extends Migration
         // $this->removeSemClassAndTypes($id);
         // $this->removeConfigOption();
         // SimpleORMap::expireTableScheme();
+
+        $db = DBManager::get();
+
+        //remove entry in sem_classes
+        $name = "ePortfolio";
+        $statement = $db->prepare("DELETE FROM sem_classes WHERE name = ?");
+        $statement->execute(array($name));
+
+        //remove entry in sem_types
+        $nameType = "ePortfolio";
+        $statement = $db->prepare("DELETE FROM sem_types WHERE name = ?");
+        $statement->execute(array($nameType));
     }
 
     /**********************************************************************/
     /* PRIVATE METHODS                                                    */
     /**********************************************************************/
 
-    private function getMoocSemClassID()
-    {
-        return Config::get()->getValue(\Mooc\SEM_CLASS_CONFIG_ID);
-    }
 
     private function insertSemClass()
     {
@@ -93,37 +99,6 @@ class AddSemClass extends Migration
         return true;
     }
 
-    private function addSemTypes($sc_id)
-    {
-        $db = DBManager::get();
-
-        foreach (words(\Mooc\SEM_TYPE_NAMES) as $name) {
-
-            // Test wether that type already exists in db, if so, don't insert another one
-            $alreadyExists = $db->prepare('SELECT id FROM sem_types WHERE name = ?');
-            $alreadyExists->execute(array($name));
-            if(!$alreadyExists->fetchColumn()) {
-                $statement = $db->prepare(
-                    "INSERT INTO sem_types SET name = ?, class = ?, mkdate = UNIX_TIMESTAMP(), chdate = UNIX_TIMESTAMP()");
-                $statement->execute(array($name, $sc_id));
-            }
-
-        }
-        $GLOBALS['SEM_TYPE'] = SemType::refreshTypes();
-    }
-
-    private function addConfigOption($sc_id)
-    {
-        Config::get()->create(\Mooc\SEM_CLASS_CONFIG_ID, array(
-            'value'       => $sc_id,
-            'is_default'  => 0,
-            'type'        => 'integer',
-            'range'       => 'global',
-            'section'     => 'global',
-            'description' => 'ID der Veranstaltungsklasse f�r (M)OOC-Veranstaltungen.'
-            ));
-    }
-
     private function removeSemClassAndTypes($id)
     {
         $sem_class = new SemClass(intval($id));
@@ -131,8 +106,4 @@ class AddSemClass extends Migration
         $GLOBALS['SEM_CLASS'] = SemClass::refreshClasses();
     }
 
-    private function removeConfigOption()
-    {
-        return Config::get()->delete(\Mooc\SEM_CLASS_CONFIG_ID);
-    }
 }
