@@ -61,7 +61,7 @@
 
     <div class="jumbotron" style="border-radius: 10px;">
       <div class="container" style="padding: 0 50px;">
-        <h1>Meine Portfolios</h1>
+        <h1>Meine Portfolios hallo</h1>
         <p>Hier findest Du alle ePortfolios, die Du angelegt hast oder die andere für dich freigegeben haben.</p>
         <p><a class="btn btn-primary btn-lg" href="#" role="button" style="background-color: #33578c; color: #fff;">Mehr Informationen</a></p>
       </div>
