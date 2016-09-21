@@ -13,8 +13,8 @@ class EportfolioPlugin extends StudIPPlugin implements SystemPlugin {
         parent::__construct();
 
         $navigation = new AutoNavigation(_('ePortfolio'));
-        $navigation->setURL(PluginEngine::GetURL($this, array(), 'show'));
         $navigation->setImage(Assets::image_path('admin'));
+        $navigation->setURL(PluginEngine::GetURL($this, array(), 'show'));
         Navigation::addItem('/eportfolioplugin', $navigation);
         Navigation::activateItem("/eportfolioplugin");
 

@@ -68,36 +68,42 @@
     </div>
 
   </div>
+
+  <div class="col-md-6">
+    <button type="button" name="button" class="btn btn-success" style="margin-bottom: 30px;">Neues Portfolio (Veranstaltung) erstellen</button>
+  </div>
+
 </div>
 
 <div class="row">
+  <div class="col-md-12">
+    <table class="table table-striped">
+      <tr>
+        <th>
+          Portfolio-Name
+        </th>
+        <th>
+          Abgabetermin
+        </th>
+        <th>
+          Freigaben
+        </th>
+      </tr>
 
-  <div class="col-md-3 start_overview">
+      <tr>
+        <td>
+          <a href="#">Textiles Gestalten </a><span class="badge">42</span>
+        </td>
 
-    <div class="start_overview_inner">
-      <p class="start_overview_heading">
-        Textiles Gestalten
-        <span class="badge">0</span>
-      </p>
-      <img src="http://berkemeier.europa-moebel.de/images/base/colors/grau.jpg" alt="..." class="img-thumbnail">
-      <div class="start_overview_info">
+        <td>
+          30. September 2016
+        </td>
 
-        <div class="">
-          <button type="button" class="btn btn-primary" style="background-color: #33578c; color: #fff;">Abgabe</button>
-          <span> 30. Sepember 2016 </span>
-        </div>
+        <td>
+          Freigaben
+        </td>
+      </tr>
 
-        <div class="" style="margin-top: 10px;">
-          <button type="button" class="btn btn-primary" style="background-color: #33578c; color: #fff; padding-top: 10px;">Freigabe</button>
-          <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-          <span class="glyphicon glyphicon-sunglasses" aria-hidden="true"></span>
-          <span class="glyphicon glyphicon-apple" aria-hidden="true"></span>
-          <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>
-        </div>
-
-      </div>
-    </div>
-
+    </table>
   </div>
-
 </div>

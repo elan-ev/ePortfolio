@@ -17,14 +17,11 @@ class ShowController extends StudipController {
 
     public function index_action()
     {
-
         $sidebar = Sidebar::Get();
         Sidebar::Get()->setTitle('e-Portfolio');
 
         $widget1 = new SearchWidget();
-        $widget2 = new SearchWidget();
         Sidebar::Get()->addWidget($widget1, 'search1');
-        Sidebar::Get()->insertWidget($widget2, 'search1', 'search2'); //widget2 (mit Namen search2) wird vor widget1 (mit Namen search1) platziert.
 
     }
 
