@@ -1,0 +1,5 @@
+pluginname=ePortfolio
+pluginclassname=EportfolioPlugin
+origin=Universitaet Osnabrueck 
+version=0.1a
+studipMinVersion=2.4
