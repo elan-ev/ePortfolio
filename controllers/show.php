@@ -25,6 +25,7 @@ class ShowController extends StudipController {
 
     }
 
+<<<<<<< HEAD
     public function createPortfolio () {
 
 
@@ -32,6 +33,8 @@ class ShowController extends StudipController {
 
     }
 
+=======
+>>>>>>> 5d0dd0069747f8a8fcdfd26acd14232ecc9425d0
     // customized #url_for for plugins
     function url_for($to)
     {

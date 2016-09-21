@@ -25,6 +25,7 @@ class EportfolioPlugin extends StudIPPlugin implements SystemPlugin {
       PageLayout::addScript($this->getPluginURL() . '/assets/js/addPortfolio.js');
       PageLayout::addStylesheet($this->getPluginURL().'/assets/style.css');
 
+
     }
 
     public function perform($unconsumed_path)
@@ -38,7 +39,6 @@ class EportfolioPlugin extends StudIPPlugin implements SystemPlugin {
         $dispatcher->plugin = $this;
         $dispatcher->dispatch($unconsumed_path);
     }
-
 
     private function setupAutoload()
     {
