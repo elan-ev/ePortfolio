@@ -1,4 +1,5 @@
   <?php
+
 class ShowController extends StudipController {
 
     public function __construct($dispatcher)
@@ -17,24 +18,23 @@ class ShowController extends StudipController {
 
     public function index_action()
     {
+
+        $user = get_username();
+
         $sidebar = Sidebar::Get();
-        Sidebar::Get()->setTitle('e-Portfolio');
+        Sidebar::Get()->setTitle('e-Portfolio von '.$user );
 
-        $widget1 = new SearchWidget();
-        Sidebar::Get()->addWidget($widget1, 'search1');
-
-    }
-
-<<<<<<< HEAD
-    public function createPortfolio () {
-
-
-      
+        $widget = new SearchWidget();
+        Sidebar::Get()->addWidget($widget);
 
     }
 
-=======
->>>>>>> 5d0dd0069747f8a8fcdfd26acd14232ecc9425d0
+    public function createPortfolio() {
+
+      echo "hallo";
+
+    }
+
     // customized #url_for for plugins
     function url_for($to)
     {

@@ -46,6 +46,11 @@ class AddSemClass extends Migration
         $nameType = "ePortfolio";
         $id = -2;
 
+        //Fügt Spalte an true or false ePortfolio
+        // $nameType = "eportfolioStatus";
+        // $statement = $db->prepare("ALTER TABLE seminare ADD ? BOOLEAN");
+        // $statement->execute(array($nameType));
+
         if($this->validateUniqueness($name)) {
     			$statement = $db->prepare("INSERT INTO sem_classes SET name = ?, mkdate = UNIX_TIMESTAMP(), chdate = UNIX_TIMESTAMP()");
     			$statement->execute(array($name));

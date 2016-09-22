@@ -63,10 +63,6 @@
       <div class="container" style="padding: 0 50px;">
 
         <h1>Meine Portfolios</h1>
-<<<<<<< HEAD
-=======
-        <h1>Meine Portfolios</h1>
->>>>>>> 5d0dd0069747f8a8fcdfd26acd14232ecc9425d0
 
         <p>Hier findest Du alle ePortfolios, die Du angelegt hast oder die andere für dich freigegeben haben.</p>
         <p><a class="btn btn-primary btn-lg" href="#" role="button" style="background-color: #33578c; color: #fff;">Mehr Informationen</a></p>
@@ -75,41 +71,68 @@
 
   </div>
 
-  <div class="col-md-6">
-    <button type="button" name="button" class="btn btn-success" style="margin-bottom: 30px;">Neues Portfolio (Veranstaltung) erstellen</button>
-  </div>
-
 </div>
 
 <div class="row">
   <div class="col-md-12">
-    <table class="table table-striped">
+    <table class="table table-striped portfolioOverview">
       <tr>
         <th>
           Portfolio-Name
         </th>
         <th>
-          Abgabetermin
+          Beschreibung
         </th>
         <th>
           Freigaben
         </th>
       </tr>
 
-      <tr>
-        <td>
-          <a href="#">Textiles Gestalten </a><span class="badge">42</span>
-        </td>
-
-        <td>
-          30. September 2016
-        </td>
-
-        <td>
-          Freigaben
-        </td>
-      </tr>
-
     </table>
   </div>
 </div>
+
+<div class="row">
+  <div class="col-md-6">
+    <button data-toggle="modal" data-target="#myModal" type="button" name="button" class="btn btn-success" id="newPortfolio" style="margin-bottom: 30px;"><i class="fa fa-plus" aria-hidden="true"></i> Neues Portfolio erstellen</button>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Neues Portfolio erstellen</h4>
+      </div>
+      <div class="modal-body">
+        <!-- Input Form  -->
+
+        <form action="/studip/plugins.php/eportfolioplugin/create" method="post">
+          <div class="form-group">
+            <label for="PortfolioName">Portfolio Name</label>
+            <input type="Text" class="form-control" id="PortfolioName" placeholder="Portfolio Name" name="name">
+          </div>
+          <div class="form-group">
+            <label for="Beschreibung">Beschreibung</label>
+            <input type="text" class="form-control" id="Beschreibung" placeholder="Beschreibung des Portfolios" name="text">
+          </div>
+
+          <button type="submit" class="btn btn-success">Erstellen</button>
+        </form>
+
+        <!-- Form Ende  -->
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+
+$('#myModal').on('shown.bs.modal', function () {
+  $('#myInput').focus()
+})
+
+</script>
