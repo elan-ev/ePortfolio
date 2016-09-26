@@ -7,55 +7,9 @@
   <!-- Latest compiled and minified JavaScript -->
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
-  <style media="screen">
-
-    .list-group-item:hover {
-      cursor: pointer;
-      background-color: #33568b;
-      color: #fff;
-    }
-
-    .badge {
-      background-color: #33568b;
-      border: 1px solid #fff;
-      font-size: 13px;
-      border-radius: 20px;
-    }
-
-    .start_overview_inner {
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      padding: 5px;
-    }
-
-    .start_overview_heading {
-      font-size: 20px;
-      text-align: right;
-      padding: 20px 0 0;
-      font-weight: bold;
-    }
-
-    .start_overview_info {
-      padding: 20px 0;
-    }
-
-  </style>
-
 </head>
 
 <div class="row">
-
-  <!-- <div class="col-md-2">
-    <ul class="list-group">
-      <li class="list-group-item">Meine Portfolios</li>
-      <li class="list-group-item">Freunde</li>
-      <li class="list-group-item"><span class="badge">4</span> Max Muster</li>
-      <li class="list-group-item"><span class="badge">0</span> Marcel Kipp</li>
-      <li class="list-group-item"><span class="badge">1</span> Heinrich Heine</li>
-      <li class="list-group-item"><span class="badge">5</span> Paul Paulus</li>
-      <li class="list-group-item"><span class="badge">0</span> Steffen Steil</li>
-    </ul>
-  </div> -->
 
   <div class="col-md-12">
 
@@ -75,8 +29,14 @@
 
 <div class="row">
   <div class="col-md-12">
-    <table class="table table-striped portfolioOverview">
-      <tr>
+
+    <h4>�bersicht meiner Portfolios</h4>
+
+    <!-- Banner Success Display when created -->
+    <div class="alert alert-success createPortfolioBanner" role="alert">Portfolio <span id="createPortfolioName"></span> wurde erstellt</div>
+
+    <table data-link="row" class="rowlink table  table-striped portfolioOverview">
+      <tr class="tr-head">
         <th>
           Portfolio-Name
         </th>
@@ -95,6 +55,27 @@
 <div class="row">
   <div class="col-md-6">
     <button data-toggle="modal" data-target="#myModal" type="button" name="button" class="btn btn-success" id="newPortfolio" style="margin-bottom: 30px;"><i class="fa fa-plus" aria-hidden="true"></i> Neues Portfolio erstellen</button>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <h4>F�r Sie sichtbare Portfolios</h4>
+
+    <table class="table table-hover table-striped viewportfolioOverview">
+      <tr class="tr-head">
+        <th>
+          Portfolio-Name
+        </th>
+        <th>
+          Beschreibung
+        </th>
+        <th>
+          Besitzer
+        </th>
+      </tr>
+
+    </table>
   </div>
 </div>
 
@@ -131,8 +112,46 @@
 
 <script>
 
-$('#myModal').on('shown.bs.modal', function () {
-  $('#myInput').focus()
-})
+  //Trigger Modal
+  $('#myModal').on('shown.bs.modal', function () {
+    $('#myInput').focus()
+  })
+
+  //Abfangen GET[]
+  function getUrlVars() {
+      var vars = {};
+      var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+      vars[key] = value;
+      });
+      return vars;
+  }
+
+  //Display Banner mit Portfolio Name
+  var seminarName = getUrlVars()["seminarName"];
+  if(seminarName) {
+    $('#createPortfolioName').append(seminarName);
+    $('.createPortfolioBanner').css('display', 'block');
+
+    //Entfernt %20 aus string
+    $("#createPortfolioName").text(function(index, text) {
+      return text.replace("%20", " ");
+    });
+
+  }
+
+  // Statische Sitebar
+  // Widget - Navigation
+  $('.sidebar').append('<div class="sidebar-widget widgetCustom1"><div class="sidebar-widget-header">Navigation</div></div>');
+  $('.widgetCustom1').append('<ul class="widget-list widget-links sidebar-navigation customLinkList1"></ul>');
+  $('.customLinkList1').append('<li><a>Einstellungen</a></li>');
+  $('.customLinkList1').append('<li><a>Portfolios verwalten</a></li>');
+
+  //Widget - Freunde
+  $('.sidebar').append('<div class="sidebar-widget widgetCustom2"><div class="sidebar-widget-header">Freunde</div></div>');
+  $('.widgetCustom2').append('<ul class="widget-list widget-links sidebar-navigation customLinkList2"></ul>');
+  $('.customLinkList2').append('<li><a>Testperson 1</a></li>');
+  $('.customLinkList2').append('<li><a>Testperson 2</a></li>');
+  $('.customLinkList2').append('<li><a>Testperson 3</a></li>');
+
 
 </script>

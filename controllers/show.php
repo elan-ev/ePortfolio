@@ -6,6 +6,15 @@ class ShowController extends StudipController {
     {
         parent::__construct($dispatcher);
         $this->plugin = $dispatcher->plugin;
+
+        $user = get_username();
+
+        $sidebar = Sidebar::Get();
+        Sidebar::Get()->setTitle('e-Portfolio von '.$user );
+
+        $widget = new SearchWidget();
+        Sidebar::Get()->addWidget($widget);
+
     }
 
     public function before_filter(&$action, &$args)
@@ -19,19 +28,6 @@ class ShowController extends StudipController {
     public function index_action()
     {
 
-        $user = get_username();
-
-        $sidebar = Sidebar::Get();
-        Sidebar::Get()->setTitle('e-Portfolio von '.$user );
-
-        $widget = new SearchWidget();
-        Sidebar::Get()->addWidget($widget);
-
-    }
-
-    public function createPortfolio() {
-
-      echo "hallo";
 
     }
 

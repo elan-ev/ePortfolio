@@ -7,7 +7,7 @@ require 'bootstrap.php';
  * @version 0.1
  */
 
-class EportfolioPlugin extends StudIPPlugin implements SystemPlugin {
+class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlugin {
 
     public function __construct() {
         parent::__construct();
@@ -21,58 +21,86 @@ class EportfolioPlugin extends StudIPPlugin implements SystemPlugin {
     }
 
     public function initialize () {
-
-      PageLayout::addScript($this->getPluginURL() . '/assets/js/addPortfolio.js');
       PageLayout::addStylesheet($this->getPluginURL().'/assets/style.css');
       PageLayout::addStylesheet('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css');
+      PageLayout::addScript($this->getPluginURL().'/assets/js/jasny-bootstrap.min.js');
+    }
 
+    public function getTabNavigation($course_id) {
+
+    }
+
+    public function getNotificationObjects($course_id, $since, $user_id) {
+        return array();
+    }
+
+    public function getIconNavigation($course_id, $last_visit, $user_id) {
+        // ...
+    }
+
+    public function getInfoTemplate($course_id) {
+        // ...
     }
 
     public function perform($unconsumed_path)
     {
-        $this->setupAutoload();
-        $dispatcher = new Trails_Dispatcher(
-            $this->getPluginPath(),
-            rtrim(PluginEngine::getLink($this, array(), null), '/'),
-            'show'
-        );
-        $dispatcher->plugin = $this;
-        $dispatcher->dispatch($unconsumed_path);
+      $this->setupAutoload();
+      $dispatcher = new Trails_Dispatcher(
+          $this->getPluginPath(),
+          rtrim(PluginEngine::getLink($this, array(), null), '/'),
+          'show'
+      );
 
-        $nameSeminar = "ePortfolio";
-        $tableName = ".portfolioOverview";
-        $status = "124";
-        $userid = $GLOBALS["user"]->id;
-        $arrayPortfolio = array();
+      $dispatcher->plugin = $this;
+      $dispatcher->dispatch($unconsumed_path);
 
-        $db = DBManager::get();
-        $getseminarid = $db->query("SELECT * FROM seminar_user WHERE user_id = '".$userid."'")->fetchAll();
-          foreach ($getseminarid as $seminar) {
-            $Seminar_id = $seminar[Seminar_id];
+      $nameSeminar = "ePortfolio";
+      $tableName = ".portfolioOverview";
+      $tableNamenotMine = ".viewportfolioOverview";
+      $status = "124";
+      $userid = $GLOBALS["user"]->id;
+      $arrayPortfolio = array();
+      $userStatus = "dozent";
 
-            $result = $db->query("SELECT * FROM seminare WHERE status = '".$status."' AND Seminar_id = '".$Seminar_id."' ")->fetchAll();
-            foreach ($result as $nutzer) {
-              $arrayOne = array($nutzer[Name], $nutzer[Seminar_id], $nutzer[Beschreibung], $nutzer[Seminar_id]);
+      $db = DBManager::get();
+      $getseminarid = $db->query("SELECT * FROM seminar_user WHERE user_id = '".$userid."' AND status = '".$userStatus."'")->fetchAll();
+        foreach ($getseminarid as $seminar) {
+          $Seminar_id = $seminar[Seminar_id];
 
-              $seminarid = $nutzer[Seminar_id];
-              $link = 'href="/studip/dispatch.php/course/overview?cid='.$seminarid.'"';
-              $icon = '<i class="fa fa-minus-circle" aria-hidden="true"></i>';
+          $result = $db->query("SELECT * FROM seminare WHERE status = '".$status."' AND Seminar_id = '".$Seminar_id."' ")->fetchAll();
+          foreach ($result as $nutzer) {
+            $arrayOne = array($nutzer[Name], $nutzer[Seminar_id], $nutzer[Beschreibung], $nutzer[Seminar_id]);
 
-              echo "<script>jQuery('".$tableName."').append('<tr><td><a ".$link."> ".$nutzer[Name]." </a></td><td> ".$nutzer[Beschreibung]." </td><td>".$icon."  Keine</td></tr>');</script>";
+            $seminarid = $nutzer[Seminar_id];
+            $link = 'href="/studip/dispatch.php/course/overview?cid='.$seminarid.'"';
+            $icon = '<i class="fa fa-minus-circle" aria-hidden="true"></i>';
+            $class = ' class="clickable-row"';
 
-              $arrayPortfolio[] = $arrayOne;
-            }
+            echo "<script>jQuery('".$tableName."').append('<tr><td><a ".$link.">".$nutzer[Name]."</a></td><td> ".$nutzer[Beschreibung]." </td><td>".$icon."  Keine</td></tr>');</script>";
 
+            $arrayPortfolio[] = $arrayOne;
           }
 
+        }
 
-    }
+      $notMine = $db->query("SELECT * FROM seminar_user WHERE user_id = '".$userid."' AND status != '".$userStatus."'")->fetchAll();
+      foreach ($notMine as $seminar) {
+        $Seminar_id = $seminar[Seminar_id];
 
-    public function createPortfolio()
-    {
+        $result = $db->query("SELECT * FROM seminare WHERE status = '".$status."' AND Seminar_id = '".$Seminar_id."' ")->fetchAll();
+        foreach ($result as $nutzer) {
+          $arrayOne = array($nutzer[Name], $nutzer[Seminar_id], $nutzer[Beschreibung], $nutzer[Seminar_id]);
 
+          $seminarid = $nutzer[Seminar_id];
+          $link = 'href="/studip/dispatch.php/course/overview?cid='.$seminarid.'"';
+          $icon = '<i class="fa fa-minus-circle" aria-hidden="true"></i>';
 
+          echo "<script>jQuery('".$tableNamenotMine."').append('<tr><td><a ".$link."> ".$nutzer[Name]." </a></td><td> ".$nutzer[Beschreibung]." </td><td>".$icon."  Keine</td></tr>');</script>";
 
+          $arrayPortfolio[] = $arrayOne;
+        }
+
+      }
     }
 
     private function setupAutoload()
@@ -84,5 +112,20 @@ class EportfolioPlugin extends StudIPPlugin implements SystemPlugin {
                 include_once __DIR__ . $class . '.php';
             });
         }
+    }
+
+    private function getSemClass()
+    {
+        global $SEM_CLASS, $SEM_TYPE, $SessSemName;
+        return $SEM_CLASS[$SEM_TYPE[$SessSemName['art_num']]['class']];
+    }
+
+    private function isSlotModule()
+    {
+        if (!$this->getSemClass()) {
+            return false;
+        }
+
+        return $this->getSemClass()->isSlotModule(get_class($this));
     }
 }

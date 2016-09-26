@@ -5,3 +5,70 @@
   border: 1px solid #ddd;
 
 }
+
+.list-group-item:hover {
+  cursor: pointer;
+  background-color: #33568b;
+  color: #fff;
+}
+
+.badge {
+  background-color: #33568b;
+  border: 1px solid #fff;
+  font-size: 13px;
+  border-radius: 20px;
+}
+
+.start_overview_inner {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 5px;
+}
+
+.start_overview_heading {
+  font-size: 20px;
+  text-align: right;
+  padding: 20px 0 0;
+  font-weight: bold;
+}
+
+.start_overview_info {
+  padding: 20px 0;
+}
+
+.createPortfolioBanner {
+  display: none;
+}
+
+#createPortfolioName {
+  font-weight: bold;
+}
+
+tr:hover {
+  background-color: #33578c;
+  cursor: pointer;
+  color: #fff;
+  transition: all 0.2s;
+}
+
+tr:hover a {
+  color: #fff;
+  transition: all 0.2s;
+}
+
+.tr-head:hover {
+  color: #000;
+}
+
+.table {
+  border: 1px solid #ddd;
+}
+
+.table a:hover {
+  text-decoration: none!important;
+}
+
+.sidebar a:hover {
+  text-decoration: none!important;
+  cursor: pointer;
+}
