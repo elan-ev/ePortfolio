@@ -18,7 +18,7 @@
 
         <h1>Meine Portfolios</h1>
 
-        <p>Hier findest Du alle ePortfolios, die Du angelegt hast oder die andere für dich freigegeben haben.</p>
+        <p>Hier finden Sie alle ePortfolios, die Sie angelegt hast oder die andere für Sie freigegeben haben.</p>
         <p><a class="btn btn-primary btn-lg" href="#" role="button" style="background-color: #33578c; color: #fff;">Mehr Informationen</a></p>
       </div>
     </div>
@@ -26,6 +26,8 @@
   </div>
 
 </div>
+
+<hr>
 
 <div class="row">
   <div class="col-md-12">
@@ -35,7 +37,7 @@
     <!-- Banner Success Display when created -->
     <div class="alert alert-success createPortfolioBanner" role="alert">Portfolio <span id="createPortfolioName"></span> wurde erstellt</div>
 
-    <table data-link="row" class="rowlink table  table-striped portfolioOverview">
+    <table data-link="row" class="rowlink table  portfolioOverview">
       <tr class="tr-head">
         <th>
           Portfolio-Name
@@ -58,11 +60,13 @@
   </div>
 </div>
 
+<hr>
+
 <div class="row">
   <div class="col-md-12">
     <h4>F�r Sie sichtbare Portfolios</h4>
 
-    <table class="table table-hover table-striped viewportfolioOverview">
+    <table  data-link="row" class=" rowlink table  viewportfolioOverview">
       <tr class="tr-head">
         <th>
           Portfolio-Name

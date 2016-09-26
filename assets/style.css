@@ -56,8 +56,14 @@ tr:hover a {
   transition: all 0.2s;
 }
 
+.tr-head {
+  background-color: #e7ebf1;
+}
+
 .tr-head:hover {
   color: #000;
+  cursor: default;
+  background-color: #e7ebf1;
 }
 
 .table {
@@ -71,4 +77,11 @@ tr:hover a {
 .sidebar a:hover {
   text-decoration: none!important;
   cursor: pointer;
+}
+
+.jumbotron {
+  background-color:#e7ebf1!important;
+  border-radius: 0px!important;
+  padding-top: 42px!important;
+  padding-bottom:41px!important;
 }
