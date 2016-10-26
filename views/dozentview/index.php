@@ -5,6 +5,7 @@
 
   $havePerm = array("root", "dozent", "admin");
   if (in_array($perm, $havePerm)){
+  } else {
     exit("Sie haben keine Berechtigung diese Seite zu betrachten");
   }
 
@@ -28,9 +29,9 @@
     <div class="jumbotron" style="border-radius: 10px;">
       <div class="container" style="padding: 0 50px;">
 
-        <h1 id="headline_uebersicht"></h1>
+        <h1>Dozentenansicht</h1>
 
-        <p>Hier finden Sie alle ePortfolios, die Sie angelegt hast oder die andere für Sie freigegeben haben.</p>
+        <p>In der Dozentenansicht finden sie alle Portfolios, auf die sie Zugriff haben.</p>
         <p><a class="btn btn-primary btn-lg" href="#" role="button" style="background-color: #33578c; color: #fff;">Mehr Informationen</a></p>
       </div>
     </div>
@@ -43,40 +44,7 @@
 
 <div class="row">
   <div class="col-md-12">
-
-    <h4>�bersicht meiner Portfolios <span id="labelMyPortfolio" class="badge"></span></h4>
-
-    <!-- Banner Success Display when created -->
-    <div class="alert alert-success createPortfolioBanner" role="alert">Portfolio <span id="createPortfolioName"></span> wurde erstellt</div>
-
-    <table data-link="row" class="rowlink table  portfolioOverview">
-      <tr class="tr-head">
-        <th>
-          Portfolio-Name
-        </th>
-        <th>
-          Beschreibung
-        </th>
-        <th>
-          Freigaben
-        </th>
-      </tr>
-
-    </table>
-  </div>
-</div>
-
-<div class="row">
-  <div class="col-md-6">
-    <button data-toggle="modal" data-target="#myModal" type="button" name="button" class="btn btn-success" id="newPortfolio" style="margin-bottom: 30px;"><i class="fa fa-plus" aria-hidden="true"></i> Neues Portfolio erstellen</button>
-  </div>
-</div>
-
-<hr>
-
-<div class="row">
-  <div class="col-md-12">
-    <h4>F�r Sie sichtbare Portfolios <span id="labelAccess" class="badge"></span></h4>
+    <h4>F�r Sie sichtbare Portfolios</h4>
 
     <table  data-link="row" class=" rowlink table  viewportfolioOverview">
       <tr class="tr-head">
@@ -106,7 +74,7 @@
       <div class="modal-body">
         <!-- Input Form  -->
 
-        <form id="createForm" method="post">
+        <form action="/studip/plugins.php/eportfolioplugin/create" method="post">
           <div class="form-group">
             <label for="PortfolioName">Portfolio Name</label>
             <input type="Text" class="form-control" id="PortfolioName" placeholder="Portfolio Name" name="name">
@@ -125,27 +93,35 @@
   </div>
 </div>
 
-<script type="text/javascript" src="/studip/plugins_packages/Universitaet Osnabrueck/EportfolioPlugin/assets/js/eportfolio.js"></script>
+
 <script>
-
-  $( document ).ready(function() {
-    var nameNewCreatePortfolio;
-
-    updatePortfolioTable();
-    updateAccessTable();
-    createNewPortfolio();
-
-  });
-
-  function updater() {
-    deleteOldTableRows();
-    updatePortfolioTable();
-  }
 
   //Trigger Modal
   $('#myModal').on('shown.bs.modal', function () {
     $('#myInput').focus()
   })
+
+  //Abfangen GET[]
+  function getUrlVars() {
+      var vars = {};
+      var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+      vars[key] = value;
+      });
+      return vars;
+  }
+
+  //Display Banner mit Portfolio Name
+  var seminarName = getUrlVars()["seminarName"];
+  if(seminarName) {
+    $('#createPortfolioName').append(seminarName);
+    $('.createPortfolioBanner').css('display', 'block');
+
+    //Entfernt %20 aus string
+    $("#createPortfolioName").text(function(index, text) {
+      return text.replace("%20", " ");
+    });
+
+  }
 
   // Statische Sitebar
   // Widget - Navigation

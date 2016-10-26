@@ -12,9 +12,28 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     public function __construct() {
         parent::__construct();
 
+        function checkPermission(){
+          $userId = $GLOBALS["user"]->id;
+          $perm = get_global_perm($userId);
+
+          $havePerm = array("root", "dozent", "admin");
+          if (in_array($perm, $havePerm)){
+            $GLOBALS["permission"] = 1;
+          }
+
+        }
+
+        $GLOBALS["permission"] = 0;
+        $renderView = "show";
+        checkPermission();
+
+        if ($GLOBALS["permission"] == 1){
+          $renderView = "dozentview";
+        }
+
         $navigation = new AutoNavigation(_('ePortfolio'));
         $navigation->setImage(Assets::image_path('admin'));
-        $navigation->setURL(PluginEngine::GetURL($this, array(), 'show'));
+        $navigation->setURL(PluginEngine::GetURL($this, array(), $renderView));
         Navigation::addItem('/eportfolioplugin', $navigation);
         Navigation::activateItem("/eportfolioplugin");
 
@@ -55,65 +74,6 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
       $dispatcher->plugin = $this;
       $dispatcher->dispatch($unconsumed_path);
 
-      $nameSeminar = "ePortfolio";
-      $tableName = ".portfolioOverview";
-      $tableNamenotMine = ".viewportfolioOverview";
-      $status = "124";
-      $userid = $GLOBALS["user"]->id;
-      $arrayPortfolio = array();
-      $userStatus = "dozent";
-
-      $db = DBManager::get();
-      $getseminarid = $db->query("SELECT * FROM seminar_user WHERE user_id = '".$userid."' AND status = '".$userStatus."'")->fetchAll();
-        foreach ($getseminarid as $seminar) {
-          $Seminar_id = $seminar[Seminar_id];
-
-          $result = $db->query("SELECT * FROM seminare WHERE status = '".$status."' AND Seminar_id = '".$Seminar_id."' ")->fetchAll();
-          foreach ($result as $nutzer) {
-            $arrayOne = array($nutzer[Name], $nutzer[Seminar_id], $nutzer[Beschreibung], $nutzer[Seminar_id]);
-
-            $seminarid = $nutzer[Seminar_id];
-            $link = 'href="/studip/dispatch.php/course/overview?cid='.$seminarid.'"';
-            $icon = '<i class="fa fa-minus-circle" aria-hidden="true"></i>';
-            $class = ' class="clickable-row"';
-
-            echo "<script>jQuery('".$tableName."').append('<tr><td><a ".$link.">".$nutzer[Name]."</a></td><td> ".$nutzer[Beschreibung]." </td><td>".$icon."  Keine</td></tr>');</script>";
-
-            $arrayPortfolio[] = $arrayOne;
-          }
-
-        }
-
-      $notMine = $db->query("SELECT * FROM seminar_user WHERE user_id = '".$userid."' AND status != '".$userStatus."'")->fetchAll();
-      foreach ($notMine as $seminar) {
-        $Seminar_id = $seminar[Seminar_id];
-
-        $result = $db->query("SELECT * FROM seminare WHERE status = '".$status."' AND Seminar_id = '".$Seminar_id."' ")->fetchAll();
-        foreach ($result as $nutzer) {
-          $arrayOne = array($nutzer[Name], $nutzer[Seminar_id], $nutzer[Beschreibung], $nutzer[Seminar_id]);
-          $seminarid = $nutzer[Seminar_id];
-
-          $getSeminarOwnerid = $db->query("SELECT user_id FROM seminar_user WHERE status = 'dozent' AND Seminar_id = '".$seminarid."'")->fetchAll();
-          foreach ($getSeminarOwnerid as $owner) {
-            $seminarOwnerid = $owner[user_id];
-            echo $seminarOwnerid;
-
-            $getSeminarOwner = $db->query("SELECT * FROM auth_user_md5 WHERE user_id = '".$seminarOwnerid."';")->fetchAll();
-            foreach ( $getSeminarOwner as $seminarOwner) {
-              $ownerName = $seminarOwner[Vorname]." ".$seminarOwner[Nachname];
-
-            }
-          }
-
-          $link = 'href="/studip/dispatch.php/course/overview?cid='.$seminarid.'"';
-          $icon = '<i class="fa fa-minus-circle" aria-hidden="true"></i>';
-          $class = ' class="clickable-row"';
-
-          echo "<script>jQuery('".$tableNamenotMine."').append('<tr><td><a ".$link.">".$nutzer[Name]."</a></td><td> ".$nutzer[Beschreibung]." </td><td>".$ownerName."</td></tr>');</script>";
-          $arrayPortfolio[] = $arrayOne;
-        }
-
-      }
     }
 
     private function setupAutoload()
@@ -141,4 +101,5 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
 
         return $this->getSemClass()->isSlotModule(get_class($this));
     }
+
 }

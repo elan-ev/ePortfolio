@@ -1,6 +1,6 @@
   <?php
 
-class ShowController extends StudipController {
+class dozentviewController extends StudipController {
 
     public function __construct($dispatcher)
     {
@@ -22,12 +22,13 @@ class ShowController extends StudipController {
         parent::before_filter($action, $args);
 
         $this->set_layout($GLOBALS['template_factory']->open('layouts/base.php'));
-//      PageLayout::setTitle('');
+        PageLayout::setTitle('viewDozent');
     }
 
     public function index_action()
     {
 
+      echo "viewDozent";
 
     }
 

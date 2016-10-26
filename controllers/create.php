@@ -62,10 +62,8 @@ class CreateController extends StudipController {
 
         }
 
-
         //Öffnet Show-Page
         echo "<meta http-equiv='refresh' content='0; URL=/studip/plugins.php/eportfolioplugin/show?seminarName=".$name."'>";
-
     }
 
     // customized #url_for for plugins
