@@ -48,6 +48,16 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
 
     public function getTabNavigation($course_id) {
 
+      $cid = $course_id;
+      $tabs = array();
+
+      $navigation = new Navigation('eportfolioPlugin', PluginEngine::getURL($this, compact('cid'), 'eportfolioplugin', true));
+      $navigation->setImage('icons/16/white/group4.png');
+      $navigation->setActiveImage('icons/16/black/group4.png');
+
+      $tabs['eportfolioplugin'] = $navigation;
+      return $tabs;
+
     }
 
     public function getNotificationObjects($course_id, $since, $user_id) {
