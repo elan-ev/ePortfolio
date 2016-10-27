@@ -33,7 +33,7 @@ function updatePortfolioTable() {
         var beschreibung = v['beschreibung'];
         var seminar_id = v['seminar_id'];
 
-        $('.portfolioOverview').append("<tr class='insert_tr'><td><a href='/studip/dispatch.php/course/overview?cid="+seminar_id+"'>"+name+"</a></td><td> "+beschreibung+" </td><td><i class='fa fa-minus-circle' aria-hidden='true'></i>  Keine</td></tr>");
+        $('.portfolioOverview').append("<tr class='insert_tr'><td><a href='/studip/plugins.php/eportfolioplugin/eportfolioplugin?cid="+seminar_id+"'>"+name+"</a></td><td> "+beschreibung+" </td><td><i class='fa fa-minus-circle' aria-hidden='true'></i>  Keine</td></tr>");
 
       });
 
@@ -51,7 +51,7 @@ function updateAccessTable(){
     data: {},
     success: function(data) {
       var i = data["counter"];
-      
+
       $.each(data, function(k, v){
 
         var name = v['name'];
@@ -59,7 +59,7 @@ function updateAccessTable(){
         var seminar_id = v['seminar_id'];
         var ownerName = v['ownerName'];
 
-        $('.viewportfolioOverview').append("<tr class='insert_tr'><td><a href='/studip/dispatch.php/course/overview?cid="+seminar_id+"''>"+name+"</a></td><td> "+beschreibung+" </td><td>"+ownerName+"</td></tr>");
+        $('.viewportfolioOverview').append("<tr class='insert_tr'><td><a href='/studip/plugins.php/eportfolioplugin/eportfolioplugin?cid="+seminar_id+"''>"+name+"</a></td><td> "+beschreibung+" </td><td>"+ownerName+"</td></tr>");
       });
 
       updateLabelAccess(i);
