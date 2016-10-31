@@ -16,7 +16,8 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
           $userId = $GLOBALS["user"]->id;
           $perm = get_global_perm($userId);
 
-          $havePerm = array("root", "dozent", "admin");
+          // $havePerm = array("root", "dozent", "admin");
+          $havePerm = array();
           if (in_array($perm, $havePerm)){
             $GLOBALS["permission"] = 1;
           }

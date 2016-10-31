@@ -1,18 +1,32 @@
 function createNewPortfolio() {
   $('#createForm').submit(function(e){
-    var url = "/studip/plugins.php/eportfolioplugin/create";
-    nameNewCreatePortfolio = $( "#PortfolioName" ).val();
 
-    $.ajax({
-      type: "POST",
-      url: url,
-      data: $("#createForm").serialize(),
-      success: function(data) {
-        $('#myModal').modal('hide');
-        updater();
-        showBanner(nameNewCreatePortfolio);
-      }
+    var nameNewCreatePortfolio;
+    var url = "/studip/plugins.php/eportfolioplugin/create";
+    var idBannerSuccess = 'createPortfolioName';
+    var classBannerSuccess = 'createPortfolioBanner';
+    var idBannerAlert = '#createBannerAlert';
+
+    //check everthing is filled out
+    var empty = $(this).parent().find("input").filter(function() {
+        return this.value === "";
     });
+
+    if (empty.length) {
+      $(idBannerAlert).css('display', 'block');
+    } else {
+      $.ajax({
+        type: "POST",
+        url: url,
+        data: $("#createForm").serialize(),
+        success: function(data) {
+          nameNewCreatePortfolio = $( "#PortfolioName" ).val();
+          $('#myModal').modal('hide');
+          updater();
+          showBanner(nameNewCreatePortfolio, idBannerSuccess , classBannerSuccess);
+        }
+      });
+    }
 
     e.preventDefault(); // avoid to execute the actual submit of the form.
   });
@@ -92,13 +106,15 @@ function getUrlVars() {
     return vars;
 }
 
-function showBanner(e) {
+function showBanner(e, id, c) {
   var hideAfter = 6000;
   var animation = "slow";
+  var idName = '#' + id;
+  var className = '.' + c;
 
-  $('#createPortfolioName').text(e);
-  $('.createPortfolioBanner').css('display', 'block');
-  setTimeout(function() {$('.createPortfolioBanner').fadeOut(animation);}, hideAfter);
+  $(idName).text(e);
+  $(className).css('display', 'block');
+  setTimeout(function() {$(className).fadeOut(animation);}, hideAfter);
 }
 
 function updateLabelPortfolios(e) {

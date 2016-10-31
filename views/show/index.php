@@ -116,6 +116,9 @@
             <input type="text" class="form-control" id="Beschreibung" placeholder="Beschreibung des Portfolios" name="text">
           </div>
 
+          <!-- Error msg -->
+          <div class="alert alert-danger createPortfolioBanner" role="alert" id="createBannerAlert">Bitte fuellen Sie alle Felder aus</div>
+
           <button type="submit" class="btn btn-success">Erstellen</button>
         </form>
 
