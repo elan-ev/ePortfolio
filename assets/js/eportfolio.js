@@ -22,6 +22,7 @@ function createNewPortfolio() {
         success: function(data) {
           nameNewCreatePortfolio = $( "#PortfolioName" ).val();
           $('#myModal').modal('hide');
+           $('#createForm')[0].reset();
           updater();
           showBanner(nameNewCreatePortfolio, idBannerSuccess , classBannerSuccess);
         }

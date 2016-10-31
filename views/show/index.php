@@ -120,6 +120,7 @@
           <div class="alert alert-danger createPortfolioBanner" role="alert" id="createBannerAlert">Bitte fuellen Sie alle Felder aus</div>
 
           <button type="submit" class="btn btn-success">Erstellen</button>
+          <input type="reset" id="configreset" value="Reset" style="display:none;">
         </form>
 
         <!-- Form Ende  -->
