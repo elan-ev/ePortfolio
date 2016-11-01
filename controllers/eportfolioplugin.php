@@ -26,21 +26,25 @@ class EportfoliopluginController extends StudipController {
 
   public function index_action()
   {
-
+    //set AutoNavigation
     Navigation::activateItem("course/eportfolioplugin");
 
     $cid = $_GET["cid"];
     $i = 0;
 
     $db = DBManager::get();
-    $templateStatus = $db->query("SELECT templateStatus FROM eportfolio WHERE Seminar_id = '$cid' ")->fetchAll();
-    $getCourseware = $db->query("SELECT id FROM mooc_blocks WHERE type = 'Courseware' AND seminar_id = '$cid'")->fetchAll();
 
+    // get template Status
+    $templateStatus = $db->query("SELECT templateStatus FROM eportfolio WHERE Seminar_id = '$cid' ")->fetchAll();
     $t = $templateStatus[0][templateStatus];
+
+    // get courseware parentId
+    $getCourseware = $db->query("SELECT id FROM mooc_blocks WHERE type = 'Courseware' AND seminar_id = '$cid'")->fetchAll();
     $getC = $getCourseware[0][id];
 
+    //auto insert chapters
     if ($t == 0) {
-
+      //set chapter titles
       $template = array('Reflektionsimpuls 1', 'Reflektionsimpuls 2', 'Reflektionsimpuls 3', 'Reflektionsimpuls 4','Reflektionsimpuls 5', 'Reflektionsimpuls 6');
 
       foreach ($template as $value) {
@@ -52,7 +56,6 @@ class EportfoliopluginController extends StudipController {
     }
 
   }
-
 
   // customized #url_for for plugins
   function url_for($to)
