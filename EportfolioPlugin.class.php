@@ -4,7 +4,7 @@ require 'bootstrap.php';
 /**
  * EportfolioPlugin.class.php
  * @author  Marcel Kipp
- * @version 0.1
+ * @version 0.18
  */
 
 class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlugin {
@@ -52,7 +52,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
       $cid = $course_id;
       $tabs = array();
 
-      $navigation = new Navigation('eportfolioPlugin', PluginEngine::getURL($this, compact('cid'), 'eportfolioplugin', true));
+      $navigation = new Navigation('Uebersicht', PluginEngine::getURL($this, compact('cid'), 'eportfolioplugin', true));
       $navigation->setImage('icons/16/white/group4.png');
       $navigation->setActiveImage('icons/16/black/group4.png');
 

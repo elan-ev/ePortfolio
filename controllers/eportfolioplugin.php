@@ -7,7 +7,10 @@ class EportfoliopluginController extends StudipController {
       parent::__construct($dispatcher);
       $this->plugin = $dispatcher->plugin;
 
-
+      $sidebar = Sidebar::Get();
+      Sidebar::Get()->setTitle('Uebersicht');
+      $widget = new SearchWidget();
+      Sidebar::Get()->addWidget($widget);
 
   }
 
@@ -25,6 +28,28 @@ class EportfoliopluginController extends StudipController {
   {
 
     Navigation::activateItem("course/eportfolioplugin");
+
+    $cid = $_GET["cid"];
+    $i = 0;
+
+    $db = DBManager::get();
+    $templateStatus = $db->query("SELECT templateStatus FROM eportfolio WHERE Seminar_id = '$cid' ")->fetchAll();
+    $getCourseware = $db->query("SELECT id FROM mooc_blocks WHERE type = 'Courseware' AND seminar_id = '$cid'")->fetchAll();
+
+    $t = $templateStatus[0][templateStatus];
+    $getC = $getCourseware[0][id];
+
+    if ($t == 0) {
+
+      $template = array('Reflektionsimpuls 1', 'Reflektionsimpuls 2', 'Reflektionsimpuls 3', 'Reflektionsimpuls 4','Reflektionsimpuls 5', 'Reflektionsimpuls 6');
+
+      foreach ($template as $value) {
+        $db->query("INSERT INTO mooc_blocks (type, parent_id, seminar_id, title, position) VALUES ('Chapter', '$getC', '$cid', '$value', '$i')");
+        $db->query("UPDATE eportfolio SET templateStatus = '1' WHERE seminar_id = '$cid'");
+        $i++;
+      }
+
+    }
 
   }
 

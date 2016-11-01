@@ -33,6 +33,7 @@ class CreateController extends StudipController {
 
         $userid = $GLOBALS["user"]->id;
         $Seminar_id = generateRandomString();
+        $eportfolio_id = generateRandomString();
         $Institut_id = "7a4f19a0a2c321ab2b8f7b798881af7c";
         $VeranstaltungsNummer = "25252525";
         $name = $_POST[name];
@@ -54,6 +55,8 @@ class CreateController extends StudipController {
         $db = DBManager::get();
         $result = $db->query("INSERT INTO seminare (Seminar_id, VeranstaltungsNummer, Institut_id, Name, status, Beschreibung, Lesezugriff, Schreibzugriff, start_time, duration_time, mkdate, chdate) VALUES ('$Seminar_id', '$VeranstaltungsNummer', '$Institut_id', '$name', '$status', '$Beschreibung', '$Lesezugriff', '$Schreibzugriff', '$start_time', '$duration_time', 'UNIX_TIMESTAMP()', 'UNIX_TIMESTAMP()'); ");
         $resultuser = $db->query("INSERT INTO seminar_user (Seminar_id, user_id, status, position, gruppe, notification, visible, bind_calendar, mkdate) VALUES ('$Seminar_id', '$userid', '$statususer', '$position', '$gruppe', '$notification', '$visibleuser', '$bind_calendar', 'UNIX_TIMESTAMP()');");
+
+        $result_eportfolioTable = $db->query("INSERT INTO eportfolio (Seminar_id, eportfolio_id, owner_id) VALUES ('$Seminar_id', '$eportfolio_id', '$userid'); ");
 
         // $deleteCoursewareStandard = $db->query("DELETE FROM mooc_blocks WHERE type != 'Courseware' AND seminar_id = '".$Seminar_id."';");
         $createCoursewareTemplate = $db->query("SELECT * FROM mooc_blocks WHERE type = 'Courseware' AND seminar_id = '".$Seminar_id."'; ")->fetchAll();
