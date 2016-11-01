@@ -85,3 +85,20 @@ tr:hover a {
   padding-top: 42px!important;
   padding-bottom:41px!important;
 }
+
+.card-wrapper {
+  padding: 5px;
+  padding-bottom: 50px;
+}
+
+.card-inner {
+  padding: 10px;
+  padding-bottom: 50px;
+  border:1px solid rgba(0,0,0,0.2);
+  cursor: pointer;
+}
+
+.card-inner:hover {
+  background-color: rgba(0,0,0,0.1);
+  transition: all 0.2s;
+}
