@@ -65,6 +65,10 @@ class EportfoliopluginController extends StudipController {
       foreach ($template as $value) {
         $db->query("INSERT INTO mooc_blocks (type, parent_id, seminar_id, title, position) VALUES ('Chapter', '$getC', '$cid', '$value', '$i')");
         $db->query("UPDATE eportfolio SET templateStatus = '1' WHERE seminar_id = '$cid'");
+
+        //update all mooc_blocks field
+        $db->query("UPDATE mooc_blocks SET title = 'Reflektionsimpulse' WHERE type = 'Courseware'");
+        
         $i++;
       }
     }
