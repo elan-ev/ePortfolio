@@ -59,16 +59,24 @@ class EportfoliopluginController extends StudipController {
 
     //auto insert chapters
     if ($t == 0) {
-      //set chapter titles
-      $template = array('Reflektionsimpuls 1', 'Reflektionsimpuls 2', 'Reflektionsimpuls 3', 'Reflektionsimpuls 4','Reflektionsimpuls 5', 'Reflektionsimpuls 6');
+
+      //set additional chapter titles
+      $template = array('Reflektionsimpuls 3', 'Reflektionsimpuls 4','Reflektionsimpuls 5', 'Reflektionsimpuls 6');
 
       foreach ($template as $value) {
+        //insert into eportfolio
         $db->query("INSERT INTO mooc_blocks (type, parent_id, seminar_id, title, position) VALUES ('Chapter', '$getC', '$cid', '$value', '$i')");
-        $db->query("UPDATE eportfolio SET templateStatus = '1' WHERE seminar_id = '$cid'");
 
         //update all mooc_blocks field
         $db->query("UPDATE mooc_blocks SET title = 'Reflektionsimpulse' WHERE type = 'Courseware'");
-        
+
+        //change title of standard chapters
+        $db->query("UPDATE mooc_blocks SET title = 'Reflektionsimpuls 1' WHERE title = 'Kapitel 1'");
+        $db->query("UPDATE mooc_blocks SET title = 'Reflektionsimpuls 2' WHERE title = 'Kapitel 2'");
+
+        //change templateStatus
+        $db->query("UPDATE eportfolio SET templateStatus = '1' WHERE seminar_id = '$cid'");
+
         $i++;
       }
     }
