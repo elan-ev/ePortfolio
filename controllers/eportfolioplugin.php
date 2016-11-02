@@ -71,8 +71,8 @@ class EportfoliopluginController extends StudipController {
         $db->query("UPDATE mooc_blocks SET title = 'Reflektionsimpulse' WHERE type = 'Courseware'");
 
         //change title of standard chapters
-        $db->query("UPDATE mooc_blocks SET title = 'Reflektionsimpuls 1' WHERE title = 'Kapitel 1'");
-        $db->query("UPDATE mooc_blocks SET title = 'Reflektionsimpuls 2' WHERE title = 'Kapitel 2'");
+        $db->query("UPDATE mooc_blocks SET title = 'Reflektionsimpuls 1' WHERE title = 'Kapitel 1' AND Seminar_id= '$cid'");
+        $db->query("UPDATE mooc_blocks SET title = 'Reflektionsimpuls 2' WHERE title = 'Kapitel 2' AND Seminar_id= '$cid'");
 
         //change templateStatus
         $db->query("UPDATE eportfolio SET templateStatus = '1' WHERE seminar_id = '$cid'");
