@@ -49,6 +49,11 @@
      </div>
     </div>
 
+    <h4>Einstellungen</h4>
+    <div class="panel list-group">
+     <a href="#" class="list-group-item" data-toggle="collapse" data-target="#sm" data-parent="#menu">Portfolioeinstellungen</a>
+    </div>
+
   </div>
 
   <div class="col-md-9">
@@ -62,7 +67,7 @@
       <?php foreach ($cardInfo as $key): ?>
 
         <?php
-          $link = '/studip/plugins.php/courseware/courseware?cid=r4noa4wa9l7lzhhy287uzb8lq7zvobmf&selected='.$key[id];
+          $link = '/studip/plugins.php/courseware/courseware?cid='.$cid.'&selected='.$key[id];
           $linkAdmin = $link.'#author';
         ?>
 

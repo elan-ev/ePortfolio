@@ -101,6 +101,7 @@ class EportfoliopluginController extends StudipController {
     $this->cardInfo = $return_arr;
     $this->seminarTitle = $getS;
     $this->isOwner = $isOwner;
+    $this->cid = $cid;
 
   }
 
