@@ -8,40 +8,89 @@
 
 <!-- HEAD END -->
 
-<h1 style="border:none!important;"><?php  echo $seminarTitle; ?></h1>
-<hr>
-
 <div class="row">
-  <?php foreach ($cardInfo as $key): ?>
+  <div class="col-md-3">
 
-    <?php
-      $link = '/studip/plugins.php/courseware/courseware?cid=r4noa4wa9l7lzhhy287uzb8lq7zvobmf&selected='.$key[id];
-      $linkAdmin = $link.'#author';
-    ?>
+    <!-- sidebar -->
+    <h4>Reflexionsimpulse</h4>
+    <ul class="list-group">
+      <?php foreach ($cardInfo as $key): ?>
+        <a href="#" class="list-group-item" data-toggle="collapse" data-target="#<?php echo $key[id]; ?>" data-parent="#menu">
+          <?php echo $key[title];?>
+          <?php if($key[section]):?>
+            <span class="glyphicon glyphicon glyphicon-chevron-down pull-right" aria-hidden="true"></span>
+          <?php endif; ?>
+         </a>
 
-    <div class="col-md-4 card-wrapper">
-      <div class="card-inner" style="">
+        <div id="<?php echo $key[id]; ?>" class="sublinks collapse">
+          <?php foreach ($key[section] as $section):?>
+            <a class="list-group-item small"><span class="glyphicon glyphicon-chevron-right"></span> <?php echo $section[title]; ?></a>
+          <?php endforeach; ?>
+        </div>
 
-      <h4><?php echo $key[title]; ?></h4>
+      <?php endforeach; ?>
+    </ul>
 
-      <div class="" style="background-color:rgba(0,0,0,0.2);width:100%;height: 150px;">
-        &nbsp;
-      </div>
-
-      <div class="alert alert-info" style="margin: 20px 0;" role="alert">Warum will ich Lehrerin werden? Welche Staerken will ich einbringen? </div>
-
-      <div class="">
-        <b>Freigaben: </b>50 <br>
-        <b>Kommentare: </b> 12
-      </div>
-
-      <a href="<?php echo $link; ?>"><button type="button" class="btn btn-primary">Anschauen</button></a>
-
-      <?php if($isOwner == true):?>
-        <a href="<?php echo $linkAdmin; ?>"><button type="button" class="btn btn-primary">Bearbeiten</button></a>
-      <?php endif; ?>
+    <h4>Teilnehmer</h4>
+    <div class="panel list-group">
+     <a href="#" class="list-group-item" data-toggle="collapse" data-target="#sm" data-parent="#menu">Supervisoren<span class="glyphicon glyphicon glyphicon-chevron-down pull-right" aria-hidden="true"></span></a>
+     <div id="sm" class="sublinks collapse">
+      <a class="list-group-item small"><span class="glyphicon glyphicon-chevron-right"></span> Marcel Kipp</a>
+      <a class="list-group-item small"><span class="glyphicon glyphicon-chevron-right"></span> Max Mustermann</a>
+     </div>
+     <a href="#" class="list-group-item" data-toggle="collapse" data-target="#m" data-parent="#menu">Zuschauer <span class="label label-info">6</span><span class="glyphicon glyphicon glyphicon-chevron-down pull-right" aria-hidden="true"></span></a>
+     <div id="m" class="sublinks collapse">
+      <a class="list-group-item small"><span class="glyphicon glyphicon-chevron-right"></span> Marcel Kipp</a>
+      <a class="list-group-item small"><span class="glyphicon glyphicon-chevron-right"></span> Max Mustermann</a>
+      <a class="list-group-item small"><span class="glyphicon glyphicon-chevron-right"></span> Max Mustermann</a>
+      <a class="list-group-item small"><span class="glyphicon glyphicon-chevron-right"></span> Max Mustermann</a>
+      <a class="list-group-item small"><span class="glyphicon glyphicon-chevron-right"></span> Max Mustermann</a>
+      <a class="list-group-item small"><span class="glyphicon glyphicon-chevron-right"></span> Max Mustermann</a>
+     </div>
     </div>
+
   </div>
 
-  <?php endforeach; ?>
+  <div class="col-md-9">
+
+    <!-- overview area -->
+
+    <h1 style="border:none!important;"><?php  echo $seminarTitle; ?></h1>
+    <hr>
+
+    <div class="row">
+      <?php foreach ($cardInfo as $key): ?>
+
+        <?php
+          $link = '/studip/plugins.php/courseware/courseware?cid=r4noa4wa9l7lzhhy287uzb8lq7zvobmf&selected='.$key[id];
+          $linkAdmin = $link.'#author';
+        ?>
+
+        <div class="col-md-4 card-wrapper">
+          <div class="card-inner" style="">
+
+          <h4><?php echo $key[title]; ?></h4>
+
+          <div class="" style="background-color:rgba(0,0,0,0.2);width:100%;height: 150px;">
+            &nbsp;
+          </div>
+
+          <div class="alert alert-info" style="margin: 20px 0;" role="alert">Warum will ich Lehrerin werden? Welche Staerken will ich einbringen? </div>
+
+          <div class="">
+            <b>Freigaben: </b>50 <br>
+            <b>Kommentare: </b> 12
+          </div>
+
+          <a href="<?php echo $link; ?>"><button type="button" class="btn btn-primary">Anschauen</button></a>
+
+          <?php if($isOwner == true):?>
+            <a href="<?php echo $linkAdmin; ?>"><button type="button" class="btn btn-primary">Bearbeiten</button></a>
+          <?php endif; ?>
+        </div>
+      </div>
+
+      <?php endforeach; ?>
+    </div>
+  </div>
 </div>

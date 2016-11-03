@@ -102,3 +102,14 @@ tr:hover a {
   background-color: rgba(0,0,0,0.1);
   transition: all 0.2s;
 }
+
+.menupoint {
+  background-color: rgba(0,0,0,0.05)!important;
+  padding-left: 30px!important;
+}
+
+a.list-group-item:focus, a.list-group-item:hover, button.list-group-item:focus, button.list-group-item:hover {
+  background-color: #28497c!important;
+  color: #fff!important;
+  transition: all 0.0s!important; 
+}

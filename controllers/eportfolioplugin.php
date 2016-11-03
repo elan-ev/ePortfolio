@@ -7,17 +7,16 @@ class EportfoliopluginController extends StudipController {
       parent::__construct($dispatcher);
       $this->plugin = $dispatcher->plugin;
 
-      $sidebar = Sidebar::Get();
-      Sidebar::Get()->setTitle('Uebersicht');
-      $widget = new SearchWidget();
-      Sidebar::Get()->addWidget($widget);
+      // Sidebar - not in use
+      // $sidebar = Sidebar::Get();
+      // Sidebar::Get()->setTitle('Uebersicht');
+      // $widget = new SearchWidget();
+      // Sidebar::Get()->addWidget($widget);
   }
 
   public function before_filter(&$action, &$args)
   {
       parent::before_filter($action, $args);
-
-      // $this->set_layout($GLOBALS['template_factory']->open('layouts/base.php'));
       PageLayout::setTitle('Uebersicht');
 
   }
@@ -57,9 +56,10 @@ class EportfoliopluginController extends StudipController {
       $isOwner = true;
     }
 
+    echo $t;
     //auto insert chapters
     if ($t == 0) {
-
+      echo  " t - triggered";
       //set additional chapter titles
       $template = array('Reflektionsimpuls 3', 'Reflektionsimpuls 4','Reflektionsimpuls 5', 'Reflektionsimpuls 6');
 
@@ -89,8 +89,13 @@ class EportfoliopluginController extends StudipController {
       $arrayOne['id'] = $value[id];
       $arrayOne['title'] = $value[title];
 
+      // get sections of chapter
+      $queryMenuPoints = $db->query("SELECT id, title FROM mooc_blocks WHERE parent_id = '$value[id]'")->fetchAll();
+      $arrayOne['section'] = $queryMenuPoints;
+
       array_push($return_arr, $arrayOne);
     }
+
 
     //push to template
     $this->cardInfo = $return_arr;
@@ -99,22 +104,4 @@ class EportfoliopluginController extends StudipController {
 
   }
 
-  // customized #url_for for plugins
-  // function url_for($to)
-  // {
-  //     $args = func_get_args();
-  //
-  //     # find params
-  //     $params = array();
-  //     if (is_array(end($args))) {
-  //         $params = array_pop($args);
-  //     }
-  //
-  //     # urlencode all but the first argument
-  //     $args = array_map('urlencode', $args);
-  //     $args[0] = $to;
-  //
-  //     return PluginEngine::getURL($this->dispatcher->plugin, $params, join('/', $args));
-  //
-  // }
 }
