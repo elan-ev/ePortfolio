@@ -136,7 +136,7 @@ function updateLabelAccess(e) {
 
 function deletePortfolio() {
   var href = "/studip/plugins.php/eportfolioplugin/show";
-  var url = "/studip/plugins.php/eportfolioplugin/settings";
+  var url = "/studip/plugins.php/eportfolioplugin/settings?cid="+cid;
   $.ajax({
     type: "POST",
     url: url,

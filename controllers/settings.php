@@ -39,19 +39,16 @@ class settingsController extends StudipController {
     //delete Portfolio///
     ////////////////////
 
-    $deleteTrigger = $_POST["deletePortfolio"];
+    if ($_POST["deletePortfolio"]) {
 
-    if ($deleteTrigger == '1'){
-      echo $deleteTrigger;
-      echo $cid;
-      // echo $userid;
-      $query1 = $db->query("DELETE FROM eportfolio WHERE Seminar_id = '$cid'");
-      $query2 = $db->query("DELETE FROM mooc_blocks WHERE Seminar_id = '$cid'");
-      $query3 = $db->query("DELETE FROM seminare WHERE Seminar_id = '$cid'");
-    }
+      $deleteTrigger = $_POST["deletePortfolio"];
 
-    if ($cid){
-      echo $cid;
+      if ($deleteTrigger == '1'){
+        $db->query("DELETE FROM eportfolio WHERE Seminar_id = '$cid'");
+        $db->query("DELETE FROM mooc_blocks WHERE Seminar_id = '$cid'");
+        $db->query("DELETE FROM seminare WHERE Seminar_id = '$cid'");
+      }
+
     }
 
     ////////////////////

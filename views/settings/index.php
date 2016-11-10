@@ -35,7 +35,12 @@
 
 <script type="text/javascript" src="/studip/plugins_packages/Universitaet Osnabrueck/EportfolioPlugin/assets/js/eportfolio.js"></script>
 <script type="text/javascript">
+
+var cid = '<?php echo $cid; ?>';
+alert(cid);
+
 $( document ).ready(function() {
+
 
   $('#deleteModal').on('shown.bs.modal', function () {
     $('#deleteModal').focus()
