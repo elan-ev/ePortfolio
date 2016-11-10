@@ -133,3 +133,18 @@ function updateLabelAccess(e) {
 
   $('#labelAccess').text(e);
 }
+
+function deletePortfolio() {
+  var href = "/studip/plugins.php/eportfolioplugin/show";
+  var url = "/studip/plugins.php/eportfolioplugin/settings";
+  $.ajax({
+    type: "POST",
+    url: url,
+    data: {
+      'deletePortfolio':'1',
+    },
+    success: function(data) {
+      console.log(data);
+    }
+  });
+}

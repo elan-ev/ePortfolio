@@ -52,11 +52,19 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
       $cid = $course_id;
       $tabs = array();
 
+      //uebersicht navigation point
       $navigation = new Navigation('Uebersicht', PluginEngine::getURL($this, compact('cid'), 'eportfolioplugin', true));
       $navigation->setImage('icons/16/white/group4.png');
       $navigation->setActiveImage('icons/16/black/group4.png');
 
+      //settings navigation
+      $navigationSettings = new Navigation('Einstellungen', PluginEngine::getURL($this, compact('cid'), 'settings', true));
+      $navigationSettings->setImage('icons/16/white/admin.png');
+      $navigationSettings->setActiveImage('icons/16/black/admin.png');
+
+      //generate navigation
       $tabs['eportfolioplugin'] = $navigation;
+      $tabs['settings'] = $navigationSettings;
       return $tabs;
 
     }
