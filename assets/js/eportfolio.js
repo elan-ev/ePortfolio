@@ -144,7 +144,12 @@ function deletePortfolio() {
       'deletePortfolio':'1',
     },
     success: function(data) {
-      console.log(data);
+      $('#deletebtn').remove();
+      $('#deleteText').remove();
+      $('.deleteSuccess').css('display', 'block');
+      setTimeout(function(){
+        window.location.href = '/studip/plugins.php/eportfolioplugin/show';
+      }, 1500);
     }
   });
 }

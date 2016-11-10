@@ -19,14 +19,21 @@
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title">Portfolio loeschen</h4>
       </div>
-      <div class="modal-body">
+      <div class="modal-body" id="modalDeleteBody">
 
-        <p style="margin-bottom:30px;">
+        <p id="deleteText" style="margin-bottom:30px;">
           Sind Sie sich sicher, dass Sie das Portfolio <b><?php echo $title; ?></b> loeschen wollen?</br>
           Alle Daten werden hierdurch <b>unwiderruflich</b> geloescht und koennen nicht wiederhergestellt werden.
         </p>
 
-        <button type="button" onClick="deletePortfolio();" class="btn btn-danger">Portfolio loeschen</button>
+        <div class="deleteSuccess">
+          <div><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></div>
+          <p>
+            Portfolio <b><?php echo $title; ?></b> geloescht
+          </p>
+        </div>
+
+        <button type="button" onClick="deletePortfolio();" id="deletebtn" class="btn btn-danger">Portfolio loeschen</button>
 
       </div>
     </div>
@@ -36,16 +43,15 @@
 <script type="text/javascript" src="/studip/plugins_packages/Universitaet Osnabrueck/EportfolioPlugin/assets/js/eportfolio.js"></script>
 <script type="text/javascript">
 
-var cid = '<?php echo $cid; ?>';
-alert(cid);
+  var cid = '<?php echo $cid; ?>';
 
-$( document ).ready(function() {
+  $( document ).ready(function() {
 
 
-  $('#deleteModal').on('shown.bs.modal', function () {
-    $('#deleteModal').focus()
-  })
+    $('#deleteModal').on('shown.bs.modal', function () {
+      $('#deleteModal').focus()
+    })
 
-});
+  });
 
 </script>
