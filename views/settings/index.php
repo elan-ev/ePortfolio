@@ -8,6 +8,46 @@
 
 <!-- HEAD END -->
 
+<h2>Zuschauerrechte</h2>
+
+<table class="table table-bordered">
+
+<tr>
+  <th></th>
+  <?php foreach ($chapterList as $chapter):?>
+    <th>
+      <?php echo $chapter[title]; ?>
+    </th>
+  <?php endforeach; ?>
+</tr>
+
+<?php $i = 1; ?>
+ <?php foreach ($viewerList as $viewer):?>
+   <tr>
+     <td><?php echo $viewer[Vorname].' '.$viewer[Nachname]; ?> </td>
+     <?php foreach ($chapterList as $chapter):?>
+
+      <?php $viewer_id = $viewer[viewer_id]; ?>
+      <td onClick="setAccess(<?php echo $chapter[id]?>, '<?php echo $viewer_id ?>'); checkIcon('<?php echo $viewer[viewer_id]?>', <?php echo $chapter[id]; ?>);" class="righttable-inner">
+
+        <?php if(!array_key_exists($chapter[id] ,$viewer[Chapter]) or $viewer[Chapter][$chapter[id]] == 1):?>
+        <span id="icon-<?php echo $viewer[viewer_id].'-'.$chapter[id]; ?>" class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+
+        <?php elseif($viewer[Chapter][$chapter[id]] == 0):?>
+          <span id="icon-<?php echo $viewer[viewer_id].'-'.$chapter[id]; ?>" class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+
+        <?php endif;?>
+
+      </td>
+
+      <?php endforeach; ?>
+
+    <?php $i = 1; ?>
+   </tr>
+  <?php endforeach; ?>
+
+</table>
+
 <h2>Einstellungen</h2>
 
 <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">Portfolio loeschen</button>
@@ -53,5 +93,32 @@
     })
 
   });
+
+  function setAccess(id, viewerId){
+    var url = "/studip/plugins.php/eportfolioplugin/settings?cid="+cid;
+    $.ajax({
+      type: "POST",
+      url: url,
+      data: {
+        'setAccess':'1',
+        'block_id': id,
+        'viewer_id': viewerId,
+      },
+      success: function(data) {
+
+      }
+    });
+  }
+
+  function checkIcon(viewerId, id) {
+    var className = $('#icon-'+viewerId+'-'+id).attr('class');
+    if (className == "glyphicon glyphicon-remove") {
+      $('#icon-'+viewerId+'-'+id).removeClass("glyphicon-remove");
+      $('#icon-'+viewerId+'-'+id).addClass("glyphicon-ok");
+    } else if (className == "glyphicon glyphicon-ok") {
+      $('#icon-'+viewerId+'-'+id).removeClass("glyphicon-ok");
+      $('#icon-'+viewerId+'-'+id).addClass("glyphicon-remove");
+    }
+  }
 
 </script>
