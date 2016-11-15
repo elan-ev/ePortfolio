@@ -1,9 +1,6 @@
 /* CSS */
-
 #portfolioOverview {
-
   border: 1px solid #ddd;
-
 }
 
 .list-group-item:hover {
@@ -71,19 +68,19 @@ tr:hover a {
 }
 
 .table a:hover {
-  text-decoration: none!important;
+  text-decoration: none !important;
 }
 
 .sidebar a:hover {
-  text-decoration: none!important;
+  text-decoration: none !important;
   cursor: pointer;
 }
 
 .jumbotron {
-  background-color:#e7ebf1!important;
-  border-radius: 0px!important;
-  padding-top: 42px!important;
-  padding-bottom:41px!important;
+  background-color: #e7ebf1 !important;
+  border-radius: 0px !important;
+  padding-top: 42px !important;
+  padding-bottom: 41px !important;
 }
 
 .card-wrapper {
@@ -94,24 +91,30 @@ tr:hover a {
 .card-inner {
   padding: 10px;
   padding-bottom: 50px;
-  border:1px solid rgba(0,0,0,0.2);
+  border: 1px solid rgba(0, 0, 0, 0.2);
   cursor: pointer;
 }
 
 .card-inner:hover {
-  background-color: rgba(0,0,0,0.1);
+  background-color: rgba(0, 0, 0, 0.1);
   transition: all 0.2s;
 }
 
 .menupoint {
-  background-color: rgba(0,0,0,0.05)!important;
-  padding-left: 30px!important;
+  background-color: rgba(0, 0, 0, 0.05) !important;
+  padding-left: 30px !important;
 }
 
-a.list-group-item:focus, a.list-group-item:hover, button.list-group-item:focus, button.list-group-item:hover {
-  background-color: #28497c!important;
-  color: #fff!important;
-  transition: all 0.0s!important;
+a.list-group-item:focus, a.list-group-item:hover {
+  background-color: #28497c !important;
+  color: #fff !important;
+  transition: all 0s !important;
+}
+
+button.list-group-item:focus, button.list-group-item:hover {
+  background-color: #28497c !important;
+  color: #fff !important;
+  transition: all 0s !important;
 }
 
 .deleteSuccess {
@@ -133,16 +136,16 @@ a.list-group-item:focus, a.list-group-item:hover, button.list-group-item:focus, 
   text-align: center;
 }
 
-.viewer-management tr:hover {
-  background-color: #fff!important;
-  color: #000!important;
-}
-
 .viewer-management {
   text-align: center;
 }
 
+.viewer-management tr:hover {
+  background-color: #fff !important;
+  color: #000 !important;
+}
+
 .viewer-management td:hover {
-  background-color: #536d96!important;
-  color: #fff!important;
+  background-color: #536d96 !important;
+  color: #fff !important;
 }
