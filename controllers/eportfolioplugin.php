@@ -56,7 +56,6 @@ class EportfoliopluginController extends StudipController {
       $isOwner = true;
     }
 
-    echo $t;
     //auto insert chapters
     if ($t == 0) {
       echo  " t - triggered";
@@ -96,13 +95,29 @@ class EportfoliopluginController extends StudipController {
       array_push($return_arr, $arrayOne);
     }
 
+    //get viewer
+    $viewerList = array();
+    $viewerCounter = 0;
+    $getViewer = $db->query("SELECT user_id FROM seminar_user WHERE Seminar_id = '$cid'")->fetchAll();
+    foreach ($getViewer as $key){
+      $viewerInfo = $db->query("SELECT Vorname, Nachname FROM auth_user_md5 WHERE user_id = '$key[user_id]'")->fetchAll();
+      foreach ($viewerInfo as $info) {
+        $arrayOne = array();
+        $arrayOne[Vorname] = $info[Vorname];
+        $arrayOne[Nachname] = $info[Nachname];
+
+        array_push($viewerList, $arrayOne);
+      }
+      $viewerCounter++;
+    }
 
     //push to template
     $this->cardInfo = $return_arr;
     $this->seminarTitle = $getS;
     $this->isOwner = $isOwner;
     $this->cid = $cid;
-
+    $this->viewerList = $viewerList;
+    $this->viewerCounter = $viewerCounter;
   }
 
 }

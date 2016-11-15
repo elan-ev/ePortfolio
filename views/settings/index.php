@@ -102,6 +102,13 @@
       $('#deleteModal').focus()
     })
 
+    // $("span").each(function(){
+    //   var name = $(this).attr('class');
+    //   if (name == "glyphicon glyphicon-remove"){
+    //     $(this).css('color', 'red');
+    //   }
+    // });
+
   });
 
   function setAccess(id, viewerId){

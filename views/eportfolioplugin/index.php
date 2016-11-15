@@ -38,14 +38,13 @@
       <a class="list-group-item small"><span class="glyphicon glyphicon-chevron-right"></span> Marcel Kipp</a>
       <a class="list-group-item small"><span class="glyphicon glyphicon-chevron-right"></span> Max Mustermann</a>
      </div>
-     <a href="#" class="list-group-item" data-toggle="collapse" data-target="#m" data-parent="#menu">Zuschauer <span class="label label-info">6</span><span class="glyphicon glyphicon glyphicon-chevron-down pull-right" aria-hidden="true"></span></a>
+     <a href="#" class="list-group-item" data-toggle="collapse" data-target="#m" data-parent="#menu">Zuschauer <span class="label label-info"><?php echo $viewerCounter; ?></span><span class="glyphicon glyphicon glyphicon-chevron-down pull-right" aria-hidden="true"></span></a>
      <div id="m" class="sublinks collapse">
-      <a class="list-group-item small"><span class="glyphicon glyphicon-chevron-right"></span> Marcel Kipp</a>
-      <a class="list-group-item small"><span class="glyphicon glyphicon-chevron-right"></span> Max Mustermann</a>
-      <a class="list-group-item small"><span class="glyphicon glyphicon-chevron-right"></span> Max Mustermann</a>
-      <a class="list-group-item small"><span class="glyphicon glyphicon-chevron-right"></span> Max Mustermann</a>
-      <a class="list-group-item small"><span class="glyphicon glyphicon-chevron-right"></span> Max Mustermann</a>
-      <a class="list-group-item small"><span class="glyphicon glyphicon-chevron-right"></span> Max Mustermann</a>
+
+      <?php foreach ($viewerList as $key):?>
+      <a class="list-group-item small"><span class="glyphicon glyphicon-chevron-right"></span><?php echo $key[Vorname].' '.$key[Nachname]; ?></a>
+      <?php endforeach; ?>
+
      </div>
     </div>
 

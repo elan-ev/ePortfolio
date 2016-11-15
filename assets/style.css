@@ -140,6 +140,10 @@ button.list-group-item:focus, button.list-group-item:hover {
   text-align: center;
 }
 
+.viewer-management th {
+  text-align: center;
+}
+
 .viewer-management tr:hover {
   background-color: #fff !important;
   color: #000 !important;
