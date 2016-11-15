@@ -130,7 +130,6 @@ class settingsController extends StudipController {
     ///////////////////
     //////////////////
 
-
     //push to template
     $this->cid = $cid;
     $this->userid = $userid;

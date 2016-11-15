@@ -50,7 +50,7 @@
 
     <h4>Einstellungen</h4>
     <div class="panel list-group">
-     <a href="#" class="list-group-item" data-toggle="collapse" data-target="#sm" data-parent="#menu">Portfolioeinstellungen</a>
+     <a href="/studip/plugins.php/eportfolioplugin/settings?cid=<?php echo $cid; ?>" class="list-group-item">Portfolioeinstellungen</a>
     </div>
 
   </div>

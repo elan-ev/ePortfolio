@@ -153,3 +153,16 @@ button.list-group-item:focus, button.list-group-item:hover {
   background-color: #536d96 !important;
   color: #fff !important;
 }
+
+.searchResultItem {
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 10px;
+  margin: 5px;
+  border-radius: 5px;
+}
+
+.searchResultItem:hover {
+  background-color: green;
+  color: #fff;
+  cursor: pointer;
+}

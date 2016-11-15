@@ -8,6 +8,10 @@
 
 <!-- HEAD END -->
 
+<h2>Supervisor</h2>
+
+<button data-toggle="modal" data-target="#addSupervisorModal" type="button" class="btn btn-success"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Supervisor hinzufuegen</button>
+
 <h2>Zuschauerrechte</h2>
 
 <table class="table table-bordered viewer-management">
@@ -90,6 +94,32 @@
   </div>
 </div>
 
+<div class="modal fade" id="addSupervisorModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Supervisor hinzufuegen</h4>
+      </div>
+      <div class="modal-body" id="modalDeleteBody">
+
+          <p>
+            <div class="input-group" style="margin-bottom:20px;">
+              <div class="input-group-addon"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></div>
+              <input type="text" class="form-control" id="inputSearchSupervisor" placeholder="Name des Supervisors">
+            </div>
+
+            <div id="searchResult">
+
+            </div>
+          </p>
+
+
+      </div>
+    </div>
+  </div>
+</div>
+
 <script type="text/javascript" src="/studip/plugins_packages/Universitaet Osnabrueck/EportfolioPlugin/assets/js/eportfolio.js"></script>
 <script type="text/javascript">
 
@@ -108,6 +138,28 @@
     //     $(this).css('color', 'red');
     //   }
     // });
+
+    $('#inputSearchSupervisor').keyup(function() {
+      var val = $("#inputSearchSupervisor").val();
+      var url = "/studip/plugins.php/eportfolioplugin/livesearch";
+
+      $.ajax({
+        type: "POST",
+        url: url,
+        dataType: "json",
+        data: {
+          'val': val,
+          'status': 'dozent',
+        },
+        success: function(json) {
+          $('#searchResult').empty();
+          $.each( json , function(e,v) {
+            console.log(v.userid);
+            $('#searchResult').append('<div class="searchResultItem">'+v.Vorname+' '+v.Nachname+'<span class="pull-right glyphicon glyphicon-plus" aria-hidden="true"></span></div>');
+          });
+        }
+      });
+    });
 
   });
 
