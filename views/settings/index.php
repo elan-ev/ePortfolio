@@ -10,16 +10,26 @@
 
 <h2>Zuschauerrechte</h2>
 
-<table class="table table-bordered">
+<table class="table table-bordered viewer-management">
 
-<tr>
-  <th></th>
-  <?php foreach ($chapterList as $chapter):?>
-    <th>
-      <?php echo $chapter[title]; ?>
-    </th>
-  <?php endforeach; ?>
-</tr>
+<?php if (!empty($viewerList)): ?>
+
+  <tr>
+    <th></th>
+    <?php foreach ($chapterList as $chapter):?>
+      <th>
+        <?php echo $chapter[title]; ?>
+      </th>
+    <?php endforeach; ?>
+  </tr>
+
+<?php else: ?>
+
+  <div class="alert alert-info" role="alert">Es sind derzeit keine Zuschauer in Ihrem Portfolio eingetragen. Bitte fügen die Teilnehmer hinzu Leserechte zu vergeben.</div>
+
+<?php endif; ?>
+
+
 
 <?php $i = 1; ?>
  <?php foreach ($viewerList as $viewer):?>

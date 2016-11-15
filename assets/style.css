@@ -128,6 +128,21 @@ a.list-group-item:focus, a.list-group-item:hover, button.list-group-item:focus, 
   margin: 20px;
   font-size: 20px;
 }
+
 .righttable-inner {
   text-align: center;
+}
+
+.viewer-management tr:hover {
+  background-color: #fff!important;
+  color: #000!important;
+}
+
+.viewer-management {
+  text-align: center;
+}
+
+.viewer-management td:hover {
+  background-color: #536d96!important;
+  color: #fff!important;
 }
