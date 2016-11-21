@@ -23,7 +23,7 @@ class livesearchController extends StudipController {
 
       // set vars
       $userid = $GLOBALS["user"]->id;
-      $cid = $_GET["cid"];
+      $cid = $_POST["cid"];
       $db = DBManager::get();
 
       //set ajax vars
@@ -31,18 +31,30 @@ class livesearchController extends StudipController {
       $val = $_POST["val"];
 
       //query
-      $search_query = $db->query("SELECT Vorname, Nachname, user_id FROM auth_user_md5 WHERE Vorname LIKE '%$val%' OR Nachname LIKE '%$val%' AND perms = '$user_status'")->fetchAll();
-      foreach ($search_query as $key) {
-        $arrayOne = array();
-        $arrayOne["Vorname"] =  $key[Vorname];
-        $arrayOne["Nachname"] = $key[Nachname];
-        $arrayOne["userid"] = $key[user_id];
+      if ($_POST["searchViewer"]){
+        $search_query = $db->query("SELECT Vorname, Nachname, user_id FROM auth_user_md5 WHERE Vorname LIKE '%$val%' OR Nachname LIKE '%$val%'")->fetchAll();
+      } elseif ($_POST["searchSupervisor"]) {
+        $search_query = $db->query("SELECT Vorname, Nachname, user_id FROM auth_user_md5 WHERE Vorname LIKE '%$val%' OR Nachname LIKE '%$val%' AND perms = '$user_status'")->fetchAll();
+      }
 
-        array_push($return_arr, $arrayOne);
+      foreach ($search_query as $key) {
+
+        $user_id_viewer = $key[user_id];
+        $checkUser = $db->query("SELECT * FROM seminar_user WHERE Seminar_id = '$cid' AND user_id = '$user_id_viewer'")->fetchAll();
+
+        if (empty($checkUser)) {
+
+          $arrayOne = array();
+          $arrayOne["Vorname"] =  $key[Vorname];
+          $arrayOne["Nachname"] = $key[Nachname];
+          $arrayOne["userid"] = $key[user_id];
+
+          array_push($return_arr, $arrayOne);
+
+        }
       }
 
       echo json_encode($return_arr);
-
     }
 
 }

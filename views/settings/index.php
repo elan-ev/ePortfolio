@@ -8,13 +8,20 @@
 
 <!-- HEAD END -->
 
-<h2>Supervisor</h2>
+<h3>Supervisor</h3>
 
-<button data-toggle="modal" data-target="#addSupervisorModal" type="button" class="btn btn-success"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Supervisor hinzufuegen</button>
+<?php if(!$supervisorInfo[Nachname] == ''): ?>
+  <?php echo $supervisorInfo[Vorname]; ?>
+  <?php echo $supervisorInfo[Nachname]; ?>
+  <?php echo $supervisorInfo[Email]; ?>
+<?php else: ?>
+  <button data-toggle="modal" data-target="#addSupervisorModal" type="button" class="btn btn-success"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Supervisor hinzufuegen</button>
+<?php endif;?>
 
-<h2>Zuschauerrechte</h2>
+<hr>
+<h3>Zuschauerrechte</h3>
 
-<table class="table table-bordered viewer-management">
+<table class="table viewer-management">
 
 <?php if (!empty($viewerList)): ?>
 
@@ -62,10 +69,27 @@
 
 </table>
 
-<h2>Einstellungen</h2>
+<button data-toggle="modal" data-target="#addViewerModal" type="button" class="btn btn-success"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Zuschauer hinzufuegen</button>
+
+<hr>
+<h3>Einstellungen</h3>
+
+<a id="portfolio-info-trigger" href="#">bearbeiten</a>
+<a id="portfolio-info-saver" href="#">speichern</a>
+
+<div class="portfolio-info-wrapper-current">
+  <div><?php echo $portfolioInfo[Name]; ?></div>
+  <div><?php echo $portfolioInfo[Beschreibung]; ?></div>
+</div>
+
+<div class="portfolio-info-wrapper">
+  <div><input id="name-input" name="it" type="text" value="<?php echo $portfolioInfo[Name]; ?>"></div>
+  <div><textarea id="beschreibung-input" name="it" type="text"><?php echo $portfolioInfo[Beschreibung]; ?></textarea></div>
+</div>
 
 <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">Portfolio loeschen</button>
 
+<!-- Modal Löschen -->
 <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -94,6 +118,8 @@
   </div>
 </div>
 
+
+<!-- Modal Suche Supervisor -->
 <div class="modal fade" id="addSupervisorModal" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -109,9 +135,8 @@
               <input type="text" class="form-control" id="inputSearchSupervisor" placeholder="Name des Supervisors">
             </div>
 
-            <div id="searchResult">
+            <div id="searchResult"></div>
 
-            </div>
           </p>
 
 
@@ -119,6 +144,30 @@
     </div>
   </div>
 </div>
+
+<!-- Modal Suche Viewer -->
+<div class="modal fade" id="addViewerModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Zuschauer hinzufuegen</h4>
+      </div>
+      <div class="modal-body" id="modalDeleteBody">
+
+          <p>
+            <div class="input-group" style="margin-bottom:20px;">
+              <div class="input-group-addon"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></div>
+              <input type="text" class="form-control" id="inputSearchViewer" placeholder="Name der Person">
+            </div>
+portfolio-info-wrapper
+
+
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <script type="text/javascript" src="/studip/plugins_packages/Universitaet Osnabrueck/EportfolioPlugin/assets/js/eportfolio.js"></script>
 <script type="text/javascript">
@@ -132,12 +181,30 @@
       $('#deleteModal').focus()
     })
 
-    // $("span").each(function(){
-    //   var name = $(this).attr('class');
-    //   if (name == "glyphicon glyphicon-remove"){
-    //     $(this).css('color', 'red');
-    //   }
-    // });
+    $('#portfolio-info-trigger').click( function() {
+      $(this).toggleClass('show-info-not');
+      $('#portfolio-info-saver').toggleClass('show-info');
+      $('.portfolio-info-wrapper').toggleClass('show-info');
+      $('.portfolio-info-wrapper-current').toggleClass('show-info-not');
+    })
+
+    $('#portfolio-info-saver').click( function() {
+      $(this).toggleClass('show-info');
+      $('#portfolio-info-trigger').toggleClass('show-info-not');
+      $('.portfolio-info-wrapper').toggleClass('show-info');
+      $('.portfolio-info-wrapper-current').toggleClass('show-info-not');
+
+      var valName = $("#name-input").val();
+      var valBeschreibung = $("#beschreibung-input").val();
+
+      $.ajax({
+        type: "POST",
+        url: "/studip/plugins.php/eportfolioplugin/settings?cid="+cid,
+        data: {'saveChanges': 1, 'Name': valName, 'Beschreibung': valBeschreibung},
+        success: function(data) { }
+      });
+
+    })
 
     $('#inputSearchSupervisor').keyup(function() {
       var val = $("#inputSearchSupervisor").val();
@@ -150,44 +217,44 @@
         data: {
           'val': val,
           'status': 'dozent',
+          'searchSupervisor': 1,
         },
         success: function(json) {
           $('#searchResult').empty();
-          $.each( json , function(e,v) {
-            console.log(v.userid);
-            $('#searchResult').append('<div class="searchResultItem">'+v.Vorname+' '+v.Nachname+'<span class="pull-right glyphicon glyphicon-plus" aria-hidden="true"></span></div>');
-          });
+          _.map(json, output);
+          function output(n) {
+            $('#searchResult').append('<div onClick="setSupervisor(&apos;'+n.userid+'&apos;)" class="searchResultItem">'+n.Vorname+' '+n.Nachname+'<span class="pull-right glyphicon glyphicon-plus" aria-hidden="true"></span></div>');
+          }
+        }
+      });
+    });
+
+    $('#inputSearchViewer').keyup(function() {
+      var val = $("#inputSearchViewer").val();
+      var url = "/studip/plugins.php/eportfolioplugin/livesearch";
+
+      $.ajax({
+        type: "POST",
+        url: url,
+        dataType: "json",
+        data: {
+          'val': val,
+          'searchViewer': 1,
+          'cid': cid,
+        },
+        success: function(json) {
+          $('#searchResultViewer').empty();
+            _.map(json, output);
+
+            function output(n) {
+              $('#searchResultViewer').append('<div onClick="setViewer(&apos;'+n.userid+'&apos;)" class="searchResultItem">'+n.Vorname+' '+n.Nachname+'<span class="pull-right glyphicon glyphicon-plus" aria-hidden="true"></span></div>');
+            }
         }
       });
     });
 
   });
 
-  function setAccess(id, viewerId){
-    var url = "/studip/plugins.php/eportfolioplugin/settings?cid="+cid;
-    $.ajax({
-      type: "POST",
-      url: url,
-      data: {
-        'setAccess':'1',
-        'block_id': id,
-        'viewer_id': viewerId,
-      },
-      success: function(data) {
 
-      }
-    });
-  }
-
-  function checkIcon(viewerId, id) {
-    var className = $('#icon-'+viewerId+'-'+id).attr('class');
-    if (className == "glyphicon glyphicon-remove") {
-      $('#icon-'+viewerId+'-'+id).removeClass("glyphicon-remove");
-      $('#icon-'+viewerId+'-'+id).addClass("glyphicon-ok");
-    } else if (className == "glyphicon glyphicon-ok") {
-      $('#icon-'+viewerId+'-'+id).removeClass("glyphicon-ok");
-      $('#icon-'+viewerId+'-'+id).addClass("glyphicon-remove");
-    }
-  }
 
 </script>

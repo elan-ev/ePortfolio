@@ -153,3 +153,61 @@ function deletePortfolio() {
     }
   });
 }
+
+function setAccess(id, viewerId){
+  var url = "/studip/plugins.php/eportfolioplugin/settings?cid="+cid;
+  $.ajax({
+    type: "POST",
+    url: url,
+    data: {
+      'setAccess':'1',
+      'block_id': id,
+      'viewer_id': viewerId,
+    },
+    success: function(data) {
+
+    }
+  });
+}
+
+function checkIcon(viewerId, id) {
+  var className = $('#icon-'+viewerId+'-'+id).attr('class');
+  if (className == "glyphicon glyphicon-remove") {
+    $('#icon-'+viewerId+'-'+id).removeClass("glyphicon-remove");
+    $('#icon-'+viewerId+'-'+id).addClass("glyphicon-ok");
+  } else if (className == "glyphicon glyphicon-ok") {
+    $('#icon-'+viewerId+'-'+id).removeClass("glyphicon-ok");
+    $('#icon-'+viewerId+'-'+id).addClass("glyphicon-remove");
+  }
+}
+
+function setSupervisor(id){
+  var url = "/studip/plugins.php/eportfolioplugin/settings?cid="+cid;
+
+  $.ajax({
+    type: "POST",
+    url: url,
+    data: {
+      'setSupervisor': 1,
+      "supervisorId": id,
+    },
+    success: function(data) {
+    }
+  });
+}
+
+function setViewer(id){
+  var url = "/studip/plugins.php/eportfolioplugin/settings?cid="+cid;
+
+  $.ajax({
+    type: "POST",
+    url: url,
+    data: {
+      'setViewer': 1,
+      "viewerId": id,
+    },
+    success: function(data) {
+      alert(data);
+    }
+  });
+}
