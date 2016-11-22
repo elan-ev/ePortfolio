@@ -30,11 +30,17 @@ class livesearchController extends StudipController {
       $user_status = $_POST["status"];
       $val = $_POST["val"];
 
+      // empty input 
+      if ($val == "") {
+        $val = array();
+        exit(json_encode($val));
+      }
+
       //query
       if ($_POST["searchViewer"]){
-        $search_query = $db->query("SELECT Vorname, Nachname, user_id FROM auth_user_md5 WHERE Vorname LIKE '%$val%' OR Nachname LIKE '%$val%'")->fetchAll();
+        $search_query = $db->query("SELECT Vorname, Nachname, user_id FROM auth_user_md5 WHERE Vorname LIKE '%$val[0]%' OR Nachname LIKE '%$val[0]%'")->fetchAll();
       } elseif ($_POST["searchSupervisor"]) {
-        $search_query = $db->query("SELECT Vorname, Nachname, user_id FROM auth_user_md5 WHERE Vorname LIKE '%$val%' OR Nachname LIKE '%$val%' AND perms = '$user_status'")->fetchAll();
+        $search_query = $db->query("SELECT Vorname, Nachname, user_id FROM auth_user_md5 WHERE Vorname LIKE '%$val%' OR Nachname LIKE '%$val%' OR Vorname LIKE '%$val[1]%' OR Nachname LIKE '%$val[1]%' AND perms = '$user_status'")->fetchAll();
       }
 
       foreach ($search_query as $key) {

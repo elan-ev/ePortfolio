@@ -200,11 +200,9 @@ class settingsController extends StudipController {
   }
 
   public function saveChanges(){
-    echo "triggereddjadljh";
     $db = DBManager::get();
     $cid = $_GET["cid"];
     $change_name = $_POST['Name'];
-    echo $change_name;
     $change_beschreibung = $_POST['Beschreibung'];
     $db->query("UPDATE seminare SET Name = '$change_name', Beschreibung = '$change_beschreibung' WHERE Seminar_id = '$cid'");
   }

@@ -189,3 +189,19 @@ button.list-group-item:focus, button.list-group-item:hover {
 .show-info-not {
   display: none;
 }
+
+.avatar-wrapper {
+  margin: 10px;
+  height: 5px;
+}
+
+.avatar-wrapper div {
+  float: left;
+  margin-right: 5px;
+}
+
+.avatar-wrapper div img {
+  border-radius: 20px;
+  width: 15px;
+  height: 15px;
+}

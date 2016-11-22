@@ -82,7 +82,17 @@
           <div class="alert alert-info" style="margin: 20px 0;" role="alert">Warum will ich Lehrerin werden? Welche Staerken will ich einbringen? </div>
 
           <div class="">
-            <b>Freigaben: </b>50 <br>
+            <b>Freigaben: </b>
+
+            <?php echo $numChapterViewer[$key[id]][number]; ?>
+
+            <div class="avatar-wrapper">
+              <?php foreach ($numChapterViewer[$key[id]][user] as $viewer):?>
+                <div class="avatar-container"><?= Avatar::getAvatar($viewer)->getImageTag(Avatar::SMALL, tooltip2($viewer)) ?></div>
+              <?php endforeach; ?>
+            </div>
+
+            <br>
             <b>Kommentare: </b> 12
           </div>
 

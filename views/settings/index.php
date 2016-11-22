@@ -15,7 +15,7 @@
   <?php echo $supervisorInfo[Nachname]; ?>
   <?php echo $supervisorInfo[Email]; ?>
 <?php else: ?>
-  <button data-toggle="modal" data-target="#addSupervisorModal" type="button" class="btn btn-success"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Supervisor hinzufuegen</button>
+  <button data-toggle="modal" data-target="#addSupervisorModal" type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Supervisor hinzufuegen</button>
 <?php endif;?>
 
 <hr>
@@ -69,7 +69,7 @@
 
 </table>
 
-<button data-toggle="modal" data-target="#addViewerModal" type="button" class="btn btn-success"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Zuschauer hinzufuegen</button>
+<button data-toggle="modal" data-target="#addViewerModal" type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Zuschauer hinzufuegen</button>
 
 <hr>
 <h3>Einstellungen</h3>
@@ -78,8 +78,8 @@
 <a id="portfolio-info-saver" href="#">speichern</a>
 
 <div class="portfolio-info-wrapper-current">
-  <div><?php echo $portfolioInfo[Name]; ?></div>
-  <div><?php echo $portfolioInfo[Beschreibung]; ?></div>
+  <div class="wrapper-name"><?php echo $portfolioInfo[Name]; ?></div>
+  <div class="wrapper-beschreibung"><?php echo $portfolioInfo[Beschreibung]; ?></div>
 </div>
 
 <div class="portfolio-info-wrapper">
@@ -160,9 +160,10 @@
               <div class="input-group-addon"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></div>
               <input type="text" class="form-control" id="inputSearchViewer" placeholder="Name der Person">
             </div>
-portfolio-info-wrapper
 
+            <div id="searchResultViewer"></div>
 
+          </p>
       </div>
     </div>
   </div>
@@ -181,6 +182,7 @@ portfolio-info-wrapper
       $('#deleteModal').focus()
     })
 
+    // Portfolio Informationen ändern
     $('#portfolio-info-trigger').click( function() {
       $(this).toggleClass('show-info-not');
       $('#portfolio-info-saver').toggleClass('show-info');
@@ -201,11 +203,15 @@ portfolio-info-wrapper
         type: "POST",
         url: "/studip/plugins.php/eportfolioplugin/settings?cid="+cid,
         data: {'saveChanges': 1, 'Name': valName, 'Beschreibung': valBeschreibung},
-        success: function(data) { }
+        success: function(data) {
+          $('.wrapper-name').empty().append('<span>'+valName+'</span>');
+          $('.wrapper-beschreibung').empty().append('<span>'+valBeschreibung+'</span>');
+        }
       });
 
     })
 
+    //Search Supervisor
     $('#inputSearchSupervisor').keyup(function() {
       var val = $("#inputSearchSupervisor").val();
       var url = "/studip/plugins.php/eportfolioplugin/livesearch";
@@ -222,6 +228,7 @@ portfolio-info-wrapper
         success: function(json) {
           $('#searchResult').empty();
           _.map(json, output);
+
           function output(n) {
             $('#searchResult').append('<div onClick="setSupervisor(&apos;'+n.userid+'&apos;)" class="searchResultItem">'+n.Vorname+' '+n.Nachname+'<span class="pull-right glyphicon glyphicon-plus" aria-hidden="true"></span></div>');
           }
@@ -229,20 +236,24 @@ portfolio-info-wrapper
       });
     });
 
+    //Search Viewer
     $('#inputSearchViewer').keyup(function() {
       var val = $("#inputSearchViewer").val();
       var url = "/studip/plugins.php/eportfolioplugin/livesearch";
+
+      var values = _.words(val);
 
       $.ajax({
         type: "POST",
         url: url,
         dataType: "json",
         data: {
-          'val': val,
+          'val': values,
           'searchViewer': 1,
           'cid': cid,
         },
         success: function(json) {
+          console.log(json);
           $('#searchResultViewer').empty();
             _.map(json, output);
 
