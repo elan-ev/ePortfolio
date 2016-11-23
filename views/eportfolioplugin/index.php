@@ -41,8 +41,9 @@
      <a href="#" class="list-group-item" data-toggle="collapse" data-target="#m" data-parent="#menu">Zuschauer <span class="label label-info"><?php echo $viewerCounter; ?></span><span class="glyphicon glyphicon glyphicon-chevron-down pull-right" aria-hidden="true"></span></a>
      <div id="m" class="sublinks collapse">
 
-      <?php foreach ($viewerList as $key):?>
-      <a class="list-group-item small"><span class="glyphicon glyphicon-chevron-right"></span><?php echo $key[Vorname].' '.$key[Nachname]; ?></a>
+      <?php foreach ($viewerList as $viewerId):?>
+        <?php $viewer = UserModel::getUser($viewerId); ?>
+        <a class="list-group-item small"><span class="glyphicon glyphicon-chevron-right"></span><?php echo $viewer[Vorname].' '.$viewer[Nachname]; ?></a>
       <?php endforeach; ?>
 
      </div>
@@ -95,6 +96,10 @@
             <br>
             <b>Kommentare: </b> 12
           </div>
+
+          <?php $model = UserModel::getUser('205f3efb7997a0fc9755da2b535038da');
+                echo $model[Vorname].' '.$model[Nachname];
+            ?>
 
           <a href="<?php echo $link; ?>"><button type="button" class="btn btn-primary">Anschauen</button></a>
 
