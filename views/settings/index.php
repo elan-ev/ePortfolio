@@ -10,10 +10,14 @@
 
 <h3>Supervisor</h3>
 
-<?php if(!$supervisorInfo[Nachname] == ''): ?>
-  <?php echo $supervisorInfo[Vorname]; ?>
-  <?php echo $supervisorInfo[Nachname]; ?>
-  <?php echo $supervisorInfo[Email]; ?>
+<?php if(!$supervisorId == NULL):?>
+
+  <?php $supervisor = UserModel::getUser($supervisorId);
+      echo $supervisor[Vorname].' '.$supervisor[Nachname].'<br/>';
+   ?>
+
+   <div class="avatar-container"><?= Avatar::getAvatar($supervisorId)->getImageTag(Avatar::NORMAL) ?></div>
+
 <?php else: ?>
   <button data-toggle="modal" data-target="#addSupervisorModal" type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Supervisor hinzufuegen</button>
 <?php endif;?>

@@ -122,29 +122,10 @@ class settingsController extends StudipController {
 
     }
 
-    ///////////////////
-    //////////////////
-
-    //get current supervisor//
-    //////////////////////////
-
-    //set supervisor array
-    $supervisorInfo = array();
-
     //get supervisor_id
     $getSupervisorquery = $db->query("SELECT supervisor_id FROM eportfolio WHERE Seminar_id = '$cid'")->fetchAll();
     $supervisor_id = $getSupervisorquery[0][supervisor_id];
-
-    //get info of person
-    $getSupervisiorInfo = $db->query("SELECT Vorname, Nachname, Email FROM auth_user_md5 WHERE user_id = '$supervisor_id'")->fetchAll();
-
-    //push info to array
-    $supervisorInfo[Vorname] = $getSupervisiorInfo[0][Vorname];
-    $supervisorInfo[Nachname] = $getSupervisiorInfo[0][Nachname];
-    $supervisorInfo[Email] = $getSupervisiorInfo[0][Email];
-
-    //////////////////////////
-    //////////////////////////
+    echo $supervisor_id;
 
     //get Portfolio Information//
     ////////////////////////////
@@ -195,7 +176,7 @@ class settingsController extends StudipController {
     $this->chapterList = $arrayList;
     $this->viewerList = $return_arr;
     $this->numberChapter = $countChapter;
-    $this->supervisorInfo = $supervisorInfo;
+    $this->supervisorId = $supervisor_id;
     $this->portfolioInfo = $portfolioInfo;
   }
 
@@ -206,5 +187,4 @@ class settingsController extends StudipController {
     $change_beschreibung = $_POST['Beschreibung'];
     $db->query("UPDATE seminare SET Name = '$change_name', Beschreibung = '$change_beschreibung' WHERE Seminar_id = '$cid'");
   }
-
 }
