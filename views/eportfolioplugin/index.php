@@ -88,18 +88,17 @@
             <?php echo $numChapterViewer[$key[id]][number]; ?>
 
             <div class="avatar-wrapper">
-              <?php foreach ($numChapterViewer[$key[id]][user] as $viewer):?>
+              <?php $checkViewer = eportfoliopluginController::isViewer($key[id], '$cid');?>
+
+              <?php if($checkViewer == 1):?>
                 <div class="avatar-container"><?= Avatar::getAvatar($viewer)->getImageTag(Avatar::SMALL, tooltip2($viewer)) ?></div>
-              <?php endforeach; ?>
+              <?php endif; ?>
+
             </div>
 
             <br>
             <b>Kommentare: </b> 12
           </div>
-
-          <?php $model = UserModel::getUser('205f3efb7997a0fc9755da2b535038da');
-                echo $model[Vorname].' '.$model[Nachname];
-            ?>
 
           <a href="<?php echo $link; ?>"><button type="button" class="btn btn-primary">Anschauen</button></a>
 

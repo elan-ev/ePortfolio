@@ -58,6 +58,8 @@ class CreateController extends StudipController {
 
         $result_eportfolioTable = $db->query("INSERT INTO eportfolio (Seminar_id, eportfolio_id, owner_id) VALUES ('$Seminar_id', '$eportfolio_id', '$userid'); ");
 
+        $db->query("INSERT INTO eportfolio_user (user_id, Seminar_id, eportfolio_id, owner) VALUES ('$userid', '$Seminar_id' , '$eportfolio_id', 1)");
+
         // $deleteCoursewareStandard = $db->query("DELETE FROM mooc_blocks WHERE type != 'Courseware' AND seminar_id = '".$Seminar_id."';");
         $createCoursewareTemplate = $db->query("SELECT * FROM mooc_blocks WHERE type = 'Courseware' AND seminar_id = '".$Seminar_id."'; ")->fetchAll();
         foreach ($createCoursewareTemplate as $block) {

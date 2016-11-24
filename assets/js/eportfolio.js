@@ -33,70 +33,59 @@ function createNewPortfolio() {
   });
 }
 
-function updatePortfolioTable() {
-  $.ajax({
-    type: "POST",
-    url: "/studip/plugins.php/eportfolioplugin/updateportfolios",
-    dataType: "json",
-    data: {},
-    success: function(data) {
-      var i = data["counter"];
+// function updatePortfolioTable() {
+//   $.ajax({
+//     type: "POST",
+//     url: "/studip/plugins.php/eportfolioplugin/updateportfolios",
+//     dataType: "json",
+//     data: {},
+//     success: function(data) {
+//       var i = data["counter"];
+//
+//       $.each(data, function(k, v){
+//
+//         var name = v['name'];
+//         var beschreibung = v['beschreibung'];
+//         var seminar_id = v['seminar_id'];
+//
+//         $('.portfolioOverview').append("<tr class='insert_tr'><td><a href='/studip/plugins.php/eportfolioplugin/eportfolioplugin?cid="+seminar_id+"'>"+name+"</a></td><td> "+beschreibung+" </td><td><i class='fa fa-minus-circle' aria-hidden='true'></i>  Keine</td></tr>");
+//
+//       });
+//
+//       PortfolioHeadline(i);
+//       updateLabelPortfolios(i);
+//     }
+//   });
+// }
 
-      $.each(data, function(k, v){
-
-        var name = v['name'];
-        var beschreibung = v['beschreibung'];
-        var seminar_id = v['seminar_id'];
-
-        $('.portfolioOverview').append("<tr class='insert_tr'><td><a href='/studip/plugins.php/eportfolioplugin/eportfolioplugin?cid="+seminar_id+"'>"+name+"</a></td><td> "+beschreibung+" </td><td><i class='fa fa-minus-circle' aria-hidden='true'></i>  Keine</td></tr>");
-
-      });
-
-      PortfolioHeadline(i);
-      updateLabelPortfolios(i);
-    }
-  });
-}
-
-function updateAccessTable(){
-  $.ajax({
-    type: "POST",
-    url: "/studip/plugins.php/eportfolioplugin/updateaccess",
-    dataType: "json",
-    data: {},
-    success: function(data) {
-      var i = data["counter"];
-
-      $.each(data, function(k, v){
-
-        var name = v['name'];
-        var beschreibung = v['beschreibung'];
-        var seminar_id = v['seminar_id'];
-        var ownerName = v['ownerName'];
-
-        $('.viewportfolioOverview').append("<tr class='insert_tr'><td><a href='/studip/plugins.php/eportfolioplugin/eportfolioplugin?cid="+seminar_id+"''>"+name+"</a></td><td> "+beschreibung+" </td><td>"+ownerName+"</td></tr>");
-      });
-
-      updateLabelAccess(i);
-    }
-  });
-}
+// function updateAccessTable(){
+//   $.ajax({
+//     type: "POST",
+//     url: "/studip/plugins.php/eportfolioplugin/updateaccess",
+//     dataType: "json",
+//     data: {},
+//     success: function(data) {
+//       var i = data["counter"];
+//
+//       $.each(data, function(k, v){
+//
+//         var name = v['name'];
+//         var beschreibung = v['beschreibung'];
+//         var seminar_id = v['seminar_id'];
+//         var ownerName = v['ownerName'];
+//
+//         $('.viewportfolioOverview').append("<tr class='insert_tr'><td><a href='/studip/plugins.php/eportfolioplugin/eportfolioplugin?cid="+seminar_id+"''>"+name+"</a></td><td> "+beschreibung+" </td><td>"+ownerName+"</td></tr>");
+//       });
+//
+//       updateLabelAccess(i);
+//     }
+//   });
+// }
 
 function deleteOldTableRows(){
   $('.insert_tr').each(function(){
     $(this).remove();
   });
-}
-
-function PortfolioHeadline(i) {
-  var one = "Mein Portfolio";
-  var two = "Meine Portfolios"
-
-  if (i <= 1) {
-    $('#headline_uebersicht').text('Mein Portfolio');
-  } else {
-    $('#headline_uebersicht').text('Meine Portfolios');
-  }
 }
 
 function getUrlVars() {
@@ -165,7 +154,7 @@ function setAccess(id, viewerId){
       'viewer_id': viewerId,
     },
     success: function(data) {
-
+      alert(data);
     }
   });
 }

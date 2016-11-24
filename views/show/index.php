@@ -46,6 +46,8 @@
 
     <h4>�bersicht meiner Portfolios <span id="labelMyPortfolio" class="badge"></span></h4>
 
+    <?php ?>
+
     <!-- Banner Success Display when created -->
     <div class="alert alert-success createPortfolioBanner" role="alert">Portfolio <span id="createPortfolioName"></span> wurde erstellt</div>
 
@@ -61,6 +63,35 @@
           Freigaben
         </th>
       </tr>
+
+      <?php $countPortfolios = 0; ?>
+      <?php $myportfolios = ShowController::getMyPortfolios(); ?>
+      <?php foreach ($myportfolios as $portfolio): ?>
+        <?php $thisPortfolio = new Seminar($portfolio);
+              $countPortfolios++; ?>
+        <tr class='insert_tr'>
+          <td><a href='/studip/plugins.php/eportfolioplugin/eportfolioplugin?cid=<?php echo $portfolio; ?>'><?php echo $thisPortfolio->getName(); ?></a></td>
+          <td></td>
+          <td><i class='fa fa-minus-circle' aria-hidden='true'></i>  Keine</td>
+        </tr>
+      <?php endforeach; ?>
+
+      <script type="text/javascript">
+
+        function PortfolioHeadline(i) {
+          var one = "Mein Portfolio";
+          var two = "Meine Portfolios"
+
+          if (i <= 1) {
+            $('#headline_uebersicht').text('Mein Portfolio');
+          } else {
+            $('#headline_uebersicht').text('Meine Portfolios');
+          }
+        }
+
+        PortfolioHeadline(<?php echo $countPortfolios; ?>);
+
+      </script>
 
     </table>
   </div>
@@ -90,6 +121,16 @@
           Besitzer
         </th>
       </tr>
+
+      <?php $myAccess = ShowController::getAccessPortfolio(); ?>
+      <?php foreach ($myAccess as $portfolio): ?>
+        <?php $thisPortfolio = new Seminar($portfolio); ?>
+        <tr class='insert_tr'>
+          <td><a href='/studip/plugins.php/eportfolioplugin/eportfolioplugin?cid=<?php echo $portfolio; ?>'><?php echo $thisPortfolio->getName(); ?></a></td>
+          <td></td>
+          <td><i class='fa fa-minus-circle' aria-hidden='true'></i>  Keine</td>
+        </tr>
+      <?php endforeach; ?>
 
     </table>
   </div>
@@ -135,8 +176,8 @@
   $( document ).ready(function() {
     var nameNewCreatePortfolio;
 
-    updatePortfolioTable();
-    updateAccessTable();
+    // updatePortfolioTable();
+    // updateAccessTable();
     createNewPortfolio();
 
   });

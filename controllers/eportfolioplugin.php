@@ -123,8 +123,6 @@ class EportfoliopluginController extends StudipController {
       $viewerCounter++;
     }
 
-    print_r($viewerList);
-
     //push to template
     $this->cardInfo = $return_arr;
     $this->seminarTitle = $getS;
@@ -134,6 +132,17 @@ class EportfoliopluginController extends StudipController {
     $this->viewerCounter = $viewerCounter;
     $this->numChapterViewer = $chapterListArray;
     $this->userid = $userid;
+  }
+
+  public function isViewer($id, $nummer){
+    $db = DBManager::get();
+    $query = $db->query("SELECT * FROM eportfolio_user WHERE Seminar_id = '$nummer' AND user_id = '$id' AND owner = 0 ")->fetchAll();
+    print_r($query);
+    // if(empty($query)){
+    //   return true;
+    // } else {
+    //   return false;
+    // }
   }
 
 }

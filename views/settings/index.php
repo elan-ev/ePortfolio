@@ -50,17 +50,16 @@
  <?php foreach ($viewerList as $viewer):?>
    <tr>
      <td><?php echo $viewer[Vorname].' '.$viewer[Nachname]; ?> </td>
+     <?php $access = settingsController::getEportfolioAccess($viewer[viewer_id], $cid);?>
      <?php foreach ($chapterList as $chapter):?>
 
       <?php $viewer_id = $viewer[viewer_id]; ?>
       <td onClick="setAccess(<?php echo $chapter[id]?>, '<?php echo $viewer_id ?>'); checkIcon('<?php echo $viewer[viewer_id]?>', <?php echo $chapter[id]; ?>);" class="righttable-inner">
 
-        <?php if(!array_key_exists($chapter[id] ,$viewer[Chapter]) or $viewer[Chapter][$chapter[id]] == 1):?>
-        <span id="icon-<?php echo $viewer[viewer_id].'-'.$chapter[id]; ?>" class="glyphicon glyphicon-ok" aria-hidden="true"></span>
-
-        <?php elseif($viewer[Chapter][$chapter[id]] == 0):?>
+        <?php if($access[$chapter[id]] == 1):?>
+          <span id="icon-<?php echo $viewer[viewer_id].'-'.$chapter[id]; ?>" class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+        <?php elseif($access[$chapter[id]] == 0):?>
           <span id="icon-<?php echo $viewer[viewer_id].'-'.$chapter[id]; ?>" class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-
         <?php endif;?>
 
       </td>
@@ -172,7 +171,6 @@
     </div>
   </div>
 </div>
-
 
 <script type="text/javascript" src="/studip/plugins_packages/Universitaet Osnabrueck/EportfolioPlugin/assets/js/eportfolio.js"></script>
 <script type="text/javascript">

@@ -7,6 +7,7 @@ class ShowController extends StudipController {
         parent::__construct($dispatcher);
         $this->plugin = $dispatcher->plugin;
 
+
         $user = get_username();
 
         $sidebar = Sidebar::Get();
@@ -22,8 +23,8 @@ class ShowController extends StudipController {
         parent::before_filter($action, $args);
 
         $this->set_layout($GLOBALS['template_factory']->open('layouts/base.php'));
-//      PageLayout::setTitle('');
     }
+
 
     public function index_action()
     {
@@ -31,23 +32,36 @@ class ShowController extends StudipController {
 
     }
 
-    // customized #url_for for plugins
-    function url_for($to)
-    {
-        $args = func_get_args();
+    public function getMyPortfolios(){
 
-        # find params
-        $params = array();
-        if (is_array(end($args))) {
-            $params = array_pop($args);
-        }
+      $db = DBManager::get();
+      $userid = $GLOBALS["user"]->id;
 
-        # urlencode all but the first argument
-        $args = array_map('urlencode', $args);
-        $args[0] = $to;
+      $myportfolios = array();
+      $countPortfolios = 0;
 
-        return PluginEngine::getURL($this->dispatcher->plugin, $params, join('/', $args));
+      $querygetcid = $db->query("SELECT Seminar_id FROM eportfolio WHERE owner_id = '$userid'")->fetchAll();
+      foreach ($querygetcid as $key) {
+        array_push($myportfolios, $key[Seminar_id]);
+        $countPortfolios++;
+      }
+
+      return $myportfolios;
+
     }
 
+    public function getAccessPortfolio() {
+
+      $db = DBManager::get();
+      $userid = $GLOBALS["user"]->id;
+
+      $accessPortfolios = array();
+      $querygetcid = $db->query("SELECT Seminar_id FROM seminar_user WHERE user_id = '$userid' AND status != 'dozent' AND eportfolio_access != '' ")->fetchAll();
+      foreach ($querygetcid as $key) {
+        array_push($accessPortfolios, $key[Seminar_id]);
+      }
+
+      return $accessPortfolios;
+    }
 
 }
