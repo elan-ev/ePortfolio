@@ -205,3 +205,11 @@ button.list-group-item:focus, button.list-group-item:hover {
   width: 15px;
   height: 15px;
 }
+
+.supervisor-btn a {
+  color: #fff;
+}
+
+.active-link {
+  background-color: #a9b6cb !important;
+}

@@ -1,14 +1,4 @@
-<?php
 
-  $userId = $GLOBALS["user"]->id;
-  $perm = get_global_perm($userId);
-
-  $havePerm = array("root", "dozent", "admin");
-  if (in_array($perm, $havePerm)){
-    exit("Sie haben keine Berechtigung diese Seite zu betrachten");
-  }
-
-?>
 
 
 <head>
@@ -19,7 +9,46 @@
   <!-- Latest compiled and minified JavaScript -->
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
+  <style media="screen">
+
+    .supervisor-btn {
+      position: absolute;
+      right: 50px;
+      top: -2px;
+      padding: 8px;
+      color: #fff;
+      background-color: #28497c;
+      font-size: 20px;
+      border-top: 2px solid rgba(255,255,255,0.3);
+    }
+
+    .supervisor-btn a {
+      color: #fff;
+    }
+
+  </style>
+
 </head>
+
+
+<!-- Supervisor Button -->
+
+<?php if($linkId == 'noId'): ?>
+
+  <script type="text/javascript">
+    $('.helpbar-container').prepend('<div class="supervisor-btn"><a href="showsupervisor"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a></div>');
+  </script>
+
+<?php elseif ($linkId):?>
+
+  <script type="text/javascript">
+    $('.helpbar-container').prepend('<div class="supervisor-btn"><a href="showsupervisor?id=<?php echo $linkId; ?>"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a></div>');
+  </script>
+
+<?php endif; ?>
+
+
+<!-- End Supervisor Button -->
 
 <div class="row">
 
@@ -70,9 +99,9 @@
         <?php $thisPortfolio = new Seminar($portfolio);
               $countPortfolios++; ?>
         <tr class='insert_tr'>
-          <td><a href='/studip/plugins.php/eportfolioplugin/eportfolioplugin?cid=<?php echo $portfolio; ?>'><?php echo $thisPortfolio->getName(); ?></a></td>
-          <td></td>
-          <td><i class='fa fa-minus-circle' aria-hidden='true'></i>  Keine</td>
+          <td><a href="<?php echo URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('cid' => $portfolio)); ?>"><?php echo $thisPortfolio->getName(); ?></a></td>
+          <td><?php echo ShowController::getCourseBeschreibung($portfolio); ?></td>
+          <td style="text-align:center;"><?php echo ShowController::countViewer($portfolio); ?></td>
         </tr>
       <?php endforeach; ?>
 
@@ -96,6 +125,7 @@
     </table>
   </div>
 </div>
+
 
 <div class="row">
   <div class="col-md-6">
@@ -126,7 +156,7 @@
       <?php foreach ($myAccess as $portfolio): ?>
         <?php $thisPortfolio = new Seminar($portfolio); ?>
         <tr class='insert_tr'>
-          <td><a href='/studip/plugins.php/eportfolioplugin/eportfolioplugin?cid=<?php echo $portfolio; ?>'><?php echo $thisPortfolio->getName(); ?></a></td>
+          <td><a href='<?php echo URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('cid' => $portfolio)); ?>'><?php echo $thisPortfolio->getName(); ?></a></td>
           <td></td>
           <td><i class='fa fa-minus-circle' aria-hidden='true'></i>  Keine</td>
         </tr>
@@ -134,6 +164,22 @@
 
     </table>
   </div>
+</div>
+
+<div class="">
+
+  <h4>Meine Gruppen</h4>
+
+  <?php
+    $var = ShowController::getUserGroups($userId);
+    foreach ($var as $key): ?>
+
+    <?php $thisGroup = new Seminar($key[0]);
+    echo $thisGroup->getName(); ?>
+
+  <?php endforeach; ?>
+
+
 </div>
 
 <!-- Modal -->
@@ -169,8 +215,7 @@
     </div>
   </div>
 </div>
-
-<script type="text/javascript" src="/studip/plugins_packages/Universitaet Osnabrueck/EportfolioPlugin/assets/js/eportfolio.js"></script>
+<script type="text/javascript" src="<?php echo URLHelper::getLink("plugins_packages/Universitaet Osnabrueck/EportfolioPlugin/assets/js/eportfolio.js"); ?>"></script>
 <script>
 
   $( document ).ready(function() {
@@ -183,7 +228,7 @@
   });
 
   function updater() {
-    deleteOldTableRows();
+    //deleteOldTableRows();
     updatePortfolioTable();
   }
 

@@ -38,6 +38,19 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         Navigation::addItem('/eportfolioplugin', $navigation);
         Navigation::activateItem("/eportfolioplugin");
 
+        //set Menu Point for Supervisor
+        $thisperm = get_global_perm($GLOBALS["user"]->id);
+        if ($thisperm == "autor"){
+
+        }
+
+      $serverinfo = $_SERVER['PATH_INFO'];
+
+      if ($serverinfo == "/courseware/courseware" || $serverinfo == "/eportfolioplugin/eportfolioplugin"){
+
+        include 'coursewareController/modifier.php';
+      }
+
     }
 
     public function initialize () {
@@ -67,6 +80,18 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
       $tabs['settings'] = $navigationSettings;
       return $tabs;
 
+    }
+
+    public function isOwner($cid, $userId){
+      $db = DBManager::get();
+      $query = $db->query("SELECT owner_id FROM eportfolio WHERE Seminar_id = '$cid'")->fetchAll();
+      return $query;
+    }
+
+    public function getAccess($cid,$userId){
+      $db = DBManager::get();
+      $query = $db->query("SELECT eportfolio_access FROM eportfolio_user WHERE Seminar_id = '$cid' AND user_id = '$userId' ")->fetchAll();
+      return $query[0][0];
     }
 
     public function getNotificationObjects($course_id, $since, $user_id) {

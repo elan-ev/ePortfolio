@@ -4,11 +4,37 @@
   <meta charset="utf-8"/><meta charset="utf-8"/>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+  <style media="screen">
+
+    .widget-list, .widget-links li {
+      position: relative;
+    }
+
+    .active-link {
+      background-color: #a9b6cb;
+      box-shadow: inset 0 0 0 1px #7e92b0;
+      color: #fff!important;
+    }
+
+    .active-link::before {
+      border: 10px solid rgba(126,146,176,0);
+      content: "";
+      height: 0;
+      width: 0;
+      position: absolute;
+      border-left-color: #7e92b0;
+      left: 100%;
+      top:50%;
+      margin-top: -10px;
+    }
+
+  </style>
 </head>
 
 <!-- HEAD END -->
 
-<h3>Supervisor</h3>
+<!-- <h3>Supervisor</h3>
 
 <?php if(!$supervisorId == NULL):?>
 
@@ -20,7 +46,7 @@
 
 <?php else: ?>
   <button data-toggle="modal" data-target="#addSupervisorModal" type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Supervisor hinzufuegen</button>
-<?php endif;?>
+<?php endif;?> -->
 
 <hr>
 <h3>Zuschauerrechte</h3>
@@ -75,6 +101,9 @@
 <button data-toggle="modal" data-target="#addViewerModal" type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Zuschauer hinzufuegen</button>
 
 <hr>
+
+
+
 <h3>Einstellungen</h3>
 
 <a id="portfolio-info-trigger" href="#">bearbeiten</a>
@@ -230,6 +259,7 @@
         success: function(json) {
           $('#searchResult').empty();
           _.map(json, output);
+          console.log(json);
 
           function output(n) {
             $('#searchResult').append('<div onClick="setSupervisor(&apos;'+n.userid+'&apos;)" class="searchResultItem">'+n.Vorname+' '+n.Nachname+'<span class="pull-right glyphicon glyphicon-plus" aria-hidden="true"></span></div>');
@@ -255,13 +285,21 @@
           'cid': cid,
         },
         success: function(json) {
-          console.log(json);
           $('#searchResultViewer').empty();
             _.map(json, output);
-
+            console.log(json);
             function output(n) {
+              console.log(n.userid);
               $('#searchResultViewer').append('<div onClick="setViewer(&apos;'+n.userid+'&apos;)" class="searchResultItem">'+n.Vorname+' '+n.Nachname+'<span class="pull-right glyphicon glyphicon-plus" aria-hidden="true"></span></div>');
             }
+        },
+        error: function(json){
+          console.log(json.responsetext);
+          $('#searchResultViewer').empty();
+          _.map(json, output);
+          function output(n) {
+            $('#searchResultViewer').append('<div onClick="setViewer(&apos;'+n.userid+'&apos;)" class="searchResultItem">'+n.Vorname+' '+n.Nachname+'<span class="pull-right glyphicon glyphicon-plus" aria-hidden="true"></span></div>');
+          }
         }
       });
     });

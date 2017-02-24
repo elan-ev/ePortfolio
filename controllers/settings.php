@@ -7,6 +7,39 @@ class settingsController extends StudipController {
       parent::__construct($dispatcher);
       $this->plugin = $dispatcher->plugin;
 
+      $portfolioid = $_GET['portfolioid'];
+
+      $sidebar = Sidebar::Get();
+      Sidebar::Get()->setTitle('Uebersicht');
+
+      $navOverview = new LinksWidget();
+      $navOverview->setTitle('Uebersicht');
+      $navOverview->addLink('Ubersicht', URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('portfolioid' => '$portfolioid')));
+      $sidebar->addWidget($navOverview);
+
+      $nav = new LinksWidget();
+      $nav->setTitle(_('Reflektionsimpulse'));
+      $nav->addLink($name, "");
+
+      $sidebar->addWidget($nav);
+      $nav->addLink('Reflektionsimpuls 1', "1");
+      $nav->addLink('Reflektionsimpuls 2', "2");
+      $nav->addLink('Reflektionsimpuls 3', "3");
+      $nav->addLink('Reflektionsimpuls 4', "4");
+      $nav->addLink('Reflektionsimpuls 5', "5");
+      $nav->addLink('Reflektionsimpuls 6', "6");
+
+      $navEinstellungen = new LinksWidget();
+      $navEinstellungen->setTitle('Einstellungen');
+      $navEinstellungen->addLink('Portfolioeinstellungen', URLHelper::getLink('plugins.php/eportfolioplugin/settings', array('portfolioid' => '$portfolioid')), null , array('class' => 'active-link'));
+      $sidebar->addWidget($navEinstellungen);
+
+      $navPersonen = new LinksWidget();
+      $navPersonen->setTitle('Teilnehmer');
+      $navPersonen->addLink('Supervisoren', "1");
+      $navPersonen->addLink('Zuschauer', "2");
+      $sidebar->addWidget($navPersonen);
+
   }
 
   public function before_filter(&$action, &$args)
@@ -18,14 +51,15 @@ class settingsController extends StudipController {
 
   public function index_action()
   {
-    //set AutoNavigation/////
-    Navigation::activateItem("course/settings");
-    ////////////////////////
 
     // set vars
     $userid = $GLOBALS["user"]->id;
     $cid = $_GET["cid"];
     $db = DBManager::get();
+
+    //set AutoNavigation////
+    Navigation::activateItem("course/settings");
+    ////////////////////////s
 
     //get seninar infos
     $getSeminarInfo = $db->query("SELECT name FROM seminare WHERE Seminar_id = '$cid'")->fetchAll();
@@ -52,15 +86,25 @@ class settingsController extends StudipController {
       $setAcess_block_id = $_POST["block_id"];
       $setAcess_viewer_id = $_POST["viewer_id"];
 
+      //debug
+      echo $setAcess_block_id . "++" . $setAcess_viewer_id;
+
       $access = $this->getEportfolioAccess($setAcess_viewer_id, $cid);
+
+      //debug
+      print_r($access);
 
       if ($access[$setAcess_block_id] == 1) {
         $access[$setAcess_block_id] = 0;
-      } else {
-        $access[$setAcess_block_id] == 1;
+      } elseif ($access[$setAcess_block_id] == 0) {
+        $access[$setAcess_block_id] = 1;
       }
 
+      //debug
+      echo $setAcess_block_id . ": " . $access[$setAcess_block_id];
+
       $this->saveEportfolioAccess($setAcess_viewer_id, $access, $cid);
+      die();
 
     }
 
@@ -162,6 +206,15 @@ class settingsController extends StudipController {
       $this->saveChanges();
     }
 
+    $mp = MultiPersonSearch::get()
+      ->setLinkText(_('Person hinzufügen'))
+      ->setTitle(_('Person zur Gruppe hinzufügen'))
+      ->setExecuteURL($this->url_for('controller'))
+      ->render();
+
+    $this->mp = $mp;
+
+
 
     //push to template
     $this->cid = $cid;
@@ -173,7 +226,6 @@ class settingsController extends StudipController {
     $this->supervisorId = $supervisor_id;
     $this->portfolioInfo = $portfolioInfo;
     $this->access = $access;
-
 
   }
 
@@ -210,7 +262,16 @@ class settingsController extends StudipController {
 
   public function saveEportfolioAccess($id, $data, $sid){
     $pushArray = serialize($data);
+    echo $pushArray;
     DBManager::get()->query("UPDATE eportfolio_user SET eportfolio_access = '$pushArray' WHERE user_id = '$id' AND Seminar_id = '$sid'");
+  }
+
+  public function isOwner($cid, $userId){
+    $db = DBManager::get();
+    $query = $db->query("SELECT owner_id FROM eportfolio WHERE Seminar_id = '$cid'")->fetchAll();
+    if ($query[0][0] == $userId) {
+      return true;
+    }
   }
 
 }

@@ -1,8 +1,14 @@
+
+$( document ).ready(function() {
+  var kik = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/create', {hallo: "welt"});
+  console.log(kik);
+});
+
 function createNewPortfolio() {
   $('#createForm').submit(function(e){
 
     var nameNewCreatePortfolio;
-    var url = "/studip/plugins.php/eportfolioplugin/create";
+    var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/create', {});
     var idBannerSuccess = 'createPortfolioName';
     var classBannerSuccess = 'createPortfolioBanner';
     var idBannerAlert = '#createBannerAlert';
@@ -21,10 +27,15 @@ function createNewPortfolio() {
         data: $("#createForm").serialize(),
         success: function(data) {
           nameNewCreatePortfolio = $( "#PortfolioName" ).val();
+          var beschreibung = $("#Beschreibung").val();
           $('#myModal').modal('hide');
            $('#createForm')[0].reset();
-          updater();
+          //updater();
           showBanner(nameNewCreatePortfolio, idBannerSuccess , classBannerSuccess);
+          console.log(data);
+          var seminar_id = data;
+          $('.portfolioOverview').append("<tr class='insert_tr'><td><a href='"+STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/eportfolioplugin', {})+"&cid"+"'>"+nameNewCreatePortfolio+"</a></td><td> "+beschreibung+" </td><td>0</td></tr>");
+          //$('.portfolioOverview').append("<tr class='insert_tr'><td><a href='/studip/plugins.php/eportfolioplugin/eportfolioplugin?cid="+seminar_id+"'>"+nameNewCreatePortfolio+"</a></td><td> "+beschreibung+" </td><td>0</td></tr>");
         }
       });
     }
@@ -124,8 +135,10 @@ function updateLabelAccess(e) {
 }
 
 function deletePortfolio() {
-  var href = "/studip/plugins.php/eportfolioplugin/show";
-  var url = "/studip/plugins.php/eportfolioplugin/settings?cid="+cid;
+  var href = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/show', {});
+  var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/settings', {cid: cid})
+//  var href = "/studip/plugins.php/eportfolioplugin/show";
+//  var url = "/studip/plugins.php/eportfolioplugin/settings?cid="+cid;
   $.ajax({
     type: "POST",
     url: url,

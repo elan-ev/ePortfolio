@@ -7,17 +7,50 @@ class EportfoliopluginController extends StudipController {
       parent::__construct($dispatcher);
       $this->plugin = $dispatcher->plugin;
 
+      $sidebar = Sidebar::Get();
+      Sidebar::Get()->setTitle('Uebersicht');
+
+      $navOverview = new LinksWidget();
+      $navOverview->setTitle('Uebersicht');
+      $navOverview->addLink('Ubersicht', URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('portfolioid' => '$portfolioid')), null , array('class' => 'active-link'));
+      $sidebar->addWidget($navOverview);
+
+      $nav = new LinksWidget();
+      $nav->setTitle(_('Reflektionsimpulse'));
+      $nav->addLink($name, "");
+
+      $sidebar->addWidget($nav);
+      $nav->addLink('Reflektionsimpuls 1', "1");
+      $nav->addLink('Reflektionsimpuls 2', "2");
+      $nav->addLink('Reflektionsimpuls 3', "3");
+      $nav->addLink('Reflektionsimpuls 4', "4");
+      $nav->addLink('Reflektionsimpuls 5', "5");
+      $nav->addLink('Reflektionsimpuls 6', "6");
+
+      $navEinstellungen = new LinksWidget();
+      $navEinstellungen->setTitle('Einstellungen');
+      $navEinstellungen->addLink('Portfolioeinstellungen', URLHelper::getLink('plugins.php/eportfolioplugin/settings', array('portfolioid' => '$portfolioid')));
+      $sidebar->addWidget($navEinstellungen);
+
+      $navPersonen = new LinksWidget();
+      $navPersonen->setTitle('Teilnehmer');
+      $navPersonen->addLink('Supervisoren', "1");
+      $navPersonen->addLink('Zuschauer', "2");
+      $sidebar->addWidget($navPersonen);
+
+
       // Sidebar - not in use
       // $sidebar = Sidebar::Get();
       // Sidebar::Get()->setTitle('Uebersicht');
       // $widget = new SearchWidget();
       // Sidebar::Get()->addWidget($widget);
+      //print_r($this->getCardInfos());
   }
 
   public function before_filter(&$action, &$args)
   {
       parent::before_filter($action, $args);
-      PageLayout::setTitle('Uebersicht');
+      PageLayout::setTitle('ePortfolio');
 
   }
 
@@ -30,7 +63,7 @@ class EportfoliopluginController extends StudipController {
     ////////////////////////
 
     $userid = $GLOBALS["user"]->id;
-    $cid = $_GET["cid"];
+    $cid = $_GET["portfolioid"];
     $i = 0;
     $isOwner = false;
 
@@ -132,17 +165,43 @@ class EportfoliopluginController extends StudipController {
     $this->viewerCounter = $viewerCounter;
     $this->numChapterViewer = $chapterListArray;
     $this->userid = $userid;
+
   }
 
-  public function isViewer($id, $nummer){
+  public function getCardInfos(){
     $db = DBManager::get();
-    $query = $db->query("SELECT * FROM eportfolio_user WHERE Seminar_id = '$nummer' AND user_id = '$id' AND owner = 0 ")->fetchAll();
-    print_r($query);
-    // if(empty($query)){
-    //   return true;
-    // } else {
-    //   return false;
-    // }
+    $return_arr = array();
+    $getCardInfos = $db->query("SELECT id, title FROM mooc_blocks WHERE seminar_id = '$cid' AND type = 'Chapter'")->fetchAll();
+    foreach ($getCardInfos as $value) {
+      $arrayOne = array();
+      $arrayOne['id'] = $value[id];
+      $arrayOne['title'] = $value[title];
+
+      // get sections of chapter
+      $queryMenuPoints = $db->query("SELECT id, title FROM mooc_blocks WHERE parent_id = '$value[id]'")->fetchAll();
+      $arrayOne['section'] = $queryMenuPoints;
+
+      array_push($return_arr, $arrayOne);
+    }
+
+    return $return_arr;
+  }
+
+  public function getChapterViewer($nummer, $chapter){
+    $db = DBManager::get();
+    $query = $db->query("SELECT eportfolio_access, user_id FROM eportfolio_user WHERE Seminar_id = '$nummer' AND owner = '0' ")->fetchAll();
+    $viewer = array();
+
+    foreach ($query as $key) {
+      $array = unserialize($key[eportfolio_access]);
+      if( $array[$chapter] > 0 ){
+        array_push($viewer, $key[user_id]);
+      }
+      $counter++;
+    }
+
+    return $viewer;
+
   }
 
 }

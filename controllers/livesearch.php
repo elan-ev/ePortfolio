@@ -30,7 +30,7 @@ class livesearchController extends StudipController {
       $user_status = $_POST["status"];
       $val = $_POST["val"];
 
-      // empty input 
+      // empty input
       if ($val == "") {
         $val = array();
         exit(json_encode($val));
