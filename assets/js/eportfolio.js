@@ -167,7 +167,7 @@ function setAccess(id, viewerId){
       'viewer_id': viewerId,
     },
     success: function(data) {
-      alert(data);
+      //alert(data);
     }
   });
 }
@@ -209,7 +209,7 @@ function setViewer(id){
       "viewerId": id,
     },
     success: function(data) {
-      alert(data);
+      location.reload();
     }
   });
 }

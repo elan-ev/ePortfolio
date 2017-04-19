@@ -213,3 +213,13 @@ button.list-group-item:focus, button.list-group-item:hover {
 .active-link {
   background-color: #a9b6cb !important;
 }
+
+.legend {
+  background: rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.4);
+}
+
+.legend ul li {
+  margin: 0px;
+  list-style: none;
+}

@@ -29,6 +29,30 @@
       margin-top: -10px;
     }
 
+
+    .portfolio-info-wrapper-current .wrapper-name {
+      margin-bottom: 10px;
+    }
+
+    .portfolio-info-wrapper-current .wrapper-beschreibung {
+      margin-bottom: 10px;
+    }
+
+    .portfolio-info-trigger {
+      font-size: 10px;
+      text-align: center;
+      border: 1px solid #dddddd;
+      padding: 3px 5px;
+    }
+
+    .glyphicon-ok {
+      color: green;
+    }
+
+    .glyphicon-remove {
+      color: red;
+    }
+
   </style>
 </head>
 
@@ -66,7 +90,7 @@
 
 <?php else: ?>
 
-  <div class="alert alert-info" role="alert">Es sind derzeit keine Zuschauer in Ihrem Portfolio eingetragen. Bitte fügen die Teilnehmer hinzu Leserechte zu vergeben.</div>
+  <?php echo MessageBox::info('Es sind derzeit keine Zuschauer in Ihrem Portfolio eingetragen. Bitte fügen die Teilnehmer hinzu Leserechte zu vergeben.'); ?>
 
 <?php endif; ?>
 

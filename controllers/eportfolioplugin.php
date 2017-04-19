@@ -7,29 +7,30 @@ class EportfoliopluginController extends StudipController {
       parent::__construct($dispatcher);
       $this->plugin = $dispatcher->plugin;
 
+      $cid = $_GET['cid'];
+
       $sidebar = Sidebar::Get();
       Sidebar::Get()->setTitle('Uebersicht');
 
       $navOverview = new LinksWidget();
       $navOverview->setTitle('Uebersicht');
-      $navOverview->addLink('Ubersicht', URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('portfolioid' => '$portfolioid')), null , array('class' => 'active-link'));
+      $navOverview->addLink('Ubersicht', URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('portfolioid' => $portfolioid)), null , array('class' => 'active-link'));
       $sidebar->addWidget($navOverview);
 
       $nav = new LinksWidget();
-      $nav->setTitle(_('Reflektionsimpulse'));
+      $nav->setTitle(_('Courseware'));
       $nav->addLink($name, "");
 
+      $getCoursewareChapters = $this->getCardInfos($cid);
+      foreach ($getCoursewareChapters as $key => $value) {
+        $nav->addLink($value[title], URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $cid, 'selected' => $value[id])));
+      }
+
       $sidebar->addWidget($nav);
-      $nav->addLink('Reflektionsimpuls 1', "1");
-      $nav->addLink('Reflektionsimpuls 2', "2");
-      $nav->addLink('Reflektionsimpuls 3', "3");
-      $nav->addLink('Reflektionsimpuls 4', "4");
-      $nav->addLink('Reflektionsimpuls 5', "5");
-      $nav->addLink('Reflektionsimpuls 6', "6");
 
       $navEinstellungen = new LinksWidget();
       $navEinstellungen->setTitle('Einstellungen');
-      $navEinstellungen->addLink('Portfolioeinstellungen', URLHelper::getLink('plugins.php/eportfolioplugin/settings', array('portfolioid' => '$portfolioid')));
+      $navEinstellungen->addLink('Portfolioeinstellungen', URLHelper::getLink('plugins.php/eportfolioplugin/settings', array('portfolioid' => $portfolioid)));
       $sidebar->addWidget($navEinstellungen);
 
       $navPersonen = new LinksWidget();
@@ -38,13 +39,6 @@ class EportfoliopluginController extends StudipController {
       $navPersonen->addLink('Zuschauer', "2");
       $sidebar->addWidget($navPersonen);
 
-
-      // Sidebar - not in use
-      // $sidebar = Sidebar::Get();
-      // Sidebar::Get()->setTitle('Uebersicht');
-      // $widget = new SearchWidget();
-      // Sidebar::Get()->addWidget($widget);
-      //print_r($this->getCardInfos());
   }
 
   public function before_filter(&$action, &$args)
@@ -59,11 +53,11 @@ class EportfoliopluginController extends StudipController {
   {
 
     //set AutoNavigation/////
-    Navigation::activateItem("course/eportfolioplugin");
+    //Navigation::activateItem("course/eportfolioplugin");
     ////////////////////////
 
     $userid = $GLOBALS["user"]->id;
-    $cid = $_GET["portfolioid"];
+    $cid = $_GET["cid"];
     $i = 0;
     $isOwner = false;
 
@@ -73,6 +67,7 @@ class EportfoliopluginController extends StudipController {
     // get template Status
     $templateStatus = $db->query("SELECT templateStatus FROM eportfolio WHERE Seminar_id = '$cid' ")->fetchAll();
     $t = $templateStatus[0][templateStatus];
+    echo $t;
 
     // get courseware parentId
     $getCourseware = $db->query("SELECT id FROM mooc_blocks WHERE type = 'Courseware' AND seminar_id = '$cid'")->fetchAll();
@@ -92,19 +87,35 @@ class EportfoliopluginController extends StudipController {
     //auto insert chapters
     if ($t == 0) {
       echo  " t - triggered";
+
+      $templateid = DBManager::get()->query("SELECT template_id FROM eportfolio WHERE Seminar_id = '$cid'")->fetchAll();
+      $templateid = $templateid[0][0];
+      $getChapters = DBManager::get()->query("SELECT chapters FROM eportfolio_templates WHERE id = '$templateid'")->fetchAll();
+      $chapters = $getChapters[0][0];
+      $chapters = json_decode($chapters, true);
+
+      $gettempname = DBManager::get()->query("SELECT temp_name FROM eportfolio_templates WHERE id = 'templateid'")->fetchAll();
+      $gettempname = $gettempname[0][0];
+
+      print_r($chapters);
+
       //set additional chapter titles
       $template = array('Reflektionsimpuls 3', 'Reflektionsimpuls 4','Reflektionsimpuls 5', 'Reflektionsimpuls 6');
+      $template = $chapters;
 
-      foreach ($template as $value) {
-        //insert into eportfolio
-        $db->query("INSERT INTO mooc_blocks (type, parent_id, seminar_id, title, position) VALUES ('Chapter', '$getC', '$cid', '$value', '$i')");
+      foreach ($template as $key => $value) {
+
+        if($key > 1){
+          //insert into eportfolio
+          $db->query("INSERT INTO mooc_blocks (type, parent_id, seminar_id, title, position) VALUES ('Chapter', '$getC', '$cid', '$value', '$i')");
+        }
 
         //update all mooc_blocks field
-        $db->query("UPDATE mooc_blocks SET title = 'Reflektionsimpulse' WHERE type = 'Courseware'");
+        $db->query("UPDATE mooc_blocks SET title = '$gettempname' WHERE type = 'Courseware'");
 
         //change title of standard chapters
-        $db->query("UPDATE mooc_blocks SET title = 'Reflektionsimpuls 1' WHERE title = 'Kapitel 1' AND Seminar_id= '$cid'");
-        $db->query("UPDATE mooc_blocks SET title = 'Reflektionsimpuls 2' WHERE title = 'Kapitel 2' AND Seminar_id= '$cid'");
+        $db->query("UPDATE mooc_blocks SET title = '$template[0]' WHERE title = 'Kapitel 1' AND Seminar_id= '$cid'");
+        $db->query("UPDATE mooc_blocks SET title = '$template[1]' WHERE title = 'Kapitel 2' AND Seminar_id= '$cid'");
 
         //change templateStatus
         $db->query("UPDATE eportfolio SET templateStatus = '1' WHERE seminar_id = '$cid'");
@@ -168,10 +179,10 @@ class EportfoliopluginController extends StudipController {
 
   }
 
-  public function getCardInfos(){
+  public function getCardInfos($cid){
     $db = DBManager::get();
     $return_arr = array();
-    $getCardInfos = $db->query("SELECT id, title FROM mooc_blocks WHERE seminar_id = '$cid' AND type = 'Chapter'")->fetchAll();
+    $getCardInfos = $db->query("SELECT id, title FROM mooc_blocks WHERE seminar_id = '$cid' AND type = 'Chapter' ORDER BY id ASC")->fetchAll();
     foreach ($getCardInfos as $value) {
       $arrayOne = array();
       $arrayOne['id'] = $value[id];
@@ -202,6 +213,14 @@ class EportfoliopluginController extends StudipController {
 
     return $viewer;
 
+  }
+
+  public function isOwner($cid, $userId){
+    $db = DBManager::get();
+    $query = $db->query("SELECT owner_id FROM eportfolio WHERE Seminar_id = '$cid'")->fetchAll();
+    if ($query[0][0] == $userId) {
+      return true;
+    }
   }
 
 }

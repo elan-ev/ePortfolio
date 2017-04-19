@@ -59,7 +59,7 @@
 
         <h1 id="headline_uebersicht"></h1>
 
-        <p>Hier finden Sie alle ePortfolios, die Sie angelegt hast oder die andere für Sie freigegeben haben.</p>
+        <p>Hier finden Sie alle ePortfolios, die Sie angelegt hast oder die andere fuer Sie freigegeben haben.</p>
         <p><a class="btn btn-primary btn-lg" href="#" role="button" style="background-color: #33578c; color: #fff;">Mehr Informationen</a></p>
       </div>
     </div>
@@ -73,7 +73,7 @@
 <div class="row">
   <div class="col-md-12">
 
-    <h4>�bersicht meiner Portfolios <span id="labelMyPortfolio" class="badge"></span></h4>
+    <h4>Meine Portfolios <span id="labelMyPortfolio" class="badge"></span></h4>
 
     <?php ?>
 
@@ -137,7 +137,7 @@
 
 <div class="row">
   <div class="col-md-12">
-    <h4>F�r Sie sichtbare Portfolios <span id="labelAccess" class="badge"></span></h4>
+    <h4>Sichtbare Portfolios <span id="labelAccess" class="badge"></span></h4>
 
     <table  data-link="row" class=" rowlink table  viewportfolioOverview">
       <tr class="tr-head">
@@ -166,7 +166,7 @@
   </div>
 </div>
 
-<div class="">
+<!-- <div class="">
 
   <h4>Meine Gruppen</h4>
 
@@ -180,7 +180,7 @@
   <?php endforeach; ?>
 
 
-</div>
+</div> -->
 
 <!-- Modal -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">

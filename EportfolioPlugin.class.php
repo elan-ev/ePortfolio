@@ -12,6 +12,11 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     public function __construct() {
         parent::__construct();
 
+        if($_POST["type"] == "freigeben"){
+          $this->freigeben($_POST["selected"], $_POST["cid"]);
+          exit;
+        }
+
         function checkPermission(){
           $userId = $GLOBALS["user"]->id;
           $perm = get_global_perm($userId);
@@ -47,10 +52,28 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
       $serverinfo = $_SERVER['PATH_INFO'];
 
       if ($serverinfo == "/courseware/courseware" || $serverinfo == "/eportfolioplugin/eportfolioplugin"){
-
         include 'coursewareController/modifier.php';
       }
 
+    }
+
+    public function getCardInfos($cid){
+      $db = DBManager::get();
+      $return_arr = array();
+      $getCardInfos = $db->query("SELECT id, title FROM mooc_blocks WHERE seminar_id = '$cid' AND type = 'Chapter' ORDER BY id ASC")->fetchAll();
+      foreach ($getCardInfos as $value) {
+        $arrayOne = array();
+        $arrayOne['id'] = $value[id];
+        $arrayOne['title'] = $value[title];
+
+        // get sections of chapter
+        $queryMenuPoints = $db->query("SELECT id, title FROM mooc_blocks WHERE parent_id = '$value[id]'")->fetchAll();
+        $arrayOne['section'] = $queryMenuPoints;
+
+        array_push($return_arr, $arrayOne);
+      }
+
+      return $return_arr;
     }
 
     public function initialize () {
@@ -144,6 +167,23 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         }
 
         return $this->getSemClass()->isSlotModule(get_class($this));
+    }
+
+    public function freigeben($selected, $cid){
+      $db = DBManager::get();
+      $query = $db->query("SELECT freigaben_kapitel FROM eportfolio WHERE Seminar_id = '$cid'")->fetchAll();
+      //print_r($query[0][0]);
+      if(empty($query[0][0])){
+        $array = array($selected => '1');
+        $array = json_encode($array);
+        $db->query("UPDATE eportfolio SET freigaben_kapitel = '$array' WHERE Seminar_id = '$cid'");
+      } else {
+        $array = $query[0][0];
+        $array = json_decode($array);
+        $array->$selected = "1";
+        $array = json_encode($array);
+        $db->query("UPDATE eportfolio SET freigaben_kapitel = '$array' WHERE Seminar_id = '$cid'");
+      }
     }
 
 }

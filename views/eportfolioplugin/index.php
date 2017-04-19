@@ -35,8 +35,6 @@
 <!-- HEAD END -->
 
 <div class="row">
-
-
   <div class="col-md-12">
 
     <!-- overview area -->
@@ -66,7 +64,7 @@
 
           <div class="">
 
-            <?php if($isOwner == true):?>
+            <?php //if($isOwner == true):?>
             <div class="avatar-wrapper">
               <?php $checkViewer = eportfoliopluginController::getChapterViewer($cid, $key[id]);?>
               <?php
@@ -78,7 +76,7 @@
               <?php endforeach; ?>
 
             </div>
-          <?php endif; ?>
+          <?php //endif; ?>
 
             <br>
             <?php if($isOwner == true):?>
@@ -91,9 +89,9 @@
 
           <a href="<?php echo $link; ?>"><button type="button" class="btn btn-primary">Anschauen</button></a>
 
-          <?php if($isOwner == true):?>
+          <?php //if($isOwner == true):?>
             <a href="<?php echo $linkAdmin; ?>"><button type="button" class="btn btn-primary">Bearbeiten</button></a>
-          <?php endif; ?>
+          <?php //endif; ?>
         </div>
       </div>
 

@@ -30,6 +30,27 @@
       margin-top: -10px;
     }
 
+    .legend {
+      background: rgba(0, 0, 0, 0.01);
+      border: 1px solid rgba(0, 0, 0, 0.2);
+      max-width: 800px;
+      padding: 5px 10px;
+      margin-top: 30px;
+    }
+
+    .legend ul li {
+      margin: 0px;
+      list-style: none;
+    }
+
+    .legend ul {
+      padding:0px;
+    }
+
+    td, th {
+      text-align: center;
+    }
+
   </style>
 
 </head>
@@ -38,30 +59,119 @@
  Neue Supervisionsgruppe erstellen
 </button> -->
 
-<table>
+<h1><?php echo showsupervisorcontroller::getCourseName($id); ?></h1>
 
-<?php foreach ($groupList as $key): ?>
+<?php showsupervisorcontroller::getTemplates($id); ?>
 
-  <tr>
-    <td style="padding-right:30px;">
-      <?= Avatar::getAvatar($key)->getImageTag(Avatar::SMALL) ?>
-    </td>
-    <td>
-      <?php $supervisor = UserModel::getUser($key);
-          echo $supervisor[Vorname].' '.$supervisor[Nachname];
-       ?>
-    </td>
-    <td>
-      <a href="#" onClick="getUserData('<?php echo $key; ?>');">
-        <span style="margin:0px 30px;" class="glyphicon glyphicon-log-in" aria-hidden="true"></span>
-      </a>
-    </td>
-  </tr>
+<div>
 
-<?php endforeach; ?>
+  <label for="template">Template hinzufuegen</label>
+  <select class="" id="tempselector" name="template">
+    <?php  $templates = showsupervisorcontroller::getTemplates($id); ?>
+    <?php foreach ($templates as $key => $value):?>
+      <option value="<?php echo $value[id] ?>"><?php echo $value[temp_name] ?></option>
+    <?php endforeach; ?>
+  </select>
+  <button type="button" onclick="addTemp()" name="button">Add</button>
 
 
-</table>
+
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist">
+    <?php $templistid = showsupervisorcontroller::getGroupTemplates($id);?>
+    <?php foreach ($templistid as $key => $value): ?>
+      <?php $tempname = showsupervisorcontroller::getTemplateName($value);?>
+      <li role="presentation"><a href="#<?php echo $value; ?>" aria-controls="<?php echo $value; ?>" role="tab" data-toggle="tab"><?php echo $tempname ?></a></li>
+    <?php endforeach; ?>
+
+    <!-- <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Testportfolio</a></li>
+    <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Profile</a></li>
+    <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Messages</a></li>
+    <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Settings</a></li> -->
+  </ul>
+
+  <!-- Tab panes -->
+
+
+  <div class="tab-content">
+
+    <?php $templistid = showsupervisorcontroller::getGroupTemplates($id); ?>
+    <?php foreach ($templistid as $key => $value): ?>
+      <?php $tempid = $value ?>
+      <div role="tabpanel" class="tab-pane" id="<?php echo $value; ?>">
+        <table style="margin-bottom: 30px;max-width: 600px; text-align: left!important;">
+          <tr>
+            <th style="width: 200px;border-bottom: 1px solid;">Name</th>
+            <?php
+            $q = DBManager::get()->query("SELECT chapters FROM eportfolio_templates WHERE id = '$value'")->fetchAll();
+            $q = json_decode($q[0][0], true);
+            foreach ($q as $key => $valueChapter): ?>
+              <th style="width: 100px; border-bottom: 1px solid;"><?php print_r($valueChapter); ?></th>
+            <?php endforeach; ?>
+          </tr>
+
+          <?php foreach ($groupList as $key):?>
+            <tr>
+              <td style="text-align: left;">
+                <?php $supervisor = UserModel::getUser($key);
+                $userid = $key;
+                    echo $supervisor[Vorname].' '.$supervisor[Nachname];
+                 ?>
+              </td>
+
+              <?php $getsemid = DBManager::get()->query("SELECT Seminar_id FROM eportfolio WHERE owner_id = '$key' AND template_id = '$tempid'")->fetchAll();
+              $getsemid = $getsemid[0][0];
+              ?>
+
+              <?php $t = DBManager::get()->query("SELECT freigaben_kapitel FROM eportfolio WHERE Seminar_id = 'h965bdvaolo50gc5uk8lj7snb96c939q'")->fetchAll();
+              //  print_r($t);
+              $freigaben_kapitel = json_decode($t[0][0], true);
+               ?>
+
+              <?php
+              //$q = DBManager::get()->query("SELECT title, id FROM mooc_blocks WHERE type = 'Chapter' AND seminar_id = 'is22plkvtlt3ms6vvuwjsrwfuwohruq9'")->fetchAll();
+              $status = DBManager::get()->query("SELECT templateStatus FROM eportfolio WHERE Seminar_id = '$getsemid'")->fetchAll();
+              $status = $status[0][0];
+
+              $q = DBManager::get()->query("SELECT title, id FROM mooc_blocks WHERE type = 'Chapter' AND seminar_id = '$getsemid'")->fetchAll();
+              foreach ($q as $key => $value): ?>
+
+                <?php if ($status == 1): ?>
+                  <?php $t = DBManager::get()->query("SELECT freigaben_kapitel FROM eportfolio WHERE Seminar_id = '$getsemid'")->fetchAll();
+                  $freigaben_kapitel = json_decode($t[0][0], true);?>
+                  <td><?php $idNew = $value[id];
+                  if($freigaben_kapitel[$idNew]):?>
+                    <?php $link = URLHelper::getLink("plugins.php/courseware/courseware", array('cid' => $getsemid , 'selected' => $idNew));?>
+                    <a href="<?php echo $link; ?>">
+                      <i class="fa fa-check" aria-hidden="true"></i>
+                    </a>
+                  <?php endif; ?>
+                  </td>
+                <?php else: ?>
+                  <td>
+                    N
+                  </td>
+                <?php endif; ?>
+
+
+              <?php endforeach; ?>
+
+            </tr>
+          <?php endforeach; ?>
+        </table>
+
+        <button type="button" name="button">Template loeschen</button>
+
+
+      </div>
+    <?php endforeach; ?>
+
+    <div role="tabpanel" class="tab-pane" id="profile">Nein</div>
+    <div role="tabpanel" class="tab-pane" id="messages">Warum</div>
+    <div role="tabpanel" class="tab-pane" id="settings">booar</div>
+  </div>
+
+</div>
 
 <?php if(!$id): ?>
 
@@ -76,18 +186,26 @@
 
 <!-- add person buton / MultiPersonSearch -->
 <?php if($id) {
-  print_r($mp);
+  //print_r($mp);
 }  ?>
 
-<?php
+<!-- <?php
 
-$sf = new QuickSearch("username", "username");
-$sf->withButton();
-print $sf->render();
+$suche = new SQLSearch("SELECT * FROM auth_user_md5");
+print QuickSearch::get("username", $suche)
+  ->render();
+  ?> -->
 
 
-  ?>
-
+<!-- Legende -->
+<div class="legend">
+  <ul>
+    <li><i class="fa fa-check" aria-hidden="true"></i>  Kapitel/Implus freigeschaltet</li>
+    <li><i class="fa fa-check" aria-hidden="true" style="color:orange;"></i>  Kapitel freigeschaltet und Änderungen seit ich das letzte mal reingeschaut habe</li>
+    <li><i class="fa fa-file-o" aria-hidden="true"></i>  Supervisionsanliegen freischalten</li>
+    <li><i class="fa fa-comments" aria-hidden="true"></i>  Resonanz gegeben</li>
+  </ul>
+</div>
 
 <div id="myModal" class="modal fade" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
@@ -176,5 +294,55 @@ function getUserData(id){
     }
   });
 }
+
+$('#myTabs a').click(function (e) {
+  e.preventDefault()
+  $(this).tab('show')
+})
+
+function addTemp(){
+  const tempid = $('#tempselector').val();
+  console.log(tempid);
+
+  $.ajax({
+    type: "POST",
+    url: "/studip/plugins.php/eportfolioplugin/showsupervisor",
+    data: {
+      type: 'addTemp',
+      groupid: '<?php echo $id ?>',
+      tempid: tempid
+    },
+    success: function(data){
+      console.log(data);
+      if (data == "") {
+        createPortfolio(tempid);
+        console.log("Noooope");
+      }
+    }
+  });
+}
+
+function createPortfolio(tempid){
+  $.ajax({
+    type: "POST",
+    url: "/studip/plugins.php/eportfolioplugin/showsupervisor",
+    data: {
+      type: 'createPortfolio',
+      groupid: '<?php echo $id ?>',
+      tempid: tempid
+    },
+    success: function(data){
+      console.log(data);
+    }
+  });
+}
+
+
+$(document).ready(
+  function(){
+    console.log("tab");
+    $('li[role="presentation"]:first').addClass("active");
+  }
+);
 
 </script>

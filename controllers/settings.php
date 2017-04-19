@@ -9,6 +9,8 @@ class settingsController extends StudipController {
 
       $portfolioid = $_GET['portfolioid'];
 
+      $cid = $_GET['cid'];
+
       $sidebar = Sidebar::Get();
       Sidebar::Get()->setTitle('Uebersicht');
 
@@ -21,13 +23,13 @@ class settingsController extends StudipController {
       $nav->setTitle(_('Reflektionsimpulse'));
       $nav->addLink($name, "");
 
+      $getCoursewareChapters = EportfolioPlugin::getCardInfos($cid);
+      foreach ($getCoursewareChapters as $key => $value) {
+        $nav->addLink($value[title], URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $cid, 'selected' => $value[id])));
+      }
+
       $sidebar->addWidget($nav);
-      $nav->addLink('Reflektionsimpuls 1', "1");
-      $nav->addLink('Reflektionsimpuls 2', "2");
-      $nav->addLink('Reflektionsimpuls 3', "3");
-      $nav->addLink('Reflektionsimpuls 4', "4");
-      $nav->addLink('Reflektionsimpuls 5', "5");
-      $nav->addLink('Reflektionsimpuls 6', "6");
+
 
       $navEinstellungen = new LinksWidget();
       $navEinstellungen->setTitle('Einstellungen');
@@ -58,7 +60,7 @@ class settingsController extends StudipController {
     $db = DBManager::get();
 
     //set AutoNavigation////
-    Navigation::activateItem("course/settings");
+    //Navigation::activateItem("course/settings");
     ////////////////////////s
 
     //get seninar infos
