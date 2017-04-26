@@ -65,7 +65,7 @@
 
 <div>
 
-  <label for="template">Template hinzufuegen</label>
+  <label for="template">Portfolio - Vorlage hinzufuegen</label>
   <select class="" id="tempselector" name="template">
     <?php  $templates = showsupervisorcontroller::getTemplates($id); ?>
     <?php foreach ($templates as $key => $value):?>
@@ -160,7 +160,7 @@
           <?php endforeach; ?>
         </table>
 
-        <button type="button" name="button">Template loeschen</button>
+        <button type="button" name="button" onclick="deletetemplate(<?php echo $tempid; ?>)">Vorlage loeschen</button>
 
 
       </div>
@@ -313,8 +313,8 @@ function addTemp(){
       tempid: tempid
     },
     success: function(data){
-      console.log(data);
-      if (data == "") {
+      console.log("the data -->" + data);
+      if (data == "  created") {
         createPortfolio(tempid);
         console.log("Noooope");
       }
@@ -332,9 +332,34 @@ function createPortfolio(tempid){
       tempid: tempid
     },
     success: function(data){
+      console.log("createPortfolio-->");
       console.log(data);
     }
   });
+}
+
+function deletetemplate(tempid){
+  var c = confirm("Es werden alle bestehenden ePortfolios dieses Templates gelöscht! Möchten Sie fortfahren?");
+  if (c == true){
+
+    console.log("okay");
+
+    $.ajax({
+      type: "POST",
+      url: "/studip/plugins.php/eportfolioplugin/showsupervisor",
+      data: {
+        type: 'delete',
+        tempid: tempid,
+        groupid: '<?php echo $id ?>'
+      },
+      success: function(data){
+        console.log(data);
+      }
+    });
+
+  } else {
+    console.log("cancel");
+  }
 }
 
 

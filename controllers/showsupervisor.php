@@ -15,11 +15,16 @@ class ShowsupervisorController extends StudipController {
           $this->addTempToDB();
           exit();
         }
+
         if($_POST["type"] == 'createPortfolio'){
           $this->createPortfolio();
           exit();
         }
 
+        if($_POST["type"] == 'delete'){
+          $this->deletePortfolio();
+          exit();
+        }
 
 
         //sidebar
@@ -171,6 +176,7 @@ class ShowsupervisorController extends StudipController {
         $array = array($tempid);
         $array = json_encode($array);
         DBManager::get()->query("UPDATE eportfolio_groups SET templates = '$array' WHERE seminar_id = '$groupid'");
+        echo "created";
       } else {
         $array = json_decode($q[0][0]);
         if(in_array($tempid, $array)){
@@ -180,6 +186,7 @@ class ShowsupervisorController extends StudipController {
         array_push($array, $tempid);
         $array = json_encode($array);
         DBManager::get()->query("UPDATE eportfolio_groups SET templates = '$array' WHERE seminar_id = '$groupid'");
+        echo "created";
       }
 
     //  print_r($array);
@@ -206,6 +213,28 @@ class ShowsupervisorController extends StudipController {
           $randomString .= $characters[rand(0, $charactersLength - 1)];
         }
       return $randomString;
+    }
+
+    public function deletePortfolio(){
+      $tempid = $_POST["tempid"];
+      $groupid = $_POST["groupid"];
+
+      //delete templateid in eportfolio_groups-table
+      $q = DBManager::get()->query("SELECT templates FROM eportfolio_groups WHERE seminar_id = '$groupid'")->fetchAll();
+      $templates = json_decode($q[0][0]);
+      $templates = array_diff($templates, array($tempid));
+      $templates = json_encode($templates);
+      DBManager::get()->query("UPDATE eportfolio_groups SET templates = '$templates' WHERE  seminar_id = '$groupid'");
+
+      //get all seminar ids
+      $q = DBManager::get()->query("SELECT Seminar_id FROM eportfolio WHERE template_id = '$tempid'")->fetchAll();
+      foreach ($q as $key => $value) {
+       DMManager::get()->query("DELETE * FROM ");
+      }
+
+      //delete in ePortfolio table
+      //DBManager::get()->query("DELETE * FROM eportfolio ");
+
     }
 
     public function createPortfolio($id){
