@@ -244,6 +244,12 @@
   $('.customLinkList1').append('<li><a>Einstellungen</a></li>');
   $('.customLinkList1').append('<li><a>Portfolios verwalten</a></li>');
 
+  <?php if($linkId == 'noId'): ?>
+    console.log("no supervisor");
+  <?php elseif ($linkId):?>
+    $('.customLinkList1').append('<li><a href="showsupervisor?id=<?php echo $linkId; ?>">Supervisoransicht</a></li>');
+  <?php endif; ?>
+
   //Widget - Freunde
   $('.sidebar').append('<div class="sidebar-widget widgetCustom2"><div class="sidebar-widget-header">Freunde</div></div>');
   $('.widgetCustom2').append('<ul class="widget-list widget-links sidebar-navigation customLinkList2"></ul>');

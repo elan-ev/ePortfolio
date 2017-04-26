@@ -47,10 +47,11 @@ class ShowsupervisorController extends StudipController {
         }
 
         $navcreate = new LinksWidget();
-        $navcreate->setTitle('Erstellen');
+        $navcreate->setTitle('Navigation');
 
         $attr = array("data-toggle"=>"modal", "data-target" => "#myModal");
         $navcreate->addLink("Neue Gruppe anlegen", "#", "", $attr);
+        $navcreate->addLink("Meine Portfolios", "show");
 
         $sidebar->addWidget($nav);
         $sidebar->addWidget($navcreate);
