@@ -74,8 +74,6 @@
   </select>
   <button type="button" onclick="addTemp()" name="button">Add</button>
 
-
-
   <!-- Nav tabs -->
   <ul class="nav nav-tabs" role="tablist">
     <?php $templistid = showsupervisorcontroller::getGroupTemplates($id);?>

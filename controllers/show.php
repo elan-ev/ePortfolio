@@ -30,6 +30,7 @@ class ShowController extends StudipController {
         // echo $GLOBALS["user"]->id;
         $this->userId = $GLOBALS["user"]->id;
         $perm = get_global_perm($GLOBALS["user"]->id);
+        $this->perm = $perm;
         if($perm == "dozent"){
           $output = $this->getFirstGroup($GLOBALS["user"]->id);
           if(!$output == '') {

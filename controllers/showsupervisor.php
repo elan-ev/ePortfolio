@@ -228,14 +228,19 @@ class ShowsupervisorController extends StudipController {
       DBManager::get()->query("UPDATE eportfolio_groups SET templates = '$templates' WHERE  seminar_id = '$groupid'");
 
       //get all seminar ids
-      $q = DBManager::get()->query("SELECT Seminar_id FROM eportfolio WHERE template_id = '$tempid'")->fetchAll();
-      foreach ($q as $key => $value) {
-       DMManager::get()->query("DELETE * FROM ");
+      $q = DBManager::get()->query("SELECT * FROM eportfolio WHERE template_id = '$tempid'")->fetchAll();
+      $member = $this->getGroupMember($groupid); // get member list as array
+      foreach ($q as $key) {
+        $sid = $key["Seminar_id"];
+        $ownerid = DBManager::get()->query("SELECT owner_id FROM eportfolio WHERE Seminar_id = '$sid'")->fetchAll();
+        if (in_array($ownerid[0][0], $member)) { //delete portfolios of group member only
+          DBManager::get()->query("DELETE FROM seminare WHERE Seminar_id = '$sid'"); // delete in seminare
+          DBManager::get()->query("DELETE FROM seminar_user WHERE Seminar_id = '$sid'"); //delete in seminar_user
+          DBManager::get()->query("DELETE FROM eportfolio_user WHERE Seminar_id = '$sid'"); //delete in eportfolio_user
+          DBManager::get()->query("DELETE FROM eportfolio WHERE Seminar_id = '$sid'"); // delete in eportfolio
+        }
+
       }
-
-      //delete in ePortfolio table
-      //DBManager::get()->query("DELETE * FROM eportfolio ");
-
     }
 
     public function createPortfolio($id){

@@ -36,13 +36,7 @@
 <?php if($linkId == 'noId'): ?>
 
   <script type="text/javascript">
-    $('.helpbar-container').prepend('<div class="supervisor-btn"><a href="showsupervisor"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a></div>');
-  </script>
-
-<?php elseif ($linkId):?>
-
-  <script type="text/javascript">
-    $('.helpbar-container').prepend('<div class="supervisor-btn"><a href="showsupervisor?id=<?php echo $linkId; ?>"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a></div>');
+  //$('.helpbar-container').prepend('<div class="supervisor-btn"><a href="showsupervisor?id=<?php echo $linkId; ?>"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a></div>');
   </script>
 
 <?php endif; ?>
@@ -69,6 +63,32 @@
 </div>
 
 <hr>
+
+<?php if ($perm == "dozent"):?>
+<div class="row">
+  <div class="col-md-12">
+
+    <h4>Meine Portfolio - Vorlagen</h4>
+
+    <table data-link="row" class="rowlink table  portfolioOverview">
+      
+      <tr>
+        <th>
+          Vorlagen - Name
+        </th>
+        <th>
+          Beschreibung
+        </th>
+        <th>
+          Optionen
+        </th>
+      </tr>
+    </table>
+
+    <hr>
+  </div>
+</div>
+<?php endif; ?>
 
 <div class="row">
   <div class="col-md-12">
