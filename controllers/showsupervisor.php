@@ -206,6 +206,11 @@ class ShowsupervisorController extends StudipController {
       return $q[0][0];
     }
 
+    public function getGroupOwner($id){
+      $q = DBManager::get()->query("SELECT owner_id FROM eportfolio_groups WHERE seminar_id = '$id'")->fetchAll();
+      return $q[0][0];
+    }
+
     public function generateRandomString($length = 32) {
       $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
       $charactersLength = strlen($characters);
@@ -245,6 +250,8 @@ class ShowsupervisorController extends StudipController {
 
     public function createPortfolio($id){
       $member = $this->getGroupMember($_POST["groupid"]);
+      $groupowner = $this->getGroupOwner($_POST["groupid"]);
+
       foreach ($member as $key => $value) {
 
           $userid = $value;
@@ -282,7 +289,12 @@ class ShowsupervisorController extends StudipController {
           $createCoursewareTemplate = $db->query("SELECT * FROM mooc_blocks WHERE type = 'Courseware' AND seminar_id = '".$Seminar_id."'; ")->fetchAll();
           foreach ($createCoursewareTemplate as $block) {
             $block_id = $block[id];
+          }
 
+          //add supervisor in portfolio
+          $member = $this->getGroupMember($groupid);
+          if (!in_array($groupowner, $member)) {
+            DBManager::get()->query("INSERT INTO seminar_user (Seminar_id, user_id, status, position, gruppe, notification, visible, bind_calendar, mkdate) VALUES ('$Seminar_id', '$groupowner', '$statususer', '$position', '$gruppe', '$notification', '$visibleuser', '$bind_calendar', 'UNIX_TIMESTAMP()');");
           }
       }
     }
