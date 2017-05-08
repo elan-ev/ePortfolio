@@ -159,7 +159,7 @@
 
 <div class="row">
   <div class="col-md-6">
-    <button data-toggle="modal" data-target="#myModal" type="button" name="button" class="btn btn-success" id="newPortfolio" style="margin-bottom: 30px;"><i class="fa fa-plus" aria-hidden="true"></i> Neues Portfolio erstellen</button>
+    <?= \Studip\Button::create('Eigenes Portfolio erstellen', 'klickMichButton', array('data-toggle' => 'modal', 'data-target' => '#myModal', 'id' => "newPortfolio")); ?>
   </div>
 </div>
 
@@ -237,7 +237,7 @@
           <div class="alert alert-danger createPortfolioBanner" role="alert" id="createBannerAlert">Bitte fuellen Sie alle Felder aus</div>
 
           <button type="submit" class="btn btn-success">Erstellen</button>
-          <input type="reset" id="configreset" value="Reset" style="display:none;">
+          <?= \Studip\Button::create('Erstellen', 'Button', array('type' => 'submit')); ?>
         </form>
 
         <!-- Form Ende  -->
