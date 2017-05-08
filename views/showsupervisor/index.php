@@ -97,7 +97,7 @@
     <?php foreach ($templistid as $key => $value): ?>
       <?php $tempid = $value ?>
       <div role="tabpanel" class="tab-pane" id="<?php echo $value; ?>">
-        <table style="margin-bottom: 30px;max-width: 600px; text-align: left!important;">
+        <table class="default">
           <tr>
             <th style="width: 200px;border-bottom: 1px solid;">Name</th>
             <?php
