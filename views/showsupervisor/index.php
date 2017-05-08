@@ -141,7 +141,7 @@
                   if($freigaben_kapitel[$idNew]):?>
                     <?php $link = URLHelper::getLink("plugins.php/courseware/courseware", array('cid' => $getsemid , 'selected' => $idNew));?>
                     <a href="<?php echo $link; ?>">
-                      <i class="fa fa-check" aria-hidden="true"></i>
+                      <?php echo  Icon::create('accept', 'clickable'); ?>
                     </a>
                   <?php endif; ?>
                   </td>
@@ -198,10 +198,10 @@ print QuickSearch::get("username", $suche)
 <!-- Legende -->
 <div class="legend">
   <ul>
-    <li><i class="fa fa-check" aria-hidden="true"></i>  Kapitel/Implus freigeschaltet</li>
-    <li><i class="fa fa-check" aria-hidden="true" style="color:orange;"></i>  Kapitel freigeschaltet und Änderungen seit ich das letzte mal reingeschaut habe</li>
-    <li><i class="fa fa-file-o" aria-hidden="true"></i>  Supervisionsanliegen freigeschaltet</li>
-    <li><i class="fa fa-comments" aria-hidden="true"></i>  Resonanz gegeben</li>
+    <li><?php echo  Icon::create('accept', 'clickable'); ?>  Kapitel/Implus freigeschaltet</li>
+    <li><?php echo  Icon::create('accept+new', 'clickable'); ?></i>  Kapitel freigeschaltet und Änderungen seit ich das letzte mal reingeschaut habe</li>
+    <li><?php echo  Icon::create('file', 'clickable'); ?>  Supervisionsanliegen freigeschaltet</li>
+    <li><?php echo  Icon::create('forum', 'clickable'); ?>  Resonanz gegeben</li>
   </ul>
 </div>
 
