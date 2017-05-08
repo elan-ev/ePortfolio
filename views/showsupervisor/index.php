@@ -200,7 +200,7 @@ print QuickSearch::get("username", $suche)
   <ul>
     <li><i class="fa fa-check" aria-hidden="true"></i>  Kapitel/Implus freigeschaltet</li>
     <li><i class="fa fa-check" aria-hidden="true" style="color:orange;"></i>  Kapitel freigeschaltet und Änderungen seit ich das letzte mal reingeschaut habe</li>
-    <li><i class="fa fa-file-o" aria-hidden="true"></i>  Supervisionsanliegen freischalten</li>
+    <li><i class="fa fa-file-o" aria-hidden="true"></i>  Supervisionsanliegen freigeschaltet</li>
     <li><i class="fa fa-comments" aria-hidden="true"></i>  Resonanz gegeben</li>
   </ul>
 </div>
