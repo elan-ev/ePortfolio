@@ -71,7 +71,7 @@
     <h4>Meine Portfolio - Vorlagen</h4>
 
     <table data-link="row" class="rowlink table  portfolioOverview">
-      
+
       <tr>
         <th>
           Vorlagen - Name
@@ -261,8 +261,8 @@
   // Widget - Navigation
   $('.sidebar').append('<div class="sidebar-widget widgetCustom1"><div class="sidebar-widget-header">Navigation</div></div>');
   $('.widgetCustom1').append('<ul class="widget-list widget-links sidebar-navigation customLinkList1"></ul>');
-  $('.customLinkList1').append('<li><a>Einstellungen</a></li>');
-  $('.customLinkList1').append('<li><a>Portfolios verwalten</a></li>');
+  //$('.customLinkList1').append('<li><a>Einstellungen</a></li>');
+  //$('.customLinkList1').append('<li><a>Portfolios verwalten</a></li>');
 
   <?php if($linkId == 'noId'): ?>
     console.log("no supervisor");
@@ -271,11 +271,11 @@
   <?php endif; ?>
 
   //Widget - Freunde
-  $('.sidebar').append('<div class="sidebar-widget widgetCustom2"><div class="sidebar-widget-header">Freunde</div></div>');
-  $('.widgetCustom2').append('<ul class="widget-list widget-links sidebar-navigation customLinkList2"></ul>');
-  $('.customLinkList2').append('<li><a>Testperson 1</a></li>');
-  $('.customLinkList2').append('<li><a>Testperson 2</a></li>');
-  $('.customLinkList2').append('<li><a>Testperson 3</a></li>');
+  //$('.sidebar').append('<div class="sidebar-widget widgetCustom2"><div class="sidebar-widget-header">Freunde</div></div>');
+  //$('.widgetCustom2').append('<ul class="widget-list widget-links sidebar-navigation customLinkList2"></ul>');
+  //$('.customLinkList2').append('<li><a>Testperson 1</a></li>');
+  //$('.customLinkList2').append('<li><a>Testperson 2</a></li>');
+  //$('.customLinkList2').append('<li><a>Testperson 3</a></li>');
 
 
 </script>
