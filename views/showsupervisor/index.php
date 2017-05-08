@@ -158,7 +158,7 @@
           <?php endforeach; ?>
         </table>
 
-        <button type="button" name="button" onclick="deletetemplate(<?php echo $tempid; ?>)">Vorlage loeschen</button>
+        <button type="button" name="button" onclick="deletetemplate(<?php echo $tempid; ?>)">Vorlage für diese Gruppe löschen</button>
 
 
       </div>
@@ -256,7 +256,6 @@ print QuickSearch::get("username", $suche)
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
-
 
 <script type="text/javascript">
 $('#myModal').on('shown.bs.modal', function () {
