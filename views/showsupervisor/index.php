@@ -311,7 +311,7 @@ function getUserData(id){
     url: "/studip/plugins.php/eportfolioplugin/ajaxsupervisor?userId="+id,
     dataType: 'JSON',
     success: function(data) {
-      $('#userInfoModel').modal('toggle');
+      $('#userInfoModel').mclassodal('toggle');
       console.log(data);
       _.forEach(data, function(value){
         console.log(value);
@@ -391,7 +391,7 @@ function deletetemplate(tempid){
 $(document).ready(
   function(){
     console.log("tab");
-    $('li[role="presentation"]:first').addClass("active");
+    $('div[role="tabpanel"]:first').addClass('active');
   }
 );
 
