@@ -51,6 +51,30 @@
       text-align: center;
     }
 
+    .widget-custom{
+      border: 1px solid #d0d7e3;
+            margin-bottom: 20px;
+    }
+
+    .widget-custom-head{
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      background-color: #e7ebf1;
+      color: #28497c;
+      font-size: 1.1em;
+      font-weight: bold;
+      line-height: 2em;
+      padding: 0 1ex;
+      text-align: left;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .widget-custom-content {
+      padding: 1ex;
+    }
+
   </style>
 
 </head>
@@ -65,14 +89,18 @@
 
 <div>
 
-  <label for="template">Portfolio - Vorlage hinzufuegen</label>
-  <select class="" id="tempselector" name="template">
-    <?php  $templates = showsupervisorcontroller::getTemplates($id); ?>
-    <?php foreach ($templates as $key => $value):?>
-      <option value="<?php echo $value[id] ?>"><?php echo $value[temp_name] ?></option>
-    <?php endforeach; ?>
-  </select>
-  <button type="button" onclick="addTemp()" name="button">Add</button>
+  <div class="widget-custom">
+    <div class="widget-custom-head">Portfolio - Vorlage hinzufügen</div>
+    <div class="widget-custom-content">
+      <select class="" id="tempselector" name="template">
+        <?php  $templates = showsupervisorcontroller::getTemplates($id); ?>
+        <?php foreach ($templates as $key => $value):?>
+          <option value="<?php echo $value[id] ?>"><?php echo $value[temp_name] ?></option>
+        <?php endforeach; ?>
+      </select>
+      <?= \Studip\Button::create('Hinzufügen', 'button', array('type' => 'button', 'onclick' => 'addTemp()')); ?>
+    </div>
+  </div>
 
   <!-- Nav tabs -->
   <ul class="nav nav-tabs" role="tablist">
