@@ -42,14 +42,11 @@
 }
 
 tr:hover {
-  background-color: #33578c;
   cursor: pointer;
-  color: #fff;
   transition: all 0.2s;
 }
 
 tr:hover a {
-  color: #fff;
   transition: all 0.2s;
 }
 

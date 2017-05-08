@@ -67,22 +67,32 @@
 <?php if ($perm == "dozent"):?>
 <div class="row">
   <div class="col-md-12">
-
-    <h4>Meine Portfolio - Vorlagen</h4>
-
-    <table data-link="row" class="rowlink table  portfolioOverview">
-
-      <tr>
-        <th>
-          Vorlagen - Name
-        </th>
-        <th>
-          Beschreibung
-        </th>
-        <th>
-          Optionen
-        </th>
-      </tr>
+    <table class="default">
+      <caption>Sichtibare Portfolios</caption>
+      <colgroup>
+        <col width="30%">
+        <col width="60%">
+        <col width="10%">
+      </colgroup>
+      <thead>
+        <tr class="sortable">
+          <th>Portfolio-Name</th>
+          <th>Beschreibung</th>
+          <th>Aktionen</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Beispiel Vorlage</td>
+          <td>Hier wird die Beschreibung eingefügt, ich bin nur ein Platzhaltertext. Bitte beachtet mich nicht weiter.</td>
+          <td> <?php echo  Icon::create('group2', 'clickable'); ?><?php echo  Icon::create('info', 'clickable'); ?></td>
+        </tr>
+        <tr>
+          <td>Beispiel Vorlage</td>
+          <td>Hier wird die Beschreibung eingefügt, ich bin nur ein Platzhaltertext. Bitte beachtet mich nicht weiter.</td>
+          <td> <?php echo  Icon::create('group2', 'clickable'); ?><?php echo  Icon::create('info', 'clickable'); ?></td>
+        </tr>
+      </tbody>
     </table>
 
     <hr>
@@ -93,37 +103,37 @@
 <div class="row">
   <div class="col-md-12">
 
-    <h4>Meine Portfolios <span id="labelMyPortfolio" class="badge"></span></h4>
-
     <?php ?>
-
     <!-- Banner Success Display when created -->
     <div class="alert alert-success createPortfolioBanner" role="alert">Portfolio <span id="createPortfolioName"></span> wurde erstellt</div>
 
-    <table data-link="row" class="rowlink table  portfolioOverview">
-      <tr class="tr-head">
-        <th>
-          Portfolio-Name
-        </th>
-        <th>
-          Beschreibung
-        </th>
-        <th>
-          Freigaben
-        </th>
-      </tr>
-
-      <?php $countPortfolios = 0; ?>
-      <?php $myportfolios = ShowController::getMyPortfolios(); ?>
-      <?php foreach ($myportfolios as $portfolio): ?>
-        <?php $thisPortfolio = new Seminar($portfolio);
-              $countPortfolios++; ?>
-        <tr class='insert_tr'>
-          <td><a href="<?php echo URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('cid' => $portfolio)); ?>"><?php echo $thisPortfolio->getName(); ?></a></td>
-          <td><?php echo ShowController::getCourseBeschreibung($portfolio); ?></td>
-          <td style="text-align:center;"><?php echo ShowController::countViewer($portfolio); ?></td>
+    <table class="default">
+      <caption>Meine Portfolios</caption>
+      <colgroup>
+        <col width="30%">
+        <col width="60%">
+        <col width="10%">
+      </colgroup>
+      <thead>
+        <tr class="sortable">
+          <th>Portfolio-Name</th>
+          <th>Beschreibung</th>
+          <th>Freigaben</th>
         </tr>
-      <?php endforeach; ?>
+      </thead>
+      <tbody>
+        <?php $countPortfolios = 0; ?>
+        <?php $myportfolios = ShowController::getMyPortfolios(); ?>
+        <?php foreach ($myportfolios as $portfolio): ?>
+          <?php $thisPortfolio = new Seminar($portfolio);
+                $countPortfolios++; ?>
+          <tr class=''>
+            <td><a href="<?php echo URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('cid' => $portfolio)); ?>"><?php echo $thisPortfolio->getName(); ?></a></td>
+            <td><?php echo ShowController::getCourseBeschreibung($portfolio); ?></td>
+            <td style=""><?php echo ShowController::countViewer($portfolio); ?></td>
+          </tr>
+        <?php endforeach; ?>
+      </tbody>
 
       <script type="text/javascript">
 
@@ -157,21 +167,21 @@
 
 <div class="row">
   <div class="col-md-12">
-    <h4>Sichtbare Portfolios <span id="labelAccess" class="badge"></span></h4>
-
-    <table  data-link="row" class=" rowlink table  viewportfolioOverview">
-      <tr class="tr-head">
-        <th>
-          Portfolio-Name
-        </th>
-        <th>
-          Beschreibung
-        </th>
-        <th>
-          Besitzer
-        </th>
-      </tr>
-
+    <table  class="default">
+      <caption>Sichtibare Portfolios</caption>
+      <colgroup>
+        <col width="30%">
+        <col width="60%">
+        <col width="10%">
+      </colgroup>
+      <thead>
+        <tr class="sortable">
+          <th>Portfolio-Name</th>
+          <th>Beschreibung</th>
+          <th>Besitzer</th>
+        </tr>
+      </thead>
+      <tbody>
       <?php $myAccess = ShowController::getAccessPortfolio(); ?>
       <?php foreach ($myAccess as $portfolio): ?>
         <?php $thisPortfolio = new Seminar($portfolio); ?>
@@ -181,7 +191,7 @@
           <td><i class='fa fa-minus-circle' aria-hidden='true'></i>  Keine</td>
         </tr>
       <?php endforeach; ?>
-
+      </tbody>
     </table>
   </div>
 </div>
