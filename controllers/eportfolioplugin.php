@@ -10,11 +10,11 @@ class EportfoliopluginController extends StudipController {
       $cid = $_GET['cid'];
 
       $sidebar = Sidebar::Get();
-      Sidebar::Get()->setTitle('Uebersicht');
+      Sidebar::Get()->setTitle('Übersicht');
 
       $navOverview = new LinksWidget();
-      $navOverview->setTitle('Uebersicht');
-      $navOverview->addLink('Ubersicht', URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('portfolioid' => $portfolioid)), null , array('class' => 'active-link'));
+      $navOverview->setTitle('Übersicht');
+      $navOverview->addLink('Übersicht', URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('portfolioid' => $portfolioid)), null , array('class' => 'active-link'));
       $sidebar->addWidget($navOverview);
 
       $nav = new LinksWidget();
@@ -28,16 +28,10 @@ class EportfoliopluginController extends StudipController {
 
       $sidebar->addWidget($nav);
 
-      $navEinstellungen = new LinksWidget();
-      $navEinstellungen->setTitle('Einstellungen');
-      $navEinstellungen->addLink('Portfolioeinstellungen', URLHelper::getLink('plugins.php/eportfolioplugin/settings', array('portfolioid' => $portfolioid)));
-      $sidebar->addWidget($navEinstellungen);
-
-      $navPersonen = new LinksWidget();
-      $navPersonen->setTitle('Teilnehmer');
-      $navPersonen->addLink('Supervisoren', "1");
-      $navPersonen->addLink('Zuschauer', "2");
-      $sidebar->addWidget($navPersonen);
+      //$navEinstellungen = new LinksWidget();
+      //$navEinstellungen->setTitle('Einstellungen');
+      //$navEinstellungen->addLink('Portfolioeinstellungen', URLHelper::getLink('plugins.php/eportfolioplugin/settings', array('portfolioid' => $portfolioid)));
+      //$sidebar->addWidget($navEinstellungen);
 
   }
 
@@ -53,7 +47,7 @@ class EportfoliopluginController extends StudipController {
   {
 
     //set AutoNavigation/////
-    //Navigation::activateItem("course/eportfolioplugin");
+    Navigation::activateItem("course/eportfolioplugin");
     ////////////////////////
 
     $userid = $GLOBALS["user"]->id;
@@ -67,7 +61,7 @@ class EportfoliopluginController extends StudipController {
     // get template Status
     $templateStatus = $db->query("SELECT templateStatus FROM eportfolio WHERE Seminar_id = '$cid' ")->fetchAll();
     $t = $templateStatus[0][templateStatus];
-    echo $t;
+    //echo $t;
 
     // get courseware parentId
     $getCourseware = $db->query("SELECT id FROM mooc_blocks WHERE type = 'Courseware' AND seminar_id = '$cid'")->fetchAll();
@@ -86,7 +80,7 @@ class EportfoliopluginController extends StudipController {
 
     //auto insert chapters
     if ($t == 0) {
-      echo  " t - triggered";
+      //echo  " t - triggered";
 
       $templateid = DBManager::get()->query("SELECT template_id FROM eportfolio WHERE Seminar_id = '$cid'")->fetchAll();
       $templateid = $templateid[0][0];
@@ -94,10 +88,10 @@ class EportfoliopluginController extends StudipController {
       $chapters = $getChapters[0][0];
       $chapters = json_decode($chapters, true);
 
-      $gettempname = DBManager::get()->query("SELECT temp_name FROM eportfolio_templates WHERE id = 'templateid'")->fetchAll();
+      $gettempname = DBManager::get()->query("SELECT temp_name FROM eportfolio_templates WHERE id = '$templateid'")->fetchAll();
       $gettempname = $gettempname[0][0];
 
-      print_r($chapters);
+      //print_r($chapters);
 
       //set additional chapter titles
       $template = array('Reflektionsimpuls 3', 'Reflektionsimpuls 4','Reflektionsimpuls 5', 'Reflektionsimpuls 6');
@@ -195,7 +189,20 @@ class EportfoliopluginController extends StudipController {
       array_push($return_arr, $arrayOne);
     }
 
+    //$tempid = $db->query("SELECT * FROM eportfolio WHERE Seminar_id = '$cid'")->fetchAll();
+    //$tempid = $tempid[0]["template_id"];
+    //$img = $db->query("SELECT * FROM eportfolio_templates WHERE id = '$tempid'")-fetchAll();
+    //$img =  $img[0]["img"];
+    //array_push($return_arr, $img);
+
     return $return_arr;
+  }
+
+  public function getImg($cid){
+    $q = DBManager::get()->query("SELECT * FROM eportfolio WHERE Seminar_id = '$cid'")->fetchAll();
+    $tempid = $q[0][7];
+    $img = DBManager::get()->query("SELECT * FROM eportfolio_templates WHERE id = '$tempid'")->fetchAll();
+    return $img[0]["img"];
   }
 
   public function getChapterViewer($nummer, $chapter){

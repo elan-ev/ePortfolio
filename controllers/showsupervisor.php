@@ -26,7 +26,6 @@ class ShowsupervisorController extends StudipController {
           exit();
         }
 
-
         //sidebar
         $sidebar = Sidebar::Get();
         Sidebar::Get()->setTitle('Supervisionsansicht');
@@ -252,6 +251,10 @@ class ShowsupervisorController extends StudipController {
       $member = $this->getGroupMember($_POST["groupid"]);
       $groupowner = $this->getGroupOwner($_POST["groupid"]);
 
+      $tempid = $_POST["tempid"];
+      $q = DBManager::get()->query("SELECT * FROM eportfolio_templates WHERE id = '$tempid'")->fetchAll();
+      $description = $q[0]["description"];
+
       foreach ($member as $key => $value) {
 
           $userid = $value;
@@ -278,7 +281,10 @@ class ShowsupervisorController extends StudipController {
           $id = $_POST["tempid"];
 
           $db = DBManager::get();
-          $result = $db->query("INSERT INTO seminare (Seminar_id, VeranstaltungsNummer, Institut_id, Name, status, Beschreibung, Lesezugriff, Schreibzugriff, start_time, duration_time, mkdate, chdate) VALUES ('$Seminar_id', '$VeranstaltungsNummer', '$Institut_id', '$name', '$status', '$Beschreibung', '$Lesezugriff', '$Schreibzugriff', '$start_time', '$duration_time', 'UNIX_TIMESTAMP()', 'UNIX_TIMESTAMP()'); ");
+          $result = $db->query("INSERT INTO seminare (Seminar_id, VeranstaltungsNummer, Institut_id, Name, status, Beschreibung, Lesezugriff, Schreibzugriff, start_time, duration_time, mkdate, chdate) VALUES ('$Seminar_id', '$VeranstaltungsNummer', '$Institut_id', '$name', '$status', '$description', '$Lesezugriff', '$Schreibzugriff', '$start_time', '$duration_time', 'UNIX_TIMESTAMP()', 'UNIX_TIMESTAMP()'); ");
+
+          //$result = $db->query("INSERT INTO plugins_activated (pluginid, poiid, state) VALUES ()");
+
           $resultuser = $db->query("INSERT INTO seminar_user (Seminar_id, user_id, status, position, gruppe, notification, visible, bind_calendar, mkdate) VALUES ('$Seminar_id', '$userid', '$statususer', '$position', '$gruppe', '$notification', '$visibleuser', '$bind_calendar', 'UNIX_TIMESTAMP()');");
 
           $result_eportfolioTable = $db->query("INSERT INTO eportfolio (Seminar_id, eportfolio_id, owner_id, template_id) VALUES ('$Seminar_id', '$eportfolio_id', '$userid', '$id'); ");
@@ -296,6 +302,7 @@ class ShowsupervisorController extends StudipController {
           if (!in_array($groupowner, $member)) {
             DBManager::get()->query("INSERT INTO seminar_user (Seminar_id, user_id, status, position, gruppe, notification, visible, bind_calendar, mkdate) VALUES ('$Seminar_id', '$groupowner', '$statususer', '$position', '$gruppe', '$notification', '$visibleuser', '$bind_calendar', 'UNIX_TIMESTAMP()');");
           }
+
       }
     }
 

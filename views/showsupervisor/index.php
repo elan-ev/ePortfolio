@@ -47,6 +47,10 @@
       padding:0px;
     }
 
+    tr {
+      border-bottom: 1px solid #e2e3e5!important;
+    }
+
     td, th {
       text-align: center;
     }
@@ -90,7 +94,7 @@
 <div>
 
   <div class="widget-custom">
-    <div class="widget-custom-head">Portfolio - Vorlage hinzufügen</div>
+    <div class="widget-custom-head">Portfolio - Vorlage hinzuf�gen</div>
     <div class="widget-custom-content">
       <select class="" id="tempselector" name="template">
         <?php  $templates = showsupervisorcontroller::getTemplates($id); ?>
@@ -98,7 +102,7 @@
           <option value="<?php echo $value[id] ?>"><?php echo $value[temp_name] ?></option>
         <?php endforeach; ?>
       </select>
-      <?= \Studip\Button::create('Hinzufügen', 'button', array('type' => 'button', 'onclick' => 'addTemp()')); ?>
+      <?= \Studip\Button::create('Hinzuf�gen', 'button', array('type' => 'button', 'onclick' => 'addTemp()')); ?>
     </div>
   </div>
 
@@ -171,6 +175,8 @@
                     <a href="<?php echo $link; ?>">
                       <?php echo  Icon::create('accept', 'clickable'); ?>
                     </a>
+                  <?php else: ?>
+                    &nbsp;
                   <?php endif; ?>
                   </td>
                 <?php else: ?>
@@ -186,15 +192,12 @@
           <?php endforeach; ?>
         </table>
 
-        <button type="button" name="button" onclick="deletetemplate(<?php echo $tempid; ?>)">Vorlage für diese Gruppe löschen</button>
+        <button type="button" name="button" onclick="deletetemplate(<?php echo $tempid; ?>)">Vorlage f�r diese Gruppe l�schen</button>
 
 
       </div>
     <?php endforeach; ?>
 
-    <div role="tabpanel" class="tab-pane" id="profile">Nein</div>
-    <div role="tabpanel" class="tab-pane" id="messages">Warum</div>
-    <div role="tabpanel" class="tab-pane" id="settings">booar</div>
   </div>
 
 </div>
@@ -205,7 +208,9 @@
   <div class="panel-heading">
     Gruppen erstellen
   </div>
-  <div class="panel-body">Aktuell haben Sie noch keine Gruppen erstellt. Bitte erstellen Sie zunächst ein Gruppe um mit der Verwaltung fortzufahren</div>
+
+  <?php echo MessageBox::info('>Aktuell haben Sie noch keine Gruppen erstellt. Bitte erstellen Sie zun�chst ein Gruppe um mit der Verwaltung fortzufahren.'); ?>
+
 </div>
 
 <?php endif; ?>
@@ -227,7 +232,7 @@ print QuickSearch::get("username", $suche)
 <div class="legend">
   <ul>
     <li><?php echo  Icon::create('accept', 'clickable'); ?>  Kapitel/Implus freigeschaltet</li>
-    <li><?php echo  Icon::create('accept+new', 'clickable'); ?></i>  Kapitel freigeschaltet und Änderungen seit ich das letzte mal reingeschaut habe</li>
+    <li><?php echo  Icon::create('accept+new', 'clickable'); ?></i>  Kapitel freigeschaltet und �nderungen seit ich das letzte mal reingeschaut habe</li>
     <li><?php echo  Icon::create('file', 'clickable'); ?>  Supervisionsanliegen freigeschaltet</li>
     <li><?php echo  Icon::create('forum', 'clickable'); ?>  Resonanz gegeben</li>
   </ul>
@@ -300,7 +305,7 @@ function createGroup(){
       // var neu = $("#createGroupForm").serialize();
       var id = data;
       // console.log(id);
-      window.document.location.href = "/studip/plugins.php/eportfolioplugin/showsupervisor?id="+id;
+      window.document.location.href = "/studip/portfolio/plugins.php/eportfolioplugin/showsupervisor?id="+id;
     }
   });
 }

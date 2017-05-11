@@ -72,15 +72,13 @@
   <button data-toggle="modal" data-target="#addSupervisorModal" type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Supervisor hinzufuegen</button>
 <?php endif;?> -->
 
-<hr>
-<h3>Zuschauerrechte</h3>
-
-<table class="table viewer-management">
+<table class="default">
 
 <?php if (!empty($viewerList)): ?>
 
-  <tr>
-    <th></th>
+  <caption>Zugriffsrechte</caption>
+  <tr class="sortable">
+    <th>Name</th>
     <?php foreach ($chapterList as $chapter):?>
       <th>
         <?php echo $chapter[title]; ?>
@@ -90,11 +88,11 @@
 
 <?php else: ?>
 
-  <?php echo MessageBox::info('Es sind derzeit keine Zuschauer in Ihrem Portfolio eingetragen. Bitte fügen die Teilnehmer hinzu Leserechte zu vergeben.'); ?>
+  <?php echo MessageBox::info('Es sind derzeit keine Zugriffsrechte in Ihrem Portfolio vergeben.'); ?>
 
 <?php endif; ?>
 
-
+<tbody>
 
 <?php $i = 1; ?>
  <?php foreach ($viewerList as $viewer):?>
@@ -119,11 +117,10 @@
     <?php $i = 1; ?>
    </tr>
   <?php endforeach; ?>
-
+  </tbody>
 </table>
 
-<button data-toggle="modal" data-target="#addViewerModal" type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Zuschauer hinzufuegen</button>
-
+  <?= \Studip\Button::create('Zugriffrechte vergeben', 'klickMichButton', array('data-toggle' => 'modal', 'data-target' => '#addViewerModal', 'id' => "newPortfolio")); ?>
 <hr>
 
 
@@ -143,7 +140,7 @@
   <div><textarea id="beschreibung-input" name="it" type="text"><?php echo $portfolioInfo[Beschreibung]; ?></textarea></div>
 </div>
 
-<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">Portfolio loeschen</button>
+<?= \Studip\Button::create('Portfolio l�schen', 'klickMichButton', array('data-toggle' => 'modal', 'data-target' => '#deleteModal', 'type' => 'button')); ?>
 
 <!-- Modal Löschen -->
 <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog">
@@ -151,24 +148,22 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Portfolio loeschen</h4>
+        <h4 class="modal-title">Portfolio l�schen</h4>
       </div>
       <div class="modal-body" id="modalDeleteBody">
 
         <p id="deleteText" style="margin-bottom:30px;">
-          Sind Sie sich sicher, dass Sie das Portfolio <b><?php echo $title; ?></b> loeschen wollen?</br>
-          Alle Daten werden hierdurch <b>unwiderruflich</b> geloescht und koennen nicht wiederhergestellt werden.
+          Sind Sie sich sicher, dass Sie das Portfolio <b><?php echo $title; ?></b> l�schen wollen?</br>
+          Alle Daten werden hierdurch <b>unwiderruflich</b> gel�scht und koennen nicht wiederhergestellt werden.
         </p>
 
         <div class="deleteSuccess">
           <div><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></div>
           <p>
-            Portfolio <b><?php echo $title; ?></b> geloescht
+            Portfolio <b><?php echo $title; ?></b> gel�scht
           </p>
         </div>
-
-        <button type="button" onClick="deletePortfolio();" id="deletebtn" class="btn btn-danger">Portfolio loeschen</button>
-
+          <?= \Studip\Button::create('Portfolio l�schen', 'klickMichButton', array('id' => 'deletebtn', 'onClick' => 'deletePortfolio()', 'type' => 'button')); ?>
       </div>
     </div>
   </div>
@@ -181,7 +176,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Supervisor hinzufuegen</h4>
+        <h4 class="modal-title">Supervisor hinzuf�gen</h4>
       </div>
       <div class="modal-body" id="modalDeleteBody">
 
@@ -207,7 +202,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Zuschauer hinzufuegen</h4>
+        <h4 class="modal-title">Neue Zugriffsrechte vergeben</h4>
       </div>
       <div class="modal-body" id="modalDeleteBody">
 
@@ -225,7 +220,7 @@
   </div>
 </div>
 
-<script type="text/javascript" src="/studip/plugins_packages/Universitaet Osnabrueck/EportfolioPlugin/assets/js/eportfolio.js"></script>
+<script type="text/javascript" src="/studip/plugins_packages/uos/EportfolioPlugin/assets/js/eportfolio.js"></script>
 <script type="text/javascript">
 
   var cid = '<?php echo $cid; ?>';

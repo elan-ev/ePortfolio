@@ -74,12 +74,25 @@ class ShowController extends StudipController {
       return $accessPortfolios;
     }
 
+    public function getTemplates(){
+      $q = DBManager::get()->query("SELECT * FROM eportfolio_templates")->fetchAll();
+      return $q;
+    }
+
     public function getCourseBeschreibung($cid){
 
       $db = DBManager::get();
       $query = $db->query("SELECT Beschreibung FROM seminare WHERE Seminar_id = '$cid'")->fetchAll();
       return $query[0][Beschreibung];
 
+    }
+
+    public function getOwnerName($cid){
+      $q = DBManager::get()->query("SELECT * FROM eportfolio WHERE Seminar_id = '$cid'")->fetchAll();
+      $ownerid = $q[0]["owner_id"];
+      $query = DBManager::get()->query("SELECT * FROM auth_user_md5 WHERE user_id = '$ownerid'")->fetchAll();
+      $name = $query[0]["Vorname"]." ".$query[0]["Nachname"];
+      return $name;
     }
 
     public function countViewer($cid) {

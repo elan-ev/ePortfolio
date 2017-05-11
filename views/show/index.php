@@ -53,7 +53,7 @@
 
         <h1 id="headline_uebersicht"></h1>
 
-        <p>Hier finden Sie alle ePortfolios, die Sie angelegt hast oder die andere fuer Sie freigegeben haben.</p>
+        <p>Hier finden Sie alle ePortfolios, die Sie angelegt hast oder die andere f�r Sie freigegeben haben.</p>
         <p><a class="btn btn-primary btn-lg" href="#" role="button" style="background-color: #33578c; color: #fff;">Mehr Informationen</a></p>
       </div>
     </div>
@@ -68,30 +68,29 @@
 <div class="row">
   <div class="col-md-12">
     <table class="default">
-      <caption>Sichtibare Portfolios</caption>
+      <caption>Meine Vorlagen</caption>
       <colgroup>
         <col width="30%">
         <col width="60%">
-        <col width="10%">
+
       </colgroup>
       <thead>
         <tr class="sortable">
           <th>Portfolio-Name</th>
           <th>Beschreibung</th>
-          <th>Aktionen</th>
+
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>Beispiel Vorlage</td>
-          <td>Hier wird die Beschreibung eingefügt, ich bin nur ein Platzhaltertext. Bitte beachtet mich nicht weiter.</td>
-          <td> <?php echo  Icon::create('group2', 'clickable'); ?><?php echo  Icon::create('info', 'clickable'); ?></td>
-        </tr>
-        <tr>
-          <td>Beispiel Vorlage</td>
-          <td>Hier wird die Beschreibung eingefügt, ich bin nur ein Platzhaltertext. Bitte beachtet mich nicht weiter.</td>
-          <td> <?php echo  Icon::create('group2', 'clickable'); ?><?php echo  Icon::create('info', 'clickable'); ?></td>
-        </tr>
+        <?php $temps = ShowController::getTemplates();
+          foreach ($temps as $key):?>
+
+          <tr>
+            <td><?php echo $key["temp_name"] ?></td>
+            <td><?php echo $key["description"] ?></td>
+          </tr>
+
+        <?php endforeach; ?>
       </tbody>
     </table>
 
@@ -111,14 +110,16 @@
       <caption>Meine Portfolios</caption>
       <colgroup>
         <col width="30%">
-        <col width="60%">
-        <col width="10%">
+        <col width="50%">
+        <col width="10%" style="text-align: center;">
+        <col width="10%" style="text-align: center;">
       </colgroup>
       <thead>
         <tr class="sortable">
           <th>Portfolio-Name</th>
           <th>Beschreibung</th>
-          <th>Freigaben</th>
+          <th style="text-align: center;">Freigaben</th>
+          <th style="text-align: center;">Aktionen</th>
         </tr>
       </thead>
       <tbody>
@@ -130,7 +131,8 @@
           <tr class=''>
             <td><a href="<?php echo URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('cid' => $portfolio)); ?>"><?php echo $thisPortfolio->getName(); ?></a></td>
             <td><?php echo ShowController::getCourseBeschreibung($portfolio); ?></td>
-            <td style=""><?php echo ShowController::countViewer($portfolio); ?></td>
+            <td style="text-align: center;"><?php echo ShowController::countViewer($portfolio); ?></td>
+            <td style="text-align: center;"><a href="<?php echo URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('cid' => $portfolio)); ?>"><?php echo Icon::create('edit', 'clickable') ?></a></td>
           </tr>
         <?php endforeach; ?>
       </tbody>
@@ -168,7 +170,7 @@
 <div class="row">
   <div class="col-md-12">
     <table  class="default">
-      <caption>Sichtibare Portfolios</caption>
+      <caption>Sichtbare Portfolios</caption>
       <colgroup>
         <col width="30%">
         <col width="60%">
@@ -188,7 +190,11 @@
         <tr class='insert_tr'>
           <td><a href='<?php echo URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('cid' => $portfolio)); ?>'><?php echo $thisPortfolio->getName(); ?></a></td>
           <td></td>
-          <td><i class='fa fa-minus-circle' aria-hidden='true'></i>  Keine</td>
+          <td>
+            <?php
+              print_r(ShowController::getOwnerName($thisPortfolio->getId()));
+             ?>
+          </td>
         </tr>
       <?php endforeach; ?>
       </tbody>
@@ -200,14 +206,6 @@
 
   <h4>Meine Gruppen</h4>
 
-  <?php
-    $var = ShowController::getUserGroups($userId);
-    foreach ($var as $key): ?>
-
-    <?php $thisGroup = new Seminar($key[0]);
-    echo $thisGroup->getName(); ?>
-
-  <?php endforeach; ?>
 
 
 </div> -->
@@ -234,9 +232,8 @@
           </div>
 
           <!-- Error msg -->
-          <div class="alert alert-danger createPortfolioBanner" role="alert" id="createBannerAlert">Bitte fuellen Sie alle Felder aus</div>
+          <div class="alert alert-danger createPortfolioBanner" role="alert" id="createBannerAlert">Bitte f�llen Sie alle Felder aus</div>
 
-          <button type="submit" class="btn btn-success">Erstellen</button>
           <?= \Studip\Button::create('Erstellen', 'Button', array('type' => 'submit')); ?>
         </form>
 
@@ -245,7 +242,7 @@
     </div>
   </div>
 </div>
-<script type="text/javascript" src="<?php echo URLHelper::getLink("plugins_packages/Universitaet Osnabrueck/EportfolioPlugin/assets/js/eportfolio.js"); ?>"></script>
+<script type="text/javascript" src="<?php echo URLHelper::getLink("plugins_packages/uos/EportfolioPlugin/assets/js/eportfolio.js"); ?>"></script>
 <script>
 
   $( document ).ready(function() {

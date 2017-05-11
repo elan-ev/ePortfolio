@@ -41,8 +41,13 @@
 
     <h1 style="border:none!important;"><?php  echo $seminarTitle; ?></h1>
     <hr>
+    <?php $img = eportfoliopluginController::getImg($cid);
+      $img = json_decode($img);
+      $imgcount = 0;
+     ?>
 
     <div class="row">
+
       <?php foreach ($cardInfo as $key): ?>
 
         <?php
@@ -56,7 +61,9 @@
 
           <h4><?php echo $key[title]; ?></h4>
 
-          <div class="" style="background-color:rgba(0,0,0,0.2);width:100%;height: 150px;">
+          <?php $theurl = $img[$imgcount]; $imgcount++; ?>
+
+          <div class="" style="min-height: 220px;background-image: url('<?php echo $theurl; ?>'); background-size: cover;">
             &nbsp;
           </div>
 
@@ -70,9 +77,10 @@
               <?php
               $counter = 0;
               foreach($checkViewer as $viewer => $viewerValue):?>
-
+                <?php if($isOwner == true):?>
                   <div class="avatar-container"><?= Avatar::getAvatar($viewerValue)->getImageTag(Avatar::SMALL) ?></div>
                   <?php $counter++; ?>
+                <?php endif; ?>
               <?php endforeach; ?>
 
             </div>
@@ -82,16 +90,16 @@
             <?php if($isOwner == true):?>
               <b>Freigaben: <?php echo $counter; ?></b><br>
             <?php endif; ?>
-            <b>Kommentare: 12</b><br>
+            <!--<b>Kommentare: 12</b><br>-->
             <br>
 
           </div>
 
           <a href="<?php echo $link; ?>"><button type="button" class="btn btn-primary">Anschauen</button></a>
 
-          <?php //if($isOwner == true):?>
+          <?php if($isOwner == true):?>
             <a href="<?php echo $linkAdmin; ?>"><button type="button" class="btn btn-primary">Bearbeiten</button></a>
-          <?php //endif; ?>
+          <?php endif; ?>
         </div>
       </div>
 

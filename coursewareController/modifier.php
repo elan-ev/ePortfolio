@@ -1,6 +1,6 @@
 <?php
 
-print('modifier.php active');
+//print('modifier.php active');
 
 //set variables
 $cid = $_GET["cid"];
@@ -16,10 +16,16 @@ $workingArray = json_encode($workingArray);
   .cke_chrome {
     min-height: 0px!important;
   }
+
+  #nav_course_files, #nav_course_forum2, #nav_course_mooc_progress {
+    display: none;
+  }
 </style>
-<script type="text/javascript" src="/studip/plugins_packages/Universitaet Osnabrueck/EportfolioPlugin/assets/js/jquery.js"></script>
+<script type="text/javascript" src="/studip/plugins_packages/uos/EportfolioPlugin/assets/js/jquery.js"></script>
 <script type="text/javascript">
   $(document).ready(function(){
+    console.log("ready");
+    $('li[id="nav_eportfolioplugin"] img').attr('src', 'http://studip3g-test.rz.uni-osnabrueck.de/studip/assets/images/icons/white/admin.svg');
     var workingArray = <?php echo $workingArray ?>;
     console.log(workingArray);
     $.each(workingArray, function(key, value){
@@ -29,6 +35,8 @@ $workingArray = json_encode($workingArray);
       }
     });
   });
+
+  $('#nav_course_files, #nav_course_mooc_progress').css('display', 'none');
 </script>
 
 <script type="text/javascript">

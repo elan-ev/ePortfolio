@@ -41,7 +41,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         $navigation->setImage(Assets::image_path('admin'));
         $navigation->setURL(PluginEngine::GetURL($this, array(), $renderView));
         Navigation::addItem('/eportfolioplugin', $navigation);
-        Navigation::activateItem("/eportfolioplugin");
+        //Navigation::activateItem("/eportfolioplugin");
 
         //set Menu Point for Supervisor
         $thisperm = get_global_perm($GLOBALS["user"]->id);
@@ -51,7 +51,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
 
       $serverinfo = $_SERVER['PATH_INFO'];
 
-      if ($serverinfo == "/courseware/courseware" || $serverinfo == "/eportfolioplugin/eportfolioplugin"){
+      if ($serverinfo == "/courseware/courseware" || $serverinfo == "/eportfolioplugin/eportfolioplugin" || $serverinfo == "/eportfolioplugin/settings"){
         include 'coursewareController/modifier.php';
       }
 

@@ -12,7 +12,10 @@ class settingsController extends StudipController {
       $cid = $_GET['cid'];
 
       $sidebar = Sidebar::Get();
-      Sidebar::Get()->setTitle('Uebersicht');
+      Sidebar::Get()->setTitle('Einstellungen');
+
+      //autonavigation
+      Navigation::activateItem("course/settings");
 
       $navOverview = new LinksWidget();
       $navOverview->setTitle('Uebersicht');
@@ -31,16 +34,6 @@ class settingsController extends StudipController {
       $sidebar->addWidget($nav);
 
 
-      $navEinstellungen = new LinksWidget();
-      $navEinstellungen->setTitle('Einstellungen');
-      $navEinstellungen->addLink('Portfolioeinstellungen', URLHelper::getLink('plugins.php/eportfolioplugin/settings', array('portfolioid' => '$portfolioid')), null , array('class' => 'active-link'));
-      $sidebar->addWidget($navEinstellungen);
-
-      $navPersonen = new LinksWidget();
-      $navPersonen->setTitle('Teilnehmer');
-      $navPersonen->addLink('Supervisoren', "1");
-      $navPersonen->addLink('Zuschauer', "2");
-      $sidebar->addWidget($navPersonen);
 
   }
 

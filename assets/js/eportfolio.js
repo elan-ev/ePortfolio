@@ -135,8 +135,8 @@ function updateLabelAccess(e) {
 }
 
 function deletePortfolio() {
-  var href = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/show', {});
-  var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/settings', {cid: cid})
+  var href = STUDIP.URLHelper.getURL('/studip/plugins.php/eportfolioplugin/show', {});
+  var url = STUDIP.URLHelper.getURL('/studip/plugins.php/eportfolioplugin/settings', {cid: cid})
 //  var href = "/studip/plugins.php/eportfolioplugin/show";
 //  var url = "/studip/plugins.php/eportfolioplugin/settings?cid="+cid;
   $.ajax({
@@ -152,6 +152,7 @@ function deletePortfolio() {
       setTimeout(function(){
         window.location.href = '/studip/plugins.php/eportfolioplugin/show';
       }, 1500);
+      console.log("gel�scht");
     }
   });
 }
@@ -199,6 +200,7 @@ function setSupervisor(id){
 }
 
 function setViewer(id){
+  console.log("set viewer");
   var url = "/studip/plugins.php/eportfolioplugin/settings?cid="+cid;
 
   $.ajax({
