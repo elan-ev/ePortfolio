@@ -292,25 +292,6 @@ class ShowsupervisorController extends StudipController {
           $eportfolio_id = $eportfolio->createId();
           DBManager::get()->query("INSERT INTO eportfolio (Seminar_id, eportfolio_id, owner_id, template_id) VALUES ('$sem_id', '$eportfolio_id', '$userid', '$id')"); //table eportfolio
           DBManager::get()->query("INSERT INTO eportfolio_user(user_id, Seminar_id, eportfolio_id, owner) VALUES ('$userid', '$Seminar_id' , '$eportfolio_id', 1)"); //table eportfollio_user
-
-
-          //$db = DBManager::get();
-        //  $result_eportfolioTable = $db->query("INSERT INTO eportfolio (Seminar_id, eportfolio_id, owner_id, template_id) VALUES ('$Seminar_id', '$eportfolio_id', '$userid', '$id'); ");
-
-        //  $db->query("INSERT INTO eportfolio_user (user_id, Seminar_id, eportfolio_id, owner) VALUES ('$userid', '$Seminar_id' , '$eportfolio_id', 1)");
-
-          // $deleteCoursewareStandard = $db->query("DELETE FROM mooc_blocks WHERE type != 'Courseware' AND seminar_id = '".$Seminar_id."';");
-          // $createCoursewareTemplate = $db->query("SELECT * FROM mooc_blocks WHERE type = 'Courseware' AND seminar_id = '".$Seminar_id."'; ")->fetchAll();
-          // foreach ($createCoursewareTemplate as $block) {
-          //   $block_id = $block[id];
-          // }
-
-          //add supervisor in portfolio
-          // $member = $this->getGroupMember($groupid);
-          // if (!in_array($groupowner, $member)) {
-          //   DBManager::get()->query("INSERT INTO seminar_user (Seminar_id, user_id, status, position, gruppe, notification, visible, bind_calendar, mkdate) VALUES ('$Seminar_id', '$groupowner', '$statususer', '$position', '$gruppe', '$notification', '$visibleuser', '$bind_calendar', 'UNIX_TIMESTAMP()');");
-          // }
-
       }
     }
 
