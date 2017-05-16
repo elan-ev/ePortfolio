@@ -255,53 +255,61 @@ class ShowsupervisorController extends StudipController {
       $q = DBManager::get()->query("SELECT * FROM eportfolio_templates WHERE id = '$tempid'")->fetchAll();
       $description = $q[0]["description"];
 
+      foreach ($GLOBALS['SEM_CLASS'] as $id => $sem_class){ //get the id of ePortfolio Seminarclass
+        if ($sem_class['name'] == 'ePortfolio') {
+          $sem_class_id = $id;
+        }
+      }
+
       foreach ($member as $key => $value) {
 
-          $userid = $value;
-          $Seminar_id = $this->generateRandomString();
-          $eportfolio_id = $this->generateRandomString();
-          $Institut_id = "7a4f19a0a2c321ab2b8f7b798881af7c";
-          $VeranstaltungsNummer = "25252525";
-          $name = $this->getTemplateName($_POST["tempid"]);
-          $status = 124;
-          $Beschreibung = $_POST[text];
-          $Lesezugriff = 1;
-          $Schreibzugriff = 1;
-          $start_time = 1459461600;
-          $duration_time = 0;
+          $userid           = $value; //get userid
+          $sem_name         = $this->getTemplateName($_POST["tempid"]);
+          $sem_description  = "beschreibung";
+          $id               = $_POST["tempid"];
 
-          $statususer = "dozent";
-          $bind_calendar = 1;
-          $visibleuser = "yes";
-          $position = 0;
-          $gruppe = 5;
-          $notification = 0;
-          $bind_calendar = 1;
+          $sem              = new Seminar();
+          $sem->Seminar_id  = $sem->createId();
+          $sem->name        = $sem_name;
+          $sem->description = $sem_description;
+          $sem->status      = $sem_class_id;
+          $sem->read_level  = 1;
+          $sem->write_level = 1;
+          $sem->institut_id = Config::Get()->STUDYGROUP_DEFAULT_INST;
+          $sem->visible     = 1;
 
-          $id = $_POST["tempid"];
+          $sem_id = $sem->Seminar_id;
 
-          $db = DBManager::get();
-          $result = $db->query("INSERT INTO seminare (Seminar_id, VeranstaltungsNummer, Institut_id, Name, status, Beschreibung, Lesezugriff, Schreibzugriff, start_time, duration_time, mkdate, chdate) VALUES ('$Seminar_id', '$VeranstaltungsNummer', '$Institut_id', '$name', '$status', '$description', '$Lesezugriff', '$Schreibzugriff', '$start_time', '$duration_time', 'UNIX_TIMESTAMP()', 'UNIX_TIMESTAMP()'); ");
-
-          //$result = $db->query("INSERT INTO plugins_activated (pluginid, poiid, state) VALUES ()");
-
-          $resultuser = $db->query("INSERT INTO seminar_user (Seminar_id, user_id, status, position, gruppe, notification, visible, bind_calendar, mkdate) VALUES ('$Seminar_id', '$userid', '$statususer', '$position', '$gruppe', '$notification', '$visibleuser', '$bind_calendar', 'UNIX_TIMESTAMP()');");
-
-          $result_eportfolioTable = $db->query("INSERT INTO eportfolio (Seminar_id, eportfolio_id, owner_id, template_id) VALUES ('$Seminar_id', '$eportfolio_id', '$userid', '$id'); ");
-
-          $db->query("INSERT INTO eportfolio_user (user_id, Seminar_id, eportfolio_id, owner) VALUES ('$userid', '$Seminar_id' , '$eportfolio_id', 1)");
-
-          // $deleteCoursewareStandard = $db->query("DELETE FROM mooc_blocks WHERE type != 'Courseware' AND seminar_id = '".$Seminar_id."';");
-          $createCoursewareTemplate = $db->query("SELECT * FROM mooc_blocks WHERE type = 'Courseware' AND seminar_id = '".$Seminar_id."'; ")->fetchAll();
-          foreach ($createCoursewareTemplate as $block) {
-            $block_id = $block[id];
-          }
-
-          //add supervisor in portfolio
+          $sem->addMember($userid, 'dozent'); // add target to seminar
           $member = $this->getGroupMember($groupid);
           if (!in_array($groupowner, $member)) {
-            DBManager::get()->query("INSERT INTO seminar_user (Seminar_id, user_id, status, position, gruppe, notification, visible, bind_calendar, mkdate) VALUES ('$Seminar_id', '$groupowner', '$statususer', '$position', '$gruppe', '$notification', '$visibleuser', '$bind_calendar', 'UNIX_TIMESTAMP()');");
+            $sem->addMember($groupowner, 'dozent');
           }
+
+          $sem->store(); //save sem
+
+          $eportfolio = new Seminar();
+          $eportfolio_id = $eportfolio->createId();
+          DBManager::get()->query("INSERT INTO eportfolio (Seminar_id, eportfolio_id, owner_id, template_id) VALUES ('$sem_id', '$eportfolio_id', '$userid', '$id')"); //table eportfolio
+          DBManager::get()->query("INSERT INTO eportfolio_user(user_id, Seminar_id, eportfolio_id, owner) VALUES ('$userid', '$Seminar_id' , '$eportfolio_id', 1)"); //table eportfollio_user
+
+
+          //$db = DBManager::get();
+        //  $result_eportfolioTable = $db->query("INSERT INTO eportfolio (Seminar_id, eportfolio_id, owner_id, template_id) VALUES ('$Seminar_id', '$eportfolio_id', '$userid', '$id'); ");
+
+        //  $db->query("INSERT INTO eportfolio_user (user_id, Seminar_id, eportfolio_id, owner) VALUES ('$userid', '$Seminar_id' , '$eportfolio_id', 1)");
+
+          // $deleteCoursewareStandard = $db->query("DELETE FROM mooc_blocks WHERE type != 'Courseware' AND seminar_id = '".$Seminar_id."';");
+          // $createCoursewareTemplate = $db->query("SELECT * FROM mooc_blocks WHERE type = 'Courseware' AND seminar_id = '".$Seminar_id."'; ")->fetchAll();
+          // foreach ($createCoursewareTemplate as $block) {
+          //   $block_id = $block[id];
+          // }
+
+          //add supervisor in portfolio
+          // $member = $this->getGroupMember($groupid);
+          // if (!in_array($groupowner, $member)) {
+          //   DBManager::get()->query("INSERT INTO seminar_user (Seminar_id, user_id, status, position, gruppe, notification, visible, bind_calendar, mkdate) VALUES ('$Seminar_id', '$groupowner', '$statususer', '$position', '$gruppe', '$notification', '$visibleuser', '$bind_calendar', 'UNIX_TIMESTAMP()');");
+          // }
 
       }
     }
