@@ -7,14 +7,19 @@ class EportfoliopluginController extends StudipController {
       parent::__construct($dispatcher);
       $this->plugin = $dispatcher->plugin;
 
+      if ($_POST['titleChanger']) {
+        $this->changeTitle();
+        exit();
+      }
+
       $cid = $_GET['cid'];
 
       $sidebar = Sidebar::Get();
-      Sidebar::Get()->setTitle('Übersicht');
+      Sidebar::Get()->setTitle('ï¿½bersicht');
 
       $navOverview = new LinksWidget();
-      $navOverview->setTitle('Übersicht');
-      $navOverview->addLink('Übersicht', URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('portfolioid' => $portfolioid)), null , array('class' => 'active-link'));
+      $navOverview->setTitle('ï¿½bersicht');
+      $navOverview->addLink('ï¿½bersicht', URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('portfolioid' => $portfolioid)), null , array('class' => 'active-link'));
       $sidebar->addWidget($navOverview);
 
       $nav = new LinksWidget();
@@ -228,6 +233,15 @@ class EportfoliopluginController extends StudipController {
     if ($query[0][0] == $userId) {
       return true;
     }
+  }
+
+  public function changeTitle(){
+    $title      = $_POST['title'];
+    $cid        = $_POST['cid'];
+
+    $sem        = new Seminar($cid);
+    $sem->name  = $title;
+    $sem->store();
   }
 
 }

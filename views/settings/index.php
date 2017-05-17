@@ -122,36 +122,6 @@
 
 <?= \Studip\Button::create('Zugriffrechte vergeben', 'klickMichButton', array('data-toggle' => 'modal', 'data-target' => '#addViewerModal', 'id' => "newPortfolio")); ?>
 
-<?= \Studip\Button::create('Portfolio l�schen', 'klickMichButton', array('data-toggle' => 'modal', 'data-target' => '#deleteModal', 'type' => 'button')); ?>
-
-<!-- Modal Löschen -->
-<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Portfolio l�schen</h4>
-      </div>
-      <div class="modal-body" id="modalDeleteBody">
-
-        <p id="deleteText" style="margin-bottom:30px;">
-          Sind Sie sich sicher, dass Sie das Portfolio <b><?php echo $title; ?></b> l�schen wollen?</br>
-          Alle Daten werden hierdurch <b>unwiderruflich</b> gel�scht und koennen nicht wiederhergestellt werden.
-        </p>
-
-        <div class="deleteSuccess">
-          <div><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></div>
-          <p>
-            Portfolio <b><?php echo $title; ?></b> gel�scht
-          </p>
-        </div>
-          <?= \Studip\Button::create('Portfolio l�schen', 'klickMichButton', array('id' => 'deletebtn', 'onClick' => 'deletePortfolio()', 'type' => 'button')); ?>
-      </div>
-    </div>
-  </div>
-</div>
-
-
 <!-- Modal Suche Supervisor -->
 <div class="modal fade" id="addSupervisorModal" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
