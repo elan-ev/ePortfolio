@@ -94,11 +94,10 @@
             <br>
 
           </div>
-
-          <a href="<?php echo $link; ?>"><button type="button" class="btn btn-primary">Anschauen</button></a>
+          <a href="<?php echo $link; ?>"><?= \Studip\Button::create('Anschauen', 'anschauen', array('type' => 'button')); ?></a>
 
           <?php if($isOwner == true):?>
-            <a href="<?php echo $linkAdmin; ?>"><button type="button" class="btn btn-primary">Bearbeiten</button></a>
+            <a href="<?php echo $linkAdmin; ?>"><?= \Studip\Button::create('Bearbeiten', 'anschauen', array('type' => 'button')); ?></a>
           <?php endif; ?>
         </div>
       </div>
