@@ -11,36 +11,22 @@ class settingsController extends StudipController {
 
       $cid = $_GET['cid'];
 
-      $sidebar = Sidebar::Get();
-      Sidebar::Get()->setTitle('Einstellungen');
-
       //autonavigation
       Navigation::activateItem("course/settings");
 
-      $navOverview = new LinksWidget();
-      $navOverview->setTitle('Uebersicht');
-      $navOverview->addLink('Ubersicht', URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('portfolioid' => '$portfolioid')));
-      $sidebar->addWidget($navOverview);
-
-      $nav = new LinksWidget();
-      $nav->setTitle(_('Reflektionsimpulse'));
-      $nav->addLink($name, "");
-
-      $getCoursewareChapters = EportfolioPlugin::getCardInfos($cid);
-      foreach ($getCoursewareChapters as $key => $value) {
-        $nav->addLink($value[title], URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $cid, 'selected' => $value[id])));
-      }
-
-      $sidebar->addWidget($nav);
-
-
-
+      $sidebar = Sidebar::Get();
+      $sidebar->setTitle('Zugriffsrechte');
+      
+      $views = new ViewsWidget();
+      $views->setTitle('Zugriffsrechte');
+      $views->addLink(_('Rechteverwaltung'), '#')->setActive(true);
+      Sidebar::get()->addWidget($views);
   }
 
   public function before_filter(&$action, &$args)
   {
     parent::before_filter($action, $args);
-    PageLayout::setTitle('Uebersicht');
+    PageLayout::setTitle('Zugriffsrechte');
 
   }
 
