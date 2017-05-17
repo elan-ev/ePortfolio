@@ -29,6 +29,11 @@
       margin-top: -10px;
     }
 
+    span img {
+      margin-bottom: 5px;
+      cursor: pointer;
+    }
+
   </style>
 </head>
 
@@ -38,8 +43,19 @@
   <div class="col-md-12">
 
     <!-- overview area -->
+    <div id="title">
+      <h3 style="border:none!important;">
+        <?php  echo $seminarTitle; ?>
+        <?php if($isOwner == true):?><span style="margin-left: 10px;"><?php echo Icon::create('edit', 'inactive', array('onclick' => 'toggleChangeInput()'));?></span><?php endif; ?>
+      </h3>
+    </div>
 
-    <h1 style="border:none!important;"><?php  echo $seminarTitle; ?></h1>
+    <?php if($isOwner == true):?>
+      <div id="title_changer" style="display: none;">
+        <h3 style="border:none!important;"><input name="name" value="<?php echo $seminarTitle; ?>"><span style="margin-left: 10px;"><?php echo Icon::create('accept', 'clickable', array('onclick' => 'saveTitle()')) ?></span></h3>
+      </div>
+    <?php endif; ?>
+
     <hr>
     <?php $img = eportfoliopluginController::getImg($cid);
       $img = json_decode($img);
@@ -106,3 +122,32 @@
     </div>
   </div>
 </div>
+
+<script>
+
+  function toggleChangeInput(){
+    $('#title').css('display', 'none');
+    $('#title_changer').css('display', 'block');
+  }
+
+  function saveTitle(){
+    var text = $('#title_changer input').val();
+
+    $.ajax({
+      type: 'post',
+      url: STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/eportfolioplugin'),
+      data: {
+        title: text,
+        titleChanger: 1,
+        cid: '<?php echo $_GET["cid"]; ?>'
+      },
+      success: function (data){
+        $('#title h3').html(text);
+        $('#title_changer').css('display', 'none');
+        $('#title').css('display', 'block');
+      }
+    });
+
+  }
+
+</script>

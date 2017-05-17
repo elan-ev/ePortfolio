@@ -16,7 +16,7 @@ class settingsController extends StudipController {
 
       $sidebar = Sidebar::Get();
       $sidebar->setTitle('Zugriffsrechte');
-      
+
       $views = new ViewsWidget();
       $views->setTitle('Zugriffsrechte');
       $views->addLink(_('Rechteverwaltung'), '#')->setActive(true);

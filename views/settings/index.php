@@ -120,25 +120,7 @@
   </tbody>
 </table>
 
-  <?= \Studip\Button::create('Zugriffrechte vergeben', 'klickMichButton', array('data-toggle' => 'modal', 'data-target' => '#addViewerModal', 'id' => "newPortfolio")); ?>
-<hr>
-
-
-
-<h3>Einstellungen</h3>
-
-<a id="portfolio-info-trigger" href="#">bearbeiten</a>
-<a id="portfolio-info-saver" href="#">speichern</a>
-
-<div class="portfolio-info-wrapper-current">
-  <div class="wrapper-name"><?php echo $portfolioInfo[Name]; ?></div>
-  <div class="wrapper-beschreibung"><?php echo $portfolioInfo[Beschreibung]; ?></div>
-</div>
-
-<div class="portfolio-info-wrapper">
-  <div><input id="name-input" name="it" type="text" value="<?php echo $portfolioInfo[Name]; ?>"></div>
-  <div><textarea id="beschreibung-input" name="it" type="text"><?php echo $portfolioInfo[Beschreibung]; ?></textarea></div>
-</div>
+<?= \Studip\Button::create('Zugriffrechte vergeben', 'klickMichButton', array('data-toggle' => 'modal', 'data-target' => '#addViewerModal', 'id' => "newPortfolio")); ?>
 
 <?= \Studip\Button::create('Portfolio l�schen', 'klickMichButton', array('data-toggle' => 'modal', 'data-target' => '#deleteModal', 'type' => 'button')); ?>
 
