@@ -12,6 +12,7 @@ $workingArray = unserialize($workingArray);
 $workingArray = json_encode($workingArray);
 
 ?>
+
 <style media="screen">
   .cke_chrome {
     min-height: 0px!important;
@@ -20,7 +21,19 @@ $workingArray = json_encode($workingArray);
   #nav_course_files, #nav_course_forum2, #nav_course_mooc_progress {
     display: none;
   }
+
+  .cktoolbar {
+    max-width: 100% !important;
+    width: 100%;
+  }
+
+  .cke_reset {
+    width: 100% !important;
+    height: 150px!important;
+  }
 </style>
+
+
 <script type="text/javascript" src="/studip/plugins_packages/uos/EportfolioPlugin/assets/js/jquery.js"></script>
 <script type="text/javascript">
   $(document).ready(function(){
