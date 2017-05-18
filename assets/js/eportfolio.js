@@ -49,11 +49,11 @@ function createNewPortfolio() {
 //     type: "POST",
 //     url: "/studip/plugins.php/eportfolioplugin/updateportfolios",
 //     dataType: "json",
+//       $.each(data, function(k, v){
 //     data: {},
 //     success: function(data) {
 //       var i = data["counter"];
 //
-//       $.each(data, function(k, v){
 //
 //         var name = v['name'];
 //         var beschreibung = v['beschreibung'];
@@ -158,7 +158,7 @@ function deletePortfolio() {
 }
 
 function setAccess(id, viewerId){
-  var url = "/studip/plugins.php/eportfolioplugin/settings?cid="+cid;
+  var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/settings', {cid: cid});
   $.ajax({
     type: "POST",
     url: url,
@@ -185,7 +185,7 @@ function checkIcon(viewerId, id) {
 }
 
 function setSupervisor(id){
-  var url = "/studip/plugins.php/eportfolioplugin/settings?cid="+cid;
+  var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/settings', {cid: cid});
 
   $.ajax({
     type: "POST",
@@ -201,7 +201,7 @@ function setSupervisor(id){
 
 function setViewer(id){
   console.log("set viewer");
-  var url = "/studip/plugins.php/eportfolioplugin/settings?cid="+cid;
+  var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/settings', {cid: cid});
 
   $.ajax({
     type: "POST",

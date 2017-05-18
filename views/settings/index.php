@@ -216,7 +216,7 @@
     //Search Supervisor
     $('#inputSearchSupervisor').keyup(function() {
       var val = $("#inputSearchSupervisor").val();
-      var url = "/studip/plugins.php/eportfolioplugin/livesearch";
+      var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/livesearch');
 
       $.ajax({
         type: "POST",
@@ -242,7 +242,7 @@
     //Search Viewer
     $('#inputSearchViewer').keyup(function() {
       var val = $("#inputSearchViewer").val();
-      var url = "/studip/plugins.php/eportfolioplugin/livesearch";
+      var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/livesearch');
 
       var values = _.words(val);
 
