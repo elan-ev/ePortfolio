@@ -94,7 +94,7 @@
 <div>
 
   <div class="widget-custom">
-    <div class="widget-custom-head">Portfolio - Vorlage hinzufï¿½gen</div>
+    <div class="widget-custom-head">Portfolio - Vorlage hinzufügen</div>
     <div class="widget-custom-content">
       <select class="" id="tempselector" name="template">
         <?php  $templates = showsupervisorcontroller::getTemplates($id); ?>
@@ -192,7 +192,7 @@
           <?php endforeach; ?>
         </table>
 
-        <button type="button" name="button" onclick="deletetemplate(<?php echo $tempid; ?>)">Vorlage fï¿½r diese Gruppe lï¿½schen</button>
+        <button type="button" name="button" onclick="deletetemplate(<?php echo $tempid; ?>)">Vorlage für diese Gruppe löschen</button>
 
 
       </div>
@@ -209,7 +209,7 @@
     Gruppen erstellen
   </div>
 
-  <?php echo MessageBox::info('>Aktuell haben Sie noch keine Gruppen erstellt. Bitte erstellen Sie zunï¿½chst ein Gruppe um mit der Verwaltung fortzufahren.'); ?>
+  <?php echo MessageBox::info('>Aktuell haben Sie noch keine Gruppen erstellt. Bitte erstellen Sie zunächst ein Gruppe um mit der Verwaltung fortzufahren.'); ?>
 
 </div>
 
@@ -232,7 +232,7 @@ print QuickSearch::get("username", $suche)
 <div class="legend">
   <ul>
     <li><?php echo  Icon::create('accept', 'clickable'); ?>  Kapitel/Implus freigeschaltet</li>
-    <li><?php echo  Icon::create('accept+new', 'clickable'); ?></i>  Kapitel freigeschaltet und ï¿½nderungen seit ich das letzte mal reingeschaut habe</li>
+    <li><?php echo  Icon::create('accept+new', 'clickable'); ?></i>  Kapitel freigeschaltet und Änderungen seit ich das letzte mal reingeschaut habe</li>
     <li><?php echo  Icon::create('file', 'clickable'); ?>  Supervisionsanliegen freigeschaltet</li>
     <li><?php echo  Icon::create('forum', 'clickable'); ?>  Resonanz gegeben</li>
   </ul>

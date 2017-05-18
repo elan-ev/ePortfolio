@@ -125,7 +125,7 @@
 
 <?php if($isOwner == true):?>
 
-  <?= \Studip\Button::create('Portfolio lï¿½schen', 'klickMichButton', array('data-toggle' => 'modal', 'data-target' => '#deleteModal', 'type' => 'button')); ?>
+  <?= \Studip\Button::create('Portfolio löschen', 'klickMichButton', array('data-toggle' => 'modal', 'data-target' => '#deleteModal', 'type' => 'button')); ?>
 
   <!-- Modal LÃ¶schen -->
   <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog">
@@ -133,22 +133,22 @@
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title">Portfolio lï¿½schen</h4>
+          <h4 class="modal-title">Portfolio löschen</h4>
         </div>
         <div class="modal-body" id="modalDeleteBody">
 
           <p id="deleteText" style="margin-bottom:30px;">
-            Sind Sie sich sicher, dass Sie das Portfolio <b><?php echo $title; ?></b> lï¿½schen wollen?</br>
-            Alle Daten werden hierdurch <b>unwiderruflich</b> gelï¿½scht und koennen nicht wiederhergestellt werden.
+            Sind Sie sich sicher, dass Sie das Portfolio <b><?php echo $title; ?></b> löschen wollen?</br>
+            Alle Daten werden hierdurch <b>unwiderruflich</b> gelöscht und koennen nicht wiederhergestellt werden.
           </p>
 
           <div class="deleteSuccess">
             <div><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></div>
             <p>
-              Portfolio <b><?php echo $title; ?></b> gelï¿½scht
+              Portfolio <b><?php echo $title; ?></b> gelöscht
             </p>
           </div>
-            <?= \Studip\Button::create('Portfolio lï¿½schen', 'klickMichButton', array('id' => 'deletebtn', 'onClick' => 'deletePortfolio()', 'type' => 'button')); ?>
+            <?= \Studip\Button::create('Portfolio löschen', 'klickMichButton', array('id' => 'deletebtn', 'onClick' => 'deletePortfolio()', 'type' => 'button')); ?>
         </div>
       </div>
     </div>
