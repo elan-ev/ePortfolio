@@ -333,7 +333,6 @@ $('#myTabs a').click(function (e) {
 
 function addTemp(){
   const tempid = $('#tempselector').val();
-  console.log(tempid);
   var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/showsupervisor');
 
   $.ajax({
@@ -345,10 +344,8 @@ function addTemp(){
       tempid: tempid
     },
     success: function(data){
-      console.log("the data -->" + data);
       if (data == "  created") {
         createPortfolio(tempid);
-        console.log("Noooope");
       }
     }
   });
@@ -365,8 +362,6 @@ function createPortfolio(tempid){
       tempid: tempid
     },
     success: function(data){
-      console.log("createPortfolio-->");
-      console.log(data);
     }
   });
 }
@@ -375,7 +370,6 @@ function deletetemplate(tempid){
   var c = confirm("Es werden alle bestehenden ePortfolios dieses Templates gelöscht! Möchten Sie fortfahren?");
   if (c == true){
 
-    console.log("okay");
     var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/showsupervisor');
     $.ajax({
       type: "POST",
@@ -398,7 +392,6 @@ function deletetemplate(tempid){
 
 $(document).ready(
   function(){
-    console.log("tab");
     $('div[role="tabpanel"]:first').addClass('active');
   }
 );
