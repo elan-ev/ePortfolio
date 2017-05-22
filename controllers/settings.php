@@ -15,10 +15,10 @@ class settingsController extends StudipController {
       Navigation::activateItem("course/settings");
 
       $sidebar = Sidebar::Get();
-      $sidebar->setTitle('Zugriffsrechte');
+      $sidebar->setTitle('Navigation');
 
       $views = new ViewsWidget();
-      $views->setTitle('Zugriffsrechte');
+      $views->setTitle('Rechte');
       $views->addLink(_('Rechteverwaltung'), '#')->setActive(true);
       Sidebar::get()->addWidget($views);
   }
@@ -26,7 +26,7 @@ class settingsController extends StudipController {
   public function before_filter(&$action, &$args)
   {
     parent::before_filter($action, $args);
-    PageLayout::setTitle('Zugriffsrechte');
+    PageLayout::setTitle('Rechteverwaltung');
 
   }
 
