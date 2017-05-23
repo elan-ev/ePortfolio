@@ -15,11 +15,11 @@ class EportfoliopluginController extends StudipController {
       $cid = $_GET['cid'];
 
       $sidebar = Sidebar::Get();
-      Sidebar::Get()->setTitle('ï¿½bersicht');
+      Sidebar::Get()->setTitle('bersicht');
 
       $navOverview = new LinksWidget();
-      $navOverview->setTitle('Übersicht');
-      $navOverview->addLink('Übersicht', URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('portfolioid' => $portfolioid)), null , array('class' => 'active-link'));
+      $navOverview->setTitle('bersicht');
+      $navOverview->addLink('bersicht', URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('portfolioid' => $portfolioid)), null , array('class' => 'active-link'));
       $sidebar->addWidget($navOverview);
 
       $nav = new LinksWidget();

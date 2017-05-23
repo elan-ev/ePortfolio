@@ -102,7 +102,7 @@
           <option value="<?php echo $value[id] ?>"><?php echo $value[temp_name] ?></option>
         <?php endforeach; ?>
       </select>
-      <?= \Studip\Button::create('Hinzufï¿½gen', 'button', array('type' => 'button', 'onclick' => 'addTemp()')); ?>
+      <?= \Studip\Button::create('Hinzufügen', 'button', array('type' => 'button', 'onclick' => 'addTemp()')); ?>
     </div>
   </div>
 
@@ -192,7 +192,7 @@
           <?php endforeach; ?>
         </table>
 
-        <button type="button" name="button" onclick="deletetemplate(<?php echo $tempid; ?>)">Vorlage fï¿½r diese Gruppe lï¿½schen</button>
+        <button type="button" name="button" onclick="deletetemplate(<?php echo $tempid; ?>)">Vorlage für diese Gruppe löschen</button>
 
 
       </div>
@@ -209,7 +209,7 @@
     Gruppen erstellen
   </div>
 
-  <?php echo MessageBox::info('>Aktuell haben Sie noch keine Gruppen erstellt. Bitte erstellen Sie zunï¿½chst ein Gruppe um mit der Verwaltung fortzufahren.'); ?>
+  <?php echo MessageBox::info('Aktuell haben Sie noch keine Gruppen erstellt. Bitte erstellen Sie zunächst ein Gruppe um mit der Verwaltung fortzufahren.'); ?>
 
 </div>
 
