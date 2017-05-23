@@ -34,7 +34,7 @@ $workingArray = json_encode($workingArray);
 </style>
 
 
-<script type="text/javascript" src="/studip/plugins_packages/uos/EportfolioPlugin/assets/js/jquery.js"></script>
+<script type="text/javascript" src="<?php echo $GLOBALS['ABSOLUTE_URI_STUDIP'] . 'plugins_packages/uos/EportfolioPlugin/assets/js/jquery.js'; ?>"></script>
 <script type="text/javascript">
   $(document).ready(function(){
     console.log("ready");
