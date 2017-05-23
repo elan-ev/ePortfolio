@@ -255,9 +255,9 @@ class ShowsupervisorController extends StudipController {
       $q = DBManager::get()->query("SELECT * FROM eportfolio_templates WHERE id = '$tempid'")->fetchAll();
       $description = $q[0]["description"];
 
-      foreach ($GLOBALS['SEM_CLASS'] as $id => $sem_class){ //get the id of ePortfolio Seminarclass
-        if ($sem_class['name'] == 'ePortfolio') {
-          $sem_class_id = $id;
+      foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
+        if ($sem_type['name'] == 'ePortfolio') {
+          $sem_type_id = $id;
         }
       }
 
@@ -272,7 +272,7 @@ class ShowsupervisorController extends StudipController {
           $sem->Seminar_id  = $sem->createId();
           $sem->name        = $sem_name;
           $sem->description = $sem_description;
-          $sem->status      = $sem_class_id;
+          $sem->status      = $sem_type_id;
           $sem->read_level  = 1;
           $sem->write_level = 1;
           $sem->institut_id = Config::Get()->STUDYGROUP_DEFAULT_INST;
