@@ -53,7 +53,7 @@
 
         <h1 id="headline_uebersicht"></h1>
 
-        <p>Hier finden Sie alle ePortfolios, die Sie angelegt hast oder die andere für Sie freigegeben haben.</p>
+        <p>Hier finden Sie alle ePortfolios, die Sie angelegt hast oder die andere fï¿½r Sie freigegeben haben.</p>
         <p><a class="btn btn-primary btn-lg" href="#" role="button" style="background-color: #33578c; color: #fff;">Mehr Informationen</a></p>
       </div>
     </div>
@@ -232,7 +232,7 @@
           </div>
 
           <!-- Error msg -->
-          <div class="alert alert-danger createPortfolioBanner" role="alert" id="createBannerAlert">Bitte füllen Sie alle Felder aus</div>
+          <div class="alert alert-danger createPortfolioBanner" role="alert" id="createBannerAlert">Bitte fï¿½llen Sie alle Felder aus</div>
 
           <?= \Studip\Button::create('Erstellen', 'Button', array('type' => 'submit')); ?>
         </form>
