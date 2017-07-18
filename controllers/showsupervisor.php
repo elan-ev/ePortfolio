@@ -1,5 +1,10 @@
   <?php
 
+  use Mooc\Export\XmlExport;
+  use Mooc\Import\XmlImport;
+  use Mooc\Container;
+
+
 class ShowsupervisorController extends StudipController {
 
     public function __construct($dispatcher)
@@ -23,6 +28,11 @@ class ShowsupervisorController extends StudipController {
 
         if($_POST["type"] == 'delete'){
           $this->deletePortfolio();
+          exit();
+        }
+
+        if($_POST["type"] == 'addTemplateTest'){
+          $this->addTemplateTest();
           exit();
         }
 
@@ -293,6 +303,36 @@ class ShowsupervisorController extends StudipController {
           DBManager::get()->query("INSERT INTO eportfolio (Seminar_id, eportfolio_id, owner_id, template_id) VALUES ('$sem_id', '$eportfolio_id', '$userid', '$id')"); //table eportfolio
           DBManager::get()->query("INSERT INTO eportfolio_user(user_id, Seminar_id, eportfolio_id, owner) VALUES ('$userid', '$Seminar_id' , '$eportfolio_id', 1)"); //table eportfollio_user
       }
+    }
+
+    public function addTemplateTest(){
+      $cid = "4fa67ff89828d7c6926a0e23c04aa283";
+
+      $plugin_courseware = \PluginManager::getInstance()->getPlugin('Courseware');
+      require_once 'public/' . $plugin_courseware->getPluginPath() . '/vendor/autoload.php';
+
+      //export from master course
+      $containerExport =  new Container();
+      $containerExport["cid"] = $cid; //Master cid
+      print_r($containerExport);
+      $export = new XmlExport($containerExport['block_factory']);
+      $coursewareExport = $containerExport["current_courseware"];
+      $xml = $export->export($coursewareExport);
+
+      //write export xml-data file
+      $tempDir = $GLOBALS['TMP_PATH'].'/'.uniqid();
+      mkdir($tempDir);
+      $destination = $tempDir."/data.xml";
+      $file = fopen($destination, "w+");
+      fputs($file, $xml);
+      fclose($file);
+
+      //import in new course
+      $containerImport =  new Container();
+      $containerImport["cid"] = $copy->id; //new course cid
+      $coursewareImport = $containerImport["current_courseware"];
+      $import =  new XmlImport($containerImport['block_factory']);
+      $import->import($tempDir, $coursewareImport);
     }
 
 }

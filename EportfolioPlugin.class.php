@@ -51,10 +51,28 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
 
       $serverinfo = $_SERVER['PATH_INFO'];
 
-      if ($serverinfo == "/courseware/courseware" || $serverinfo == "/eportfolioplugin/eportfolioplugin" || $serverinfo == "/eportfolioplugin/settings"){
-        include 'coursewareController/modifier.php';
-      }
+      // if ($serverinfo == "/courseware/courseware" || $serverinfo == "/eportfolioplugin/eportfolioplugin" || $serverinfo == "/eportfolioplugin/settings"){
+      //   include 'coursewareController/modifier.php';
+      // }
 
+      if ($serverinfo == "/courseware/courseware" || $serverinfo == "/eportfolioplugin/settings"){
+        if($_GET["cid"]){
+          $id = $_GET["cid"];
+
+          if ($this->checkEportfolio($id) == true) {
+            include 'coursewareController/modifier.php';
+          }
+        }
+      }
+      
+    }
+
+    public function checkEportfolio($id){
+      $db = DBManager::get();
+      $query = $db->query("SELECT * FROM eportfolio WHERE Seminar_id = '$id'")->fetchAll();
+      if (!empty($query)) {
+        return true;
+      }
     }
 
     public function getCardInfos($cid){
@@ -81,6 +99,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
       PageLayout::addStylesheet('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css');
       // script row-link
       PageLayout::addScript($this->getPluginURL().'/assets/js/jasny-bootstrap.min.js');
+      PageLayout::addScript($this->getPluginURL().'/assets/js/mustache.min.js');
     }
 
     public function getTabNavigation($course_id) {

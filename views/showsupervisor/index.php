@@ -238,6 +238,8 @@ print QuickSearch::get("username", $suche)
   </ul>
 </div>
 
+<a href="#" onclick="testfunction()">textlink Template</a>
+
 <div id="myModal" class="modal fade" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -395,5 +397,19 @@ $(document).ready(
     $('div[role="tabpanel"]:first').addClass('active');
   }
 );
+
+function testfunction(){
+  var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/showsupervisor');
+  $.ajax({
+    type: "POST",
+    url: url,
+    data: {
+      type: 'addTemplateTest'
+    },
+    success: function(data){
+      console.log(data);
+    }
+  });
+}
 
 </script>

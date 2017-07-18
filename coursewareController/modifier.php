@@ -18,6 +18,12 @@ $workingArray = json_encode($workingArray);
     min-height: 0px!important;
   }
 
+  .courseware_infobox_owner {
+    border: 2px solid black;
+    padding: 5px;
+  }
+
+
   #nav_course_files, #nav_course_forum2, #nav_course_mooc_progress {
     display: none;
   }
@@ -35,6 +41,7 @@ $workingArray = json_encode($workingArray);
 
 
 <script type="text/javascript" src="<?php echo $GLOBALS['ABSOLUTE_URI_STUDIP'] . 'plugins_packages/uos/EportfolioPlugin/assets/js/jquery.js'; ?>"></script>
+<script type="text/javascript" src="<?php echo $GLOBALS['ABSOLUTE_URI_STUDIP'] . 'plugins_packages/uos/EportfolioPlugin/assets/js/mustache.min.js'; ?>"></script>
 <script type="text/javascript">
   $(document).ready(function(){
     console.log("ready");
@@ -52,10 +59,39 @@ $workingArray = json_encode($workingArray);
   $('#nav_course_files, #nav_course_mooc_progress').css('display', 'none');
 </script>
 
+<script id="templateOwnerTrue" type="x-tmpl-mustache">
+  <div class="courseware_infobox_owner">
+
+    <p>
+     </p>
+
+    <p>Liste der berechtigten Personen:
+        {{#users}}
+
+          <div>{{firstname}} {{lastname}}</div>
+
+        {{/users}}
+
+    </p>
+    <button onclick='freigeben(<?php echo $selected; ?>, `<?php echo $cid ?>`);'>Freigeben</button>
+
+  </div>
+</script>
+
+<script id="templateOwnerFalse" type="x-tmpl-mustache">
+  <div class="courseware_infobox_owner">
+    <p>Besitzer: {{firstname}} {{lastname}}</p>
+    <?php $link = URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('cid' => $cid)); ?>
+    <a href="<?php echo $link; ?>">Zurück</a>
+  </div>
+</script>
+
 <script type="text/javascript">
 
   $(document).ready(function(){
     $('#courseware').append("<button onclick='freigeben(<?php echo $selected; ?>, `<?php echo $cid ?>`);'>Freigeben</button>");
+
+    infobox();
   });
 
   function freigeben(selected, cid){
@@ -71,9 +107,45 @@ $workingArray = json_encode($workingArray);
       },
       success: function(data){
         console.log(data);
+
+
       }
 
     });
+  }
+
+  function infobox(){
+
+    var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/eportfolioplugin');
+    var selected = <?php if(!$_GET["selected"]){echo 0;} else{echo $selected;} ?>;
+
+    console.log(selected);
+
+    $.ajax({
+      url: url,
+      type: "POST",
+      data: {
+        infobox: "infobox",
+        cid: "<?php echo $cid; ?>",
+        userid: "<?php echo $userId; ?>",
+        selected: selected,
+      },
+      success: function(data){
+
+        data = JSON.parse(data);
+        console.log(data);
+
+        if (data.owner == true) {
+          var template = $('#templateOwnerTrue').html();
+          $('#courseware').prepend(Mustache.render(template, data));
+        } else {
+          var template = $('#templateOwnerFalse').html();
+          $('#courseware').prepend(Mustache.render(template, data));
+        }
+
+      }
+    });
+
   }
 
 </script>
