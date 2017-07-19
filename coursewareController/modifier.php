@@ -116,7 +116,7 @@ $workingArray = json_encode($workingArray);
 
   function infobox(){
 
-    var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/eportfolioplugin');
+    var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/coursewareinfoblock');
     var selected = <?php if(!$_GET["selected"]){echo 0;} else{echo $selected;} ?>;
 
     console.log(selected);

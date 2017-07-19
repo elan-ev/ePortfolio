@@ -55,7 +55,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
       //   include 'coursewareController/modifier.php';
       // }
 
-      if ($serverinfo == "/courseware/courseware" || $serverinfo == "/eportfolioplugin/settings"){
+      if ($serverinfo == "/courseware/courseware" || $serverinfo == "/eportfolioplugin/settings" || $serverinfo == "/eportfolioplugin/eportfolioplugin"){
         if($_GET["cid"]){
           $id = $_GET["cid"];
 
@@ -64,7 +64,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
           }
         }
       }
-      
+
     }
 
     public function checkEportfolio($id){
