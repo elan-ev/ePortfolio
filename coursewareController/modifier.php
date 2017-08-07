@@ -1,5 +1,7 @@
 <?php
 
+//print_r($GLOBALS);
+
 //print('modifier.php active');
 
 //set variables
@@ -102,7 +104,8 @@ $workingArray = json_encode($workingArray);
     <p>Liste der berechtigten Personen:
         {{#users}}
 
-          <div>{{firstname}} {{lastname}}</div>
+          <div><img style="border-radius: 30px; width: 15px;" src="<?php echo $GLOBALS[DYNAMIC_CONTENT_URL];?>/user/{{userid}}_small.png"> {{firstname}} {{lastname}}</div>
+
 
         {{/users}}
 
