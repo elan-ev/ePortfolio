@@ -37,6 +37,40 @@ $workingArray = json_encode($workingArray);
     width: 100% !important;
     height: 150px!important;
   }
+
+  .fakeButton {
+    background: white;
+    border: 1px solid #28497c;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    color: #28497c;
+    cursor: pointer;
+    display: inline-block;
+    font-family: "Lato",sans-serif;
+    font-size: 14px;
+    line-height: 130%;
+    margin: .8em .6em .8em 0;
+    min-width: 100px;
+    overflow: visible;
+    padding: 5px 15px;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    vertical-align: middle;
+    white-space: nowrap;
+    width: auto;
+    -webkit-transition: none;
+    -moz-transition: none;
+    -o-transition: none;
+    transition: none;
+  }
+
+  .fakeButton:hover{
+    background: #28497c;
+    color: white;
+    outline: 0;
+  }
 </style>
 
 
@@ -73,7 +107,7 @@ $workingArray = json_encode($workingArray);
         {{/users}}
 
     </p>
-    <button onclick='freigeben(<?php echo $selected; ?>, `<?php echo $cid ?>`);'>Freigeben</button>
+    <button class="fakeButton" onclick='freigeben(<?php echo $selected; ?>, `<?php echo $cid ?>`);'>Freigeben</button>
 
   </div>
 </script>
