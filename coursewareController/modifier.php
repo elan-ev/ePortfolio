@@ -116,7 +116,9 @@ $workingArray = json_encode($workingArray);
   <div class="courseware_infobox_owner">
     <p>Besitzer: {{firstname}} {{lastname}}</p>
     <?php $link = URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('cid' => $cid)); ?>
-    <a href="<?php echo $link; ?>">Zurück</a>
+    <a href="<?php echo $link; ?>">
+      <button class="fakeButton">Zurück</button>
+    </a>
   </div>
 </script>
 
