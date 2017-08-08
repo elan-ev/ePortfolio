@@ -104,8 +104,7 @@ $workingArray = json_encode($workingArray);
     <p>Liste der berechtigten Personen:
         {{#users}}
 
-          <div><img style="border-radius: 30px; width: 15px;" src="<?php echo $GLOBALS[DYNAMIC_CONTENT_URL];?>/user/{{userid}}_small.png"> {{firstname}} {{lastname}}</div>
-
+          <div><img style="border-radius: 30px; width: 15px;" src="<?php echo $GLOBALS[DYNAMIC_CONTENT_URL];?>/user/{{userid}}_small.png" onError="defaultImg(this);"> {{firstname}} {{lastname}}</div>
 
         {{/users}}
 
@@ -167,7 +166,6 @@ $workingArray = json_encode($workingArray);
         infobox: "infobox",
         cid: "<?php echo $cid; ?>",
         userid: "<?php echo $userId; ?>",
-        selected: selected,
       },
       success: function(data){
 
@@ -185,6 +183,10 @@ $workingArray = json_encode($workingArray);
       }
     });
 
+  }
+
+  function defaultImg(img) { //setzt default Profilbild falls keins vorhanden
+    img.src = "<?php echo $GLOBALS[DYNAMIC_CONTENT_URL]; ?>/user/nobody_small.png";
   }
 
 </script>
