@@ -78,16 +78,22 @@
         <tr class="sortable">
           <th>Portfolio-Name</th>
           <th>Beschreibung</th>
+          <th>Aktionen</th>
 
         </tr>
       </thead>
+
       <tbody>
         <?php $temps = ShowController::getTemplates();
+
           foreach ($temps as $key):?>
 
+          <?php $thisPortfolio = new Seminar($key); ?>
+
           <tr>
-            <td><?php echo $key["temp_name"] ?></td>
-            <td><?php echo $key["description"] ?></td>
+            <td><?php echo $thisPortfolio->getName(); ?></td>
+            <td><?php echo ShowController::getCourseBeschreibung($key); ?></td>
+            <td style="text-align: center;"><a href="<?php echo URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $key)); ?>"><?php echo Icon::create('edit', 'clickable') ?></a></td>
           </tr>
 
         <?php endforeach; ?>

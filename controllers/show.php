@@ -74,9 +74,30 @@ class ShowController extends StudipController {
       return $accessPortfolios;
     }
 
+    // public function getTemplates(){
+    //   $q = DBManager::get()->query("SELECT * FROM eportfolio_templates")->fetchAll();
+    //   return $q;
+    // }
+
     public function getTemplates(){
-      $q = DBManager::get()->query("SELECT * FROM eportfolio_templates")->fetchAll();
-      return $q;
+
+      $semId;
+      $seminare = array();
+
+      foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
+        if ($sem_type['name'] == 'Portfolio - Vorlage') {
+          $semId = $id;
+        }
+      }
+
+      $db = DBManager::get();
+      $query = $db->query("SELECT Seminar_id FROM seminare WHERE status = '$semId'")->fetchAll();
+      foreach ($query as $key) {
+        array_push($seminare, $key[Seminar_id]);
+      }
+
+      return $seminare;
+
     }
 
     public function getCourseBeschreibung($cid){
