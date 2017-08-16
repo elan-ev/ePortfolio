@@ -302,8 +302,11 @@ class ShowsupervisorController extends StudipController {
 
     public function createPortfolio($id){
 
-      $semList = array();
+      if ($this->checkTemplate($_POST['groupid'], $_POST['masterid'])) {
+        exit("Error: Template schon in Verwendung!");
+      }
 
+      $semList = array();
       $member = $this->getGroupMember($_POST["groupid"]);
       $groupowner = $this->getGroupOwner($_POST["groupid"]);
 
@@ -365,8 +368,19 @@ class ShowsupervisorController extends StudipController {
         DBManager::get()->query("UPDATE eportfolio_groups SET templates = '$array' WHERE seminar_id = '$groupid'");
       }
 
-
       print_r(json_encode($semList));
+    }
+
+    public function checkTemplate($groupid, $masterid) {
+      $query = DBManager::get()->query("SELECT templates FROM eportfolio_groups WHERE seminar_id = '$groupid'")->fetchAll();
+      if (empty($query[0][0])) {
+        return false;
+      } else {
+        $array = json_decode($query[0][0]);
+        if (in_array($_POST["master"], $array)) {
+          return true;
+        }
+      }
     }
 
     public function addTemplateTest(){
