@@ -3,6 +3,7 @@
   use Mooc\Export\XmlExport;
   use Mooc\Import\XmlImport;
   use Mooc\Container;
+  use Mooc\UI\Courseware\Courseware;
 
 
 class ShowsupervisorController extends StudipController {
@@ -33,6 +34,16 @@ class ShowsupervisorController extends StudipController {
 
         if($_POST["type"] == 'addTemplateTest'){
           $this->addTemplateTest();
+          exit();
+        }
+
+        if($_POST["type"] == 'addTemplateVechta'){
+          $this->addTemplateVechta();
+          exit();
+        }
+
+        if($_POST["type"] == 'getGroupMember'){
+          $this->getGroupMemberAjax($_POST['id']);
           exit();
         }
 
@@ -168,14 +179,46 @@ class ShowsupervisorController extends StudipController {
 
     }
 
+    public function getGroupMemberAjax($cid) {
+
+      $q = DBManager::get()->query("SELECT user_id FROM eportfolio_groups_user WHERE Seminar_id = '$cid'")->fetchAll();
+      $array = array();
+      foreach ($q as $key) {
+        array_push($array, $key[0]);
+      }
+      print json_encode($array);
+
+    }
+
     public function getCourseName($id) {
       $q = DBManager::get()->query("SELECT Name FROM seminare WHERE Seminar_id = '$id'")->fetchAll();
       return $q[0][0];
     }
 
-    public function getTemplates($id){
-      $q = DBManager::get()->query("SELECT id, temp_name, description FROM eportfolio_templates WHERE group_id = '$id'")->fetchAll();
-      return $q;
+    // public function getTemplates($id){
+    //   $q = DBManager::get()->query("SELECT id, temp_name, description FROM eportfolio_templates WHERE group_id = '$id'")->fetchAll();
+    //   return $q;
+    // }
+
+    public function getTemplates(){
+
+      $semId;
+      $seminare = array();
+
+      foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
+        if ($sem_type['name'] == 'Portfolio - Vorlage') {
+          $semId = $id;
+        }
+      }
+
+      $db = DBManager::get();
+      $query = $db->query("SELECT Seminar_id FROM seminare WHERE status = '$semId'")->fetchAll();
+      foreach ($query as $key) {
+        array_push($seminare, $key[Seminar_id]);
+      }
+
+      return $seminare;
+
     }
 
     public function addTempToDB(){
@@ -258,12 +301,15 @@ class ShowsupervisorController extends StudipController {
     }
 
     public function createPortfolio($id){
+
+      $semList = array();
+
       $member = $this->getGroupMember($_POST["groupid"]);
       $groupowner = $this->getGroupOwner($_POST["groupid"]);
 
-      $tempid = $_POST["tempid"];
-      $q = DBManager::get()->query("SELECT * FROM eportfolio_templates WHERE id = '$tempid'")->fetchAll();
-      $description = $q[0]["description"];
+      // $tempid = $_POST["tempid"];
+      // $q = DBManager::get()->query("SELECT * FROM eportfolio_templates WHERE id = '$tempid'")->fetchAll();
+      // $description = $q[0]["description"];
 
       foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
         if ($sem_type['name'] == 'ePortfolio') {
@@ -274,9 +320,8 @@ class ShowsupervisorController extends StudipController {
       foreach ($member as $key => $value) {
 
           $userid           = $value; //get userid
-          $sem_name         = $this->getTemplateName($_POST["tempid"]);
-          $sem_description  = "beschreibung";
-          $id               = $_POST["tempid"];
+          $sem_name         = "Vechta_Template";
+          $sem_description  = "Beschreibung";
 
           $sem              = new Seminar();
           $sem->Seminar_id  = $sem->createId();
@@ -298,15 +343,34 @@ class ShowsupervisorController extends StudipController {
 
           $sem->store(); //save sem
 
+          array_push($semList, $sem->Seminar_id);
+
           $eportfolio = new Seminar();
           $eportfolio_id = $eportfolio->createId();
-          DBManager::get()->query("INSERT INTO eportfolio (Seminar_id, eportfolio_id, owner_id, template_id) VALUES ('$sem_id', '$eportfolio_id', '$userid', '$id')"); //table eportfolio
+          DBManager::get()->query("INSERT INTO eportfolio (Seminar_id, eportfolio_id, owner_id) VALUES ('$sem_id', '$eportfolio_id', '$userid')"); //table eportfolio
           DBManager::get()->query("INSERT INTO eportfolio_user(user_id, Seminar_id, eportfolio_id, owner) VALUES ('$userid', '$Seminar_id' , '$eportfolio_id', 1)"); //table eportfollio_user
       }
+
+      //store in DB as template for group
+      $groupid = $_POST['groupid'];
+      $query = DBManager::get()->query("SELECT templates FROM eportfolio_groups WHERE seminar_id = '$groupid'")->fetchAll();
+      if (!empty($query[0][0])) {
+        $array = json_decode($query[0][0]);
+        array_push($array, $_POST['master']);
+        $array = json_encode($array);
+        DBManager::get()->query("UPDATE eportfolio_groups SET templates = '$array' WHERE seminar_id = '$groupid'");
+      } else {
+        $array = array($_POST['master']);
+        $array = json_encode($array);
+        DBManager::get()->query("UPDATE eportfolio_groups SET templates = '$array' WHERE seminar_id = '$groupid'");
+      }
+
+
+      print_r(json_encode($semList));
     }
 
     public function addTemplateTest(){
-      $cid = "4fa67ff89828d7c6926a0e23c04aa283";
+      $cid = "43ff6d96a50cf30836ef6b8d1ea60667";
 
       $plugin_courseware = \PluginManager::getInstance()->getPlugin('Courseware');
       require_once 'public/' . $plugin_courseware->getPluginPath() . '/vendor/autoload.php';
@@ -314,25 +378,54 @@ class ShowsupervisorController extends StudipController {
       //export from master course
       $containerExport =  new Container();
       $containerExport["cid"] = $cid; //Master cid
-      print_r($containerExport);
-      $export = new XmlExport($containerExport['block_factory']);
-      $coursewareExport = $containerExport["current_courseware"];
-      $xml = $export->export($coursewareExport);
+      print_r($containerExport['block_factory']);
+      //$export = new XmlExport($containerExport['block_factory']);
+      // $coursewareExport = $containerExport["current_courseware"];
+      // $xml = $export->export($coursewareExport);
+      //
+      // //write export xml-data file
+      // $tempDir = $GLOBALS['TMP_PATH'].'/'.uniqid();
+      // mkdir($tempDir);
+      // $destination = $tempDir."/data.xml";
+      // $file = fopen($destination, "w+");
+      // fputs($file, $xml);
+      // fclose($file);
+      //
+      // //import in new course
+      // $containerImport =  new Container();
+      // $containerImport["cid"] = $copy->id; //new course cid
+      // $coursewareImport = $containerImport["current_courseware"];
+      // $import =  new XmlImport($containerImport['block_factory']);
+      // $import->import($tempDir, $coursewareImport);
+    }
 
-      //write export xml-data file
-      $tempDir = $GLOBALS['TMP_PATH'].'/'.uniqid();
-      mkdir($tempDir);
-      $destination = $tempDir."/data.xml";
-      $file = fopen($destination, "w+");
-      fputs($file, $xml);
-      fclose($file);
+    function addTemplateVechta(){
 
-      //import in new course
-      $containerImport =  new Container();
-      $containerImport["cid"] = $copy->id; //new course cid
-      $coursewareImport = $containerImport["current_courseware"];
-      $import =  new XmlImport($containerImport['block_factory']);
-      $import->import($tempDir, $coursewareImport);
+      foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
+        if ($sem_type['name'] == 'ePortfolio-Vorlage') {
+          $sem_type_id = $id;
+        }
+      }
+
+      $userid           = $GLOBALS["user"]->id; //get userid
+      $sem_name         = "Vechta Vorlage";
+      $sem_description  = "Beschreibung";
+
+      $sem              = new Seminar();
+      $sem->Seminar_id  = $sem->createId();
+      $sem->name        = $sem_name;
+      $sem->description = $sem_description;
+      $sem->status      = 143;
+      $sem->read_level  = 1;
+      $sem->write_level = 1;
+      $sem->institut_id = Config::Get()->STUDYGROUP_DEFAULT_INST;
+      $sem->visible     = 1;
+
+      $sem_id = $sem->Seminar_id;
+
+      $sem->addMember($userid, 'dozent'); // add target to seminar
+
+      $sem->store(); //save sem
     }
 
 }

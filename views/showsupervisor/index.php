@@ -96,13 +96,49 @@
   <div class="widget-custom">
     <div class="widget-custom-head">Portfolio - Vorlage hinzufï¿½gen</div>
     <div class="widget-custom-content">
-      <select class="" id="tempselector" name="template">
+      <!-- <select class="" id="tempselector" name="template">
         <?php  $templates = showsupervisorcontroller::getTemplates($id); ?>
         <?php foreach ($templates as $key => $value):?>
           <option value="<?php echo $value[id] ?>"><?php echo $value[temp_name] ?></option>
         <?php endforeach; ?>
       </select>
-      <?= \Studip\Button::create('Hinzufügen', 'button', array('type' => 'button', 'onclick' => 'addTemp()')); ?>
+      <?= \Studip\Button::create('Hinzufügen', 'button', array('type' => 'button', 'onclick' => 'addTemp()')); ?> -->
+
+      <table class="default">
+        <colgroup>
+          <col width="30%">
+          <col width="60%">
+
+        </colgroup>
+        <thead>
+          <tr class="sortable">
+            <th>Portfolio-Name</th>
+            <th>Beschreibung</th>
+            <th>Aktionen</th>
+
+          </tr>
+        </thead>
+
+        <tbody>
+          <?php $temps = ShowsupervisorController::getTemplates();
+
+            foreach ($temps as $key):?>
+
+            <?php $thisPortfolio = new Seminar($key); ?>
+
+            <tr>
+              <td><?php echo $thisPortfolio->getName(); ?></td>
+              <td><?php echo ShowsupervisorController::getCourseBeschreibung($key); ?></td>
+              <td style="text-align: center;">
+                <a href="<?php echo URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $key)); ?>"><?php echo Icon::create('edit', 'clickable') ?></a>
+                <a onclick="createPortfolio('43ff6d96a50cf30836ef6b8d1ea60667')" href="#"><?php echo Icon::create('add', 'clickable') ?></a>
+              </td>
+            </tr>
+
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+
     </div>
   </div>
 
@@ -239,7 +275,7 @@ print QuickSearch::get("username", $suche)
   </ul>
 </div>
 
-<a href="#" onclick="testfunction()">textlink Template</a>
+
 
 <div id="myModal" class="modal fade" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
@@ -354,17 +390,54 @@ function addTemp(){
   });
 }
 
-function createPortfolio(tempid){
+function createPortfolio(master){
   var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/showsupervisor');
+  console.log(master);
   $.ajax({
     type: "POST",
     url: url,
     data: {
       type: 'createPortfolio',
       groupid: '<?php echo $id ?>',
-      tempid: tempid
+      master: master
     },
     success: function(data){
+      console.log(data);
+      targets = JSON.parse(data);
+      exportPortfolio(master, targets);
+    }
+  });
+}
+
+function exportPortfolio(master, targets){
+
+  //debug
+  console.log(master);
+  console.log(targets);
+
+  urlexport = STUDIP.URLHelper.getURL('plugins.php/courseware/exportportfolio', {cid: master}); //url export
+
+  $.ajax({
+    type: "GET",
+    url: urlexport,
+    success: function(exportData){
+      var xml = exportData; //export data
+
+      targets.forEach(function(target) {
+
+        urlimport = STUDIP.URLHelper.getURL('plugins.php/courseware/importportfolio', {cid: target}); //url import
+
+        $.ajax({
+          type: "POST",
+          url: urlimport,
+          data: {xml: xml},
+          success: function(importData){
+            console.log(importData);
+            //do something when finished
+          }
+        });
+      });
+
     }
   });
 }
@@ -413,4 +486,91 @@ function testfunction(){
   });
 }
 
+// function testfunctionbeta(){
+//
+//
+//   var url = STUDIP.URLHelper.getURL('plugins.php/courseware/export?cid=43ff6d96a50cf30836ef6b8d1ea60667');
+//
+//   $.ajax({
+//     type: "GET",
+//     url: '<?php echo URLHelper::getLink('plugins.php/courseware/exportportfolio', array('cid' => '43ff6d96a50cf30836ef6b8d1ea60667', 'uniqid' => uniqID())); ?>',
+//     success: function(exportData){
+//
+//       var urlMembers = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/showsupervisor');
+//       $.ajax({
+//         type: 'POST',
+//         url: urlMembers,
+//         data: {
+//           type: 'getGroupMember',
+//           id: '<?php echo $id; ?>'
+//         },
+//         success: function(members){
+//           members = JSON.parse(members);
+//           console.log(members);
+//         }
+//       });
+//
+//       // var xml = exportData;
+//       //
+//       // $.ajax({
+//       //   type: "POST",
+//       //   url: '<?php echo URLHelper::getLink('plugins.php/courseware/importportfolio', array('cid' => '4fa67ff89828d7c6926a0e23c04aa283', 'uniqid' => uniqID())); ?>',
+//       //   data: {xml: xml},
+//       //   success: function(importData){
+//       //     console.log(importData);
+//       //   }
+//       // });
+//
+//
+//     }
+//   });
+// }
+
+function vechta(){
+  var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/showsupervisor');
+  $.ajax({
+    type: "POST",
+    url: url,
+    data: {
+      type: 'addTemplateVechta'
+    },
+    success: function(data){
+      console.log(data);
+    }
+  });
+}
+
+var unique = function(origArr) {
+    var newArr = [],
+        origLen = origArr.length,
+        found, x, y;
+
+    for (x = 0; x < origLen; x++) {
+        found = undefined;
+        for (y = 0; y < newArr.length; y++) {
+            if (origArr[x] === newArr[y]) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            newArr.push(origArr[x]);
+        }
+    }
+    return newArr;
+};
+
+var uniqID = function() {
+    var ts = +new Date;
+    var tsStr = ts.toString();
+
+    var arr = tsStr.split('');
+    var rev = arr.reverse();
+
+
+    var filtered = unique(rev);
+
+    return filtered.join('');
+
+}
 </script>
