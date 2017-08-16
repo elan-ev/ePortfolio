@@ -121,17 +121,14 @@
 
         <tbody>
           <?php $temps = ShowsupervisorController::getTemplates();
-
             foreach ($temps as $key):?>
-
             <?php $thisPortfolio = new Seminar($key); ?>
-
             <tr>
               <td><?php echo $thisPortfolio->getName(); ?></td>
               <td><?php echo ShowsupervisorController::getCourseBeschreibung($key); ?></td>
               <td style="text-align: center;">
-                <a href="<?php echo URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $key)); ?>"><?php echo Icon::create('edit', 'clickable') ?></a>
-                <a onclick="createPortfolio('43ff6d96a50cf30836ef6b8d1ea60667')" href="#"><?php echo Icon::create('add', 'clickable') ?></a>
+                  <a href="<?php echo URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $key)); ?>"><?php echo Icon::create('edit', 'clickable') ?></a>
+                  <a onclick="createPortfolio('43ff6d96a50cf30836ef6b8d1ea60667')" href="#"><?php echo Icon::create('add', 'clickable') ?></a>
               </td>
             </tr>
 

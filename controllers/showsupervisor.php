@@ -379,6 +379,8 @@ class ShowsupervisorController extends StudipController {
         $array = json_decode($query[0][0]);
         if (in_array($_POST["master"], $array)) {
           return true;
+        } else {
+          return false;
         }
       }
     }
