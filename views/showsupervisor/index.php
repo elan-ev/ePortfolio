@@ -94,7 +94,7 @@
 <div>
 
   <div class="widget-custom">
-    <div class="widget-custom-head">Portfolio - Vorlage hinzufügen</div>
+    <div class="widget-custom-head">Portfolio - Vorlage hinzufï¿½gen</div>
     <div class="widget-custom-content">
       <!-- <select class="" id="tempselector" name="template">
         <?php  $templates = showsupervisorcontroller::getTemplates($id); ?>
@@ -102,7 +102,7 @@
           <option value="<?php echo $value[id] ?>"><?php echo $value[temp_name] ?></option>
         <?php endforeach; ?>
       </select>
-      <?= \Studip\Button::create('Hinzufügen', 'button', array('type' => 'button', 'onclick' => 'addTemp()')); ?> -->
+      <?= \Studip\Button::create('Hinzufï¿½gen', 'button', array('type' => 'button', 'onclick' => 'addTemp()')); ?> -->
 
       <table class="default">
         <colgroup>
@@ -202,7 +202,7 @@
             //  $q = ShowsupervisorController::getChapters($tempid);
             $q = DBManager::get()->query("SELECT title, id FROM mooc_blocks WHERE seminar_id = '$getsemid' AND type = 'Chapter'")->fetchAll();
 
-            //übergangslösung Kapitel 1 & Kapitel 2 müssen noch entfernt werden
+            //ï¿½bergangslï¿½sung Kapitel 1 & Kapitel 2 mï¿½ssen noch entfernt werden
             unset($q[0]);
             unset($q[1]);
 
@@ -232,8 +232,8 @@
           <?php endforeach; ?>
         </table>
 
-        <!-- <button type="button" name="button" onclick="deletetemplate(<?php echo $tempid; ?>)">Vorlage für diese Gruppe löschen</button> -->
-        <?= \Studip\Button::create('Vorlage für diese Gruppe löschen', 'button', array('type' => 'button', 'onclick' => 'deletetemplate('.$tempid.')')); ?>
+        <!-- <button type="button" name="button" onclick="deletetemplate(<?php echo $tempid; ?>)">Vorlage fï¿½r diese Gruppe lï¿½schen</button> -->
+        <?= \Studip\Button::create('Vorlage fï¿½r diese Gruppe lï¿½schen', 'button', array('type' => 'button', 'onclick' => 'deletetemplate('.$tempid.')')); ?>
 
 
       </div>
@@ -250,7 +250,7 @@
     Gruppen erstellen
   </div>
 
-  <?php echo MessageBox::info('Aktuell haben Sie noch keine Gruppen erstellt. Bitte erstellen Sie zunächst ein Gruppe um mit der Verwaltung fortzufahren.'); ?>
+  <?php echo MessageBox::info('Aktuell haben Sie noch keine Gruppen erstellt. Bitte erstellen Sie zunï¿½chst ein Gruppe um mit der Verwaltung fortzufahren.'); ?>
 
 </div>
 
@@ -339,16 +339,17 @@ $('#myInput').focus()
 })
 
 function createGroup(){
+  var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/showsupervisor', {create:1});
   $.ajax({
     type: "POST",
-    url: "/studip/plugins.php/eportfolioplugin/showsupervisor?create=1",
+    url: url,
     data: $("#createGroupForm").serialize(),
     success: function(data) {
       // alert(data);
       // var neu = $("#createGroupForm").serialize();
       var id = data;
       // console.log(id);
-      window.document.location.href = "/studip/portfolio/plugins.php/eportfolioplugin/showsupervisor?id="+id;
+      //window.document.location.href = "/studip/portfolio/plugins.php/eportfolioplugin/showsupervisor?id="+id;
     }
   });
 }
