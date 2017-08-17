@@ -252,6 +252,11 @@ class ShowsupervisorController extends StudipController {
       return $q;
     }
 
+    public function getChapters($id){
+      $q = DBManager::get()->query("SELECT title, id FROM mooc_blocks WHERE seminar_id = '$id' AND type = 'Chapter'")->fetchAll();
+      return $q;
+    }
+
     public function getTemplateName($id){
       $q = DBManager::get()->query("SELECT temp_name FROM eportfolio_templates WHERE id = '$id'")->fetchAll();
       $array = array();
@@ -302,13 +307,17 @@ class ShowsupervisorController extends StudipController {
 
     public function createPortfolio($id){
 
-      if ($this->checkTemplate($_POST['groupid'], $_POST['masterid'])) {
-        exit("Error: Template schon in Verwendung!");
-      }
+      // if ($this->checkTemplate($_POST['groupid'], $_POST['masterid'])) {
+      //   exit("Error: Template schon in Verwendung!");
+      // }
 
       $semList = array();
+      $masterid = $_POST['master'];
+
       $member = $this->getGroupMember($_POST["groupid"]);
       $groupowner = $this->getGroupOwner($_POST["groupid"]);
+
+      $master = new Seminar($masterid);
 
       // $tempid = $_POST["tempid"];
       // $q = DBManager::get()->query("SELECT * FROM eportfolio_templates WHERE id = '$tempid'")->fetchAll();
@@ -323,7 +332,7 @@ class ShowsupervisorController extends StudipController {
       foreach ($member as $key => $value) {
 
           $userid           = $value; //get userid
-          $sem_name         = "Vechta_Template";
+          $sem_name         = $master->getName();
           $sem_description  = "Beschreibung";
 
           $sem              = new Seminar();
@@ -350,7 +359,7 @@ class ShowsupervisorController extends StudipController {
 
           $eportfolio = new Seminar();
           $eportfolio_id = $eportfolio->createId();
-          DBManager::get()->query("INSERT INTO eportfolio (Seminar_id, eportfolio_id, owner_id) VALUES ('$sem_id', '$eportfolio_id', '$userid')"); //table eportfolio
+          DBManager::get()->query("INSERT INTO eportfolio (Seminar_id, eportfolio_id, owner_id, template_id) VALUES ('$sem_id', '$eportfolio_id', '$userid', '$masterid')"); //table eportfolio
           DBManager::get()->query("INSERT INTO eportfolio_user(user_id, Seminar_id, eportfolio_id, owner) VALUES ('$userid', '$Seminar_id' , '$eportfolio_id', 1)"); //table eportfollio_user
       }
 

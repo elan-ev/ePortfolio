@@ -143,8 +143,10 @@
   <ul class="nav nav-tabs" role="tablist">
     <?php $templistid = showsupervisorcontroller::getGroupTemplates($id);?>
     <?php foreach ($templistid as $key => $value): ?>
-      <?php $tempname = showsupervisorcontroller::getTemplateName($value);?>
-      <li role="presentation"><a href="#<?php echo $value; ?>" aria-controls="<?php echo $value; ?>" role="tab" data-toggle="tab"><?php echo $tempname ?></a></li>
+
+
+      <?php $template = new Seminar($value);?>
+      <li role="presentation"><a href="#<?php echo $value; ?>" aria-controls="<?php echo $value; ?>" role="tab" data-toggle="tab"><?php echo $template->getName(); ?></a></li>
     <?php endforeach; ?>
 
     <!-- <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Testportfolio</a></li>
@@ -163,18 +165,23 @@
       <?php $tempid = $value ?>
       <div role="tabpanel" class="tab-pane" id="<?php echo $value; ?>">
         <table class="default">
+
           <tr>
             <th style="width: 200px;border-bottom: 1px solid;">Name</th>
+
             <?php
-            $q = DBManager::get()->query("SELECT chapters FROM eportfolio_templates WHERE id = '$value'")->fetchAll();
-            $q = json_decode($q[0][0], true);
-            foreach ($q as $key => $valueChapter): ?>
-              <th style="width: 100px; border-bottom: 1px solid;"><?php print_r($valueChapter); ?></th>
+              $q = ShowsupervisorController::getChapters($value);
+              foreach ($q as $key): ?>
+
+              <th style="width: 100px; border-bottom: 1px solid;"><?php print_r($key[0]); ?></th>
+
             <?php endforeach; ?>
+
           </tr>
 
           <?php foreach ($groupList as $key):?>
             <tr>
+
               <td style="text-align: left;">
                 <?php $supervisor = UserModel::getUser($key);
                 $userid = $key;
@@ -186,37 +193,33 @@
               $getsemid = $getsemid[0][0];
               ?>
 
-              <?php $t = DBManager::get()->query("SELECT freigaben_kapitel FROM eportfolio WHERE Seminar_id = 'h965bdvaolo50gc5uk8lj7snb96c939q'")->fetchAll();
-              //  print_r($t);
-              $freigaben_kapitel = json_decode($t[0][0], true);
-               ?>
-
               <?php
               //$q = DBManager::get()->query("SELECT title, id FROM mooc_blocks WHERE type = 'Chapter' AND seminar_id = 'is22plkvtlt3ms6vvuwjsrwfuwohruq9'")->fetchAll();
               $status = DBManager::get()->query("SELECT templateStatus FROM eportfolio WHERE Seminar_id = '$getsemid'")->fetchAll();
               $status = $status[0][0];
 
-              $q = DBManager::get()->query("SELECT title, id FROM mooc_blocks WHERE type = 'Chapter' AND seminar_id = '$getsemid'")->fetchAll();
+            //  $q = DBManager::get()->query("SELECT title, id FROM mooc_blocks WHERE type = 'Chapter' AND seminar_id = '$getsemid'")->fetchAll();
+            //  $q = ShowsupervisorController::getChapters($tempid);
+            $q = DBManager::get()->query("SELECT title, id FROM mooc_blocks WHERE seminar_id = '$getsemid' AND type = 'Chapter'")->fetchAll();
+
               foreach ($q as $key => $value): ?>
 
-                <?php if ($status == 1): ?>
                   <?php $t = DBManager::get()->query("SELECT freigaben_kapitel FROM eportfolio WHERE Seminar_id = '$getsemid'")->fetchAll();
-                  $freigaben_kapitel = json_decode($t[0][0], true);?>
+
+                  $freigaben_kapitel = json_decode($t[0][0], true);
+                  ?>
+
                   <td><?php $idNew = $value[id];
-                  if($freigaben_kapitel[$idNew]):?>
-                    <?php $link = URLHelper::getLink("plugins.php/courseware/courseware", array('cid' => $getsemid , 'selected' => $idNew));?>
-                    <a href="<?php echo $link; ?>">
-                      <?php echo  Icon::create('accept', 'clickable'); ?>
-                    </a>
-                  <?php else: ?>
-                    &nbsp;
-                  <?php endif; ?>
+
+                    if($freigaben_kapitel[$idNew]):?>
+                      <?php $link = URLHelper::getLink("plugins.php/courseware/courseware", array('cid' => $getsemid , 'selected' => $idNew));?>
+                      <a href="<?php echo $link; ?>">
+                        <?php echo  Icon::create('accept', 'clickable'); ?>
+                      </a>
+                    <?php else: ?>
+                      &nbsp;
+                    <?php endif; ?>
                   </td>
-                <?php else: ?>
-                  <td>
-                    N
-                  </td>
-                <?php endif; ?>
 
 
               <?php endforeach; ?>
