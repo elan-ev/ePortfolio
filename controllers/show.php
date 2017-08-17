@@ -32,12 +32,13 @@ class ShowController extends StudipController {
         $perm = get_global_perm($GLOBALS["user"]->id);
         $this->perm = $perm;
         if($perm == "dozent"){
-          $output = $this->getFirstGroup($GLOBALS["user"]->id);
-          if(!$output == '') {
-            $this->linkId = $output;
-          } else {
-            $this->linkId = 'noId';
-          }
+          $this->linkId = $output;
+          // $output = $this->getFirstGroup($GLOBALS["user"]->id);
+          // if(!$output == '') {
+          //   $this->linkId = $output;
+          // } else {
+          //   $this->linkId = 'noId';
+          // }
         }
 
     }

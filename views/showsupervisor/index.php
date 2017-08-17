@@ -94,7 +94,7 @@
 <div>
 
   <div class="widget-custom">
-    <div class="widget-custom-head">Portfolio - Vorlage hinzufï¿½gen</div>
+    <div class="widget-custom-head">Portfolio - Vorlage hinzufügen</div>
     <div class="widget-custom-content">
       <!-- <select class="" id="tempselector" name="template">
         <?php  $templates = showsupervisorcontroller::getTemplates($id); ?>
@@ -128,7 +128,7 @@
               <td><?php echo ShowsupervisorController::getCourseBeschreibung($key); ?></td>
               <td style="text-align: center;">
                   <a href="<?php echo URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $key)); ?>"><?php echo Icon::create('edit', 'clickable') ?></a>
-                  <a onclick="createPortfolio('43ff6d96a50cf30836ef6b8d1ea60667')" href="#"><?php echo Icon::create('add', 'clickable') ?></a>
+                  <a onclick="createPortfolio('<?php echo $key; ?>')" href="#"><?php echo Icon::create('add', 'clickable') ?></a>
               </td>
             </tr>
 
@@ -201,6 +201,10 @@
             //  $q = DBManager::get()->query("SELECT title, id FROM mooc_blocks WHERE type = 'Chapter' AND seminar_id = '$getsemid'")->fetchAll();
             //  $q = ShowsupervisorController::getChapters($tempid);
             $q = DBManager::get()->query("SELECT title, id FROM mooc_blocks WHERE seminar_id = '$getsemid' AND type = 'Chapter'")->fetchAll();
+
+            //übergangslösung Kapitel 1 & Kapitel 2 müssen noch entfernt werden
+            unset($q[0]);
+            unset($q[1]);
 
               foreach ($q as $key => $value): ?>
 
