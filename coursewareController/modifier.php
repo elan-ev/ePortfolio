@@ -119,7 +119,7 @@ $workingArray = json_encode($workingArray);
     <p>Besitzer: {{firstname}} {{lastname}}</p>
     <?php $link = URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('cid' => $cid)); ?>
     <a href="<?php echo $link; ?>">
-      <button class="fakeButton">Zurück</button>
+      <button class="fakeButton">Zurï¿½ck</button>
     </a>
   </div>
 </script>
@@ -134,7 +134,7 @@ $workingArray = json_encode($workingArray);
 
   function freigeben(selected, cid){
     console.log(selected + " " + cid);
-    var url = "/studip/plugins.php/eportfolioplugin";
+    var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin');
     $.ajax({
       url: url,
       type: 'POST',
