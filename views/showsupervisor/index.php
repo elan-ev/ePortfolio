@@ -339,12 +339,20 @@ $('#myInput').focus()
 })
 
 function createGroup(){
+  var name        = $('#wizard-name').val();
+  var description = $('#wizard-description').val();
   var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/showsupervisor', {create:1});
+
   $.ajax({
     type: "POST",
     url: url,
-    data: $("#createGroupForm").serialize(),
+    data: {
+      name: name,
+      description: description,
+      ownerid: "<?php echo $userid; ?>"
+    },
     success: function(data) {
+      console.log(data);
       // alert(data);
       // var neu = $("#createGroupForm").serialize();
       var id = data;

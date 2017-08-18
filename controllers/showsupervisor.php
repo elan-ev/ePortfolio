@@ -15,7 +15,13 @@ class ShowsupervisorController extends StudipController {
         $user = get_username();
         $id = $_GET["id"];
         $this->id = $id;
+        $this->userid = $GLOBALS["user"]->id;
         //userData for Modal
+
+        if($_GET["create"]){
+          $this->createSupervisorGroup($_POST["ownerid"], $_POST["name"], $_POST["description"]);
+          exit();
+        }
 
         if($_POST["type"] == 'addTemp'){
           $this->addTempToDB();
@@ -86,10 +92,6 @@ class ShowsupervisorController extends StudipController {
 
     public function index_action()
     {
-
-      if($_GET["create"]){
-        $this->createSupervisorGroup($GLOBALS["user"]->id, $_POST["name"], $_POST["description"]);
-      }
 
       $id = $_GET["id"];
       $this->id = $id;
