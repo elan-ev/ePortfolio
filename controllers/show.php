@@ -27,18 +27,18 @@ class ShowController extends StudipController {
 
     public function index_action()
     {
-        // echo $GLOBALS["user"]->id;
+        //echo $GLOBALS["user"]->id;
         $this->userId = $GLOBALS["user"]->id;
         $perm = get_global_perm($GLOBALS["user"]->id);
         $this->perm = $perm;
         if($perm == "dozent"){
           $this->linkId = $output;
-          // $output = $this->getFirstGroup($GLOBALS["user"]->id);
-          // if(!$output == '') {
-          //   $this->linkId = $output;
-          // } else {
-          //   $this->linkId = 'noId';
-          // }
+          $output = $this->getFirstGroup($GLOBALS["user"]->id);
+          if(!$output == '') {
+            $this->linkId = $output;
+          } else {
+            $this->linkId = 'noId';
+          }
         }
 
     }
