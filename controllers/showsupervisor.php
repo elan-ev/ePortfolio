@@ -16,6 +16,7 @@ class ShowsupervisorController extends StudipController {
         $id = $_GET["id"];
         $this->id = $id;
         $this->userid = $GLOBALS["user"]->id;
+
         //userData for Modal
 
         if($_GET["create"]){
@@ -388,7 +389,7 @@ class ShowsupervisorController extends StudipController {
         return false;
       } else {
         $array = json_decode($query[0][0]);
-        if (in_array($_POST["master"], $array)) {
+        if (in_array($masterid, $array)) {
           return true;
         } else {
           return false;
