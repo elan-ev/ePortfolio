@@ -38,7 +38,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         }
 
         $navigation = new AutoNavigation(_('ePortfolio'));
-        $navigation->setImage(Assets::image_path('admin'));
+        $navigation->setImage(Assets::image_path('lightblue/edit'));
         $navigation->setURL(PluginEngine::GetURL($this, array(), $renderView));
         Navigation::addItem('/eportfolioplugin', $navigation);
         //Navigation::activateItem("/eportfolioplugin");
@@ -108,7 +108,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
       $tabs = array();
 
       //uebersicht navigation point
-      $navigation = new Navigation('Übersicht', PluginEngine::getURL($this, compact('cid'), 'eportfolioplugin', true));
+      $navigation = new Navigation('ï¿½bersicht', PluginEngine::getURL($this, compact('cid'), 'eportfolioplugin', true));
       $navigation->setImage('icons/16/white/group4.png');
       $navigation->setActiveImage('icons/16/black/group4.png');
 
