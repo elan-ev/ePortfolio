@@ -123,14 +123,16 @@
           <?php $temps = ShowsupervisorController::getTemplates();
             foreach ($temps as $key):?>
             <?php $thisPortfolio = new Seminar($key); ?>
-            <tr>
-              <td><?php echo $thisPortfolio->getName(); ?></td>
-              <td><?php echo ShowsupervisorController::getCourseBeschreibung($key); ?></td>
-              <td style="text-align: center;">
-                  <a href="<?php echo URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $key)); ?>"><?php echo Icon::create('edit', 'clickable') ?></a>
-                  <a onclick="createPortfolio('<?php echo $key; ?>')" href="#"><?php echo Icon::create('add', 'clickable') ?></a>
-              </td>
-            </tr>
+            <?php if (ShowsupervisorController::checkTemplate($id, $key) == false): ?>
+              <tr>
+                <td><?php echo $thisPortfolio->getName(); ?></td>
+                <td><?php echo ShowsupervisorController::getCourseBeschreibung($key); ?></td>
+                <td style="text-align: center;">
+                    <a href="<?php echo URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $key)); ?>"><?php echo Icon::create('edit', 'clickable') ?></a>
+                    <a onclick="createPortfolio('<?php echo $key; ?>')" href="#"><?php echo Icon::create('add', 'clickable') ?></a>
+                </td>
+              </tr>
+            <?php endif; ?>
 
           <?php endforeach; ?>
         </tbody>
@@ -214,7 +216,6 @@
                   ?>
 
                   <td><?php $idNew = $value[id];
-
                     if($freigaben_kapitel[$idNew]):?>
                       <?php $link = URLHelper::getLink("plugins.php/courseware/courseware", array('cid' => $getsemid , 'selected' => $idNew));?>
                       <a href="<?php echo $link; ?>">
