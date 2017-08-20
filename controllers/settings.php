@@ -37,6 +37,7 @@ class settingsController extends StudipController {
     $userid = $GLOBALS["user"]->id;
     $cid = $_GET["cid"];
     $db = DBManager::get();
+    $this->cid = $cid;
 
     //set AutoNavigation////
     //Navigation::activateItem("course/settings");
@@ -253,6 +254,17 @@ class settingsController extends StudipController {
     if ($query[0][0] == $userId) {
       return true;
     }
+  }
+
+  public function getSupervisorOfPortfolio($id){
+    $query = DBManager::get()->query("SELECT supervisor_id FROM eportfolio WHERE seminar_id = '$id'")->fetchAll();
+    return $query[0][0];
+  }
+
+  public function getPortfolioFreigaben($id){
+    $query = DBManager::get()->query("SELECT freigaben_kapitel FROM eportfolio WHERE Seminar_id = '$id'")->fetchAll();
+    $query = json_decode($query[0][0], true);
+    return $query;
   }
 
 }
