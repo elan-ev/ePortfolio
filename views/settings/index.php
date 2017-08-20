@@ -119,7 +119,9 @@
 <?php $i = 1; ?>
  <?php foreach ($viewerList as $viewer):?>
    <tr>
-     <td><?php echo $viewer[Vorname].' '.$viewer[Nachname]; ?> </td>
+     <td>
+       <img style="border-radius: 30px; width: 15px;" src="<?php echo $GLOBALS[DYNAMIC_CONTENT_URL];?>/user/<?php echo $viewer[viewer_id]; ?>_small.png" onError="defaultImg(this);">
+       <?php echo $viewer[Vorname].' '.$viewer[Nachname]; ?> </td>
      <?php $access = settingsController::getEportfolioAccess($viewer[viewer_id], $cid);?>
      <?php foreach ($chapterList as $chapter):?>
 
