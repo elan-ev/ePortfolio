@@ -80,7 +80,7 @@ $workingArray = json_encode($workingArray);
 <script type="text/javascript" src="<?php echo $GLOBALS['ABSOLUTE_URI_STUDIP'] . 'plugins_packages/uos/EportfolioPlugin/assets/js/mustache.min.js'; ?>"></script>
 <script type="text/javascript">
   $(document).ready(function(){
-    console.log("ready");
+    console.log("modifier.php loaded");
     var workingArray = <?php echo $workingArray ?>;
     console.log(workingArray);
     $.each(workingArray, function(key, value){
@@ -134,6 +134,7 @@ $workingArray = json_encode($workingArray);
   function freigeben(selected, cid){
     console.log(selected + " " + cid);
     var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin');
+    $('td[id="chapter'+selected+'"]').empty().prepend('<i style="color: #24437c;" class="fa fa-circle-o-notch fa-spin fa-fw"></i>');
     $.ajax({
       url: url,
       type: 'POST',
@@ -144,7 +145,11 @@ $workingArray = json_encode($workingArray);
       },
       success: function(data){
         console.log(data);
-
+        if (data == true) {
+          $('td[id="chapter'+selected+'"]').empty().prepend('<?php echo  Icon::create('accept', 'clickable'); ?>');
+        } else {
+          $('td[id="chapter'+selected+'"]').empty().prepend('<?php echo  Icon::create('decline', 'clickable'); ?>');
+        }
 
       }
 
