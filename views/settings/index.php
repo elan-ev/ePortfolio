@@ -72,9 +72,11 @@
   <button data-toggle="modal" data-target="#addSupervisorModal" type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Supervisor hinzufuegen</button>
 <?php endif;?> -->
 
-<table class="default">
+<?php if (empty($viewerList))
+  echo MessageBox::info('Es sind derzeit keine Zugriffsrechte in Ihrem Portfolio vergeben.');
+?>
 
-<?php if (!empty($viewerList)): ?>
+<table class="default">
 
   <caption>Zugriffsrechte</caption>
   <tr class="sortable">
@@ -86,13 +88,33 @@
     <?php endforeach; ?>
   </tr>
 
-<?php else: ?>
-
-  <?php echo MessageBox::info('Es sind derzeit keine Zugriffsrechte in Ihrem Portfolio vergeben.'); ?>
-
-<?php endif; ?>
-
 <tbody>
+
+<?php
+  //supervisor Zeile
+  //Supervisor Informationen
+  $supervisorId = SettingsController::getSupervisorOfPortfolio($cid);
+  $supervisor = UserModel::getUser($supervisorId);
+  $supervisorName = $supervisor[Vorname].' '.$supervisor[Nachname];
+
+  //Freigaben für Portfolio
+  $SupervisorFreigaben = SettingsController::getPortfolioFreigaben($cid);
+ ?>
+
+<tr style="background-color: lightblue;">
+  <td>
+    <img style="border-radius: 30px; width: 15px;" src="<?php echo $GLOBALS[DYNAMIC_CONTENT_URL];?>/user/{{userid}}_small.png" onError="defaultImg(this);">
+    <?php echo $supervisorName; ?>
+  </td>
+
+  <?php foreach ($chapterList as $chapter):?>
+    <?php if($SupervisorFreigaben[$chapter[id]] == 1): ?>
+      <td id="chapter<?php echo $chapter[id]?>" onclick="freigeben('<?php echo $chapter[id]; ?>', '<?php echo $cid; ?>');"><?php echo  Icon::create('accept', 'clickable'); ?></td>
+    <?php else: ?>
+      <td id="chapter<?php echo $chapter[id]?>" onclick="freigeben('<?php echo $chapter[id]; ?>', '<?php echo $cid; ?>');"><?php echo  Icon::create('decline', 'clickable'); ?></td>
+    <?php endif; ?>
+  <?php endforeach; ?>
+</tr>
 
 <?php $i = 1; ?>
  <?php foreach ($viewerList as $viewer):?>
@@ -274,6 +296,7 @@
         }
       });
     });
+
 
   });
 
