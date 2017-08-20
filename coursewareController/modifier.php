@@ -81,7 +81,6 @@ $workingArray = json_encode($workingArray);
 <script type="text/javascript">
   $(document).ready(function(){
     console.log("ready");
-    $('li[id="nav_eportfolioplugin"] img').attr('src', 'http://studip3g-test.rz.uni-osnabrueck.de/studip/assets/images/icons/white/admin.svg');
     var workingArray = <?php echo $workingArray ?>;
     console.log(workingArray);
     $.each(workingArray, function(key, value){
