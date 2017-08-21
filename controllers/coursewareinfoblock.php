@@ -73,14 +73,28 @@ class CoursewareinfoblockController extends StudipController {
 
       }
 
+      $supervisorQuery  = DBManager::get()->query("SELECT supervisor_id FROM eportfolio WHERE seminar_id = '$cid'")->fetchAll();
+      $supervisorId     = $supervisorQuery[0][0];
+
+      //supervisor Infos
+      if (!empty($supervisorQuery[0][0])) {
+        $supervisorInfo = UserModel::getUser($supervisorId);
+        $infoboxArray["supervisorId"] = $supervisorId;
+        $infoboxArray["supervisorFistname"] = $supervisorInfo[Vorname];
+        $infoboxArray["supervisorLastname"] = $supervisorInfo[Nachname];
+        $infoboxArray['cid']                = $cid; 
+      }
+
     } else {
 
       //get owner Id
       $query = $db->query("SELECT owner_id FROM eportfolio WHERE Seminar_id = '$cid'")->fetchAll();
       $userId = $query[0][0];
       $supervisor = UserModel::getUser($userId);
-      $infoboxArray['firstname'] = $supervisor[Vorname];
-      $infoboxArray['lastname'] = $supervisor[Nachname];
+      $infoboxArray['firstname']  = $supervisor[Vorname];
+      $infoboxArray['lastname']   = $supervisor[Nachname];
+      $infoboxArray['userid']     = $userId;
+      $infoboxArray['cid']        = $cid;
 
     }
 

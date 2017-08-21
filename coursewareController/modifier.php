@@ -21,8 +21,7 @@ $workingArray = json_encode($workingArray);
   }
 
   .courseware_infobox_owner {
-    border: 2px solid black;
-    padding: 5px;
+
   }
 
 
@@ -73,6 +72,60 @@ $workingArray = json_encode($workingArray);
     color: white;
     outline: 0;
   }
+
+  .courseware_infobox_owner {
+    background-color: #e7ebf1;
+    padding: 6px 10px 0;
+    margin-bottom: 20px;
+  }
+
+  .viewer_icon {
+    position: relative;
+    display: inline-block;
+    margin-right: 1px;
+  }
+
+  .viewer_icon .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: #28497c;
+    color: #fff;
+    text-align: center;
+    border-radius: 3px;
+    padding: 1px 0;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+}
+
+.viewer_icon:hover .tooltiptext {
+    visibility: visible;
+}
+
+.viewer_icon .tooltiptext {
+    width: 120px;
+    bottom: 34px;
+    left: 50%;
+    margin-left: -60px; /* Use half of the width (120/2 = 60), to center the tooltip */
+}
+
+.viewer_icon .tooltiptext::after {
+    content: " ";
+    position: absolute;
+    top: 100%; /* At the bottom of the tooltip */
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #28497c transparent transparent transparent;
+}
+
+
+/*Overflow Visible*/
+#layout_content {
+  overflow: visible!important;
+}
 </style>
 
 
@@ -97,36 +150,52 @@ $workingArray = json_encode($workingArray);
 <script id="templateOwnerTrue" type="x-tmpl-mustache">
   <div class="courseware_infobox_owner">
 
-    <p>
-     </p>
+    <div style="display: inline; position: relative; top: -6px; font-size: 14px; font-weight: bold; margin-right: 10px;">Lesen dürfen:</div>
 
-    <p>Liste der berechtigten Personen:
+      {{#supervisorId}}
+        <div class="viewer_icon">
+          <img style="border-radius: 30px; width: 21px; border: 1px solid #28497c;" src="<?php echo $GLOBALS[DYNAMIC_CONTENT_URL];?>/user/{{supervisorId}}_small.png" onError="defaultImg(this);">
+          <span class="tooltiptext">{{supervisorFistname}} {{supervisorLastname}}</span>
+        </div>
+      {{/supervisorId}}
+
         {{#users}}
 
-          <div><img style="border-radius: 30px; width: 15px;" src="<?php echo $GLOBALS[DYNAMIC_CONTENT_URL];?>/user/{{userid}}_small.png" onError="defaultImg(this);"> {{firstname}} {{lastname}}</div>
+          <div class="viewer_icon">
+            <img style="border-radius: 30px; width: 20px; border: 1px solid grey;" src="<?php echo $GLOBALS[DYNAMIC_CONTENT_URL];?>/user/{{userid}}_small.png" onError="defaultImg(this);">
+            <span class="tooltiptext">{{firstname}} {{lastname}}</span>
+          </div>
 
         {{/users}}
 
-    </p>
-    <button class="fakeButton" onclick='freigeben(<?php echo $selected; ?>, `<?php echo $cid ?>`);'>Freigeben</button>
+        <div style="display: inline; font-size: 24px; position: relative; top: -3px;margin-left:2px;">
+          <a href="<?php echo URLHelper::getLink('plugins.php/eportfolioplugin/settings?cid='); ?>{{cid}}">
+            <i class="fa fa-cog" aria-hidden="true"></i>
+          </a>
+        </div>
 
   </div>
 </script>
 
 <script id="templateOwnerFalse" type="x-tmpl-mustache">
   <div class="courseware_infobox_owner">
-    <p>Besitzer: {{firstname}} {{lastname}}</p>
+  <div style="margin-top: 15px;margin-left:10px;float: left;">
+    <div style="display: inline; position: relative; top: -5px;font-size: 14px; font-weight: bold;margin-right: 5px;">Besitzer:</div>
+    <img style="border-radius: 30px; width: 18px; border: 1px solid #28497c;" src="<?php echo $GLOBALS[DYNAMIC_CONTENT_URL];?>/user/{{userId}}_small.png" onError="defaultImg(this);">
+    <div style="display: inline;position: relative; top: -5px;">{{firstname}} {{lastname}}</div>
     <?php $link = URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('cid' => $cid)); ?>
-    <a href="<?php echo $link; ?>">
-      <button class="fakeButton">Zur�ck</button>
+  </div>
+    <a style="float: right;" href="<?php echo $link; ?>">
+      <button class="fakeButton">Zur&uuml;ck</button>
     </a>
+    <div style="clear: both;"></div>
   </div>
 </script>
 
 <script type="text/javascript">
 
   $(document).ready(function(){
-    $('#courseware').append("<button onclick='freigeben(<?php echo $selected; ?>, `<?php echo $cid ?>`);'>Freigeben</button>");
+    // $('#courseware').append("<button onclick='freigeben(<?php echo $selected; ?>, `<?php echo $cid ?>`);'>Freigeben</button>");
 
     infobox();
   });
