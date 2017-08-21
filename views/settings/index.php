@@ -126,7 +126,7 @@
      <?php foreach ($chapterList as $chapter):?>
 
       <?php $viewer_id = $viewer[viewer_id]; ?>
-      <td onClick="setAccess(<?php echo $chapter[id]?>, '<?php echo $viewer_id ?>'); checkIcon('<?php echo $viewer[viewer_id]?>', <?php echo $chapter[id]; ?>);" class="righttable-inner">
+      <td onClick="setAccess(<?php echo $chapter[id]?>, '<?php echo $viewer_id ?>', this); checkIcon('<?php echo $viewer[viewer_id]?>', <?php echo $chapter[id]; ?>);" class="righttable-inner">
 
         <?php if($access[$chapter[id]] == 1):?>
           <span id="icon-<?php echo $viewer[viewer_id].'-'.$chapter[id]; ?>" class="glyphicon glyphicon-ok" aria-hidden="true"></span>
