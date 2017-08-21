@@ -191,15 +191,22 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     public function freigeben($selected, $cid){
       $db = DBManager::get();
       $query = $db->query("SELECT freigaben_kapitel FROM eportfolio WHERE Seminar_id = '$cid'")->fetchAll();
-      //print_r($query[0][0]);
+      # debug print_r($query[0][0]);
       if(empty($query[0][0])){
         $array = array($selected => '1');
         $array = json_encode($array);
         $db->query("UPDATE eportfolio SET freigaben_kapitel = '$array' WHERE Seminar_id = '$cid'");
+        echo true;
       } else {
         $array = $query[0][0];
         $array = json_decode($array);
-        $array->$selected = "1";
+        if ($array->$selected == "1") {
+          $array->$selected = "0";
+          echo false;
+        } else {
+          $array->$selected = "1";
+          echo true;
+        }
         $array = json_encode($array);
         $db->query("UPDATE eportfolio SET freigaben_kapitel = '$array' WHERE Seminar_id = '$cid'");
       }
