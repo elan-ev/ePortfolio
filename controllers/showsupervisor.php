@@ -534,4 +534,14 @@ class ShowsupervisorController extends StudipController {
 
     }
 
+    public function isThereAnyUser() {
+      $groupid  = $_GET['id'];
+      $query    = DBManager::get()->query("SELECT user_id FROM eportfolio_groups_user WHERE seminar_id = '$groupid'")->fetchAll();
+      if (empty($query[0])) {
+        return false;
+      } else {
+        return true;
+      }
+    }
+
 }

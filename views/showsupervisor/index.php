@@ -141,105 +141,125 @@
     </div>
   </div>
 
-  <!-- Nav tabs -->
-  <ul class="nav nav-tabs" role="tablist">
-    <?php $templistid = showsupervisorcontroller::getGroupTemplates($id);?>
-    <?php foreach ($templistid as $key => $value): ?>
+  <?php
+    if (ShowsupervisorController::isThereAnyUser() == false) {
+      echo "noch kein User vorhanden";
+    }
 
+  ?>
 
-      <?php $template = new Seminar($value);?>
-      <li role="presentation"><a href="#<?php echo $value; ?>" aria-controls="<?php echo $value; ?>" role="tab" data-toggle="tab"><?php echo $template->getName(); ?></a></li>
-    <?php endforeach; ?>
+  <?php
+    $groupTemplates = ShowsupervisorController::getGroupTemplates($id);
+    if (empty($groupTemplates[0])):
+  ?>
 
-    <!-- <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Testportfolio</a></li>
-    <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Profile</a></li>
-    <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Messages</a></li>
-    <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Settings</a></li> -->
-  </ul>
+    <h4>Gruppenmitglieder</h4>
 
-  <!-- Tab panes -->
+    <table class="default">
+      <colgroup>
+        <col width="30%">
+        <col width="60%">
+      </colgroup>
+      <tr>
+        <th>Name</th>
+        <th></th>
+        <th>Aktionen</th>
+      </tr>
+      <?php foreach ($groupList as $user):?>
+        <tr>
+          <td><?php $userInfo = UserModel::getUser($user);?><?php echo $userInfo['Vorname']." ".$userInfo['Nachname']; ?></td>
+          <td></td>
+          <td style="text-align:center;">
+            <?php echo  Icon::create('person', 'clickable'); ?>
+            <?php echo  Icon::create('trash', 'clickable'); ?>
+          </td>
+        </tr>
+      <?php endforeach; ?>
+    </table>
 
+    <?php else: ?>
 
-  <div class="tab-content">
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+      <?php $templistid = showsupervisorcontroller::getGroupTemplates($id);?>
+      <?php foreach ($templistid as $key => $value): ?>
+        <?php $template = new Seminar($value);?>
+        <li role="presentation"><a href="#<?php echo $value; ?>" aria-controls="<?php echo $value; ?>" role="tab" data-toggle="tab"><?php echo $template->getName(); ?></a></li>
+      <?php endforeach; ?>
+    </ul>
+    <!-- Tab panes -->
 
-    <?php $templistid = showsupervisorcontroller::getGroupTemplates($id); ?>
-    <?php foreach ($templistid as $key => $value): ?>
-      <?php $tempid = $value ?>
-      <div role="tabpanel" class="tab-pane" id="<?php echo $value; ?>">
-        <table class="default">
-
-          <tr>
-            <th style="width: 200px;border-bottom: 1px solid;">Name</th>
-
-            <?php
-              $q = ShowsupervisorController::getChapters($value);
-              foreach ($q as $key): ?>
-
-              <th style="width: 100px; border-bottom: 1px solid;"><?php print_r($key[0]); ?></th>
-
-            <?php endforeach; ?>
-
-          </tr>
-
-          <?php foreach ($groupList as $key):?>
+    <div class="tab-content">
+      <?php $templistid = showsupervisorcontroller::getGroupTemplates($id); ?>
+      <?php foreach ($templistid as $key => $value): ?>
+        <?php $tempid = $value ?>
+        <div role="tabpanel" class="tab-pane" id="<?php echo $value; ?>">
+          <table class="default">
             <tr>
-
-              <td style="text-align: left;">
-                <?php $supervisor = UserModel::getUser($key);
-                $userid = $key;
-                    echo $supervisor[Vorname].' '.$supervisor[Nachname];
-                 ?>
-              </td>
-
-              <?php $getsemid = DBManager::get()->query("SELECT Seminar_id FROM eportfolio WHERE owner_id = '$key' AND template_id = '$tempid'")->fetchAll();
-              $getsemid = $getsemid[0][0];
-              ?>
-
+              <th style="width: 200px;border-bottom: 1px solid;">Name</th>
               <?php
-              //$q = DBManager::get()->query("SELECT title, id FROM mooc_blocks WHERE type = 'Chapter' AND seminar_id = 'is22plkvtlt3ms6vvuwjsrwfuwohruq9'")->fetchAll();
-              $status = DBManager::get()->query("SELECT templateStatus FROM eportfolio WHERE Seminar_id = '$getsemid'")->fetchAll();
-              $status = $status[0][0];
-
-            //  $q = DBManager::get()->query("SELECT title, id FROM mooc_blocks WHERE type = 'Chapter' AND seminar_id = '$getsemid'")->fetchAll();
-            //  $q = ShowsupervisorController::getChapters($tempid);
-            $q = DBManager::get()->query("SELECT title, id FROM mooc_blocks WHERE seminar_id = '$getsemid' AND type = 'Chapter'")->fetchAll();
-
-            //�bergangsl�sung Kapitel 1 & Kapitel 2 m�ssen noch entfernt werden
-            unset($q[0]);
-            unset($q[1]);
-
-              foreach ($q as $key => $value): ?>
-
-                  <?php $t = DBManager::get()->query("SELECT freigaben_kapitel FROM eportfolio WHERE Seminar_id = '$getsemid'")->fetchAll();
-
-                  $freigaben_kapitel = json_decode($t[0][0], true);
-                  ?>
-
-                  <td><?php $idNew = $value[id];
-                    if($freigaben_kapitel[$idNew]):?>
-                      <?php $link = URLHelper::getLink("plugins.php/courseware/courseware", array('cid' => $getsemid , 'selected' => $idNew));?>
-                      <a href="<?php echo $link; ?>">
-                        <?php echo  Icon::create('accept', 'clickable'); ?>
-                      </a>
-                    <?php else: ?>
-                      &nbsp;
-                    <?php endif; ?>
-                  </td>
-
-
+                $q = ShowsupervisorController::getChapters($value);
+                foreach ($q as $key): ?>
+                  <th style="width: 100px; border-bottom: 1px solid;"><?php print_r($key[0]); ?></th>
               <?php endforeach; ?>
-
             </tr>
-          <?php endforeach; ?>
-        </table>
+            <?php foreach ($groupList as $key):?>
+              <tr>
+                <td style="text-align: left;">
+                  <?php $supervisor = UserModel::getUser($key);
+                  $userid = $key;
+                      echo $supervisor[Vorname].' '.$supervisor[Nachname];
+                   ?>
+                </td>
+                <?php $getsemid = DBManager::get()->query("SELECT Seminar_id FROM eportfolio WHERE owner_id = '$key' AND template_id = '$tempid'")->fetchAll();
+                $getsemid = $getsemid[0][0];
+                ?>
 
-        <!-- <button type="button" name="button" onclick="deletetemplate(<?php echo $tempid; ?>)">Vorlage f�r diese Gruppe l�schen</button> -->
-        <?= \Studip\Button::create('Vorlage f�r diese Gruppe l�schen', 'button', array('type' => 'button', 'onclick' => 'deletetemplate('.$tempid.')')); ?>
+                <?php
+                //$q = DBManager::get()->query("SELECT title, id FROM mooc_blocks WHERE type = 'Chapter' AND seminar_id = 'is22plkvtlt3ms6vvuwjsrwfuwohruq9'")->fetchAll();
+                $status = DBManager::get()->query("SELECT templateStatus FROM eportfolio WHERE Seminar_id = '$getsemid'")->fetchAll();
+                $status = $status[0][0];
 
-      </div>
-    <?php endforeach; ?>
+              //  $q = DBManager::get()->query("SELECT title, id FROM mooc_blocks WHERE type = 'Chapter' AND seminar_id = '$getsemid'")->fetchAll();
+              //  $q = ShowsupervisorController::getChapters($tempid);
+              $q = DBManager::get()->query("SELECT title, id FROM mooc_blocks WHERE seminar_id = '$getsemid' AND type = 'Chapter'")->fetchAll();
 
-  </div>
+              //�bergangsl�sung Kapitel 1 & Kapitel 2 m�ssen noch entfernt werden
+              unset($q[0]);
+              unset($q[1]);
+
+                foreach ($q as $key => $value): ?>
+
+                    <?php $t = DBManager::get()->query("SELECT freigaben_kapitel FROM eportfolio WHERE Seminar_id = '$getsemid'")->fetchAll();
+
+                    $freigaben_kapitel = json_decode($t[0][0], true);
+                    ?>
+
+                    <td><?php $idNew = $value[id];
+                      if($freigaben_kapitel[$idNew]):?>
+                        <?php $link = URLHelper::getLink("plugins.php/courseware/courseware", array('cid' => $getsemid , 'selected' => $idNew));?>
+                        <a href="<?php echo $link; ?>">
+                          <?php echo  Icon::create('accept', 'clickable'); ?>
+                        </a>
+                      <?php else: ?>
+                        &nbsp;
+                      <?php endif; ?>
+                    </td>
+
+
+                <?php endforeach; ?>
+
+              </tr>
+            <?php endforeach; ?>
+          </table>
+
+          <!-- <button type="button" name="button" onclick="deletetemplate(<?php echo $tempid; ?>)">Vorlage f�r diese Gruppe l�schen</button> -->
+          <?= \Studip\Button::create('Vorlage f�r diese Gruppe l�schen', 'button', array('type' => 'button', 'onclick' => 'deletetemplate('.$tempid.')')); ?>
+
+        </div>
+      <?php endforeach; ?>
+    </div>
+  <?php endif; ?>
 
 </div>
 
