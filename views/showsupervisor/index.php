@@ -236,7 +236,6 @@
         <!-- <button type="button" name="button" onclick="deletetemplate(<?php echo $tempid; ?>)">Vorlage f�r diese Gruppe l�schen</button> -->
         <?= \Studip\Button::create('Vorlage f�r diese Gruppe l�schen', 'button', array('type' => 'button', 'onclick' => 'deletetemplate('.$tempid.')')); ?>
 
-
       </div>
     <?php endforeach; ?>
 
@@ -257,18 +256,17 @@
 
 <?php endif; ?>
 
-<!-- add person buton / MultiPersonSearch -->
-<?php if($id) {
-  //print_r($mp);
-}  ?>
+<?php
+  $mp = MultiPersonSearch::get('eindeutige_id')
+    ->setLinkText(_('Personen hinzufügen'))
+    ->setTitle(_('Personen zur Gruppe hinzuf&uuml;gen'))
+    ->setSearchObject(new StandardSearch('user_id'))
+    ->setJSFunctionOnSubmit('addUserToGroup')
+    ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor', array('id' => $groupid, 'action' => 'addUsersToGroup')))
+    ->render();
 
-<!-- <?php
-
-$suche = new SQLSearch("SELECT * FROM auth_user_md5");
-print QuickSearch::get("username", $suche)
-  ->render();
-  ?> -->
-
+   print $mp;
+ ?>
 
 <!-- Legende -->
 <div class="legend">
@@ -343,14 +341,14 @@ function createGroup(){
   var name        = $('#wizard-name').val();
   var description = $('#wizard-description').val();
   var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/showsupervisor', {create:1});
-
+  console.log('<?php echo $ownerid; ?>');
   $.ajax({
     type: "POST",
     url: url,
     data: {
       name: name,
       description: description,
-      ownerid: "<?php echo $userid; ?>"
+      ownerid: "<?php echo $ownerid; ?>"
     },
     success: function(data) {
       console.log(data);
@@ -361,6 +359,10 @@ function createGroup(){
       //window.document.location.href = "/studip/portfolio/plugins.php/eportfolioplugin/showsupervisor?id="+id;
     }
   });
+}
+
+function addUserToGroup(item_id, item_name, item_firstname, item_userid){
+  console.log(item_id[0]);
 }
 
 function getUserData(id){

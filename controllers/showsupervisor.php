@@ -1,10 +1,11 @@
-  <?php
+<?php
 
-  use Mooc\Export\XmlExport;
-  use Mooc\Import\XmlImport;
-  use Mooc\Container;
-  use Mooc\UI\Courseware\Courseware;
+use Mooc\Export\XmlExport;
+use Mooc\Import\XmlImport;
+use Mooc\Container;
+use Mooc\UI\Courseware\Courseware;
 
+# require_once 'plugins_packages/virtUOS/Courseware/controllers/exportportfolio.php';
 
 class ShowsupervisorController extends StudipController {
 
@@ -15,7 +16,10 @@ class ShowsupervisorController extends StudipController {
         $user = get_username();
         $id = $_GET["id"];
         $this->id = $id;
+        $groupid = $id;
+        $this->groupid = $_GET["id"];
         $this->userid = $GLOBALS["user"]->id;
+        $this->ownerid = $GLOBALS["user"]->id;
 
         //userData for Modal
 
@@ -52,6 +56,10 @@ class ShowsupervisorController extends StudipController {
         if($_POST["type"] == 'getGroupMember'){
           $this->getGroupMemberAjax($_POST['id']);
           exit();
+        }
+
+        if ($_GET["action"] == 'addUsersToGroup') {
+          $this->addUsersToGroup();
         }
 
         //sidebar
@@ -454,6 +462,76 @@ class ShowsupervisorController extends StudipController {
       $sem->addMember($userid, 'dozent'); // add target to seminar
 
       $sem->store(); //save sem
+    }
+
+    public function addUsersToGroup(){
+
+      $mp           = MultiPersonSearch::load('eindeutige_id');
+      $groupid      = $_GET['id'];
+      $templates    = $this->getGroupTemplates($groupid);
+      $outputArray  = array();
+
+      # User der Gruppe hinzufügen
+      foreach ($mp->getAddedUsers() as $userId) {
+        $query = DBManager::get()->query("SELECT user_id FROM eportfolio_groups_user WHERE user_id = '$userId' AND seminar_id = '$groupid'")->fetchAll(); //checkt ob schon in Gruppe eingetragen ist
+        if(empty($query[0][0])){
+          DBManager::get()->query("INSERT INTO eportfolio_groups_user (user_id, seminar_id) VALUES ('$userId', '$groupid')");
+        }
+      }
+
+      # Für jedes bereits benutze Template ein Seminar pro Nutzer erstellen
+      foreach ($templates as $template) {
+
+        $semList    = array();
+        $masterid   = $template;
+        $groupowner = $this->getGroupOwner($groupid);
+        $master     = new Seminar($masterid);
+
+        # id ePortfolio Seminarklasse
+        foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
+          if ($sem_type['name'] == 'ePortfolio') {
+            $sem_type_id = $id;
+          }
+        }
+
+        # Erstellt für jeden neu hinzugefügten User ein Seminar
+        // foreach ($mp->getAddedUsers() as $userid){
+        //
+        //   $userid           = $userid; //get userid
+        //   $sem_name         = $master->getName();
+        //   $sem_description  = "Beschreibung";
+        //
+        //   $sem              = new Seminar();
+        //   $sem->Seminar_id  = $sem->createId();
+        //   $sem->name        = $sem_name;
+        //   $sem->description = $sem_description;
+        //   $sem->status      = $sem_type_id;
+        //   $sem->read_level  = 1;
+        //   $sem->write_level = 1;
+        //   $sem->institut_id = Config::Get()->STUDYGROUP_DEFAULT_INST;
+        //   $sem->visible     = 1;
+        //
+        //   $sem_id = $sem->Seminar_id;
+        //
+        //   $sem->addMember($userid, 'dozent'); // add target to seminar
+        //   $member = $this->getGroupMember($groupid);
+        //   if (!in_array($groupowner, $member)) {
+        //     $sem->addMember($groupowner, 'dozent');
+        //   }
+        //
+        //   $sem->store(); //save sem
+        //
+        //   array_push($semList, $sem->Seminar_id);
+        //
+        //   $eportfolio = new Seminar();
+        //   $eportfolio_id = $eportfolio->createId();
+        //   DBManager::get()->query("INSERT INTO eportfolio (Seminar_id, eportfolio_id, owner_id, template_id) VALUES ('$sem_id', '$eportfolio_id', '$userid', '$masterid')"); //table eportfolio
+        //   DBManager::get()->query("INSERT INTO eportfolio_user(user_id, Seminar_id, eportfolio_id, owner) VALUES ('$userid', '$Seminar_id' , '$eportfolio_id', 1)"); //table eportfollio_user
+        //
+        // }
+        // array_push($outputArray, $semList);
+      }
+
     }
 
 }
