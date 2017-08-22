@@ -93,9 +93,6 @@
 
 <div>
 
-  <div class="widget-custom">
-    <div class="widget-custom-head">Portfolio - Vorlage hinzuf�gen</div>
-    <div class="widget-custom-content">
       <!-- <select class="" id="tempselector" name="template">
         <?php  $templates = showsupervisorcontroller::getTemplates($id); ?>
         <?php foreach ($templates as $key => $value):?>
@@ -103,6 +100,8 @@
         <?php endforeach; ?>
       </select>
       <?= \Studip\Button::create('Hinzuf�gen', 'button', array('type' => 'button', 'onclick' => 'addTemp()')); ?> -->
+
+      <h4>Portfoliotemplate hinzuf&uuml;gen</h4>
 
       <table class="default">
         <colgroup>
@@ -138,8 +137,6 @@
         </tbody>
       </table>
 
-    </div>
-  </div>
 
   <?php
     if (ShowsupervisorController::isThereAnyUser() == false) {
