@@ -62,6 +62,11 @@ class ShowsupervisorController extends StudipController {
           $this->addUsersToGroup();
         }
 
+        if ($_POST["action"] == 'deleteUserFromGroup') {
+          $this->deleteUserFromGroup($_POST['userId'], $_POST["seminar_id"]);
+          exit();
+        }
+
         //sidebar
         $sidebar = Sidebar::Get();
         Sidebar::Get()->setTitle('Supervisionsansicht');
@@ -542,6 +547,11 @@ class ShowsupervisorController extends StudipController {
       } else {
         return true;
       }
+    }
+
+    public function deleteUserFromGroup($userId, $seminar_id){
+      DBManager::get()->query("DELETE FROM eportfolio_groups_user WHERE user_id = '$userId' AND seminar_id = '$seminar_id'");
+      return true;
     }
 
 }

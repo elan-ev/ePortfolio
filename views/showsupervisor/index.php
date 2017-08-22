@@ -140,40 +140,39 @@
       </div>
 
   <?php
-    if (ShowsupervisorController::isThereAnyUser() == false) {
-      echo "noch kein User vorhanden";
-    }
-
-  ?>
-
-  <?php
     $groupTemplates = ShowsupervisorController::getGroupTemplates($id);
     if (empty($groupTemplates[0])):
   ?>
 
     <h4>Gruppenmitglieder</h4>
 
-    <table class="default">
-      <colgroup>
-        <col width="30%">
-        <col width="60%">
-      </colgroup>
-      <tr>
-        <th>Name</th>
-        <th></th>
-        <th>Aktionen</th>
-      </tr>
-      <?php foreach ($groupList as $user):?>
+    <?php if (ShowsupervisorController::isThereAnyUser() == false):?>
+        <?php echo MessageBox::info('Es sind noch keine Nutzer in der der Gruppe eingetragen'); ?>
+    <?php else: ?>
+
+      <table class="default">
+        <colgroup>
+          <col width="30%">
+          <col width="60%">
+        </colgroup>
         <tr>
-          <td><?php $userInfo = UserModel::getUser($user);?><?php echo $userInfo['Vorname']." ".$userInfo['Nachname']; ?></td>
-          <td></td>
-          <td style="text-align:center;">
-            <?php echo  Icon::create('person', 'clickable'); ?>
-            <?php echo  Icon::create('trash', 'clickable'); ?>
-          </td>
+          <th>Name</th>
+          <th></th>
+          <th>Aktionen</th>
         </tr>
-      <?php endforeach; ?>
-    </table>
+        <?php foreach ($groupList as $user):?>
+          <tr>
+            <td><?php $userInfo = UserModel::getUser($user);?><?php echo $userInfo['Vorname']." ".$userInfo['Nachname']; ?></td>
+            <td></td>
+            <td style="text-align:center;">
+              <?php echo  Icon::create('person', 'clickable'); ?>
+              <a href="#" onclick="deleteUserFromGroup('<?php echo $user; ?>', this);"><?php echo  Icon::create('trash', 'clickable'); ?></a>
+            </td>
+          </tr>
+        <?php endforeach; ?>
+      </table>
+
+    <?php endif; ?>
 
     <?php else: ?>
 
@@ -282,9 +281,11 @@
     ->setJSFunctionOnSubmit('addUserToGroup')
     ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor', array('id' => $groupid, 'action' => 'addUsersToGroup')))
     ->render();
-
-   print $mp;
  ?>
+
+ <a href="/public/dispatch.php/multipersonsearch/js_form/eindeutige_id" class="multi_person_search_link" data-dialog="width=720;height=460;id=mp-search" data-dialogname="eindeutige_id" title="Personen zur Gruppe hinzuf&amp;uuml;gen" data-js-form="/public/dispatch.php/multipersonsearch/js_form/eindeutige_id">
+   <?= \Studip\Button::create('Personen hinzufügen', 'klickMichButton', array('data-dialogname' => 'eindeutige_id', 'data-js-form' => '/public/dispatch.php/multipersonsearch/js_form/eindeutige_id')); ?>
+ </a>
 
 <!-- Legende -->
 <div class="legend">
@@ -295,8 +296,6 @@
     <li><?php echo  Icon::create('forum', 'clickable'); ?>  Resonanz gegeben</li>
   </ul>
 </div>
-
-
 
 <div id="myModal" class="modal fade" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
@@ -476,6 +475,29 @@ function exportPortfolio(master, targets){
         });
       });
 
+    }
+  });
+}
+
+function deleteUserFromGroup(userid, obj) {
+  var deleteThis    = $(obj).parents('tr');
+  var tdParent      = $(obj).parents('td');
+  var urlDeleteUser = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/showsupervisor');
+
+  $(obj).parents('td').append('<i style="color: #24437c;" class="fa fa-circle-o-notch fa-spin fa-fw"></i>');
+  $(obj).remove();
+
+
+  $.ajax({
+    type: "POST",
+    url: urlDeleteUser,
+    data: {
+      action: 'deleteUserFromGroup',
+      userId: userid,
+      seminar_id: '<?php echo $id ?>',
+    },
+    success: function(data){
+      $(deleteThis).fadeOut();
     }
   });
 }
