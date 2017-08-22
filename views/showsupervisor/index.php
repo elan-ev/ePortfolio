@@ -101,42 +101,43 @@
       </select>
       <?= \Studip\Button::create('Hinzuf�gen', 'button', array('type' => 'button', 'onclick' => 'addTemp()')); ?> -->
 
-      <h4>Portfoliotemplate hinzuf&uuml;gen</h4>
+      <div id="wrapper_table_tamplates">
+        <h4>Portfoliotemplate hinzuf&uuml;gen</h4>
 
-      <table class="default">
-        <colgroup>
-          <col width="30%">
-          <col width="60%">
+        <table id="table_templates" class="default">
+          <colgroup>
+            <col width="30%">
+            <col width="60%">
 
-        </colgroup>
-        <thead>
-          <tr class="sortable">
-            <th>Portfolio-Name</th>
-            <th>Beschreibung</th>
-            <th>Aktionen</th>
+          </colgroup>
+          <thead>
+            <tr class="sortable">
+              <th>Portfolio-Name</th>
+              <th>Beschreibung</th>
+              <th>Aktionen</th>
 
-          </tr>
-        </thead>
+            </tr>
+          </thead>
 
-        <tbody>
-          <?php $temps = ShowsupervisorController::getTemplates();
-            foreach ($temps as $key):?>
-            <?php $thisPortfolio = new Seminar($key); ?>
-            <?php if (ShowsupervisorController::checkTemplate($id, $key) == false): ?>
-              <tr>
-                <td><?php echo $thisPortfolio->getName(); ?></td>
-                <td><?php echo ShowsupervisorController::getCourseBeschreibung($key); ?></td>
-                <td style="text-align: center;">
-                    <a href="<?php echo URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $key)); ?>"><?php echo Icon::create('edit', 'clickable') ?></a>
-                    <a onclick="createPortfolio('<?php echo $key; ?>')" href="#"><?php echo Icon::create('add', 'clickable') ?></a>
-                </td>
-              </tr>
-            <?php endif; ?>
+          <tbody>
+            <?php $temps = ShowsupervisorController::getTemplates();
+              foreach ($temps as $key):?>
+              <?php $thisPortfolio = new Seminar($key); ?>
+              <?php if (ShowsupervisorController::checkTemplate($id, $key) == false): ?>
+                <tr>
+                  <td><?php echo $thisPortfolio->getName(); ?></td>
+                  <td><?php echo ShowsupervisorController::getCourseBeschreibung($key); ?></td>
+                  <td style="text-align: center;">
+                      <a href="<?php echo URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $key)); ?>"><?php echo Icon::create('edit', 'clickable') ?></a>
+                      <a onclick="createPortfolio('<?php echo $key; ?>')" href="#"><?php echo Icon::create('add', 'clickable') ?></a>
+                  </td>
+                </tr>
+              <?php endif; ?>
 
-          <?php endforeach; ?>
-        </tbody>
-      </table>
-
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      </div>
 
   <?php
     if (ShowsupervisorController::isThereAnyUser() == false) {
@@ -353,6 +354,10 @@
 $('#myModal').on('shown.bs.modal', function () {
 $('#myInput').focus()
 })
+
+if ( $('#table_templates').find("td").length === 0 ) {
+    $('#wrapper_table_tamplates').css('display', 'none');
+}
 
 function createGroup(){
   var name        = $('#wizard-name').val();
