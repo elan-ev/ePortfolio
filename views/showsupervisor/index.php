@@ -206,6 +206,7 @@
             <?php foreach ($groupList as $key):?>
               <tr>
                 <td style="text-align: left;">
+                  <img style="border-radius: 30px; width: 21px; border: 1px solid #28497c;" src="<?php echo $GLOBALS[DYNAMIC_CONTENT_URL];?>/user/<?php echo $key; ?>_small.png" onError="defaultImg(this);">
                   <?php $supervisor = UserModel::getUser($key);
                   $userid = $key;
                       echo $supervisor[Vorname].' '.$supervisor[Nachname];
