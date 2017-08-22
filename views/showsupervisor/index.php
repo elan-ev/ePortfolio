@@ -162,11 +162,14 @@
         </tr>
         <?php foreach ($groupList as $user):?>
           <tr>
-            <td><?php $userInfo = UserModel::getUser($user);?><?php echo $userInfo['Vorname']." ".$userInfo['Nachname']; ?></td>
+            <td>
+              <img style="border-radius: 30px; width: 21px; border: 1px solid #28497c;" src="<?php echo $GLOBALS[DYNAMIC_CONTENT_URL];?>/user/<?php echo $user; ?>_small.png" onError="defaultImg(this);">
+              <?php $userInfo = UserModel::getUser($user);?><?php echo $userInfo['Vorname']." ".$userInfo['Nachname']; ?>
+            </td>
             <td></td>
             <td style="text-align:center;">
               <?php echo  Icon::create('person', 'clickable'); ?>
-              <a href="#" onclick="deleteUserFromGroup('<?php echo $user; ?>', this);"><?php echo  Icon::create('trash', 'clickable'); ?></a>
+              <a href="" onclick="deleteUserFromGroup('<?php echo $user; ?>', this);"><?php echo  Icon::create('trash', 'clickable'); ?></a>
             </td>
           </tr>
         <?php endforeach; ?>
@@ -632,5 +635,9 @@ var uniqID = function() {
 
     return filtered.join('');
 
+}
+
+function defaultImg(img) { //setzt default Profilbild falls keins vorhanden
+  img.src = "<?php echo $GLOBALS[DYNAMIC_CONTENT_URL]; ?>/user/nobody_small.png";
 }
 </script>
