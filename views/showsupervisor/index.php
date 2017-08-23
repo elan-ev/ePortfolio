@@ -129,7 +129,7 @@
                   <td><?php echo ShowsupervisorController::getCourseBeschreibung($key); ?></td>
                   <td style="text-align: center;">
                       <a href="<?php echo URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $key)); ?>"><?php echo Icon::create('edit', 'clickable') ?></a>
-                      <a onclick="createPortfolio('<?php echo $key; ?>')" href="#"><?php echo Icon::create('add', 'clickable') ?></a>
+                      <a onclick="triggerModalCreate('<?php echo $key; ?>')" href="#"><?php echo Icon::create('add', 'clickable') ?></a>
                   </td>
                 </tr>
               <?php endif; ?>
@@ -353,6 +353,8 @@
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+<div class="modal-area"></div>
+
 <script type="text/javascript">
 $('#myModal').on('shown.bs.modal', function () {
 $('#myInput').focus()
@@ -433,6 +435,13 @@ function addTemp(){
 
 function createPortfolio(master){
   var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/showsupervisor');
+  $('.content').empty().css({
+    'background': 'none',
+    'text-align': 'center',
+    'padding': '20px 0',
+  }).append('<i style="color: #24437c;" class="fa fa-circle-o-notch fa-3x fa-spin fa-fw"></i>');
+  $('.ui-dialog-buttonpane').remove();
+  $('.ui-dialog-titlebar-close').css('display', 'none');
   console.log(master);
   $.ajax({
     type: "POST",
@@ -474,7 +483,7 @@ function exportPortfolio(master, targets){
           data: {xml: xml},
           success: function(importData){
             console.log(importData);
-            //do something when finished
+            closeModal();
           }
         });
       });
@@ -641,4 +650,39 @@ var uniqID = function() {
 function defaultImg(img) { //setzt default Profilbild falls keins vorhanden
   img.src = "<?php echo $GLOBALS[DYNAMIC_CONTENT_URL]; ?>/user/nobody_small.png";
 }
+
+function triggerModalCreate(id){
+  var template = $('#modal-template').html();
+  Mustache.parse(template);   // optional, speeds up future uses
+  var rendered = Mustache.render(template, {id: id, titel: "Template verteilen", text: "Wollen Sie dieses Template wirklich an die aktuellen Gruppenmitglieder verteilen?"});
+  $('.modal-area').html(rendered);
+}
+
+function closeModal(){
+  $('.modal-area').empty();
+}
+
+</script>
+
+<script id="modal-template" type="x-tmpl-mustache">
+   <div class="modaloverlay">
+      <div class="create-question-dialog ui-widget-content ui-dialog studip-confirmation">
+          <div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">
+              <span>{{titel}}</span>
+              <a onclick="closeModal();" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only ui-dialog-titlebar-close">
+                  <span class="ui-button-icon-primary ui-icon ui-icon-closethick"></span>
+                  <span class="ui-button-text">Schliessen</span>
+              </a>
+          </div>
+          <div class="content ui-widget-content ui-dialog-content studip-confirmation">
+              <div class="formatted-content">{{text}}</div>
+          </div>
+          <div class="buttons ui-widget-content ui-dialog-buttonpane">
+              <div class="ui-dialog-buttonset">
+                <a class="accept button" onclick="createPortfolio('{{id}}')">Ja</a>
+                <a class="cancel button" onclick="closeModal();">Nein</a>
+              </div>
+          </div>
+      </div>
+  </div>
 </script>
