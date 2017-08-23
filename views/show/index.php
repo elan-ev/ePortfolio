@@ -53,7 +53,7 @@
 
         <h1 id="headline_uebersicht"></h1>
 
-        <p>Hier finden Sie alle ePortfolios, die Sie angelegt hast oder die andere für Sie freigegeben haben.</p>
+        <p>Hier finden Sie alle ePortfolios, die Sie angelegt hast oder die andere fï¿½r Sie freigegeben haben.</p>
         <p><?= \Studip\Button::create('Mehr Informationen'); ?></p>
       </div>
     </div>
@@ -165,11 +165,11 @@
 </div>
 
 
-<div class="row">
+<!-- <div class="row">
   <div class="col-md-6">
     <?= \Studip\Button::create('Eigenes Portfolio erstellen', 'klickMichButton', array('data-toggle' => 'modal', 'data-target' => '#myModal', 'id' => "newPortfolio")); ?>
   </div>
-</div>
+</div> -->
 
 <hr>
 
@@ -272,15 +272,15 @@
 
   // Statische Sitebar
   // Widget - Navigation
-  $('.sidebar').append('<div class="sidebar-widget widgetCustom1"><div class="sidebar-widget-header">Navigation</div></div>');
-  $('.widgetCustom1').append('<ul class="widget-list widget-links sidebar-navigation customLinkList1"></ul>');
+  //$('.sidebar').append('<div class="sidebar-widget widgetCustom1"><div class="sidebar-widget-header">Navigation</div></div>');
+  //$('.widgetCustom1').append('<ul class="widget-list widget-links sidebar-navigation customLinkList1"></ul>');
   //$('.customLinkList1').append('<li><a>Einstellungen</a></li>');
   //$('.customLinkList1').append('<li><a>Portfolios verwalten</a></li>');
 
   <?php if($linkId == 'noId'): ?>
     console.log("no supervisor");
   <?php elseif ($linkId):?>
-    $('.customLinkList1').append('<li><a href="showsupervisor?id=<?php echo $linkId; ?>">Supervisoransicht</a></li>');
+    //$('.customLinkList1').append('<li><a href="showsupervisor?id=<?php echo $linkId; ?>">Supervisoransicht</a></li>');
   <?php endif; ?>
 
   //Widget - Freunde

@@ -7,26 +7,6 @@ class ShowController extends StudipController {
         parent::__construct($dispatcher);
         $this->plugin = $dispatcher->plugin;
 
-
-        $user = get_username();
-
-        $sidebar = Sidebar::Get();
-        Sidebar::Get()->setTitle('e-Portfolio von '.$user );
-
-        $widget = new SearchWidget();
-        Sidebar::Get()->addWidget($widget);
-
-    }
-
-    public function before_filter(&$action, &$args)
-    {
-        parent::before_filter($action, $args);
-        $this->set_layout($GLOBALS['template_factory']->open('layouts/base.php'));
-    }
-
-
-    public function index_action()
-    {
         //echo $GLOBALS["user"]->id;
         $this->userId = $GLOBALS["user"]->id;
         $perm = get_global_perm($GLOBALS["user"]->id);
@@ -40,6 +20,39 @@ class ShowController extends StudipController {
             $this->linkId = 'noId';
           }
         }
+
+        $user = get_username();
+
+        $sidebar = Sidebar::Get();
+        Sidebar::Get()->setTitle('e-Portfolio von '.$user );
+
+        $navcreate = new LinksWidget();
+        $navcreate->setTitle('Navigation');
+        $attr = array('data-toggle' => 'modal', 'data-target' => '#myModal', 'id' => "newPortfolio");
+        $navcreate->addLink("Eigenes Portfolio erstellen", "", "", $attr);
+        if ($perm == "dozent") {
+          $output = $this->getFirstGroup($GLOBALS["user"]->id);
+          if(!$output == '') {
+            $linkIdMenu = $output;
+          } else {
+            $linkIdMenu = 'noId';
+          }
+          $navcreate->addLink("Supervisoransicht", "showsupervisor?id=".$linkIdMenu);
+        }
+        $sidebar->addWidget($navcreate);
+
+    }
+
+    public function before_filter(&$action, &$args)
+    {
+        parent::before_filter($action, $args);
+        $this->set_layout($GLOBALS['template_factory']->open('layouts/base.php'));
+    }
+
+
+    public function index_action()
+    {
+
 
     }
 
