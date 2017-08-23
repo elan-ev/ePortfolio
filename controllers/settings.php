@@ -11,6 +11,11 @@ class settingsController extends StudipController {
 
       $cid = $_GET['cid'];
 
+      if ($_GET['action'] == 'addZugriff') {
+        $this->addZugriff($_GET['id']);
+        exit();
+      }
+
       //autonavigation
       Navigation::activateItem("course/settings");
 
@@ -188,16 +193,6 @@ class settingsController extends StudipController {
       $this->saveChanges();
     }
 
-    $mp = MultiPersonSearch::get()
-      ->setLinkText(_('Person hinzufügen'))
-      ->setTitle(_('Person zur Gruppe hinzufügen'))
-      ->setExecuteURL($this->url_for('controller'))
-      ->render();
-
-    $this->mp = $mp;
-
-
-
     //push to template
     $this->cid = $cid;
     $this->userid = $userid;
@@ -265,6 +260,27 @@ class settingsController extends StudipController {
     $query = DBManager::get()->query("SELECT freigaben_kapitel FROM eportfolio WHERE Seminar_id = '$id'")->fetchAll();
     $query = json_decode($query[0][0], true);
     return $query;
+  }
+
+  public function addZugriff($id){
+    $mp             = MultiPersonSearch::load('eindeutige_id');
+    $seminar        = new Seminar($id);
+    $eportfolio_id  = $this->getEportfolioId($id);
+    $userRole       = 'autor';
+
+    # User der Gruppe hinzufügen
+    foreach ($mp->getAddedUsers() as $userId) {
+
+      #Seminar Add Member
+      $seminar->addMember($userId, $userRole);
+
+      # User der Tabelle eportfolio_user hinzufügen
+      DBManager::get()->query("INSERT INTO eportfolio_user (user_id, Seminar_id, eportfolio_id, status, owner) VALUES ('$userId', '$id', '$eportfolio_id', 'autor', 0)");
+    }
+
+    # Seminar speichern
+    //$seminar->store();
+
   }
 
 }

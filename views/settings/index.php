@@ -145,6 +145,18 @@
 </table>
 
 <?= \Studip\Button::create('Zugriffrechte vergeben', 'klickMichButton', array('data-toggle' => 'modal', 'data-target' => '#addViewerModal', 'id' => "newPortfolio")); ?>
+<?php
+$mp = MultiPersonSearch::get('eindeutige_id')
+  ->setLinkText(_('Personen hinzufügen'))
+  ->setTitle(_('Personen zur Gruppe hinzuf&uuml;gen'))
+  ->setSearchObject(new StandardSearch('user_id'))
+  ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/settings', array('id' => $cid, 'action' => 'addZugriff')))
+  ->render();
+ ?>
+
+ <a href="/public/dispatch.php/multipersonsearch/js_form/eindeutige_id" class="multi_person_search_link" data-dialog="width=720;height=460;id=mp-search" data-dialogname="eindeutige_id" title="Personen zur Gruppe hinzuf&amp;uuml;gen" data-js-form="/public/dispatch.php/multipersonsearch/js_form/eindeutige_id">
+   <?= \Studip\Button::create('Zugriffsrechte vergeben', 'klickMichButton', array('data-dialogname' => 'eindeutige_id', 'data-js-form' => '/public/dispatch.php/multipersonsearch/js_form/eindeutige_id')); ?>
+ </a>
 
 <!-- Modal Suche Supervisor -->
 <div class="modal fade" id="addSupervisorModal" tabindex="-1" role="dialog">
@@ -299,9 +311,6 @@
       });
     });
 
-
   });
-
-
 
 </script>
