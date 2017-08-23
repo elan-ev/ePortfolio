@@ -484,6 +484,7 @@ function exportPortfolio(master, targets){
           success: function(importData){
             console.log(importData);
             closeModal();
+            location.reload();
           }
         });
       });
