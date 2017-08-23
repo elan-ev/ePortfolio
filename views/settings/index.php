@@ -144,7 +144,6 @@
   </tbody>
 </table>
 
-<?= \Studip\Button::create('Zugriffrechte vergeben', 'klickMichButton', array('data-toggle' => 'modal', 'data-target' => '#addViewerModal', 'id' => "newPortfolio")); ?>
 <?php
 $mp = MultiPersonSearch::get('eindeutige_id')
   ->setLinkText(_('Personen hinzufügen'))
