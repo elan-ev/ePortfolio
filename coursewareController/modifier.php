@@ -169,7 +169,7 @@ $workingArray = json_encode($workingArray);
         {{/users}}
 
         <div style="display: inline; font-size: 24px; position: relative; top: -3px;margin-left:2px;">
-          <a href="<?php echo URLHelper::getLink('plugins.php/eportfolioplugin/settings?cid='); ?>{{cid}}">
+          <a href="<?php echo URLHelper::getLink('plugins.php/eportfolioplugin/settings?cid='.$cid); ?>">
             <i class="fa fa-cog" aria-hidden="true"></i>
           </a>
         </div>
