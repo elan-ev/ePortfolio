@@ -303,7 +303,7 @@
   </ul>
 </div>
 
-<div id="myModal" class="modal fade" tabindex="-1" role="dialog">
+<!-- <div id="myModal" class="modal fade" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -334,7 +334,7 @@
       </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+</div><!-- /.modal --> -->
 
 <div id="userInfoModel" class="modal fade" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
@@ -385,6 +385,7 @@ function createGroup(){
       // var neu = $("#createGroupForm").serialize();
       var id = data;
       // console.log(id);
+      window.document.location.href = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/showsupervisor', {id: id});
       //window.document.location.href = "/studip/portfolio/plugins.php/eportfolioplugin/showsupervisor?id="+id;
     }
   });
@@ -665,6 +666,13 @@ function closeModal(){
   $('.modal-area').empty();
 }
 
+function modalneueGruppe(){
+  var template = $('#modal-template-neueGruppe').html();
+  Mustache.parse(template);   // optional, speeds up future uses
+  var rendered = Mustache.render(template, {titel: 'Neue Gruppe erstellen'});
+  $('.modal-area').html(rendered);
+}
+
 </script>
 
 <script id="modal-template" type="x-tmpl-mustache">
@@ -684,6 +692,41 @@ function closeModal(){
               <div class="ui-dialog-buttonset">
                 <a class="accept button" onclick="createPortfolio('{{id}}')">Ja</a>
                 <a class="cancel button" onclick="closeModal();">Nein</a>
+              </div>
+          </div>
+      </div>
+  </div>
+</script>
+
+<script id="modal-template-neueGruppe" type="x-tmpl-mustache">
+   <div class="modaloverlay">
+      <div class="create-question-dialog ui-widget-content ui-dialog studip-confirmation">
+          <div style="background-color: #28497c;" class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">
+              <span style="color:#fff;">{{titel}}</span>
+              <a style="color:#fff;" onclick="closeModal();" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only ui-dialog-titlebar-close">
+                  <span class="ui-button-icon-primary ui-icon ui-icon-closethick"></span>
+                  <span class="ui-button-text">Schliessen</span>
+              </a>
+          </div>
+          <div style="background:none;padding: 10px;" class="content ui-widget-content ui-dialog-content studip-confirmation">
+              <div class="formatted-content">{{text}}</div>
+              <form id="createGroupForm">
+
+                <label>
+                  <span class="required">Name</span>
+                  <input style="width: 100%;" type="text" name="name" id="wizard-name" maxlength="254" value="" required="" aria-required="true" aria-invalid="true">
+                </label>
+
+              <label>
+                <span>Beschreibung</span>
+                <textarea style="width: 100%;" name="description" id="wizard-description" cols="75" rows="4"></textarea>
+              </label>
+
+            </form>
+          </div>
+          <div class="buttons ui-widget-content ui-dialog-buttonpane">
+              <div class="ui-dialog-buttonset">
+                <a class="button" onclick="createGroup();">Erstellen</a>
               </div>
           </div>
       </div>
