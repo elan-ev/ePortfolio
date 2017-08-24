@@ -20,11 +20,11 @@ class EportfoliopluginController extends StudipController {
       $cid = $_GET['cid'];
 
       $sidebar = Sidebar::Get();
-      Sidebar::Get()->setTitle('bersicht');
+      Sidebar::Get()->setTitle('ï¿½bersicht');
 
       $navOverview = new LinksWidget();
-      $navOverview->setTitle('bersicht');
-      $navOverview->addLink('bersicht', URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('portfolioid' => $portfolioid)), null , array('class' => 'active-link'));
+      $navOverview->setTitle('ï¿½bersicht');
+      $navOverview->addLink('ï¿½bersicht', URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('portfolioid' => $portfolioid)), null , array('class' => 'active-link'));
       $sidebar->addWidget($navOverview);
 
       $nav = new LinksWidget();
@@ -238,6 +238,11 @@ class EportfoliopluginController extends StudipController {
     if ($query[0][0] == $userId) {
       return true;
     }
+  }
+
+  public function checkIfTemplate($id){
+    $query = DBManager::get()->query("SELECT template_id FROM eportfolio WHERE seminar_id = '$id'")->fetchAll();
+    return $query[0][0];
   }
 
   public function changeTitle(){

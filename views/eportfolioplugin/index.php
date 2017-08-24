@@ -124,8 +124,9 @@
 </div>
 
 <?php if($isOwner == true):?>
-
-  <?= \Studip\Button::create('Portfolio l�schen', 'klickMichButton', array('data-toggle' => 'modal', 'data-target' => '#deleteModal', 'type' => 'button')); ?>
+  <?php if (empty(EportfoliopluginController::checkIfTemplate($cid))):?>
+    <?= \Studip\Button::create('Portfolio l�schen', 'klickMichButton', array('data-toggle' => 'modal', 'data-target' => '#deleteModal', 'type' => 'button')); ?>
+  <?php endif; ?>
 
   <!-- Modal Löschen -->
   <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog">
