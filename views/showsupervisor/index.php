@@ -169,7 +169,7 @@
             <td></td>
             <td style="text-align:center;">
               <?php echo  Icon::create('person', 'clickable'); ?>
-              <a href="" onclick="deleteUserFromGroup('<?php echo $user; ?>', this);"><?php echo  Icon::create('trash', 'clickable'); ?></a>
+              <a onclick="deleteUserFromGroup('<?php echo $user; ?>', this);"><?php echo  Icon::create('trash', 'clickable'); ?></a>
             </td>
           </tr>
         <?php endforeach; ?>
