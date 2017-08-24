@@ -16,6 +16,11 @@ class settingsController extends StudipController {
         exit();
       }
 
+      if ($_POST['action'] == 'deleteUserAccess') {
+        $this->deleteUserAccess($_POST['userId'], $_POST['seminar_id']);
+        exit();
+      }
+
       //autonavigation
       Navigation::activateItem("course/settings");
 
@@ -281,6 +286,17 @@ class settingsController extends StudipController {
     # Seminar speichern
     //$seminar->store();
 
+  }
+
+  public function deleteUserAccess($userId, $cid){
+    $seminar        = new Seminar($cid);
+    $eportfolio_id  = $this->getEportfolioId($cid);
+
+    # User aus Seminar entfernen
+    $seminar->deleteMember($userId);
+
+    # User aus eportfolio_user entfernen
+    DBManager::get()->query("DELETE FROM eportfolio_user WHERE user_id = '$userId' AND seminar_id = '$cid' AND eportfolio_id = '$eportfolio_id'");
   }
 
 }

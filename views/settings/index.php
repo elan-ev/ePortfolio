@@ -121,7 +121,11 @@
    <tr>
      <td>
        <img style="border-radius: 30px; width: 15px;" src="<?php echo $GLOBALS[DYNAMIC_CONTENT_URL];?>/user/<?php echo $viewer[viewer_id]; ?>_small.png" onError="defaultImg(this);">
-       <?php echo $viewer[Vorname].' '.$viewer[Nachname]; ?> </td>
+       <?php echo $viewer[Vorname].' '.$viewer[Nachname]; ?>
+       <a onclick="deleteUserAccess('<?php echo $viewer[viewer_id] ?>', '<?php echo $cid ?>', this);">
+          <?php echo Icon::create('trash', 'clickable') ?>
+       </a>
+     </td>
      <?php $access = settingsController::getEportfolioAccess($viewer[viewer_id], $cid);?>
      <?php foreach ($chapterList as $chapter):?>
 
@@ -311,5 +315,24 @@ $mp = MultiPersonSearch::get('eindeutige_id')
     });
 
   });
+
+  function deleteUserAccess(userId, seminar_id, obj){
+    $(obj).empty().append('<i style="color: #24437c;" class="fa fa-circle-o-notch fa-spin fa-fw"></i>');
+    var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/settings');
+    console.log(userId);
+    $.ajax({
+      type: "POST",
+      url: url,
+      data: {
+        'action': 'deleteUserAccess',
+        'userId': userId,
+        'seminar_id': seminar_id,
+      },
+      success: function(data) {
+        console.log(data);
+        $(obj).parents('tr').fadeOut();
+      }
+    });
+  }
 
 </script>
