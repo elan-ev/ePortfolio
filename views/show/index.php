@@ -51,7 +51,16 @@
     <div class="jumbotron" style="border-radius: 10px;">
       <div class="container" style="padding: 0 50px;">
 
-        <h1 id="headline_uebersicht"></h1>
+        <script type="text/javascript">
+        function defaultImg(img) { //setzt default Profilbild falls keins vorhanden
+          img.src = "<?php echo $GLOBALS[DYNAMIC_CONTENT_URL]; ?>/user/nobody_medium@2x.png";
+        }
+        </script>
+
+        <h2>
+          <img style="margin-bottom: 5px;border-radius: 50px; width: 36px; border: 1px solid #28497c;" src="<?php echo $GLOBALS[DYNAMIC_CONTENT_URL];?>/user/<?php echo $userId; ?>_medium@2x.png" onError="defaultImg(this);">
+          <span id="headline_uebersicht"></span>
+        </h2>
 
         <p>Hier finden Sie alle ePortfolios, die Sie angelegt hast oder die andere f�r Sie freigegeben haben.</p>
         <p><?= \Studip\Button::create('Mehr Informationen'); ?></p>
