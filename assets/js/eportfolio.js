@@ -121,29 +121,6 @@ function updateLabelAccess(e) {
   $('#labelAccess').text(e);
 }
 
-function deletePortfolio() {
-  var href = STUDIP.URLHelper.getURL('/studip/plugins.php/eportfolioplugin/show', {});
-  var url = STUDIP.URLHelper.getURL('/studip/plugins.php/eportfolioplugin/settings', {cid: cid})
-//  var href = "/studip/plugins.php/eportfolioplugin/show";
-//  var url = "/studip/plugins.php/eportfolioplugin/settings?cid="+cid;
-  $.ajax({
-    type: "POST",
-    url: url,
-    data: {
-      'deletePortfolio':'1',
-    },
-    success: function(data) {
-      $('#deletebtn').remove();
-      $('#deleteText').remove();
-      $('.deleteSuccess').css('display', 'block');
-      setTimeout(function(){
-        window.location.href = '/studip/plugins.php/eportfolioplugin/show';
-      }, 1500);
-      console.log("gel�scht");
-    }
-  });
-}
-
 function setAccess(id, viewerId, obj){
   var status = $(obj).children('span').hasClass('glyphicon-ok');
   $(obj).empty().append('<i style="color: #24437c;" class="fa fa-circle-o-notch fa-spin fa-fw"></i>');

@@ -62,6 +62,7 @@ class EportfoliopluginController extends StudipController {
 
     $userid = $GLOBALS["user"]->id;
     $cid = $_GET["cid"];
+    $this->cid = $cid;
     $i = 0;
     $isOwner = false;
 

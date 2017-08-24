@@ -21,6 +21,11 @@ class settingsController extends StudipController {
         exit();
       }
 
+      if ($_POST['action'] == 'deletePortfolio') {
+        $this->deletePortfolio($_POST['cid']);
+        exit();
+      }
+
       //autonavigation
       Navigation::activateItem("course/settings");
 
@@ -56,21 +61,6 @@ class settingsController extends StudipController {
     //get seninar infos
     $getSeminarInfo = $db->query("SELECT name FROM seminare WHERE Seminar_id = '$cid'")->fetchAll();
     $getS = $getSeminarInfo[0][name];
-
-    //delete Portfolio///
-    ////////////////////
-
-    if ($_POST["deletePortfolio"]) {
-
-      $deleteTrigger = $_POST["deletePortfolio"];
-
-      if ($deleteTrigger == '1'){
-        $db->query("DELETE FROM eportfolio WHERE Seminar_id = '$cid'");
-        $db->query("DELETE FROM mooc_blocks WHERE Seminar_id = '$cid'");
-        $db->query("DELETE FROM seminare WHERE Seminar_id = '$cid'");
-      }
-
-    }
 
     // set a new viewer
 
@@ -297,6 +287,15 @@ class settingsController extends StudipController {
 
     # User aus eportfolio_user entfernen
     DBManager::get()->query("DELETE FROM eportfolio_user WHERE user_id = '$userId' AND seminar_id = '$cid' AND eportfolio_id = '$eportfolio_id'");
+  }
+
+  public function deletePortfolio($cid){
+    $seminar = new Seminar($cid);
+    $seminar->delete();
+
+    # Seminar aus eportfolio-tabllen löschen
+    DBManager::get()->query("DELETE FROM eportfolio WHERE seminar_id = '$cid'");
+    DBManager::get()->query("DELETE FROM eportfolio_user WHERE seminar_id = '$cid'");
   }
 
 }
