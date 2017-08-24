@@ -74,7 +74,7 @@ class CreateController extends StudipController {
 
         $userid           = $GLOBALS["user"]->id; //get userid
         $sem_name         = $_POST['name'];
-        $sem_description  = $_POST['text'];
+        $sem_description  = $_POST['beschreibung'];
 
         $sem              = new Seminar();
         $sem->Seminar_id  = $sem->createId();
@@ -87,6 +87,7 @@ class CreateController extends StudipController {
         $sem->visible     = 1;
 
         $sem_id = $sem->Seminar_id;
+        echo $sem_id;
 
         $sem->addMember($userid, 'dozent');
         $sem->store();

@@ -5,43 +5,30 @@ $( document ).ready(function() {
 });
 
 function createNewPortfolio() {
-  $('#createForm').submit(function(e){
+  var nameNewCreatePortfolio;
+  var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/create', {});
+  var idBannerSuccess = 'createPortfolioName';
+  var classBannerSuccess = 'createPortfolioBanner';
+  var idBannerAlert = '#createBannerAlert';
 
-    var nameNewCreatePortfolio;
-    var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/create', {});
-    var idBannerSuccess = 'createPortfolioName';
-    var classBannerSuccess = 'createPortfolioBanner';
-    var idBannerAlert = '#createBannerAlert';
-
-    //check everthing is filled out
-    var empty = $(this).parent().find("input").filter(function() {
-        return this.value === "";
+  var name        = $('#wizard-name').val();
+  var description = $('#wizard-description').val();
+  if (name === "" || description ==="") {
+    $('.error-log').css('display', 'block');
+  } else {
+    $('.content').empty().append('<i style="color: #24437c;" class="fa fa-circle-o-notch fa-3x fa-spin fa-fw"></i>').css('text-align', 'center');
+    $.ajax({
+      type: "POST",
+      url: url,
+      data: {
+        'name': name,
+        'beschreibung': description
+      },
+      success: function(data) {
+        window.document.location.href = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/show');
+      }
     });
-
-    if (empty.length) {
-      $(idBannerAlert).css('display', 'block');
-    } else {
-      $.ajax({
-        type: "POST",
-        url: url,
-        data: $("#createForm").serialize(),
-        success: function(data) {
-          nameNewCreatePortfolio = $( "#PortfolioName" ).val();
-          var beschreibung = $("#Beschreibung").val();
-          $('#myModal').modal('hide');
-           $('#createForm')[0].reset();
-          //updater();
-          showBanner(nameNewCreatePortfolio, idBannerSuccess , classBannerSuccess);
-          console.log(data);
-          var seminar_id = data;
-          $('.portfolioOverview').append("<tr class='insert_tr'><td><a href='"+STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/eportfolioplugin', {})+"&cid"+"'>"+nameNewCreatePortfolio+"</a></td><td> "+beschreibung+" </td><td>0</td></tr>");
-          //$('.portfolioOverview').append("<tr class='insert_tr'><td><a href='/studip/plugins.php/eportfolioplugin/eportfolioplugin?cid="+seminar_id+"'>"+nameNewCreatePortfolio+"</a></td><td> "+beschreibung+" </td><td>0</td></tr>");
-        }
-      });
-    }
-
-    e.preventDefault(); // avoid to execute the actual submit of the form.
-  });
+  }
 }
 
 // function updatePortfolioTable() {

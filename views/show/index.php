@@ -216,6 +216,8 @@
 
 </div> -->
 
+<div class="modal-area"></div>
+
 <!-- Modal -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
@@ -265,6 +267,17 @@
     updatePortfolioTable();
   }
 
+  function newPortfolioModal(){
+    var template = $('#modal-template-neuesPortfolio').html();
+    Mustache.parse(template);   // optional, speeds up future uses
+    var rendered = Mustache.render(template, {titel: 'Neus Portfolio erstellen'});
+    $('.modal-area').html(rendered);
+  }
+
+  function closeModal(){
+    $('.modal-area').empty();
+  }
+
   //Trigger Modal
   $('#myModal').on('shown.bs.modal', function () {
     $('#myInput').focus()
@@ -291,4 +304,40 @@
   //$('.customLinkList2').append('<li><a>Testperson 3</a></li>');
 
 
+</script>
+
+<script id="modal-template-neuesPortfolio" type="x-tmpl-mustache">
+   <div class="modaloverlay">
+      <div class="create-question-dialog ui-widget-content ui-dialog studip-confirmation">
+          <div style="background-color: #28497c;" class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">
+              <span style="color:#fff;">{{titel}}</span>
+              <a style="color:#fff!important;" onclick="closeModal();" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only ui-dialog-titlebar-close">
+                  <span class="ui-button-icon-primary ui-icon ui-icon-closethick"></span>
+                  <span class="ui-button-text">Schliessen</span>
+              </a>
+          </div>
+          <div style="background:none;padding: 10px;" class="content ui-widget-content ui-dialog-content studip-confirmation">
+              <div class="formatted-content">{{text}}</div>
+              <form id="createGroupForm">
+
+                <label>
+                  <span class="required">Name</span>
+                  <input style="width: 100%;" type="text" name="name" id="wizard-name" maxlength="254" value="" required="" aria-required="true" aria-invalid="true">
+                </label>
+
+              <label>
+                <span>Beschreibung</span>
+                <textarea style="width: 100%;" name="description" id="wizard-description" cols="75" rows="4"></textarea>
+              </label>
+
+            </form>
+            <span class="error-log" style="color: red;margin: 10px 0;display: none;">Bitte alle Felder ausfüllen!</span>
+          </div>
+          <div class="buttons ui-widget-content ui-dialog-buttonpane">
+              <div class="ui-dialog-buttonset">
+                <a class="button" onclick="createNewPortfolio();">Erstellen</a>
+              </div>
+          </div>
+      </div>
+  </div>
 </script>
