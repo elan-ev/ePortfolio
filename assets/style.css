@@ -220,3 +220,22 @@ button.list-group-item:focus, button.list-group-item:hover {
   margin: 0px;
   list-style: none;
 }
+
+.pers-color-block {
+  border: 1px solid grey;
+  padding: 3px;
+  margin-right: 3px;
+  display: inline;
+}
+
+.pers-color-block i {
+  opacity: 0;
+}
+
+.pers-color-block:hover i {
+  opacity: 1;
+}
+
+.pers-color-block:hover {
+
+}

@@ -26,6 +26,11 @@ class settingsController extends StudipController {
         exit();
       }
 
+      if ($_POST['action'] == 'setsettingsColor') {
+        $this->setsettingsColor($_POST['cid'], $_POST['color']);
+        exit();
+      }
+
       //autonavigation
       Navigation::activateItem("course/settings");
 
@@ -296,6 +301,21 @@ class settingsController extends StudipController {
     # Seminar aus eportfolio-tabllen löschen
     DBManager::get()->query("DELETE FROM eportfolio WHERE seminar_id = '$cid'");
     DBManager::get()->query("DELETE FROM eportfolio_user WHERE seminar_id = '$cid'");
+  }
+
+  public function setsettingsColor($cid, $color){
+    $newArray = array();
+    //$setting = DBManager::get()->query("SELECT settings FROM eportfolio WHERE semniar_id = $cid;")->fetchAll();
+    $newArray['color'] = $color;
+    $newArray = json_encode($newArray);
+    DBManager::get()->query("UPDATE eportfolio SET settings = '$newArray' WHERE seminar_id = '$cid'");
+  }
+
+  public function getsettingsColor(){
+    $cid = $_GET['cid'];
+    $color = DBManager::get()->query("SELECT settings FROM eportfolio WHERE seminar_id = '$cid'")->fetchAll();
+    $color = json_decode($color[0][0]);
+    return $color->color;
   }
 
 }

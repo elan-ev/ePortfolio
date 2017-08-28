@@ -17,6 +17,11 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
           exit;
         }
 
+        if($_POST["action"] == "getsettingsColor"){
+          $this->getsettingsColor($_GET['cid']);
+          exit;
+        }
+
         function checkPermission(){
           $userId = $GLOBALS["user"]->id;
           $perm = get_global_perm($userId);
@@ -210,6 +215,12 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         $array = json_encode($array);
         $db->query("UPDATE eportfolio SET freigaben_kapitel = '$array' WHERE Seminar_id = '$cid'");
       }
+    }
+
+    public function getsettingsColor($cid){
+      $color = DBManager::get()->query("SELECT settings FROM eportfolio WHERE seminar_id = '$cid'")->fetchAll();
+      $color = json_decode($color[0][0]);
+      echo $color->color;
     }
 
 }
