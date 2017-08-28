@@ -99,22 +99,27 @@
 
   //Freigaben für Portfolio
   $SupervisorFreigaben = SettingsController::getPortfolioFreigaben($cid);
+
+  # Prüfen ob eigenes Portfolio
+  $eigenesPortfolio = SettingsController::eigenesPortfolio($cid);
  ?>
 
-<tr style="background-color: lightblue;">
-  <td>
-    <img style="border-radius: 30px; width: 15px;" src="<?php echo $GLOBALS[DYNAMIC_CONTENT_URL];?>/user/<?php echo $supervisorId; ?>_small.png" onError="defaultImg(this);">
-    <?php echo $supervisorName; ?>
-  </td>
+<?php if ($eigenesPortfolio == false): ?>
+  <tr style="background-color: lightblue;">
+    <td>
+      <img style="border-radius: 30px; width: 15px;" src="<?php echo $GLOBALS[DYNAMIC_CONTENT_URL];?>/user/<?php echo $supervisorId; ?>_small.png" onError="defaultImg(this);">
+      <?php echo $supervisorName; ?>
+    </td>
 
-  <?php foreach ($chapterList as $chapter):?>
-    <?php if($SupervisorFreigaben[$chapter[id]] == 1): ?>
-      <td id="chapter<?php echo $chapter[id]?>" onclick="freigeben('<?php echo $chapter[id]; ?>', '<?php echo $cid; ?>');"><?php echo  Icon::create('accept', 'clickable'); ?></td>
-    <?php else: ?>
-      <td id="chapter<?php echo $chapter[id]?>" onclick="freigeben('<?php echo $chapter[id]; ?>', '<?php echo $cid; ?>');"><?php echo  Icon::create('decline', 'clickable'); ?></td>
-    <?php endif; ?>
-  <?php endforeach; ?>
-</tr>
+    <?php foreach ($chapterList as $chapter):?>
+      <?php if($SupervisorFreigaben[$chapter[id]] == 1): ?>
+        <td id="chapter<?php echo $chapter[id]?>" onclick="freigeben('<?php echo $chapter[id]; ?>', '<?php echo $cid; ?>');"><?php echo  Icon::create('accept', 'clickable'); ?></td>
+      <?php else: ?>
+        <td id="chapter<?php echo $chapter[id]?>" onclick="freigeben('<?php echo $chapter[id]; ?>', '<?php echo $cid; ?>');"><?php echo  Icon::create('decline', 'clickable'); ?></td>
+      <?php endif; ?>
+    <?php endforeach; ?>
+  </tr>
+<?php endif; ?>
 
 <?php $i = 1; ?>
  <?php foreach ($viewerList as $viewer):?>

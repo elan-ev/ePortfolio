@@ -318,4 +318,13 @@ class settingsController extends StudipController {
     return $color->color;
   }
 
+  public function eigenesPortfolio($cid){
+    $query = DBManager::get()->query("SELECT template_id FROM eportfolio WHERE seminar_id = '$cid'")->fetchAll();
+    if (empty($query[0][0])) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
 }
