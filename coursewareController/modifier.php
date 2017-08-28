@@ -262,15 +262,7 @@ $workingArray = json_encode($workingArray);
     img.src = "<?php echo $GLOBALS[DYNAMIC_CONTENT_URL]; ?>/user/nobody_small.png";
   }
 
-  function rgb2hex(rgb) {
-    rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
-    function hex(x) {
-        return ("0" + parseInt(x).toString(16)).slice(-2);
-    }
-    return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
-  }
-
-  function getsettingsColor() {
+  function getsettingsColor(){
     var cid = '<?php echo $_GET["cid"] ?>';
     var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin', {cid, cid});
 
@@ -282,7 +274,7 @@ $workingArray = json_encode($workingArray);
         cid: "<?php echo $cid; ?>",
       },
       success: function(data){
-        data = rgb2hex(data);
+        // data = rgb2hex(data);
         $('.active-section').css('background', data);
         $('.active-subchapter').css('background-color', 'rgba(0,0,0,0)');
       }
