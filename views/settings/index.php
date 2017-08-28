@@ -155,10 +155,12 @@ $mp = MultiPersonSearch::get('eindeutige_id')
   ->setSearchObject(new StandardSearch('user_id'))
   ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/settings', array('id' => $cid, 'action' => 'addZugriff')))
   ->render();
+
+$tempURL = URLHelper::getLink('dispatch.php/multipersonsearch/js_form/eindeutige_id');
  ?>
 
- <a href="/public/dispatch.php/multipersonsearch/js_form/eindeutige_id" class="multi_person_search_link" data-dialog="width=720;height=460;id=mp-search" data-dialogname="eindeutige_id" title="Personen zur Gruppe hinzuf&amp;uuml;gen" data-js-form="/public/dispatch.php/multipersonsearch/js_form/eindeutige_id">
-   <?= \Studip\Button::create('Zugriffsrechte vergeben', 'klickMichButton', array('data-dialogname' => 'eindeutige_id', 'data-js-form' => '/public/dispatch.php/multipersonsearch/js_form/eindeutige_id')); ?>
+ <a href="<?php echo $tempURL ?>" class="multi_person_search_link" data-dialog="width=720;height=460;id=mp-search" data-dialogname="eindeutige_id" title="Personen zur Gruppe hinzuf&amp;uuml;gen" data-js-form="<?php echo $tempURL ?>">
+   <?= \Studip\Button::create('Zugriffsrechte vergeben', 'klickMichButton', array('data-dialogname' => 'eindeutige_id', 'data-js-form' => $tempURL)); ?>
  </a>
 
 <hr>
