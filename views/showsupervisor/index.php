@@ -334,7 +334,7 @@
       </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
-</div><!-- /.modal --> -->
+</div><!-- /.modal -->
 
 <div id="userInfoModel" class="modal fade" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
