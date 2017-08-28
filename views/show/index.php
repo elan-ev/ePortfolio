@@ -62,7 +62,7 @@
           <span id="headline_uebersicht"></span>
         </h2>
 
-        <p>Hier finden Sie alle ePortfolios, die Sie angelegt hast oder die andere f�r Sie freigegeben haben.</p>
+        <p>Hier finden Sie alle ePortfolios, die Sie angelegt haben oder die andere f&uuml;r Sie freigegeben haben.</p>
         <p><?= \Studip\Button::create('Mehr Informationen'); ?></p>
       </div>
     </div>
