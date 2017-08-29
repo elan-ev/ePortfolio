@@ -69,7 +69,6 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
 
             # modifier for the menubar
             if (!$id == NULL) {
-              
               $seminar = new Seminar($id);
               $seminarMembers = $seminar->getMembers("dozent");
               foreach ($seminarMembers as $key => $value) {
@@ -140,7 +139,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         $isDozent       = false;
 
         foreach ($seminarMembers as $key => $value) {
-          if ($userId == $key) {
+          if ($GLOBALS["user"]->id == $key) {
             $isDozent = true;
           }
         }
