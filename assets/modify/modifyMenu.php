@@ -4,7 +4,7 @@
 //set variables
 $cid = $_GET["cid"];
 $userId = $GLOBALS["user"]->id;
-echo "moddy";
+
 // $isOwner = $this->isOwner($cid, $userId);
  ?>
 

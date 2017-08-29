@@ -66,6 +66,16 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
 
           if ($this->checkEportfolio($id) == true) {
             include 'coursewareController/modifier.php';
+
+            # modifier for the menubar
+            $seminar = new Seminar($id);
+            $seminarMembers = $seminar->getMembers("dozent");
+            foreach ($seminarMembers as $key => $value) {
+              if ($userId != $key) {
+                include 'assets/modify/modifyMenu.php';
+              }
+            }
+
           }
         }
       }
@@ -117,10 +127,23 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
       $navigation->setImage('icons/16/white/group4.png');
       $navigation->setActiveImage('icons/16/black/group4.png');
 
-      //settings navigation
-      $navigationSettings = new Navigation('Zugriffsrechte', PluginEngine::getURL($this, compact('cid'), 'settings', true));
-      $navigationSettings->setImage('icons/16/white/admin.png');
-      $navigationSettings->setActiveImage('icons/16/black/admin.png');
+      # settings navigation
+      $id             = $_GET["cid"];
+      $seminar        = new Seminar($id);
+      $seminarMembers = $seminar->getMembers("dozent");
+      $isDozent       = false;
+
+      foreach ($seminarMembers as $key => $value) {
+        if ($userId == $key) {
+          $isDozent = true;
+        }
+      }
+
+      if ($isDozent == true) {
+        $navigationSettings = new Navigation('Zugriffsrechte', PluginEngine::getURL($this, compact('cid'), 'settings', true));
+        $navigationSettings->setImage('icons/16/white/admin.png');
+        $navigationSettings->setActiveImage('icons/16/black/admin.png');
+      }
 
       //generate navigation
       $tabs['eportfolioplugin'] = $navigation;
