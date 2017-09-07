@@ -185,7 +185,7 @@
 <div class="row">
   <div class="col-md-12">
     <table  class="default">
-      <caption>Sichtbare Portfolios</caption>
+      <caption>F&uuml;r mich freigegebene Portfolios</caption>
       <colgroup>
         <col width="30%">
         <col width="60%">
