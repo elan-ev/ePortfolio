@@ -23,8 +23,8 @@ class EportfoliopluginController extends StudipController {
       Sidebar::Get()->setTitle('ï¿½bersicht');
 
       $navOverview = new LinksWidget();
-      $navOverview->setTitle('ï¿½bersicht');
-      $navOverview->addLink('ï¿½bersicht', URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('portfolioid' => $portfolioid)), null , array('class' => 'active-link'));
+      $navOverview->setTitle('Übersicht');
+      $navOverview->addLink('Übersicht', URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('portfolioid' => $portfolioid)), null , array('class' => 'active-link'));
       $sidebar->addWidget($navOverview);
 
       $nav = new LinksWidget();
@@ -33,7 +33,12 @@ class EportfoliopluginController extends StudipController {
 
       $getCoursewareChapters = $this->getCardInfos($cid);
       foreach ($getCoursewareChapters as $key => $value) {
-        $nav->addLink($value[title], URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $cid, 'selected' => $value[id])));
+        $isOwner = $this->isOwner($cid, $GLOBALS["user"]->id);
+        if ($this->checkPersmissionOfChapter($value[id], $GLOBALS["user"]->id, $cid) == true && $isOwner == NULL) {
+          $nav->addLink($value[title], URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $cid, 'selected' => $value[id])));
+        } else {
+          $nav->addLink($value[title], URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $cid, 'selected' => $value[id])));
+        }
       }
 
       $sidebar->addWidget($nav);
@@ -63,8 +68,14 @@ class EportfoliopluginController extends StudipController {
     $userid = $GLOBALS["user"]->id;
     $cid = $_GET["cid"];
     $this->cid = $cid;
+    $this->userId = $userid;
     $i = 0;
     $isOwner = false;
+
+    # ÃœberprÃ¼ft ob Besitzer der Veranstaltung
+    // if (!$this->checkIfOwner($userId, $cid) == true) {
+    //   exit("Sie haben keine Berechtigung!");
+    // }
 
     $db = DBManager::get();
     $this->plugin = $dispatcher->plugin;
@@ -304,6 +315,25 @@ class EportfoliopluginController extends StudipController {
 
     print_r(json_encode($infoboxArray));
 
+  }
+
+  public function checkIfOwner($userId, $cid){
+    $query = DBManager::get()->query("SELECT status FROM seminar_user WHERE user_id = '$userId' AND seminar_id = '$cid'")->fetchAll();
+    if ($query[0][0] == "dozent") {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public function checkPersmissionOfChapter($chapter, $userId, $cid){
+    $query = DBManager::get()->query("SELECT eportfolio_access FROM eportfolio_user WHERE user_id = '$userId' AND seminar_id = '$cid'")->fetchAll();
+    $data = unserialize($query[0][0]);
+    if ($data[$chapter] == 1) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
 }

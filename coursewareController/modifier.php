@@ -195,10 +195,27 @@ $workingArray = json_encode($workingArray);
 <script type="text/javascript">
 
   $(document).ready(function(){
-    // $('#courseware').append("<button onclick='freigeben(<?php echo $selected; ?>, `<?php echo $cid ?>`);'>Freigeben</button>");
+    var color;
+
     getsettingsColor();
     infobox();
+    authorModeColor();
+    changeTitle();
   });
+
+  function changeTitle(){
+    $('span[title="Courseware"]').html('E-Portfolio');
+  }
+
+  function authorModeColor() {
+    $('.author').click(function (){
+      $('.active-section').css('background', '#fff');
+    });
+
+    $('.student').click(function (){
+      $('.active-section').css('background', color);
+    });
+  }
 
   function freigeben(selected, cid){
     console.log(selected + " " + cid);
@@ -275,6 +292,7 @@ $workingArray = json_encode($workingArray);
       },
       success: function(data){
         // data = rgb2hex(data);
+        color = data;
         $('.active-section').css('background', data);
         $('.active-subchapter').css('background-color', 'rgba(0,0,0,0)');
       }

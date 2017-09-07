@@ -37,6 +37,21 @@
   </style>
 </head>
 
+<?php
+
+  $images = array(
+    "http://www.arbeitstipps.de/wp-content/uploads/2010/06/leere-blatt-syndrom-mangelnde-kreativitaet-tipps.jpg",
+    "http://www.ahs-institut.de/wp-content/uploads/2015/03/2015-ahs-kollegial.jpg",
+    "http://www.maz-online.de/var/storage/images/maz/lokales/teltow-flaeming/sorge-um-unterrichtsausfall-trotz-neuer-lehrer/262589062-1-ger-DE/Sorge-um-Unterrichtsausfall-trotz-neuer-Lehrer_pdaArticleWide.jpg",
+    "https://www.daad.de/medien/ausland/symbole/fittosize_558_314_3de6fbc25ed35bc4e67ac128c2c40130_abschlussfeier_by_thomas_koelsch_pixelio.jpg",
+    "http://p5.focus.de/img/fotos/origs2589632/6655443606-w630-h354-o-q75-p5/schule-lehrer.jpg",
+    "http://p5.focus.de/img/fotos/origs1094264/3255449779-w630-h354-o-q75-p5/schule-lernen.jpg",
+    "https://www.km.bayern.de/bilder/km_absatz/foto/6667_0710_bibliotheken_partner_der_schule_455.jpg",
+    "https://www.pointer.de/bilder/teaser_top/2374lernen_bibliothek_studium.jpg",
+  );
+
+ ?>
+
 <!-- HEAD END -->
 
 <div class="row">
@@ -64,6 +79,7 @@
 
     <div class="row">
 
+      <?php $imageNumber = 0; ?>
       <?php foreach ($cardInfo as $key): ?>
 
         <?php
@@ -79,9 +95,11 @@
 
           <?php $theurl = $img[$imgcount]; $imgcount++; ?>
 
-          <div class="" style="min-height: 220px;background-image: url('<?php echo $theurl; ?>'); background-size: cover;">
+          <div class="" style="min-height: 220px;background-image: url('<?php echo $images[$imageNumber]; ?>'); background-size: cover;">
             &nbsp;
           </div>
+
+          <?php $imageNumber++; ?>
 
           <!-- <div class="alert alert-info" style="margin: 20px 0;" role="alert">Warum will ich Lehrerin werden? Welche Staerken will ich einbringen? </div> -->
 

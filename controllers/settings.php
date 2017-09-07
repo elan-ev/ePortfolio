@@ -59,6 +59,11 @@ class settingsController extends StudipController {
     $db = DBManager::get();
     $this->cid = $cid;
 
+    # Überprüft ob Besitzer der Veranstaltung
+    // if (!$this->checkIfOwner($userId, $cid) == true) {
+    //   exit("Sie haben keine Berechtigung!");
+    // }
+
     //set AutoNavigation////
     //Navigation::activateItem("course/settings");
     ////////////////////////s
@@ -137,7 +142,7 @@ class settingsController extends StudipController {
     //get supervisor_id
     $getSupervisorquery = $db->query("SELECT supervisor_id FROM eportfolio WHERE Seminar_id = '$cid'")->fetchAll();
     $supervisor_id = $getSupervisorquery[0][supervisor_id];
-    echo $supervisor_id;
+    //echo $supervisor_id;
 
     //get Portfolio Information//
     ////////////////////////////
@@ -321,6 +326,15 @@ class settingsController extends StudipController {
   public function eigenesPortfolio($cid){
     $query = DBManager::get()->query("SELECT template_id FROM eportfolio WHERE seminar_id = '$cid'")->fetchAll();
     if (empty($query[0][0])) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public function checkIfOwner($userId, $cid){
+    $query = DBManager::get()->query("SELECT status FROM seminar_user WHERE user_id = '$userId' AND seminar_id = '$cid'")->fetchAll();
+    if ($query[0][0] == "dozent") {
       return true;
     } else {
       return false;

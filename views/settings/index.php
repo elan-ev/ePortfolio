@@ -108,7 +108,7 @@
   <tr style="background-color: lightblue;">
     <td>
       <img style="border-radius: 30px; width: 15px;" src="<?php echo $GLOBALS[DYNAMIC_CONTENT_URL];?>/user/<?php echo $supervisorId; ?>_small.png" onError="defaultImg(this);">
-      <?php echo $supervisorName; ?>
+      <?php echo $supervisorName; ?> (Supervisor)
     </td>
 
     <?php foreach ($chapterList as $chapter):?>
