@@ -147,7 +147,7 @@
             <td><a href="<?php echo URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('cid' => $portfolio)); ?>"><?php echo $thisPortfolio->getName(); ?></a></td>
             <td><?php echo ShowController::getCourseBeschreibung($portfolio); ?></td>
             <td style="text-align: center;"><?php echo ShowController::countViewer($portfolio); ?></td>
-            <td style="text-align: center;"><a href="<?php echo URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('cid' => $portfolio)); ?>"><?php echo Icon::create('edit', 'clickable') ?></a></td>
+            <td style="text-align: center;"><a href="<?php echo URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $portfolio)); ?>"><?php echo Icon::create('edit', 'clickable') ?></a></td>
           </tr>
         <?php endforeach; ?>
       </tbody>
