@@ -29,7 +29,7 @@ class ShowController extends StudipController {
         $navcreate = new LinksWidget();
         $navcreate->setTitle('Navigation');
         $attr = array('onclick' => 'newPortfolioModal()');
-        $navcreate->addLink("Eigenes Portfolio erstellen", "#", "", $attr);
+        $navcreate->addLink("Eigenes ePortfolio erstellen", "#", "", $attr);
         if ($perm == "dozent") {
           $output = $this->getFirstGroup($GLOBALS["user"]->id);
           if(!$output == '') {
