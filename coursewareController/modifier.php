@@ -204,7 +204,7 @@ $workingArray = json_encode($workingArray);
   });
 
   function changeTitle(){
-    $('span[title="Courseware"]').html('E-Portfolio');
+    $('span[title="Courseware"]').html('ePortfolio');
   }
 
   function authorModeColor() {
