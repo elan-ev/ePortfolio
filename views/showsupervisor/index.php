@@ -102,7 +102,7 @@
       <?= \Studip\Button::create('Hinzuf�gen', 'button', array('type' => 'button', 'onclick' => 'addTemp()')); ?> -->
 
       <div id="wrapper_table_tamplates" style="margin-top: 30px;">
-        <h4>Portfoliotemplate hinzuf&uuml;gen</h4>
+        <h4>Portfoliovorlage hinzuf&uuml;gen</h4>
 
         <table id="table_templates" class="default">
           <colgroup>
