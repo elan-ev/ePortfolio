@@ -256,6 +256,7 @@ $workingArray = json_encode($workingArray);
         infobox: "infobox",
         cid: "<?php echo $cid; ?>",
         userid: "<?php echo $userId; ?>",
+        selected: selected,
       },
       success: function(data){
 

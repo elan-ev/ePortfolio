@@ -78,11 +78,20 @@ class CoursewareinfoblockController extends StudipController {
 
       //supervisor Infos
       if (!empty($supervisorQuery[0][0])) {
-        $supervisorInfo = UserModel::getUser($supervisorId);
-        $infoboxArray["supervisorId"] = $supervisorId;
-        $infoboxArray["supervisorFistname"] = $supervisorInfo[Vorname];
-        $infoboxArray["supervisorLastname"] = $supervisorInfo[Nachname];
-        $infoboxArray['cid']                = $cid; 
+
+        # check Freigaben
+        $query = DBManager::get()->query("SELECT freigaben_kapitel FROM eportfolio WHERE Seminar_id = '$cid'")->fetchAll();
+        $freigabe = json_decode($query[0][0]);
+        $freigabe = $freigabe->$selected;
+
+        if ($freigabe == 1) {
+          $supervisorInfo = UserModel::getUser($supervisorId);
+          $infoboxArray["supervisorId"] = $supervisorId;
+          $infoboxArray["supervisorFistname"] = $supervisorInfo[Vorname];
+          $infoboxArray["supervisorLastname"] = $supervisorInfo[Nachname];
+          $infoboxArray['cid']                = $cid;
+        }
+
       }
 
     } else {
