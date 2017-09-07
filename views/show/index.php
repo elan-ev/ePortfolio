@@ -63,7 +63,7 @@
         </h2>
 
         <p>Hier finden Sie alle ePortfolios, die Sie angelegt haben oder die andere f&uuml;r Sie freigegeben haben.</p>
-        <p><?= \Studip\Button::create('Mehr Informationen'); ?></p>
+        <!-- <p><?= \Studip\Button::create('Mehr Informationen'); ?></p> -->
       </div>
     </div>
 
