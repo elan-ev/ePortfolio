@@ -24,7 +24,7 @@ class ShowController extends StudipController {
         $user = get_username();
 
         $sidebar = Sidebar::Get();
-        Sidebar::Get()->setTitle('e-Portfolio von '.$user );
+        Sidebar::Get()->setTitle('ePortfolio von '.$user );
 
         $navcreate = new LinksWidget();
         $navcreate->setTitle('Navigation');
