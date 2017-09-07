@@ -168,7 +168,7 @@ $tempURL = URLHelper::getLink('dispatch.php/multipersonsearch/js_form/eindeutige
    <?= \Studip\Button::create('Zugriffsrechte vergeben', 'klickMichButton', array('data-dialogname' => 'eindeutige_id', 'data-js-form' => $tempURL)); ?>
  </a>
 
-<hr>
+<!-- <hr>
 
 <div class="personal-colors">
   <h5>Courseware Hintergrundfarbe</h5>
@@ -183,7 +183,7 @@ $tempURL = URLHelper::getLink('dispatch.php/multipersonsearch/js_form/eindeutige
       <div onclick="settingsColor(this)" data-color="#c0392b" style="background-color:#c0392b" class="pers-color-block"><i class="fa fa-check" aria-hidden="true"></i></div>
     </div>
   </div>
-</div>
+</div> -->
 
 <script type="text/javascript">
 function rgb2hex(rgb) {
