@@ -23,8 +23,8 @@ class EportfoliopluginController extends StudipController {
       Sidebar::Get()->setTitle('ï¿½bersicht');
 
       $navOverview = new LinksWidget();
-      $navOverview->setTitle('Übersicht');
-      $navOverview->addLink('Übersicht', URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('portfolioid' => $portfolioid)), null , array('class' => 'active-link'));
+      $navOverview->setTitle('ï¿½bersicht');
+      $navOverview->addLink('ï¿½bersicht', URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('portfolioid' => $portfolioid)), null , array('class' => 'active-link'));
       $sidebar->addWidget($navOverview);
 
       $nav = new LinksWidget();
@@ -53,7 +53,6 @@ class EportfoliopluginController extends StudipController {
   public function before_filter(&$action, &$args)
   {
       parent::before_filter($action, $args);
-      PageLayout::setTitle('ePortfolio');
 
   }
 
@@ -192,6 +191,9 @@ class EportfoliopluginController extends StudipController {
     $this->viewerCounter = $viewerCounter;
     $this->numChapterViewer = $chapterListArray;
     $this->userid = $userid;
+
+    # Aktuelle Seite
+    PageLayout::setTitle('ePortfolio - Ãœbersicht: '.$getS);
 
   }
 

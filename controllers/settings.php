@@ -31,6 +31,10 @@ class settingsController extends StudipController {
         exit();
       }
 
+      # Aktuelle Seite
+      $seminar = new Seminar($_GET["cid"]);
+      PageLayout::setTitle('ePortfolio - Zugriffsrechte: '.$seminar->getName());
+
       //autonavigation
       Navigation::activateItem("course/settings");
 
@@ -46,8 +50,6 @@ class settingsController extends StudipController {
   public function before_filter(&$action, &$args)
   {
     parent::before_filter($action, $args);
-    PageLayout::setTitle('Rechteverwaltung');
-
   }
 
   public function index_action()

@@ -67,6 +67,9 @@ class ShowsupervisorController extends StudipController {
           exit();
         }
 
+        # Aktuelle Seite
+        PageLayout::setTitle('ePortfolio - Supervisionsansicht');
+
         //sidebar
         $sidebar = Sidebar::Get();
         Sidebar::Get()->setTitle('Supervisionsansicht');
