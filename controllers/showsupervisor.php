@@ -333,8 +333,9 @@ class ShowsupervisorController extends StudipController {
       $semList = array();
       $masterid = $_POST['master'];
 
-      $member = $this->getGroupMember($_POST["groupid"]);
+      $member     = $this->getGroupMember($_POST["groupid"]);
       $groupowner = $this->getGroupOwner($_POST["groupid"]);
+      $groupname  = new Seminar($_POST["groupid"]);
 
       $master = new Seminar($masterid);
 
@@ -351,7 +352,7 @@ class ShowsupervisorController extends StudipController {
       foreach ($member as $key => $value) {
 
           $userid           = $value; //get userid
-          $sem_name         = $master->getName();
+          $sem_name         = $master->getName()." (".$groupname->getName().")";
           $sem_description  = "Beschreibung";
 
           $sem              = new Seminar();
