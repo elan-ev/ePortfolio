@@ -73,8 +73,8 @@ class CreateController extends StudipController {
         }
 
         $userid           = $GLOBALS["user"]->id; //get userid
-        $sem_name         = $_POST['name'];
-        $sem_description  = $_POST['beschreibung'];
+        $sem_name         = iconv("UTF-8","windows-1252",$_POST['name']);
+        $sem_description  = iconv("UTF-8","windows-1252",$_POST['beschreibung']);
 
         $sem              = new Seminar();
         $sem->Seminar_id  = $sem->createId();
