@@ -267,7 +267,9 @@
 
     // updatePortfolioTable();
     // updateAccessTable();
-    createNewPortfolio();
+    // 
+    // das brauchen wit hier nicht oder?:
+    //createNewPortfolio();
 
   });
 
