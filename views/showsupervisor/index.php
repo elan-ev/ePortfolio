@@ -99,7 +99,7 @@
           <option value="<?php echo $value[id] ?>"><?php echo $value[temp_name] ?></option>
         <?php endforeach; ?>
       </select>
-      <?= \Studip\Button::create('Hinzufï¿½gen', 'button', array('type' => 'button', 'onclick' => 'addTemp()')); ?> -->
+      <?= \Studip\Button::create('Hinzufügen', 'button', array('type' => 'button', 'onclick' => 'addTemp()')); ?> -->
 
       <div id="wrapper_table_tamplates" style="margin-top: 30px;">
         <h4>Portfoliovorlage hinzuf&uuml;gen</h4>
@@ -225,7 +225,7 @@
               //  $q = ShowsupervisorController::getChapters($tempid);
               $q = DBManager::get()->query("SELECT title, id FROM mooc_blocks WHERE seminar_id = '$getsemid' AND type = 'Chapter'")->fetchAll();
 
-              //ï¿½bergangslï¿½sung Kapitel 1 & Kapitel 2 mï¿½ssen noch entfernt werden
+              //Übergangslösung Kapitel 1 & Kapitel 2 müssen noch entfernt werden
               unset($q[0]);
               unset($q[1]);
 
@@ -254,8 +254,8 @@
             <?php endforeach; ?>
           </table>
 
-          <!-- <button type="button" name="button" onclick="deletetemplate(<?php echo $tempid; ?>)">Vorlage fï¿½r diese Gruppe lï¿½schen</button> -->
-          <!--<?= \Studip\Button::create('Vorlage fï¿½r diese Gruppe lï¿½schen', 'button', array('type' => 'button', 'onclick' => 'deletetemplate('.$tempid.')')); ?>-->
+          <!-- <button type="button" name="button" onclick="deletetemplate(<?php echo $tempid; ?>)">Vorlage fr diese Gruppe lschen</button> -->
+          <!--<?= \Studip\Button::create('Vorlage für diese Gruppe löschen', 'button', array('type' => 'button', 'onclick' => 'deletetemplate('.$tempid.')')); ?>-->
 
         </div>
       <?php endforeach; ?>
@@ -271,7 +271,7 @@
     Gruppen erstellen
   </div>
 
-  <?php echo MessageBox::info('Aktuell haben Sie noch keine Gruppen erstellt. Bitte erstellen Sie zunï¿½chst ein Gruppe um mit der Verwaltung fortzufahren.'); ?>
+  <?php echo MessageBox::info('Aktuell haben Sie noch keine Gruppen erstellt. Bitte erstellen Sie zunächst ein Gruppe um mit der Verwaltung fortzufahren.'); ?>
 
 </div>
 
@@ -279,7 +279,7 @@
 
 <?php
   $mp = MultiPersonSearch::get('eindeutige_id')
-    ->setLinkText(_('Personen hinzufÃ¼gen'))
+    ->setLinkText(_('Personen hinzufügen'))
     ->setTitle(_('Personen zur Gruppe hinzuf&uuml;gen'))
     ->setSearchObject(new StandardSearch('user_id'))
     ->setJSFunctionOnSubmit('addUserToGroup')
@@ -289,7 +289,7 @@
 
 <?php if (empty(ShowsupervisorController::getGroupTemplates($id))):?>
    <a href="<?php echo URLHelper::getLink('dispatch.php/multipersonsearch/js_form/eindeutige_id'); ?>" class="multi_person_search_link" data-dialog="width=720;height=460;id=mp-search" data-dialogname="eindeutige_id" title="Personen zur Gruppe hinzuf&amp;uuml;gen" data-js-form="<?php echo URLHelper::getLink('dispatch.php/multipersonsearch/js_form/eindeutige_id'); ?>">
-     <?= \Studip\Button::create('Personen hinzufÃ¼gen', 'klickMichButton', array('data-dialogname' => 'eindeutige_id', 'data-js-form' => URLHelper::getLink('dispatch.php/multipersonsearch/js_form/eindeutige_id'))); ?>
+     <?= \Studip\Button::create('Personen hinzufügen', 'klickMichButton', array('data-dialogname' => 'eindeutige_id', 'data-js-form' => URLHelper::getLink('dispatch.php/multipersonsearch/js_form/eindeutige_id'))); ?>
    </a>
 <?php endif; ?>
 
@@ -297,7 +297,7 @@
 <div class="legend">
   <ul>
     <li><?php echo  Icon::create('accept', 'clickable'); ?>  Kapitel/Implus freigeschaltet</li>
-    <li><?php echo  Icon::create('accept+new', 'clickable'); ?></i>  Kapitel freigeschaltet und ï¿½nderungen seit ich das letzte mal reingeschaut habe</li>
+    <li><?php echo  Icon::create('accept+new', 'clickable'); ?></i>  Kapitel freigeschaltet und nderungen seit ich das letzte mal reingeschaut habe</li>
     <li><?php echo  Icon::create('file', 'clickable'); ?>  Supervisionsanliegen freigeschaltet</li>
     <li><?php echo  Icon::create('forum', 'clickable'); ?>  Resonanz gegeben</li>
   </ul>
@@ -520,7 +520,7 @@ function deleteUserFromGroup(userid, obj) {
 }
 
 function deletetemplate(tempid){
-  var c = confirm("Es werden alle bestehenden ePortfolios dieses Templates gelÃ¶scht! MÃ¶chten Sie fortfahren?");
+  var c = confirm("Es werden alle bestehenden ePortfolios dieses Templates gelöscht! Möchten Sie fortfahren?");
   if (c == true){
 
     var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/showsupervisor');

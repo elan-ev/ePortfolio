@@ -97,10 +97,10 @@
   $supervisor = UserModel::getUser($supervisorId);
   $supervisorName = $supervisor[Vorname].' '.$supervisor[Nachname];
 
-  //Freigaben fÃ¼r Portfolio
+  //Freigaben für Portfolio
   $SupervisorFreigaben = SettingsController::getPortfolioFreigaben($cid);
 
-  # PrÃ¼fen ob eigenes Portfolio
+  # Prüfen ob eigenes Portfolio
   $eigenesPortfolio = SettingsController::eigenesPortfolio($cid);
  ?>
 
@@ -155,7 +155,7 @@
 
 <?php
 $mp = MultiPersonSearch::get('eindeutige_id')
-  ->setLinkText(_('Personen hinzufÃ¼gen'))
+  ->setLinkText(_('Personen hinzufügen'))
   ->setTitle(_('Personen zur Gruppe hinzuf&uuml;gen'))
   ->setSearchObject(new StandardSearch('user_id'))
   ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/settings', array('id' => $cid, 'action' => 'addZugriff')))
@@ -205,7 +205,7 @@ $('div[data-color="'+color+'"] i').css('opacity', '1').attr('data-status', 'acti
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Supervisor hinzufï¿½gen</h4>
+        <h4 class="modal-title">Supervisor hinzufügen</h4>
       </div>
       <div class="modal-body" id="modalDeleteBody">
 
@@ -261,7 +261,7 @@ $('div[data-color="'+color+'"] i').css('opacity', '1').attr('data-status', 'acti
       $('#deleteModal').focus()
     })
 
-    // Portfolio Informationen Ã¤ndern
+    // Portfolio Informationen ändern
     $('#portfolio-info-trigger').click( function() {
       $(this).toggleClass('show-info-not');
       $('#portfolio-info-saver').toggleClass('show-info');

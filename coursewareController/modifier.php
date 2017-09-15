@@ -151,7 +151,7 @@ $workingArray = json_encode($workingArray);
 <script id="templateOwnerTrue" type="x-tmpl-mustache">
   <div class="courseware_infobox_owner">
 
-    <div style="display: inline; position: relative; top: -6px; font-size: 14px; font-weight: bold; margin-right: 10px;">Lesen dÃ¼rfen:</div>
+    <div style="display: inline; position: relative; top: -6px; font-size: 14px; font-weight: bold; margin-right: 10px;">Lesen dürfen:</div>
 
       {{#supervisorId}}
         <div class="viewer_icon">

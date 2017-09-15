@@ -44,7 +44,7 @@
 
 <div class="row">
   <div class="col-md-12">
-    <h4>Fï¿½r Sie sichtbare Portfolios</h4>
+    <h4>Für Sie sichtbare Portfolios</h4>
 
     <table  data-link="row" class=" rowlink table  viewportfolioOverview">
       <tr class="tr-head">

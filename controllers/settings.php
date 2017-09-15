@@ -61,7 +61,7 @@ class settingsController extends StudipController {
     $db = DBManager::get();
     $this->cid = $cid;
 
-    # ÃœberprÃ¼ft ob Besitzer der Veranstaltung
+    # Überprüft ob Besitzer der Veranstaltung
     // if (!$this->checkIfOwner($userId, $cid) == true) {
     //   exit("Sie haben keine Berechtigung!");
     // }
@@ -275,13 +275,13 @@ class settingsController extends StudipController {
     $eportfolio_id  = $this->getEportfolioId($id);
     $userRole       = 'autor';
 
-    # User der Gruppe hinzufÃ¼gen
+    # User der Gruppe hinzufügen
     foreach ($mp->getAddedUsers() as $userId) {
 
       #Seminar Add Member
       $seminar->addMember($userId, $userRole);
 
-      # User der Tabelle eportfolio_user hinzufÃ¼gen
+      # User der Tabelle eportfolio_user hinzufügen
       DBManager::get()->query("INSERT INTO eportfolio_user (user_id, Seminar_id, eportfolio_id, status, owner) VALUES ('$userId', '$id', '$eportfolio_id', 'autor', 0)");
     }
 
@@ -305,7 +305,7 @@ class settingsController extends StudipController {
     $seminar = new Seminar($cid);
     $seminar->delete();
 
-    # Seminar aus eportfolio-tabllen lÃ¶schen
+    # Seminar aus eportfolio-tabllen löschen
     DBManager::get()->query("DELETE FROM eportfolio WHERE seminar_id = '$cid'");
     DBManager::get()->query("DELETE FROM eportfolio_user WHERE seminar_id = '$cid'");
   }

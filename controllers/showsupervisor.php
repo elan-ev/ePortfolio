@@ -131,8 +131,8 @@ class ShowsupervisorController extends StudipController {
 
       //not working MultiPersonSearch
       $mp = MultiPersonSearch::get('eindeutige_id')
-        ->setLinkText(_('Person hinzufÃ¼gen'))
-        ->setTitle(_('Person zur Gruppe hinzufÃ¼gen'))
+        ->setLinkText(_('Person hinzufügen'))
+        ->setTitle(_('Person zur Gruppe hinzufügen'))
         ->setExecuteURL($this->url_for('controller'))
         ->render();
 
@@ -480,7 +480,7 @@ class ShowsupervisorController extends StudipController {
       $templates    = $this->getGroupTemplates($groupid);
       $outputArray  = array();
 
-      # User der Gruppe hinzufÃ¼gen
+      # User der Gruppe hinzufügen
       foreach ($mp->getAddedUsers() as $userId) {
         $query = DBManager::get()->query("SELECT user_id FROM eportfolio_groups_user WHERE user_id = '$userId' AND seminar_id = '$groupid'")->fetchAll(); //checkt ob schon in Gruppe eingetragen ist
         if(empty($query[0][0])){
@@ -488,7 +488,7 @@ class ShowsupervisorController extends StudipController {
         }
       }
 
-      # FÃ¼r jedes bereits benutze Template ein Seminar pro Nutzer erstellen
+      # Für jedes bereits benutze Template ein Seminar pro Nutzer erstellen
       foreach ($templates as $template) {
 
         $semList    = array();
@@ -503,7 +503,7 @@ class ShowsupervisorController extends StudipController {
           }
         }
 
-        # Erstellt fÃ¼r jeden neu hinzugefÃ¼gten User ein Seminar
+        # Erstellt für jeden neu hinzugefügten User ein Seminar
         // foreach ($mp->getAddedUsers() as $userid){
         //
         //   $userid           = $userid; //get userid

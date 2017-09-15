@@ -1,5 +1,5 @@
 <?php
-//entfernt MenÃ¼reiter die fÃ¼r Zuschaeuer nicht zugÃ¤nglich seinen sollen
+//entfernt Menüreiter die für Zuschaeuer nicht zugänglich seinen sollen
 
 //set variables
 $cid = $_GET["cid"];

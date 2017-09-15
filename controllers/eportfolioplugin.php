@@ -20,11 +20,11 @@ class EportfoliopluginController extends StudipController {
       $cid = $_GET['cid'];
 
       $sidebar = Sidebar::Get();
-      Sidebar::Get()->setTitle('ï¿½bersicht');
+      Sidebar::Get()->setTitle('Übersicht');
 
       $navOverview = new LinksWidget();
-      $navOverview->setTitle('ï¿½bersicht');
-      $navOverview->addLink('ï¿½bersicht', URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('portfolioid' => $portfolioid)), null , array('class' => 'active-link'));
+      $navOverview->setTitle('Übersicht');
+      $navOverview->addLink('Übersicht', URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('portfolioid' => $portfolioid)), null , array('class' => 'active-link'));
       $sidebar->addWidget($navOverview);
 
       $nav = new LinksWidget();
@@ -71,7 +71,7 @@ class EportfoliopluginController extends StudipController {
     $i = 0;
     $isOwner = false;
 
-    # ÃœberprÃ¼ft ob Besitzer der Veranstaltung
+    # Überprüft ob Besitzer der Veranstaltung
     // if (!$this->checkIfOwner($userId, $cid) == true) {
     //   exit("Sie haben keine Berechtigung!");
     // }
@@ -193,7 +193,7 @@ class EportfoliopluginController extends StudipController {
     $this->userid = $userid;
 
     # Aktuelle Seite
-    PageLayout::setTitle('ePortfolio - Ãœbersicht: '.$getS);
+    PageLayout::setTitle('ePortfolio - Übersicht: '.$getS);
 
   }
 
