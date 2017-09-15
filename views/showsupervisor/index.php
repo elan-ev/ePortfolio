@@ -102,7 +102,7 @@
       <?= \Studip\Button::create('Hinzufügen', 'button', array('type' => 'button', 'onclick' => 'addTemp()')); ?> -->
 
       <div id="wrapper_table_tamplates" style="margin-top: 30px;">
-        <h4>Portfoliovorlage hinzuf&uuml;gen</h4>
+        <h4>Portfoliovorlage hinzufügen</h4>
 
         <table id="table_templates" class="default">
           <colgroup>
