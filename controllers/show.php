@@ -17,7 +17,7 @@ class ShowController extends StudipController {
           if(!$output == '') {
             $this->linkId = $output;
           } else {
-            $this->linkId = 'noId';
+            $this->linkId = '';
           }
         }
 
@@ -35,7 +35,7 @@ class ShowController extends StudipController {
           if(!$output == '') {
             $linkIdMenu = $output;
           } else {
-            $linkIdMenu = 'noId';
+            $linkIdMenu = '';
           }
           $navcreate->addLink("Supervisionsansicht", "showsupervisor?id=".$linkIdMenu);
         }
