@@ -128,14 +128,14 @@ class settingsController extends StudipController {
       $viewerVorname = $viewerInfo[0][Vorname];
       $viewerNachname = $viewerInfo[0][Nachname];
 
-      $viewerAccess = $db->query("SELECT eportfolio_access FROM seminar_user WHERE user_id = '$viewer_id' AND Seminar_id = '$cid'")->fetchAll();
-      $dataAccess = unserialize($viewerAccess[0][eportfolio_access]);
+      //$viewerAccess = $db->query("SELECT eportfolio_access FROM seminar_user WHERE user_id = '$viewer_id' AND Seminar_id = '$cid'")->fetchAll();
+      //$dataAccess = unserialize($viewerAccess[0][eportfolio_access]);
 
       $arrayOne = array();
       $arrayOne['Vorname'] = $viewerVorname;
       $arrayOne['Nachname'] = $viewerNachname;
       $arrayOne['viewer_id'] = $viewer_id;
-      $arrayOne['Chapter'] = $dataAccess[chapter];
+      //$arrayOne['Chapter'] = $dataAccess[chapter];
 
       array_push($return_arr, $arrayOne);
 

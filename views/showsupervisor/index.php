@@ -437,6 +437,7 @@ function addTemp(){
 }
 
 function createPortfolio(master){
+  // exportPortfolio(master);
   var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/showsupervisor');
   $('.content').empty().css({
     'background': 'none',
@@ -466,7 +467,7 @@ function exportPortfolio(master, targets){
 
   //debug
   console.log(master);
-  console.log(targets);
+  //console.log(targets);
 
   urlexport = STUDIP.URLHelper.getURL('plugins.php/courseware/exportportfolio', {cid: master}); //url export
 
@@ -474,7 +475,24 @@ function exportPortfolio(master, targets){
     type: "GET",
     url: urlexport,
     success: function(exportData){
-      var xml = exportData; //export data
+      var path = exportData; //export data
+      console.log(path);
+
+      urlimport = STUDIP.URLHelper.getURL('plugins.php/courseware/importportfolio', {cid: 'e10c5a03a8248cbd14abab70f0655475'}); //url import
+
+      // $.ajax({
+      //     type: "POST",
+      //     url: urlimport,
+      //     data: {
+      //       master: master,
+      //       path: path,
+      //     },
+      //     success: function(importData){
+      //       console.log(importData);
+      //       //closeModal();
+      //       //location.reload();
+      //     }
+      //   });
 
       targets.forEach(function(target) {
 
@@ -483,11 +501,16 @@ function exportPortfolio(master, targets){
         $.ajax({
           type: "POST",
           url: urlimport,
-          data: {xml: xml},
+          data: {
+            // xml: xml,
+            master: master,
+            target: target,
+            path: path,
+          },
           success: function(importData){
             console.log(importData);
             closeModal();
-            location.reload();
+            //location.reload();
           }
         });
       });

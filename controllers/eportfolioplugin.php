@@ -162,16 +162,16 @@ class EportfoliopluginController extends StudipController {
     }
 
     //get views of chapter
-    $querygetviewer = $db->query("SELECT eportfolio_access, user_id FROM seminar_user WHERE Seminar_id = '$cid'")->fetchAll();
-    foreach ($querygetviewer as $key) {
-      $getviewerList = unserialize($key[0]);
-      foreach ($getviewerList[chapter] as $val => $value) {
-        if($value == '1'){
-          $chapterListArray[$val][number]++;
-          array_push($chapterListArray[$val][user], $key[user_id]);
-        }
-      }
-    }
+    //$querygetviewer = $db->query("SELECT eportfolio_access, user_id FROM seminar_user WHERE Seminar_id = '$cid'")->fetchAll();
+    //foreach ($querygetviewer as $key) {
+    //  $getviewerList = unserialize($key[0]);
+    //  foreach ($getviewerList[chapter] as $val => $value) {
+    //    if($value == '1'){
+    //      $chapterListArray[$val][number]++;
+    //      array_push($chapterListArray[$val][user], $key[user_id]);
+    //    }
+    //  }
+    //}
 
     //get viewer
     $viewerList = array();
