@@ -245,6 +245,13 @@
                       <?php else: ?>
                         &nbsp;
                       <?php endif; ?>
+
+                      <a href="<?php echo $link; ?>">
+                        <?php if (ShowsupervisorController::checkSupervisorNotiz($idNew) == true) {
+                          echo  Icon::create('file', 'clickable');
+                        }?>
+                      </a>
+
                     </td>
 
 
@@ -456,7 +463,7 @@ function createPortfolio(master){
       master: master
     },
     success: function(data){
-      console.log(data);
+      //console.log(data);
       targets = JSON.parse(data);
       exportPortfolio(master, targets);
     }
@@ -466,7 +473,7 @@ function createPortfolio(master){
 function exportPortfolio(master, targets){
 
   //debug
-  console.log(master);
+  //console.log(master);
   //console.log(targets);
 
   urlexport = STUDIP.URLHelper.getURL('plugins.php/courseware/exportportfolio', {cid: master}); //url export
@@ -476,6 +483,7 @@ function exportPortfolio(master, targets){
     url: urlexport,
     success: function(exportData){
       var path = exportData; //export data
+      console.log("###exportPath:");
       console.log(path);
 
       urlimport = STUDIP.URLHelper.getURL('plugins.php/courseware/importportfolio', {cid: 'e10c5a03a8248cbd14abab70f0655475'}); //url import
@@ -508,6 +516,7 @@ function exportPortfolio(master, targets){
             path: path,
           },
           success: function(importData){
+            console.log("###importData:");
             console.log(importData);
             closeModal();
             //location.reload();
