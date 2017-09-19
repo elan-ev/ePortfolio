@@ -324,7 +324,7 @@ class ShowsupervisorController extends StudipController {
       }
     }
 
-    public function createPortfolio($id){
+    public function createPortfolio(){
 
       // if ($this->checkTemplate($_POST['groupid'], $_POST['masterid'])) {
       //   exit("Error: Template schon in Verwendung!");
