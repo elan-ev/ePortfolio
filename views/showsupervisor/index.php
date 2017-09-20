@@ -252,6 +252,10 @@
                         }?>
                       </a>
 
+                      <?php if (ShowsupervisorController::checkSupervisorFeedback($idNew) == true) {
+                        echo  Icon::create('forum', 'clickable');
+                      } ?>
+
                     </td>
 
 

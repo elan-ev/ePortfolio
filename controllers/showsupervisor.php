@@ -577,4 +577,20 @@ class ShowsupervisorController extends StudipController {
       }
     }
 
+    public function checkSupervisorFeedback($id){
+      $supervisorNotiz = DBManager::get()->query("SELECT id FROM mooc_blocks WHERE parent_id = '$id' ")->fetchAll();
+      foreach ($supervisorNotiz[0] as $key => $value) {
+        $supervisorNotizSubchapter = DBManager::get()->query("SELECT id FROM mooc_blocks WHERE parent_id = '$value' ")->fetchAll();
+        foreach ($supervisorNotizSubchapter[0] as $keySub => $valueSub) {
+          $supervisorNotizSubchapterBlock = DBManager::get()->query("SELECT id FROM mooc_blocks WHERE parent_id = '$valueSub' AND type ='PortfolioBlockSupervisor' ")->fetchAll();
+          foreach ($supervisorNotizSubchapterBlock as $keyBlock => $valueBlock) {
+            $supervisorFeedback = DBManager::get()->query("SELECT block_id FROM mooc_fields WHERE block_id = '$valueBlock'")->fetchAll();
+            if (!empty($supervisorFeedback)) {
+              return true;
+            }
+          }
+        }
+      }
+    }
+
 }
