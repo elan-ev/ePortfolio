@@ -246,15 +246,17 @@
                         &nbsp;
                       <?php endif; ?>
 
-                      <a href="<?php echo $link; ?>">
+                      <a href="<?php echo URLHelper::getLink("plugins.php/courseware/courseware", array('cid' => $getsemid , 'selected' => $idNew)) ?>">
                         <?php if (ShowsupervisorController::checkSupervisorNotiz($idNew) == true) {
                           echo  Icon::create('file', 'clickable');
                         }?>
                       </a>
 
-                      <?php if (ShowsupervisorController::checkSupervisorFeedback($idNew) == true) {
-                        echo  Icon::create('forum', 'clickable');
-                      } ?>
+                      <a href="<?php echo URLHelper::getLink("plugins.php/courseware/courseware", array('cid' => $getsemid , 'selected' => $idNew)) ?>">
+                        <?php if (ShowsupervisorController::checkSupervisorFeedback($idNew) == true) {
+                          echo  Icon::create('forum', 'clickable');
+                        } ?>
+                      </a
 
                     </td>
 
