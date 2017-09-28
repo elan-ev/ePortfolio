@@ -594,4 +594,40 @@ class ShowsupervisorController extends StudipController {
       }
     }
 
+    public function delete_action($id){
+
+      # check permission if root
+      $perm = get_global_perm($GLOBALS["user"]->id);
+
+      if(!$perm == "root"){
+          throw new Exception("Not Allowed");
+      }
+
+      # get eportfolio id's
+      $eportfolio = DBManager::get()->query("SELECT eportfolio_id, Seminar_id FROM eportfolio WHERE group_id = '$id'")->fetchAll();
+
+      # eportfolio_groups
+      DBManager::get()->query("DELETE FROM eportfolio_groups WHERE seminar_id = '$id'");
+
+      # eportfolio_groups_user
+      DBManager::get()->query("DELETE FROM eportfolio_groups WHERE seminar_id = '$id'");
+
+
+      foreach ($eportfolio as $key) {
+        $eportfolio_id = $key['eportfolio_id'];
+        $Seminar_id = $key['Seminar_id'];
+
+        # eportfolio_user
+        DBManager::get()->query("DELETE FROM eportfolio_user WHERE eportfolio_id = '$eportfolio_id'");
+
+        $sem = new Seminar($Seminar_id);
+        $sem->delete();
+
+      }
+
+      # eportfolio
+      DBManager::get()->query("DELETE FROM eportfolio WHERE group_id = '$id'");
+
+    }
+
 }
