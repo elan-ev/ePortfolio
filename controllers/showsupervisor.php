@@ -24,7 +24,7 @@ class ShowsupervisorController extends StudipController {
         //userData for Modal
 
         if($_GET["create"]){
-          $this->createSupervisorGroup($_POST["ownerid"], $_POST["name"], $_POST["description"]);
+          $this->createSupervisorGroup($_POST["ownerid"], studip_utf8decode(strip_tags($_POST["name"])), studip_utf8decode(strip_tags($_POST["description"])));
           exit();
         }
 

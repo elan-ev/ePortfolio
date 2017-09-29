@@ -260,7 +260,7 @@ class EportfoliopluginController extends StudipController {
   }
 
   public function changeTitle(){
-    $title      = $_POST['title'];
+    $title      = studip_utf8decode(strip_tags($_POST['title']));
     $cid        = $_POST['cid'];
 
     $sem        = new Seminar($cid);
