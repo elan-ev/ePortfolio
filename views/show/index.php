@@ -262,15 +262,6 @@
 <script type="text/javascript" src="<?php echo URLHelper::getLink("plugins_packages/uos/EportfolioPlugin/assets/js/eportfolio.js"); ?>"></script>
 <script>
 
-  $( document ).ready(function() {
-    var nameNewCreatePortfolio;
-
-    // updatePortfolioTable();
-    // updateAccessTable();
-    createNewPortfolio();
-
-  });
-
   function updater() {
     //deleteOldTableRows();
     updatePortfolioTable();
