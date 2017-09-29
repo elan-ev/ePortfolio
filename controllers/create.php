@@ -73,8 +73,8 @@ class CreateController extends StudipController {
         }
 
         $userid           = $GLOBALS["user"]->id; //get userid
-        $sem_name         = $_POST['name'];
-        $sem_description  = $_POST['beschreibung'];
+        $sem_name         = studip_utf8decode($_POST['name']);
+        $sem_description  = studip_utf8decode($_POST['beschreibung']);
 
         $sem              = new Seminar();
         $sem->Seminar_id  = $sem->createId();
@@ -94,8 +94,18 @@ class CreateController extends StudipController {
 
         $eportfolio = new Seminar();
         $eportfolio_id = $eportfolio->createId();
-        DBManager::get()->query("INSERT INTO eportfolio (Seminar_id, eportfolio_id, owner_id) VALUES ('$sem_id', '$eportfolio_id', '$userid')"); //table eportfolio
-        DBManager::get()->query("INSERT INTO eportfolio_user(user_id, Seminar_id, eportfolio_id, owner) VALUES ('$userid', '$Seminar_id' , '$eportfolio_id', 1)"); //table eportfollio_user
+        
+        //table eportfolio
+        $values = array('sem_id' => $sem_id, 'eportfolio_id' => $eportfolio_id, 'userid' => $userid);
+        $query = "INSERT INTO eportfolio (Seminar_id, eportfolio_id, owner_id) VALUES (:sem_id, :eportfolio_id, :userid)" ;
+        $statement = DBManager::get()->prepare($query);
+        $statement->execute($values);
+        
+        //table eportfollio_user
+        $values2 = array('userid' => $userid, 'Seminar_id' => $sem_id, 'eportfolio_id' => $eportfolio_id, );
+        $query2 = "INSERT INTO eportfolio_user(user_id, Seminar_id, eportfolio_id, owner) VALUES (:userid, :Seminar_id , :eportfolio_id, 1)" ;
+        $statement2 = DBManager::get()->prepare($query2);
+        $statement2->execute($values2);
 
     }
 }
