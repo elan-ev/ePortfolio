@@ -641,20 +641,6 @@ function testfunction(){
 //   });
 // }
 
-function vechta(){
-  var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/showsupervisor');
-  $.ajax({
-    type: "POST",
-    url: url,
-    data: {
-      type: 'addTemplateVechta'
-    },
-    success: function(data){
-      console.log(data);
-    }
-  });
-}
-
 var unique = function(origArr) {
     var newArr = [],
         origLen = origArr.length,
