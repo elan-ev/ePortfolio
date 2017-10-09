@@ -80,8 +80,8 @@ class EportfoliopluginController extends StudipController {
     $this->plugin = $dispatcher->plugin;
 
     // get template Status
-    $templateStatus = $db->query("SELECT templateStatus FROM eportfolio WHERE Seminar_id = '$cid' ")->fetchAll();
-    $t = $templateStatus[0][templateStatus];
+    //$templateStatus = $db->query("SELECT templateStatus FROM eportfolio WHERE Seminar_id = '$cid' ")->fetchAll();
+    //$t = $templateStatus[0][templateStatus];
     //echo $t;
 
     // get courseware parentId
@@ -100,6 +100,7 @@ class EportfoliopluginController extends StudipController {
     }
 
     //auto insert chapters
+    /**
     if ($t == 0) {
       //echo  " t - triggered";
 
@@ -138,6 +139,8 @@ class EportfoliopluginController extends StudipController {
         $i++;
       }
     }
+     *
+     */
 
     //get cardinfos for overview
     $return_arr = array();
@@ -223,10 +226,10 @@ class EportfoliopluginController extends StudipController {
   }
 
   public function getImg($cid){
-    $q = DBManager::get()->query("SELECT * FROM eportfolio WHERE Seminar_id = '$cid'")->fetchAll();
-    $tempid = $q[0][7];
-    $img = DBManager::get()->query("SELECT * FROM eportfolio_templates WHERE id = '$tempid'")->fetchAll();
-    return $img[0]["img"];
+    //$q = DBManager::get()->query("SELECT * FROM eportfolio WHERE Seminar_id = '$cid'")->fetchAll();
+    //$tempid = $q[0][7];
+    //$img = DBManager::get()->query("SELECT * FROM eportfolio_templates WHERE id = '$tempid'")->fetchAll();
+    //return $img[0]["img"];
   }
 
   public function getChapterViewer($nummer, $chapter){

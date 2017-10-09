@@ -277,9 +277,9 @@ class ShowsupervisorController extends StudipController {
     }
 
     public function getTemplateName($id){
-      $q = DBManager::get()->query("SELECT temp_name FROM eportfolio_templates WHERE id = '$id'")->fetchAll();
-      $array = array();
-      return $q[0][0];
+      //$q = DBManager::get()->query("SELECT temp_name FROM eportfolio_templates WHERE id = '$id'")->fetchAll();
+      //$array = array();
+      //return $q[0][0];
     }
 
     public function getGroupOwner($id){
