@@ -332,6 +332,7 @@ class ShowsupervisorController extends StudipController {
 
       $semList = array();
       $masterid = $_POST['master'];
+      $groupid = $_POST['groupid'];
 
       $member     = $this->getGroupMember($_POST["groupid"]);
       $groupowner = $this->getGroupOwner($_POST["groupid"]);
@@ -379,7 +380,7 @@ class ShowsupervisorController extends StudipController {
 
           $eportfolio = new Seminar();
           $eportfolio_id = $eportfolio->createId();
-          DBManager::get()->query("INSERT INTO eportfolio (Seminar_id, eportfolio_id, owner_id, template_id, supervisor_id) VALUES ('$sem_id', '$eportfolio_id', '$userid', '$masterid', '$groupowner')"); //table eportfolio
+          DBManager::get()->query("INSERT INTO eportfolio (Seminar_id, eportfolio_id, group_id, owner_id, template_id, supervisor_id) VALUES ('$sem_id', '$eportfolio_id', '$groupid' , '$userid', '$masterid', '$groupowner')"); //table eportfolio
           DBManager::get()->query("INSERT INTO eportfolio_user(user_id, Seminar_id, eportfolio_id, owner) VALUES ('$userid', '$Seminar_id' , '$eportfolio_id', 1)"); //table eportfollio_user
 
           create_folder(_('Allgemeiner Dateiordner'),
