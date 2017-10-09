@@ -610,7 +610,7 @@ class ShowsupervisorController extends StudipController {
       DBManager::get()->query("DELETE FROM eportfolio_groups WHERE seminar_id = '$id'");
 
       # eportfolio_groups_user
-      DBManager::get()->query("DELETE FROM eportfolio_groups WHERE seminar_id = '$id'");
+      DBManager::get()->query("DELETE FROM eportfolio_groups_user WHERE seminar_id = '$id'");
 
 
       foreach ($eportfolio as $key) {
