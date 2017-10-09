@@ -212,7 +212,7 @@
                       echo $supervisor[Vorname].' '.$supervisor[Nachname];
                    ?>
                 </td>
-                <?php $getsemid = DBManager::get()->query("SELECT Seminar_id FROM eportfolio WHERE owner_id = '$key' AND template_id = '$tempid'")->fetchAll();
+                <?php $getsemid = DBManager::get()->query("SELECT Seminar_id FROM eportfolio WHERE owner_id = '$key' AND template_id = '$tempid' AND group_id = '$groupid'")->fetchAll();
                 $getsemid = $getsemid[0][0];
                 ?>
 
@@ -226,8 +226,8 @@
               $q = DBManager::get()->query("SELECT title, id FROM mooc_blocks WHERE seminar_id = '$getsemid' AND type = 'Chapter'")->fetchAll();
 
               //Übergangslösung Kapitel 1 & Kapitel 2 müssen noch entfernt werden
-              unset($q[0]);
-              unset($q[1]);
+              //nset($q[0]);
+              //unset($q[1]);
 
                 foreach ($q as $key => $value): ?>
 
