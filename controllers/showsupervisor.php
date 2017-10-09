@@ -48,11 +48,6 @@ class ShowsupervisorController extends StudipController {
           exit();
         }
 
-        if($_POST["type"] == 'addTemplateVechta'){
-          $this->addTemplateVechta();
-          exit();
-        }
-
         if($_POST["type"] == 'getGroupMember'){
           $this->getGroupMemberAjax($_POST['id']);
           exit();
@@ -449,35 +444,6 @@ class ShowsupervisorController extends StudipController {
       // $coursewareImport = $containerImport["current_courseware"];
       // $import =  new XmlImport($containerImport['block_factory']);
       // $import->import($tempDir, $coursewareImport);
-    }
-
-    function addTemplateVechta(){
-
-      foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
-        if ($sem_type['name'] == 'ePortfolio-Vorlage') {
-          $sem_type_id = $id;
-        }
-      }
-
-      $userid           = $GLOBALS["user"]->id; //get userid
-      $sem_name         = "Vechta Vorlage";
-      $sem_description  = "Beschreibung";
-
-      $sem              = new Seminar();
-      $sem->Seminar_id  = $sem->createId();
-      $sem->name        = $sem_name;
-      $sem->description = $sem_description;
-      $sem->status      = 143;
-      $sem->read_level  = 1;
-      $sem->write_level = 1;
-      $sem->institut_id = Config::Get()->STUDYGROUP_DEFAULT_INST;
-      $sem->visible     = 1;
-
-      $sem_id = $sem->Seminar_id;
-
-      $sem->addMember($userid, 'dozent'); // add target to seminar
-
-      $sem->store(); //save sem
     }
 
     public function addUsersToGroup(){
