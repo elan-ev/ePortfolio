@@ -333,56 +333,71 @@ class ShowsupervisorController extends StudipController {
       $groupowner = $this->getGroupOwner($_POST["groupid"]);
       $groupname  = new Seminar($_POST["groupid"]);
 
-      $master = new Seminar($masterid);
+      $groupHasTemplates = DBManager::get()->query("SELECT templates FROM eportfolio_groups WHERE seminar_id = '$groupid'")->fetchAll();
+      $groupHasTemplates = json_decode($groupHasTemplates[0][0]);
 
-      // $tempid = $_POST["tempid"];
-      // $q = DBManager::get()->query("SELECT * FROM eportfolio_templates WHERE id = '$tempid'")->fetchAll();
-      // $description = $q[0]["description"];
+      if (count($groupHasTemplates) >= 1) {
 
-      foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
-        if ($sem_type['name'] == 'ePortfolio') {
-          $sem_type_id = $id;
-        }
-      }
-
-      foreach ($member as $key => $value) {
-
-          $userid           = $value; //get userid
-          $sem_name         = $master->getName()." (".$groupname->getName().")";
-          $sem_description  = "Beschreibung";
-
-          $sem              = new Seminar();
-          $sem->Seminar_id  = $sem->createId();
-          $sem->name        = $sem_name;
-          $sem->description = $sem_description;
-          $sem->status      = $sem_type_id;
-          $sem->read_level  = 1;
-          $sem->write_level = 1;
-          $sem->institut_id = Config::Get()->STUDYGROUP_DEFAULT_INST;
-          $sem->visible     = 1;
-
-          $sem_id = $sem->Seminar_id;
-
-          $sem->addMember($userid, 'dozent'); // add target to seminar
-          $member = $this->getGroupMember($groupid);
-          if (!in_array($groupowner, $member)) {
-            $sem->addMember($groupowner, 'dozent');
-          }
-
-          $sem->store(); //save sem
-
+        foreach ($member as $key => $value) {
+          $seminarGroupId = DBManager::get()->query("SELECT Seminar_id FROM eportfolio WHERE group_id = '$groupid' AND owner_id = '$value'")->fetchAll();
+          $seminarGroupId = $seminarGroupId[0][0];
           array_push($semList, $sem->Seminar_id);
+        }
 
-          $eportfolio = new Seminar();
-          $eportfolio_id = $eportfolio->createId();
-          DBManager::get()->query("INSERT INTO eportfolio (Seminar_id, eportfolio_id, group_id, owner_id, template_id, supervisor_id) VALUES ('$sem_id', '$eportfolio_id', '$groupid' , '$userid', '$masterid', '$groupowner')"); //table eportfolio
-          DBManager::get()->query("INSERT INTO eportfolio_user(user_id, Seminar_id, eportfolio_id, owner) VALUES ('$userid', '$Seminar_id' , '$eportfolio_id', 1)"); //table eportfollio_user
+      } else {
 
-          create_folder(_('Allgemeiner Dateiordner'),
-                        _('Ablage für allgemeine Ordner und Dokumente der Veranstaltung'),
-                        $sem->Seminar_id,
-                        7,
-                        $sem->Seminar_id);
+        $master = new Seminar($masterid);
+
+        // $tempid = $_POST["tempid"];
+        // $q = DBManager::get()->query("SELECT * FROM eportfolio_templates WHERE id = '$tempid'")->fetchAll();
+        // $description = $q[0]["description"];
+
+        foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
+          if ($sem_type['name'] == 'ePortfolio') {
+            $sem_type_id = $id;
+          }
+        }
+
+        foreach ($member as $key => $value) {
+
+            $userid           = $value; //get userid
+            $sem_name         = $master->getName()." (".$groupname->getName().")";
+            $sem_description  = "Beschreibung";
+
+            $sem              = new Seminar();
+            $sem->Seminar_id  = $sem->createId();
+            $sem->name        = $sem_name;
+            $sem->description = $sem_description;
+            $sem->status      = $sem_type_id;
+            $sem->read_level  = 1;
+            $sem->write_level = 1;
+            $sem->institut_id = Config::Get()->STUDYGROUP_DEFAULT_INST;
+            $sem->visible     = 1;
+
+            $sem_id = $sem->Seminar_id;
+
+            $sem->addMember($userid, 'dozent'); // add target to seminar
+            $member = $this->getGroupMember($groupid);
+            if (!in_array($groupowner, $member)) {
+              $sem->addMember($groupowner, 'dozent');
+            }
+
+            $sem->store(); //save sem
+
+            array_push($semList, $sem->Seminar_id);
+
+            $eportfolio = new Seminar();
+            $eportfolio_id = $eportfolio->createId();
+            DBManager::get()->query("INSERT INTO eportfolio (Seminar_id, eportfolio_id, group_id, owner_id, template_id, supervisor_id) VALUES ('$sem_id', '$eportfolio_id', '$groupid' , '$userid', '$masterid', '$groupowner')"); //table eportfolio
+            DBManager::get()->query("INSERT INTO eportfolio_user(user_id, Seminar_id, eportfolio_id, owner) VALUES ('$userid', '$Seminar_id' , '$eportfolio_id', 1)"); //table eportfollio_user
+
+            create_folder(_('Allgemeiner Dateiordner'),
+                          _('Ablage für allgemeine Ordner und Dokumente der Veranstaltung'),
+                          $sem->Seminar_id,
+                          7,
+                          $sem->Seminar_id);
+        }
+
       }
 
       //store in DB as template for group
