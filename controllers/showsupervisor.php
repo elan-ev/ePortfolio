@@ -339,9 +339,9 @@ class ShowsupervisorController extends StudipController {
       if (count($groupHasTemplates) >= 1) {
 
         foreach ($member as $key => $value) {
-          $seminarGroupId = DBManager::get()->query("SELECT Seminar_id FROM eportfolio WHERE group_id = '$groupid' AND owner_id = '$value'")->fetchAll();
-          $seminarGroupId = $seminarGroupId[0][0];
-          array_push($semList, $sem->Seminar_id);
+          $seminarGroupId = DBManager::get()->query("SELECT Seminar_id FROM eportfolio WHERE group_id = '$groupid' AND owner_id = '$value'")->fetchAll(PDO::FETCH_ASSOC);
+          $seminarGroupId = $seminarGroupId[0]['Seminar_id'];
+          array_push($semList, $seminarGroupId);
         }
 
       } else {
