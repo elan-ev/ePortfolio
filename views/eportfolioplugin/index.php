@@ -61,11 +61,11 @@
     <div id="title">
       <h3 style="border:none!important;">
         <?php  echo $seminarTitle; ?>
-        <?php if($isOwner == true):?><span style="margin-left: 10px;"><?php echo Icon::create('edit', 'inactive', array('onclick' => 'toggleChangeInput()'));?></span><?php endif; ?>
+        <?php if($isOwner == true || $canEdit == true):?><span style="margin-left: 10px;"><?php echo Icon::create('edit', 'inactive', array('onclick' => 'toggleChangeInput()'));?></span><?php endif; ?>
       </h3>
     </div>
 
-    <?php if($isOwner == true):?>
+    <?php if($isOwner == true || $canEdit == true):?>
       <div id="title_changer" style="display: none;">
         <h3 style="border:none!important;"><input name="name" value="<?php echo $seminarTitle; ?>"><span style="margin-left: 10px;"><?php echo Icon::create('accept', 'clickable', array('onclick' => 'saveTitle()')) ?></span></h3>
       </div>
