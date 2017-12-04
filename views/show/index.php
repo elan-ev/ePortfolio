@@ -268,11 +268,6 @@
 
   $( document ).ready(function() {
     var nameNewCreatePortfolio;
-
-    // updatePortfolioTable();
-    // updateAccessTable();
-    createNewPortfolio();
-
   });
 
   function updater() {
