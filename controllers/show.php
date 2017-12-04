@@ -151,4 +151,40 @@ class ShowController extends StudipController {
       return $q;
 
     }
+
+    public function newvorlage_action(){
+
+      foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
+        if ($sem_type['name'] == 'Portfolio - Vorlage') {
+          $sem_type_id = $id;
+        }
+      }
+
+      $userid           = $GLOBALS["user"]->id; //get userid
+      $sem_name         = $_POST['name'];
+      $sem_description  = $_POST['beschreibung'];
+
+      $sem              = new Seminar();
+      $sem->Seminar_id  = $sem->createId();
+      $sem->name        = $sem_name;
+      $sem->description = $sem_description;
+      $sem->status      = $sem_type_id;
+      $sem->read_level  = 1;
+      $sem->write_level = 1;
+      $sem->institut_id = Config::Get()->STUDYGROUP_DEFAULT_INST;
+      $sem->visible     = 1;
+
+      $sem_id = $sem->Seminar_id;
+      echo $sem_id;
+
+      $sem->addMember($userid, 'dozent');
+      $sem->store();
+
+      $eportfolio = new Seminar();
+      $eportfolio_id = $eportfolio->createId();
+      DBManager::get()->query("INSERT INTO eportfolio (Seminar_id, eportfolio_id, owner_id) VALUES ('$sem_id', '$eportfolio_id', '$userid')"); //table eportfolio
+      DBManager::get()->query("INSERT INTO eportfolio_user(user_id, Seminar_id, eportfolio_id, owner) VALUES ('$userid', '$Seminar_id' , '$eportfolio_id', 1)"); //table eportfollio_user
+
+    }
+
 }

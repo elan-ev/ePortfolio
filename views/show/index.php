@@ -109,8 +109,12 @@
       </tbody>
     </table>
 
+      <?= \Studip\Button::create('Neue Vorlage erstellen', 'createVorlage', array('onclick' => 'newVorlagenModal()')); ?>
+
     <hr>
   </div>
+
+
 </div>
 <?php endif; ?>
 
@@ -279,7 +283,14 @@
   function newPortfolioModal(){
     var template = $('#modal-template-neuesPortfolio').html();
     Mustache.parse(template);   // optional, speeds up future uses
-    var rendered = Mustache.render(template, {titel: 'Neus Portfolio erstellen'});
+    var rendered = Mustache.render(template, {titel: 'Neues Portfolio erstellen'});
+    $('.modal-area').html(rendered);
+  }
+
+  function newVorlagenModal(){
+    var template = $('#modal-template-neueVorlage').html();
+    Mustache.parse(template);   // optional, speeds up future uses
+    var rendered = Mustache.render(template, {titel: 'Neue Vorlage erstellen'});
     $('.modal-area').html(rendered);
   }
 
@@ -311,6 +322,35 @@
   //$('.customLinkList2').append('<li><a>Testperson 1</a></li>');
   //$('.customLinkList2').append('<li><a>Testperson 2</a></li>');
   //$('.customLinkList2').append('<li><a>Testperson 3</a></li>');
+
+
+  function createNewVorlage() {
+    console.log("Neue Vorlage");
+    var nameNewCreatePortfolio;
+    var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/show/newvorlage', {});
+    var idBannerSuccess = 'createPortfolioName';
+    var classBannerSuccess = 'createPortfolioBanner';
+    var idBannerAlert = '#createBannerAlert';
+
+    var name        = $('#wizard-name').val();
+    var description = $('#wizard-description').val();
+    if (name === "" || description ==="") {
+      $('.error-log').css('display', 'block');
+    } else {
+      $('.content').empty().append('<i style="color: #24437c;" class="fa fa-circle-o-notch fa-3x fa-spin fa-fw"></i>').css('text-align', 'center');
+      $.ajax({
+        type: "POST",
+        url: url,
+        data: {
+          'name': name,
+          'beschreibung': description
+        },
+        success: function(data) {
+          window.document.location.href = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/show');
+        }
+      });
+    }
+  }
 
 
 </script>
@@ -345,6 +385,42 @@
           <div class="buttons ui-widget-content ui-dialog-buttonpane">
               <div class="ui-dialog-buttonset">
                 <a class="button" onclick="createNewPortfolio();">Erstellen</a>
+              </div>
+          </div>
+      </div>
+  </div>
+</script>
+
+<script id="modal-template-neueVorlage" type="x-tmpl-mustache">
+   <div class="modaloverlay">
+      <div class="create-question-dialog ui-widget-content ui-dialog studip-confirmation">
+          <div style="background-color: #28497c;" class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">
+              <span style="color:#fff;">{{titel}}</span>
+              <a style="color:#fff!important;" onclick="closeModal();" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only ui-dialog-titlebar-close">
+                  <span class="ui-button-icon-primary ui-icon ui-icon-closethick"></span>
+                  <span class="ui-button-text">Schliessen</span>
+              </a>
+          </div>
+          <div style="background:none;padding: 10px;" class="content ui-widget-content ui-dialog-content studip-confirmation">
+              <div class="formatted-content">{{text}}</div>
+              <form id="createGroupForm">
+
+                <label>
+                  <span class="required">Name</span>
+                  <input style="width: 100%;" type="text" name="name" id="wizard-name" maxlength="254" value="" required="" aria-required="true" aria-invalid="true">
+                </label>
+
+              <label>
+                <span>Beschreibung</span>
+                <textarea style="width: 100%;" name="description" id="wizard-description" cols="75" rows="4"></textarea>
+              </label>
+
+            </form>
+            <span class="error-log" style="color: red;margin: 10px 0;display: none;">Bitte alle Felder ausfüllen!</span>
+          </div>
+          <div class="buttons ui-widget-content ui-dialog-buttonpane">
+              <div class="ui-dialog-buttonset">
+                <a class="button" onclick="createNewVorlage()">Erstellen</a>
               </div>
           </div>
       </div>
