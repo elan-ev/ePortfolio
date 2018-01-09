@@ -451,20 +451,12 @@ function addTemp(){
 
 function createPortfolio(master){
   // exportPortfolio(master);
-  var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/showsupervisor');
-  $('.content').empty().css({
-    'background': 'none',
-    'text-align': 'center',
-    'padding': '20px 0',
-  }).append('<i style="color: #24437c;" class="fa fa-circle-o-notch fa-3x fa-spin fa-fw"></i>');
-  $('.ui-dialog-buttonpane').remove();
-  $('.ui-dialog-titlebar-close').css('display', 'none');
-  console.log(master);
+  var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/showsupervisor/createportfolio');
+  loadingAnimation();
   $.ajax({
     type: "POST",
     url: url,
     data: {
-      type: 'createPortfolio',
       groupid: '<?php echo $id ?>',
       master: master
     },
@@ -532,6 +524,16 @@ function exportPortfolio(master, targets){
 
     }
   });
+}
+
+function loadingAnimation(){
+  $('.content').empty().css({
+    'background': 'none',
+    'text-align': 'center',
+    'padding': '20px 0',
+  }).append('<i style="color: #24437c;" class="fa fa-circle-o-notch fa-3x fa-spin fa-fw"></i>');
+  $('.ui-dialog-buttonpane').remove();
+  $('.ui-dialog-titlebar-close').css('display', 'none');
 }
 
 function deleteUserFromGroup(userid, obj) {
