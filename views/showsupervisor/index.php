@@ -140,7 +140,6 @@
       </div>
 
   <?php
-    $groupTemplates = ShowsupervisorController::getGroupTemplates($id);
     if (empty($groupTemplates[0])):
   ?>
 
@@ -181,7 +180,6 @@
 
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
-      <?php $templistid = showsupervisorcontroller::getGroupTemplates($id);?>
       <?php foreach ($templistid as $key => $value): ?>
         <?php $template = new Seminar($value);?>
         <li role="presentation"><a href="#<?php echo $value; ?>" aria-controls="<?php echo $value; ?>" role="tab" data-toggle="tab"><?php echo $template->getName(); ?></a></li>
@@ -190,7 +188,6 @@
     <!-- Tab panes -->
 
     <div class="tab-content">
-      <?php $templistid = showsupervisorcontroller::getGroupTemplates($id); ?>
       <?php foreach ($templistid as $key => $value): ?>
         <?php $tempid = $value ?>
         <div role="tabpanel" class="tab-pane" id="<?php echo $value; ?>">
@@ -300,7 +297,7 @@
     ->render();
  ?>
 
-<?php if (empty(ShowsupervisorController::getGroupTemplates($id))):?>
+<?php if (empty($groupTemplates)):?>
    <a href="<?php echo URLHelper::getLink('dispatch.php/multipersonsearch/js_form/eindeutige_id'); ?>" class="multi_person_search_link" data-dialog="width=720;height=460;id=mp-search" data-dialogname="eindeutige_id" title="Personen zur Gruppe hinzufügen" data-js-form="<?php echo URLHelper::getLink('dispatch.php/multipersonsearch/js_form/eindeutige_id'); ?>">
      <?= \Studip\Button::create('Personen hinzufügen', 'klickMichButton', array('data-dialogname' => 'eindeutige_id', 'data-js-form' => URLHelper::getLink('dispatch.php/multipersonsearch/js_form/eindeutige_id'))); ?>
    </a>

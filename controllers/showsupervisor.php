@@ -21,6 +21,9 @@ class ShowsupervisorController extends StudipController {
         $this->userid = $GLOBALS["user"]->id;
         $this->ownerid = $GLOBALS["user"]->id;
 
+        $this->groupTemplates = Group::getTemplates($id);
+        $this->templistid = $this->groupTemplates;
+
         //userData for Modal
 
         if($_GET["create"]){
@@ -255,11 +258,11 @@ class ShowsupervisorController extends StudipController {
       //DBManager::get()->query("UPDATE eportfolio_groups SET templates = '$array' WHERE seminar_id = '$groupid'");
     }
 
-    public function getGroupTemplates($id){
-      $q = DBManager::get()->query("SELECT templates FROM eportfolio_groups WHERE seminar_id = '$id'")->fetchAll();
-      $q = json_decode($q[0][0], true);
-      return $q;
-    }
+    //public function getGroupTemplates($id){
+      //$q = DBManager::get()->query("SELECT templates FROM eportfolio_groups WHERE seminar_id = '$id'")->fetchAll();
+      //$q = json_decode($q[0][0], true);
+      //return $q;
+    //}
 
     public function getChapters($id){
       $q = DBManager::get()->query("SELECT title, id FROM mooc_blocks WHERE seminar_id = '$id' AND type = 'Chapter'")->fetchAll();
@@ -585,5 +588,25 @@ class ShowsupervisorController extends StudipController {
       DBManager::get()->query("DELETE FROM eportfolio WHERE group_id = '$id'");
 
     }
+
+}
+
+class Group{
+
+  var $groupId;
+
+  public function __construct($id) {
+    $groupid = $id;
+  }
+
+  public static function getTemplates($id){
+    $q = DBManager::get()->query("SELECT templates FROM eportfolio_groups WHERE seminar_id = '$id'")->fetchAll();
+    $q = json_decode($q[0][0], true);
+    return $q;
+  }
+
+  public function getGroupId(){
+    return $groupid;
+  }
 
 }
