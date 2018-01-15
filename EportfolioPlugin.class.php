@@ -1,5 +1,6 @@
 <?php
 require 'bootstrap.php';
+require 'classes/group.class.php';
 
 /**
  * EportfolioPlugin.class.php
