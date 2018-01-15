@@ -409,7 +409,7 @@ class ShowsupervisorController extends StudipController {
 
       $mp           = MultiPersonSearch::load('eindeutige_id');
       $groupid      = $_GET['id'];
-      $templates    = $this->getGroupTemplates($groupid);
+      $templates    = Group::getTemplates($groupid);
       $outputArray  = array();
 
       # User der Gruppe hinzuf�gen
