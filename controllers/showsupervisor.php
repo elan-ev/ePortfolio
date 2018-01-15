@@ -241,11 +241,6 @@ class ShowsupervisorController extends StudipController {
       return $q[0][0];
     }
 
-    public function getGroupOwner($id){
-      $q = DBManager::get()->query("SELECT owner_id FROM eportfolio_groups WHERE seminar_id = '$id'")->fetchAll();
-      return $q[0][0];
-    }
-
     public function generateRandomString($length = 32) {
       $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
       $charactersLength = strlen($characters);
@@ -290,7 +285,7 @@ class ShowsupervisorController extends StudipController {
       $groupid = $_POST['groupid'];
 
       $member     = Group::getGroupMember($_POST["groupid"]);
-      $groupowner = $this->getGroupOwner($_POST["groupid"]);
+      $groupowner = Group::getOwner($_POST["groupid"]);
       $groupname  = new Seminar($_POST["groupid"]);
 
       $groupHasTemplates = DBManager::get()->query("SELECT templates FROM eportfolio_groups WHERE seminar_id = '$groupid'")->fetchAll();
@@ -425,7 +420,7 @@ class ShowsupervisorController extends StudipController {
 
         $semList    = array();
         $masterid   = $template;
-        $groupowner = $this->getGroupOwner($groupid);
+        $groupowner = Group::getOwner($groupid);
         $master     = new Seminar($masterid);
 
         # id ePortfolio Seminarklasse
@@ -594,6 +589,11 @@ class Group{
   public static function deleteUser($userId, $seminar_id){
     DBManager::get()->query("DELETE FROM eportfolio_groups_user WHERE user_id = '$userId' AND seminar_id = '$seminar_id'");
     return true;
+  }
+
+  public static function getOwner($id){
+    $q = DBManager::get()->query("SELECT owner_id FROM eportfolio_groups WHERE seminar_id = '$id'")->fetchAll();
+    return $q[0][0];
   }
 
   public function getGroupId(){
