@@ -57,7 +57,7 @@ class ShowsupervisorController extends StudipController {
         }
 
         if ($_POST["action"] == 'deleteUserFromGroup') {
-          $this->deleteUserFromGroup($_POST['userId'], $_POST["seminar_id"]);
+          Group::deleteUser($_POST['userId'], $_POST["seminar_id"]);
           exit();
         }
 
@@ -485,11 +485,6 @@ class ShowsupervisorController extends StudipController {
       }
     }
 
-    public function deleteUserFromGroup($userId, $seminar_id){
-      DBManager::get()->query("DELETE FROM eportfolio_groups_user WHERE user_id = '$userId' AND seminar_id = '$seminar_id'");
-      return true;
-    }
-
     public function checkSupervisorNotiz($id){
       $supervisorNotiz = DBManager::get()->query("SELECT id FROM mooc_blocks WHERE parent_id = '$id' ")->fetchAll();
       foreach ($supervisorNotiz[0] as $key => $value) {
@@ -594,6 +589,11 @@ class Group{
     DBManager::get()->query("INSERT INTO eportfolio_groups (seminar_id, owner_id) VALUES ('$id', '$owner')");
 
     echo $id;
+  }
+
+  public static function deleteUser($userId, $seminar_id){
+    DBManager::get()->query("DELETE FROM eportfolio_groups_user WHERE user_id = '$userId' AND seminar_id = '$seminar_id'");
+    return true;
   }
 
   public function getGroupId(){
