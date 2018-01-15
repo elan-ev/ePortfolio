@@ -28,7 +28,7 @@ class ShowsupervisorController extends StudipController {
         //userData for Modal
 
         if($_GET["create"]){
-          $this->createSupervisorGroup($_POST["ownerid"], $_POST["name"], $_POST["description"]);
+          Group::create($_POST["ownerid"], $_POST["name"], $_POST["description"]);
           exit();
         }
 
@@ -151,25 +151,6 @@ class ShowsupervisorController extends StudipController {
 
     }
 
-    public function createSupervisorGroup($owner, $title, $text) {
-
-      $course = new Seminar();
-      $id = $course->getId();
-      $course->store();
-      $course->addMember($owner, 'dozent', true);
-
-      $edit = new Course($id);
-      $edit->visible = 0;
-      $edit->store();
-
-      DBManager::get()->query("UPDATE seminare SET Name = '$title', Beschreibung = '$text', status = 142 WHERE Seminar_id = '$id' ");
-      DBManager::get()->query("INSERT INTO eportfolio_groups (seminar_id, owner_id) VALUES ('$id', '$owner')");
-
-      echo $id;
-      die();
-
-    }
-
     public function getGroups($id) {
 
       $q = DBManager::get()->query("SELECT seminar_id FROM eportfolio_groups WHERE owner_id = '$id'")->fetchAll();
@@ -180,17 +161,6 @@ class ShowsupervisorController extends StudipController {
       return $array;
 
     }
-
-    // public function getGroupMember($cid) {
-    //
-    //   $q = DBManager::get()->query("SELECT user_id FROM eportfolio_groups_user WHERE Seminar_id = '$cid'")->fetchAll();
-    //   $array = array();
-    //   foreach ($q as $key) {
-    //     array_push($array, $key[0]);
-    //   }
-    //   return $array;
-    //
-    // }
 
     public function getGroupMemberAjax($cid) {
 
@@ -207,11 +177,6 @@ class ShowsupervisorController extends StudipController {
       $q = DBManager::get()->query("SELECT Name FROM seminare WHERE Seminar_id = '$id'")->fetchAll();
       return $q[0][0];
     }
-
-    // public function getTemplates($id){
-    //   $q = DBManager::get()->query("SELECT id, temp_name, description FROM eportfolio_templates WHERE group_id = '$id'")->fetchAll();
-    //   return $q;
-    // }
 
     public function getTemplates(){
 
@@ -613,6 +578,22 @@ class Group{
       array_push($array, $key[0]);
     }
     return $array;
+  }
+
+  public static function create($owner, $title, $text){
+    $course = new Seminar();
+    $id = $course->getId();
+    $course->store();
+    $course->addMember($owner, 'dozent', true);
+
+    $edit = new Course($id);
+    $edit->visible = 0;
+    $edit->store();
+
+    DBManager::get()->query("UPDATE seminare SET Name = '$title', Beschreibung = '$text', status = 142 WHERE Seminar_id = '$id' ");
+    DBManager::get()->query("INSERT INTO eportfolio_groups (seminar_id, owner_id) VALUES ('$id', '$owner')");
+
+    echo $id;
   }
 
   public function getGroupId(){
