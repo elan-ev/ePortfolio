@@ -16,6 +16,7 @@ class ShowsupervisorController extends StudipController {
         $user = get_username();
         $id = $_GET["id"];
         $this->id = $id;
+
         $groupid = $id;
         $this->groupid = $_GET["id"];
         $this->userid = $GLOBALS["user"]->id;
@@ -113,7 +114,7 @@ class ShowsupervisorController extends StudipController {
         if(!$check[0][0] == $GLOBALS["user"]->id){
           throw new AccessDeniedException(_("Sie haben keine Berechtigung"));
         } else {
-          $this->groupList = $this->getGroupMember($id);
+          $this->groupList = Group::getGroupMember($id);
 
         }
       } else {
@@ -180,16 +181,16 @@ class ShowsupervisorController extends StudipController {
 
     }
 
-    public function getGroupMember($cid) {
-
-      $q = DBManager::get()->query("SELECT user_id FROM eportfolio_groups_user WHERE Seminar_id = '$cid'")->fetchAll();
-      $array = array();
-      foreach ($q as $key) {
-        array_push($array, $key[0]);
-      }
-      return $array;
-
-    }
+    // public function getGroupMember($cid) {
+    //
+    //   $q = DBManager::get()->query("SELECT user_id FROM eportfolio_groups_user WHERE Seminar_id = '$cid'")->fetchAll();
+    //   $array = array();
+    //   foreach ($q as $key) {
+    //     array_push($array, $key[0]);
+    //   }
+    //   return $array;
+    //
+    // }
 
     public function getGroupMemberAjax($cid) {
 
@@ -303,7 +304,7 @@ class ShowsupervisorController extends StudipController {
 
       //get all seminar ids
       $q = DBManager::get()->query("SELECT * FROM eportfolio WHERE template_id = '$tempid'")->fetchAll();
-      $member = $this->getGroupMember($groupid); // get member list as array
+      $member = Group::getGroupMember($groupid); // get member list as array
       foreach ($q as $key) {
         $sid = $key["Seminar_id"];
         $ownerid = DBManager::get()->query("SELECT owner_id FROM eportfolio WHERE Seminar_id = '$sid'")->fetchAll();
@@ -323,7 +324,7 @@ class ShowsupervisorController extends StudipController {
       $masterid = $_POST['master'];
       $groupid = $_POST['groupid'];
 
-      $member     = $this->getGroupMember($_POST["groupid"]);
+      $member     = Group::getGroupMember($_POST["groupid"]);
       $groupowner = $this->getGroupOwner($_POST["groupid"]);
       $groupname  = new Seminar($_POST["groupid"]);
 
@@ -362,7 +363,7 @@ class ShowsupervisorController extends StudipController {
             $sem_id = $sem->Seminar_id;
 
             $sem->addMember($userid, 'dozent'); // add target to seminar
-            $member = $this->getGroupMember($groupid);
+            $member = Group::getGroupMember($groupid);
 
             if (!in_array($groupowner, $member)) {
               $sem->addMember($groupowner, 'dozent');
@@ -603,6 +604,15 @@ class Group{
     $q = DBManager::get()->query("SELECT templates FROM eportfolio_groups WHERE seminar_id = '$id'")->fetchAll();
     $q = json_decode($q[0][0], true);
     return $q;
+  }
+
+  public static function getGroupMember($id) {
+    $q = DBManager::get()->query("SELECT user_id FROM eportfolio_groups_user WHERE Seminar_id = '$id'")->fetchAll();
+    $array = array();
+    foreach ($q as $key) {
+      array_push($array, $key[0]);
+    }
+    return $array;
   }
 
   public function getGroupId(){
