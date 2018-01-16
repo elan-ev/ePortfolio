@@ -237,7 +237,7 @@
           </div>
 
           <!-- Error msg -->
-          <div class="alert alert-danger createPortfolioBanner" role="alert" id="createBannerAlert">Bitte fï¿½llen Sie alle Felder aus</div>
+          <div class="alert alert-danger createPortfolioBanner" role="alert" id="createBannerAlert">Bitte füllen Sie alle Felder aus</div>
 
           <?= \Studip\Button::create('Erstellen', 'Button', array('type' => 'submit')); ?>
         </form>
@@ -345,7 +345,7 @@
               </label>
 
             </form>
-            <span class="error-log" style="color: red;margin: 10px 0;display: none;">Bitte alle Felder ausfï¿½llen!</span>
+            <span class="error-log" style="color: red;margin: 10px 0;display: none;">Bitte alle Felder ausfüllen!</span>
           </div>
           <div class="buttons ui-widget-content ui-dialog-buttonpane">
               <div class="ui-dialog-buttonset">
@@ -381,7 +381,7 @@
               </label>
 
             </form>
-            <span class="error-log" style="color: red;margin: 10px 0;display: none;">Bitte alle Felder ausfï¿½llen!</span>
+            <span class="error-log" style="color: red;margin: 10px 0;display: none;">Bitte alle Felder ausfüllen!</span>
           </div>
           <div class="buttons ui-widget-content ui-dialog-buttonpane">
               <div class="ui-dialog-buttonset">

@@ -339,7 +339,7 @@ class ShowsupervisorController extends StudipController {
             DBManager::get()->query("INSERT INTO eportfolio_user(user_id, Seminar_id, eportfolio_id, owner) VALUES ('$userid', '$Seminar_id' , '$eportfolio_id', 1)"); //table eportfollio_user
 
             create_folder(_('Allgemeiner Dateiordner'),
-                          _('Ablage fï¿½r allgemeine Ordner und Dokumente der Veranstaltung'),
+                          _('Ablage für allgemeine Ordner und Dokumente der Veranstaltung'),
                           $sem->Seminar_id,
                           7,
                           $sem->Seminar_id);
@@ -407,7 +407,7 @@ class ShowsupervisorController extends StudipController {
       $templates    = Group::getTemplates($groupid);
       $outputArray  = array();
 
-      # User der Gruppe hinzufï¿½gen
+      # User der Gruppe hinzufügen
       foreach ($mp->getAddedUsers() as $userId) {
         $query = DBManager::get()->query("SELECT user_id FROM eportfolio_groups_user WHERE user_id = '$userId' AND seminar_id = '$groupid'")->fetchAll(); //checkt ob schon in Gruppe eingetragen ist
         if(empty($query[0][0])){
@@ -415,7 +415,7 @@ class ShowsupervisorController extends StudipController {
         }
       }
 
-      # Fï¿½r jedes bereits benutze Template ein Seminar pro Nutzer erstellen
+      # Für jedes bereits benutze Template ein Seminar pro Nutzer erstellen
       foreach ($templates as $template) {
 
         $semList    = array();
@@ -430,7 +430,7 @@ class ShowsupervisorController extends StudipController {
           }
         }
 
-        # Erstellt fï¿½r jeden neu hinzugefï¿½gten User ein Seminar
+        # Erstellt für jeden neu hinzugefügten User ein Seminar
         // foreach ($mp->getAddedUsers() as $userid){
         //
         //   $userid           = $userid; //get userid
