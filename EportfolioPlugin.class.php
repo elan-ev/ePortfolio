@@ -161,12 +161,6 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
 
     }
 
-    public function isOwner($cid, $userId){
-      $db = DBManager::get();
-      $query = $db->query("SELECT owner_id FROM eportfolio WHERE Seminar_id = '$cid'")->fetchAll();
-      return $query;
-    }
-
     public function getAccess($cid,$userId){
       $db = DBManager::get();
       $query = $db->query("SELECT eportfolio_access FROM eportfolio_user WHERE Seminar_id = '$cid' AND user_id = '$userId' ")->fetchAll();
