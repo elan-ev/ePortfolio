@@ -22,6 +22,14 @@ class eportfolio {
     return $query[0][owner_id];
   }
 
+  public function isEportfolio(){
+    $db = DBManager::get();
+    $query = $db->query("SELECT * FROM eportfolio WHERE Seminar_id = '$this->eportfolioId'")->fetchAll();
+    if (!empty($query)) {
+      return true;
+    }
+  }
+
   public function getId(){
     return $this->eportfolioId;
   }

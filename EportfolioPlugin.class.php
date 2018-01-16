@@ -36,6 +36,8 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
 
         }
 
+        $eportfolio = new eportfolio($_GET['cid']);
+
         $GLOBALS["permission"] = 0;
         $renderView = "show";
         checkPermission();
@@ -66,7 +68,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         if($_GET["cid"]){
           $id = $_GET["cid"];
 
-          if ($this->checkEportfolio($id) == true) {
+          if ($eportfolio->isEportfolio() == true) {
             include 'coursewareController/modifier.php';
 
             # modifier for the menubar
@@ -84,14 +86,6 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         }
       }
 
-    }
-
-    public function checkEportfolio($id){
-      $db = DBManager::get();
-      $query = $db->query("SELECT * FROM eportfolio WHERE Seminar_id = '$id'")->fetchAll();
-      if (!empty($query)) {
-        return true;
-      }
     }
 
     public function getCardInfos($cid){
