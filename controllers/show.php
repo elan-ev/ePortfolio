@@ -138,14 +138,6 @@ class ShowController extends StudipController {
 
     }
 
-
-    public function getUserGroups($userId){
-
-      $q = DBManager::get()->query("SELECT seminar_id FROM eportfolio_groups_user WHERE user_id = '$userId'")->fetchAll();
-      return $q;
-
-    }
-
     public function newvorlage_action(){
 
       foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass

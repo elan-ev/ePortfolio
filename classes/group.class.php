@@ -54,6 +54,11 @@ class Group{
     return $q[0][0];
   }
 
+  public static function getAllGroupsOfUser($userId){
+    $q = DBManager::get()->query("SELECT seminar_id FROM eportfolio_groups_user WHERE user_id = '$userId'")->fetchAll();
+    return $q;
+  }
+
   public function getGroupId(){
     return $groupid;
   }
