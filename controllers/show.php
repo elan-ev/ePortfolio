@@ -7,7 +7,6 @@ class ShowController extends StudipController {
         parent::__construct($dispatcher);
         $this->plugin = $dispatcher->plugin;
 
-        //echo $GLOBALS["user"]->id;
         $this->userId = $GLOBALS["user"]->id;
         $perm = get_global_perm($GLOBALS["user"]->id);
         $this->perm = $perm;
@@ -88,11 +87,6 @@ class ShowController extends StudipController {
 
       return $accessPortfolios;
     }
-
-    // public function getTemplates(){
-    //   $q = DBManager::get()->query("SELECT * FROM eportfolio_templates")->fetchAll();
-    //   return $q;
-    // }
 
     public function getTemplates(){
 

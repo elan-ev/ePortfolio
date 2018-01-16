@@ -122,7 +122,6 @@
   <div class="col-md-12">
 
     <?php ?>
-    <!-- Banner Success Display when created -->
     <div class="alert alert-success createPortfolioBanner" role="alert">Portfolio <span id="createPortfolioName"></span> wurde erstellt</div>
 
     <table class="default">
@@ -177,13 +176,6 @@
   </div>
 </div>
 
-
-<!-- <div class="row">
-  <div class="col-md-6">
-    <?= \Studip\Button::create('Eigenes Portfolio erstellen', 'klickMichButton', array('data-toggle' => 'modal', 'data-target' => '#myModal', 'id' => "newPortfolio")); ?>
-  </div>
-</div> -->
-
 <hr>
 
 <div class="row">
@@ -220,14 +212,6 @@
     </table>
   </div>
 </div>
-
-<!-- <div class="">
-
-  <h4>Meine Gruppen</h4>
-
-
-
-</div> -->
 
 <div class="modal-area"></div>
 
@@ -271,7 +255,6 @@
   });
 
   function updater() {
-    //deleteOldTableRows();
     updatePortfolioTable();
   }
 
@@ -298,25 +281,12 @@
     $('#myInput').focus()
   })
 
-  // Statische Sitebar
-  // Widget - Navigation
-  //$('.sidebar').append('<div class="sidebar-widget widgetCustom1"><div class="sidebar-widget-header">Navigation</div></div>');
-  //$('.widgetCustom1').append('<ul class="widget-list widget-links sidebar-navigation customLinkList1"></ul>');
-  //$('.customLinkList1').append('<li><a>Einstellungen</a></li>');
-  //$('.customLinkList1').append('<li><a>Portfolios verwalten</a></li>');
-
   <?php if($linkId == 'noId'): ?>
     console.log("no supervisor");
   <?php elseif ($linkId):?>
     //$('.customLinkList1').append('<li><a href="showsupervisor?id=<?php echo $linkId; ?>">Supervisoransicht</a></li>');
   <?php endif; ?>
 
-  //Widget - Freunde
-  //$('.sidebar').append('<div class="sidebar-widget widgetCustom2"><div class="sidebar-widget-header">Freunde</div></div>');
-  //$('.widgetCustom2').append('<ul class="widget-list widget-links sidebar-navigation customLinkList2"></ul>');
-  //$('.customLinkList2').append('<li><a>Testperson 1</a></li>');
-  //$('.customLinkList2').append('<li><a>Testperson 2</a></li>');
-  //$('.customLinkList2').append('<li><a>Testperson 3</a></li>');
 
 
   function createNewVorlage() {
