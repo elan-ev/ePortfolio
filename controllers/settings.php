@@ -250,14 +250,6 @@ class settingsController extends StudipController {
     DBManager::get()->query("UPDATE eportfolio_user SET eportfolio_access = '$pushArray' WHERE user_id = '$id' AND Seminar_id = '$sid'");
   }
 
-  public function isOwner($cid, $userId){
-    $db = DBManager::get();
-    $query = $db->query("SELECT owner_id FROM eportfolio WHERE Seminar_id = '$cid'")->fetchAll();
-    if ($query[0][0] == $userId) {
-      return true;
-    }
-  }
-
   public function getSupervisorOfPortfolio($id){
     $query = DBManager::get()->query("SELECT supervisor_id FROM eportfolio WHERE seminar_id = '$id'")->fetchAll();
     return $query[0][0];
