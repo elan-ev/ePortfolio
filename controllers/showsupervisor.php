@@ -16,25 +16,24 @@ class ShowsupervisorController extends StudipController {
         $user = get_username();
         $id = $_GET["id"];
         $this->id = $id;
+
         $groupid = $id;
         $this->groupid = $_GET["id"];
         $this->userid = $GLOBALS["user"]->id;
         $this->ownerid = $GLOBALS["user"]->id;
 
+        $this->groupTemplates = Group::getTemplates($id);
+        $this->templistid = $this->groupTemplates;
+
         //userData for Modal
 
         if($_GET["create"]){
-          $this->createSupervisorGroup($_POST["ownerid"], studip_utf8decode(strip_tags($_POST["name"])), studip_utf8decode(strip_tags($_POST["description"])));
+          Group::create($_POST["ownerid"], studip_utf8decode(strip_tags($_POST["name"])), studip_utf8decode(strip_tags($_POST["description"])));
           exit();
         }
 
         if($_POST["type"] == 'addTemp'){
           $this->addTempToDB();
-          exit();
-        }
-
-        if($_POST["type"] == 'createPortfolio'){
-          $this->createPortfolio();
           exit();
         }
 
@@ -58,7 +57,7 @@ class ShowsupervisorController extends StudipController {
         }
 
         if ($_POST["action"] == 'deleteUserFromGroup') {
-          $this->deleteUserFromGroup($_POST['userId'], $_POST["seminar_id"]);
+          Group::deleteUser($_POST['userId'], $_POST["seminar_id"]);
           exit();
         }
 
@@ -115,7 +114,7 @@ class ShowsupervisorController extends StudipController {
         if(!$check[0][0] == $GLOBALS["user"]->id){
           throw new AccessDeniedException(_("Sie haben keine Berechtigung"));
         } else {
-          $this->groupList = $this->getGroupMember($id);
+          $this->groupList = Group::getGroupMember($id);
 
         }
       } else {
@@ -126,8 +125,8 @@ class ShowsupervisorController extends StudipController {
 
       //not working MultiPersonSearch
       $mp = MultiPersonSearch::get('eindeutige_id')
-        ->setLinkText(_('Person hinzufügen'))
-        ->setTitle(_('Person zur Gruppe hinzufügen'))
+        ->setLinkText(_('Person hinzufÃ¼gen'))
+        ->setTitle(_('Person zur Gruppe hinzufÃ¼gen'))
         ->setExecuteURL($this->url_for('controller'))
         ->render();
 
@@ -152,39 +151,9 @@ class ShowsupervisorController extends StudipController {
 
     }
 
-    public function createSupervisorGroup($owner, $title, $text) {
-
-      $course = new Seminar();
-      $id = $course->getId();
-      $course->store();
-      $course->addMember($owner, 'dozent', true);
-
-      $edit = new Course($id);
-      $edit->visible = 0;
-      $edit->store();
-
-      DBManager::get()->query("UPDATE seminare SET Name = '$title', Beschreibung = '$text', status = 142 WHERE Seminar_id = '$id' ");
-      DBManager::get()->query("INSERT INTO eportfolio_groups (seminar_id, owner_id) VALUES ('$id', '$owner')");
-
-      echo $id;
-      die();
-
-    }
-
     public function getGroups($id) {
 
       $q = DBManager::get()->query("SELECT seminar_id FROM eportfolio_groups WHERE owner_id = '$id'")->fetchAll();
-      $array = array();
-      foreach ($q as $key) {
-        array_push($array, $key[0]);
-      }
-      return $array;
-
-    }
-
-    public function getGroupMember($cid) {
-
-      $q = DBManager::get()->query("SELECT user_id FROM eportfolio_groups_user WHERE Seminar_id = '$cid'")->fetchAll();
       $array = array();
       foreach ($q as $key) {
         array_push($array, $key[0]);
@@ -208,11 +177,6 @@ class ShowsupervisorController extends StudipController {
       $q = DBManager::get()->query("SELECT Name FROM seminare WHERE Seminar_id = '$id'")->fetchAll();
       return $q[0][0];
     }
-
-    // public function getTemplates($id){
-    //   $q = DBManager::get()->query("SELECT id, temp_name, description FROM eportfolio_templates WHERE group_id = '$id'")->fetchAll();
-    //   return $q;
-    // }
 
     public function getTemplates(){
 
@@ -260,11 +224,11 @@ class ShowsupervisorController extends StudipController {
       //DBManager::get()->query("UPDATE eportfolio_groups SET templates = '$array' WHERE seminar_id = '$groupid'");
     }
 
-    public function getGroupTemplates($id){
-      $q = DBManager::get()->query("SELECT templates FROM eportfolio_groups WHERE seminar_id = '$id'")->fetchAll();
-      $q = json_decode($q[0][0], true);
-      return $q;
-    }
+    //public function getGroupTemplates($id){
+      //$q = DBManager::get()->query("SELECT templates FROM eportfolio_groups WHERE seminar_id = '$id'")->fetchAll();
+      //$q = json_decode($q[0][0], true);
+      //return $q;
+    //}
 
     public function getChapters($id){
       $q = DBManager::get()->query("SELECT title, id FROM mooc_blocks WHERE seminar_id = '$id' AND type = 'Chapter'")->fetchAll();
@@ -275,11 +239,6 @@ class ShowsupervisorController extends StudipController {
       //$q = DBManager::get()->query("SELECT temp_name FROM eportfolio_templates WHERE id = '$id'")->fetchAll();
       //$array = array();
       //return $q[0][0];
-    }
-
-    public function getGroupOwner($id){
-      $q = DBManager::get()->query("SELECT owner_id FROM eportfolio_groups WHERE seminar_id = '$id'")->fetchAll();
-      return $q[0][0];
     }
 
     public function generateRandomString($length = 32) {
@@ -305,7 +264,7 @@ class ShowsupervisorController extends StudipController {
 
       //get all seminar ids
       $q = DBManager::get()->query("SELECT * FROM eportfolio WHERE template_id = '$tempid'")->fetchAll();
-      $member = $this->getGroupMember($groupid); // get member list as array
+      $member = Group::getGroupMember($groupid); // get member list as array
       foreach ($q as $key) {
         $sid = $key["Seminar_id"];
         $ownerid = DBManager::get()->query("SELECT owner_id FROM eportfolio WHERE Seminar_id = '$sid'")->fetchAll();
@@ -319,18 +278,14 @@ class ShowsupervisorController extends StudipController {
       }
     }
 
-    public function createPortfolio(){
-
-      // if ($this->checkTemplate($_POST['groupid'], $_POST['masterid'])) {
-      //   exit("Error: Template schon in Verwendung!");
-      // }
+    public function createportfolio_action(){
 
       $semList = array();
       $masterid = $_POST['master'];
       $groupid = $_POST['groupid'];
 
-      $member     = $this->getGroupMember($_POST["groupid"]);
-      $groupowner = $this->getGroupOwner($_POST["groupid"]);
+      $member     = Group::getGroupMember($_POST["groupid"]);
+      $groupowner = Group::getOwner($_POST["groupid"]);
       $groupname  = new Seminar($_POST["groupid"]);
 
       $groupHasTemplates = DBManager::get()->query("SELECT templates FROM eportfolio_groups WHERE seminar_id = '$groupid'")->fetchAll();
@@ -347,16 +302,7 @@ class ShowsupervisorController extends StudipController {
       } else {
 
         $master = new Seminar($masterid);
-
-        // $tempid = $_POST["tempid"];
-        // $q = DBManager::get()->query("SELECT * FROM eportfolio_templates WHERE id = '$tempid'")->fetchAll();
-        // $description = $q[0]["description"];
-
-        foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
-          if ($sem_type['name'] == 'ePortfolio') {
-            $sem_type_id = $id;
-          }
-        }
+        $sem_type_id = $this->getPortfolioSemId();
 
         foreach ($member as $key => $value) {
 
@@ -377,7 +323,8 @@ class ShowsupervisorController extends StudipController {
             $sem_id = $sem->Seminar_id;
 
             $sem->addMember($userid, 'dozent'); // add target to seminar
-            $member = $this->getGroupMember($groupid);
+            $member = Group::getGroupMember($groupid);
+
             if (!in_array($groupowner, $member)) {
               $sem->addMember($groupowner, 'dozent');
             }
@@ -392,7 +339,7 @@ class ShowsupervisorController extends StudipController {
             DBManager::get()->query("INSERT INTO eportfolio_user(user_id, Seminar_id, eportfolio_id, owner) VALUES ('$userid', '$Seminar_id' , '$eportfolio_id', 1)"); //table eportfollio_user
 
             create_folder(_('Allgemeiner Dateiordner'),
-                          _('Ablage für allgemeine Ordner und Dokumente der Veranstaltung'),
+                          _('Ablage fï¿½r allgemeine Ordner und Dokumente der Veranstaltung'),
                           $sem->Seminar_id,
                           7,
                           $sem->Seminar_id);
@@ -400,21 +347,31 @@ class ShowsupervisorController extends StudipController {
 
       }
 
-      //store in DB as template for group
-      $groupid = $_POST['groupid'];
+      $this->storeTemplateForGroup($_POST['groupid'], $_POST['master']);
+      print_r(json_encode($semList));
+      die();
+    }
+
+    public function getPortfolioSemId(){
+      foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
+        if ($sem_type['name'] == 'ePortfolio') {
+          return $id;
+        }
+      }
+    }
+
+    public function storeTemplateForGroup($groupid, $postMaster){
       $query = DBManager::get()->query("SELECT templates FROM eportfolio_groups WHERE seminar_id = '$groupid'")->fetchAll();
       if (!empty($query[0][0])) {
         $array = json_decode($query[0][0]);
-        array_push($array, $_POST['master']);
+        array_push($array, $postMaster);
         $array = json_encode($array);
         DBManager::get()->query("UPDATE eportfolio_groups SET templates = '$array' WHERE seminar_id = '$groupid'");
       } else {
-        $array = array($_POST['master']);
+        $array = array($postMaster);
         $array = json_encode($array);
         DBManager::get()->query("UPDATE eportfolio_groups SET templates = '$array' WHERE seminar_id = '$groupid'");
       }
-
-      print_r(json_encode($semList));
     }
 
     public function checkTemplate($groupid, $masterid) {
@@ -441,34 +398,16 @@ class ShowsupervisorController extends StudipController {
       $containerExport =  new Container();
       $containerExport["cid"] = $cid; //Master cid
       print_r($containerExport['block_factory']);
-      //$export = new XmlExport($containerExport['block_factory']);
-      // $coursewareExport = $containerExport["current_courseware"];
-      // $xml = $export->export($coursewareExport);
-      //
-      // //write export xml-data file
-      // $tempDir = $GLOBALS['TMP_PATH'].'/'.uniqid();
-      // mkdir($tempDir);
-      // $destination = $tempDir."/data.xml";
-      // $file = fopen($destination, "w+");
-      // fputs($file, $xml);
-      // fclose($file);
-      //
-      // //import in new course
-      // $containerImport =  new Container();
-      // $containerImport["cid"] = $copy->id; //new course cid
-      // $coursewareImport = $containerImport["current_courseware"];
-      // $import =  new XmlImport($containerImport['block_factory']);
-      // $import->import($tempDir, $coursewareImport);
     }
 
     public function addUsersToGroup(){
 
       $mp           = MultiPersonSearch::load('eindeutige_id');
       $groupid      = $_GET['id'];
-      $templates    = $this->getGroupTemplates($groupid);
+      $templates    = Group::getTemplates($groupid);
       $outputArray  = array();
 
-      # User der Gruppe hinzufügen
+      # User der Gruppe hinzufï¿½gen
       foreach ($mp->getAddedUsers() as $userId) {
         $query = DBManager::get()->query("SELECT user_id FROM eportfolio_groups_user WHERE user_id = '$userId' AND seminar_id = '$groupid'")->fetchAll(); //checkt ob schon in Gruppe eingetragen ist
         if(empty($query[0][0])){
@@ -476,12 +415,12 @@ class ShowsupervisorController extends StudipController {
         }
       }
 
-      # Für jedes bereits benutze Template ein Seminar pro Nutzer erstellen
+      # Fï¿½r jedes bereits benutze Template ein Seminar pro Nutzer erstellen
       foreach ($templates as $template) {
 
         $semList    = array();
         $masterid   = $template;
-        $groupowner = $this->getGroupOwner($groupid);
+        $groupowner = Group::getOwner($groupid);
         $master     = new Seminar($masterid);
 
         # id ePortfolio Seminarklasse
@@ -491,7 +430,7 @@ class ShowsupervisorController extends StudipController {
           }
         }
 
-        # Erstellt für jeden neu hinzugefügten User ein Seminar
+        # Erstellt fï¿½r jeden neu hinzugefï¿½gten User ein Seminar
         // foreach ($mp->getAddedUsers() as $userid){
         //
         //   $userid           = $userid; //get userid
@@ -539,11 +478,6 @@ class ShowsupervisorController extends StudipController {
       } else {
         return true;
       }
-    }
-
-    public function deleteUserFromGroup($userId, $seminar_id){
-      DBManager::get()->query("DELETE FROM eportfolio_groups_user WHERE user_id = '$userId' AND seminar_id = '$seminar_id'");
-      return true;
     }
 
     public function checkSupervisorNotiz($id){

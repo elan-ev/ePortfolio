@@ -31,9 +31,22 @@ class EportfoliopluginController extends StudipController {
       $nav->setTitle(_('Courseware'));
       $nav->addLink($name, "");
 
+      foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
+        if ($sem_type['name'] == 'Portfolio - Vorlage') {
+          $sem_type_id = $id;
+        }
+      }
+
+      $seminar = new Seminar($cid);
+      $eportfolio = new eportfolio($cid);
+
+      if ($seminar->status == $sem_type_id) {
+        $this->canEdit = true;
+      }
+
       $getCoursewareChapters = $this->getCardInfos($cid);
       foreach ($getCoursewareChapters as $key => $value) {
-        $isOwner = $this->isOwner($cid, $GLOBALS["user"]->id);
+        $isOwner = $eportfolio->isOwner($GLOBALS["user"]->id);
         if ($this->checkPersmissionOfChapter($value[id], $GLOBALS["user"]->id, $cid) == true && $isOwner == NULL) {
           $nav->addLink($value[title], URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $cid, 'selected' => $value[id])));
         } else {
@@ -69,12 +82,8 @@ class EportfoliopluginController extends StudipController {
     $this->cid = $cid;
     $this->userId = $userid;
     $i = 0;
-    $isOwner = false;
-
-    # Überprüft ob Besitzer der Veranstaltung
-    // if (!$this->checkIfOwner($userId, $cid) == true) {
-    //   exit("Sie haben keine Berechtigung!");
-    // }
+    $eportfolio = new eportfolio($cid);
+    $isOwner = $eportfolio->isOwner($userid);
 
     $db = DBManager::get();
     $this->plugin = $dispatcher->plugin;
@@ -91,13 +100,6 @@ class EportfoliopluginController extends StudipController {
     //get seninar infos
     $getSeminarInfo = $db->query("SELECT name FROM seminare WHERE Seminar_id = '$cid'")->fetchAll();
     $getS = $getSeminarInfo[0][name];
-
-    //check if owner
-    $queryIsOwner = $db->query("SELECT owner_id FROM eportfolio WHERE Seminar_id = '$cid'")->fetchAll();
-    $ownerId = $queryIsOwner[0][owner_id];
-    if($userid == $ownerId){
-      $isOwner = true;
-    }
 
     //auto insert chapters
     /**
@@ -249,14 +251,6 @@ class EportfoliopluginController extends StudipController {
 
   }
 
-  public function isOwner($cid, $userId){
-    $db = DBManager::get();
-    $query = $db->query("SELECT owner_id FROM eportfolio WHERE Seminar_id = '$cid'")->fetchAll();
-    if ($query[0][0] == $userId) {
-      return true;
-    }
-  }
-
   public function checkIfTemplate($id){
     $query = DBManager::get()->query("SELECT template_id FROM eportfolio WHERE seminar_id = '$id'")->fetchAll();
     return $query[0][0];
@@ -320,15 +314,6 @@ class EportfoliopluginController extends StudipController {
 
     print_r(json_encode($infoboxArray));
 
-  }
-
-  public function checkIfOwner($userId, $cid){
-    $query = DBManager::get()->query("SELECT status FROM seminar_user WHERE user_id = '$userId' AND seminar_id = '$cid'")->fetchAll();
-    if ($query[0][0] == "dozent") {
-      return true;
-    } else {
-      return false;
-    }
   }
 
   public function checkPersmissionOfChapter($chapter, $userId, $cid){

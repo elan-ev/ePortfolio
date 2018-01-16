@@ -1,5 +1,7 @@
 <?php
 require 'bootstrap.php';
+require 'classes/group.class.php';
+require 'classes/eportfolio.class.php';
 
 /**
  * EportfolioPlugin.class.php
@@ -34,6 +36,8 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
 
         }
 
+        $eportfolio = new eportfolio($_GET['cid']);
+
         $GLOBALS["permission"] = 0;
         $renderView = "show";
         checkPermission();
@@ -60,11 +64,11 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
       //   include 'coursewareController/modifier.php';
       // }
 
-      if ($serverinfo == "/courseware/courseware" || $serverinfo == "/eportfolioplugin/settings" || $serverinfo == "/eportfolioplugin/eportfolioplugin"){
+      if ($serverinfo == "/courseware/courseware" || $serverinfo == "/eportfolioplugin/settings" || $serverinfo == "/eportfolioplugin/eportfolioplugin" || $serverinfo == "/course/management"){
         if($_GET["cid"]){
           $id = $_GET["cid"];
 
-          if ($this->checkEportfolio($id) == true) {
+          if ($eportfolio->isEportfolio() == true) {
             include 'coursewareController/modifier.php';
 
             # modifier for the menubar
@@ -82,14 +86,6 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         }
       }
 
-    }
-
-    public function checkEportfolio($id){
-      $db = DBManager::get();
-      $query = $db->query("SELECT * FROM eportfolio WHERE Seminar_id = '$id'")->fetchAll();
-      if (!empty($query)) {
-        return true;
-      }
     }
 
     public function getCardInfos($cid){
@@ -157,12 +153,6 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
       $tabs['settings'] = $navigationSettings;
       return $tabs;
 
-    }
-
-    public function isOwner($cid, $userId){
-      $db = DBManager::get();
-      $query = $db->query("SELECT owner_id FROM eportfolio WHERE Seminar_id = '$cid'")->fetchAll();
-      return $query;
     }
 
     public function getAccess($cid,$userId){

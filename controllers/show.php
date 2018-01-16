@@ -7,13 +7,12 @@ class ShowController extends StudipController {
         parent::__construct($dispatcher);
         $this->plugin = $dispatcher->plugin;
 
-        //echo $GLOBALS["user"]->id;
         $this->userId = $GLOBALS["user"]->id;
         $perm = get_global_perm($GLOBALS["user"]->id);
         $this->perm = $perm;
         if($perm == "dozent"){
           $this->linkId = $output;
-          $output = $this->getFirstGroup($GLOBALS["user"]->id);
+          $output = Group::getFirstGroupOfUser($GLOBALS["user"]->id);
           if(!$output == '') {
             $this->linkId = $output;
           } else {
@@ -29,9 +28,9 @@ class ShowController extends StudipController {
         $navcreate = new LinksWidget();
         $navcreate->setTitle('Navigation');
         $attr = array('onclick' => 'newPortfolioModal()');
-        $navcreate->addLink("Eigenes ePortfolio erstellen", "#", "", $attr);
+        $navcreate->addLink("Eigenes ePortfolio erstellen", "#", null, $attr);
         if ($perm == "dozent") {
-          $output = $this->getFirstGroup($GLOBALS["user"]->id);
+          $output = Group::getFirstGroupOfUser($GLOBALS["user"]->id);
           if(!$output == '') {
             $linkIdMenu = $output;
           } else {
@@ -89,11 +88,6 @@ class ShowController extends StudipController {
       return $accessPortfolios;
     }
 
-    // public function getTemplates(){
-    //   $q = DBManager::get()->query("SELECT * FROM eportfolio_templates")->fetchAll();
-    //   return $q;
-    // }
-
     public function getTemplates(){
 
       $semId;
@@ -138,17 +132,39 @@ class ShowController extends StudipController {
 
     }
 
-    private function getFirstGroup($userId){
+    public function newvorlage_action(){
 
-      $q = DBManager::get()->query("SELECT seminar_id FROM eportfolio_groups WHERE owner_id = '$userId'")->fetchAll();
-      return $q[0][0];
+      foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
+        if ($sem_type['name'] == 'Portfolio - Vorlage') {
+          $sem_type_id = $id;
+        }
+      }
+
+      $userid           = $GLOBALS["user"]->id; //get userid
+      $sem_name         = $_POST['name'];
+      $sem_description  = $_POST['beschreibung'];
+
+      $sem              = new Seminar();
+      $sem->Seminar_id  = $sem->createId();
+      $sem->name        = $sem_name;
+      $sem->description = $sem_description;
+      $sem->status      = $sem_type_id;
+      $sem->read_level  = 1;
+      $sem->write_level = 1;
+      $sem->institut_id = Config::Get()->STUDYGROUP_DEFAULT_INST;
+      $sem->visible     = 1;
+
+      $sem_id = $sem->Seminar_id;
+      echo $sem_id;
+
+      $sem->addMember($userid, 'dozent');
+      $sem->store();
+
+      $eportfolio = new Seminar();
+      $eportfolio_id = $eportfolio->createId();
+      DBManager::get()->query("INSERT INTO eportfolio (Seminar_id, eportfolio_id, owner_id) VALUES ('$sem_id', '$eportfolio_id', '$userid')"); //table eportfolio
+      DBManager::get()->query("INSERT INTO eportfolio_user(user_id, Seminar_id, eportfolio_id, owner) VALUES ('$userid', '$Seminar_id' , '$eportfolio_id', 1)"); //table eportfollio_user
 
     }
 
-    public function getUserGroups($userId){
-
-      $q = DBManager::get()->query("SELECT seminar_id FROM eportfolio_groups_user WHERE user_id = '$userId'")->fetchAll();
-      return $q;
-
-    }
 }
