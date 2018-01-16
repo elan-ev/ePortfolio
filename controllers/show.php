@@ -13,7 +13,7 @@ class ShowController extends StudipController {
         $this->perm = $perm;
         if($perm == "dozent"){
           $this->linkId = $output;
-          $output = $this->getFirstGroup($GLOBALS["user"]->id);
+          $output = Group::getFirstGroupOfUser($GLOBALS["user"]->id);
           if(!$output == '') {
             $this->linkId = $output;
           } else {
@@ -31,7 +31,7 @@ class ShowController extends StudipController {
         $attr = array('onclick' => 'newPortfolioModal()');
         $navcreate->addLink("Eigenes ePortfolio erstellen", "#", null, $attr);
         if ($perm == "dozent") {
-          $output = $this->getFirstGroup($GLOBALS["user"]->id);
+          $output = Group::getFirstGroupOfUser($GLOBALS["user"]->id);
           if(!$output == '') {
             $linkIdMenu = $output;
           } else {
@@ -138,12 +138,6 @@ class ShowController extends StudipController {
 
     }
 
-    private function getFirstGroup($userId){
-
-      $q = DBManager::get()->query("SELECT seminar_id FROM eportfolio_groups WHERE owner_id = '$userId'")->fetchAll();
-      return $q[0][0];
-
-    }
 
     public function getUserGroups($userId){
 
