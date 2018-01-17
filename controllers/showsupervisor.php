@@ -133,6 +133,8 @@ class ShowsupervisorController extends StudipController {
       $this->mp = $mp;
 
       $this->url = $_SERVER['REQUEST_URI'];
+      $course = new Seminar($id);
+      $this->courseName = $course->getName();
 
     }
 
@@ -163,11 +165,6 @@ class ShowsupervisorController extends StudipController {
       }
       print json_encode($array);
 
-    }
-
-    public function getCourseName($id) {
-      $q = DBManager::get()->query("SELECT Name FROM seminare WHERE Seminar_id = '$id'")->fetchAll();
-      return $q[0][0];
     }
 
     public function getTemplates(){

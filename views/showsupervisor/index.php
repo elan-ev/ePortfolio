@@ -87,7 +87,7 @@
  Neue Supervisionsgruppe erstellen
 </button> -->
 
-<h1>Supervisionsgruppe "<?php echo showsupervisorcontroller::getCourseName($id); ?>"</h1>
+<h1>Supervisionsgruppe "<?php echo $courseName; ?>"</h1>
 
 <?php showsupervisorcontroller::getTemplates($id); ?>
 
