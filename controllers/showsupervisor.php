@@ -136,14 +136,6 @@ class ShowsupervisorController extends StudipController {
 
     }
 
-    public function getCourseBeschreibung($cid){
-
-      $db = DBManager::get();
-      $query = $db->query("SELECT Beschreibung FROM seminare WHERE Seminar_id = '$cid'")->fetchAll();
-      return $query[0][Beschreibung];
-
-    }
-
     public function countViewer($cid) {
 
       $query = DBManager::get()->query("SELECT  COUNT(Seminar_id) FROM eportfolio_user WHERE Seminar_id = '$cid' AND owner = 0")->fetchAll();
