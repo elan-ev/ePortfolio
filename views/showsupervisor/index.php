@@ -128,8 +128,8 @@
                   <td><?php echo $thisPortfolio->getName(); ?></td>
                   <td><?php echo ShowsupervisorController::getCourseBeschreibung($key); ?></td>
                   <td style="text-align: center;">
-                      <a href="<?php echo URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $key)); ?>"><?php echo Icon::create('edit', 'clickable') ?></a>
-                      <a onclick="triggerModalCreate('<?php echo $key; ?>')" href="#"><?php echo Icon::create('add', 'clickable') ?></a>
+                      <a href="<?php echo URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $key)); ?>"><?php echo Icon::create('edit', 'clickable', ['title' => sprintf(_('Portfolio-Vorlage bearbeiten.'))]) ?></a>
+                      <a onclick="triggerModalCreate('<?php echo $key; ?>')" href="#"><?php echo Icon::create('add', 'clickable', ['title' => sprintf(_('Portfolio-Vorlage an GruppenmitgliederInnen verteilen.'))]) ?></a>
                   </td>
                 </tr>
               <?php endif; ?>
@@ -167,8 +167,7 @@
             </td>
             <td></td>
             <td style="text-align:center;">
-              <?php echo  Icon::create('person', 'clickable'); ?>
-              <a onclick="deleteUserFromGroup('<?php echo $user; ?>', this);"><?php echo  Icon::create('trash', 'clickable'); ?></a>
+              <a onclick="deleteUserFromGroup('<?php echo $user; ?>', this);"><?php echo  Icon::create('trash', 'clickable', ['title' => sprintf(_('Nutzer aus Gruppe austragen'))]); ?></a>
             </td>
           </tr>
         <?php endforeach; ?>
