@@ -2,6 +2,7 @@
 require 'bootstrap.php';
 require 'classes/group.class.php';
 require 'classes/eportfolio.class.php';
+require 'classes/supervisorgroup.class.php';
 
 /**
  * EportfolioPlugin.class.php
