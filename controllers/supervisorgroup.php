@@ -15,6 +15,7 @@ class SupervisorgroupController extends StudipController {
   public function index_action(){
     $group = new Supervisorgroup($this->id);
     $this->title = $group->getName();
+    $this->groupId = $group->getId();
 
     $this->mp = MultiPersonSearch::get('supervisorgroupSelectUsers')
       ->setLinkText(_('Supervisoren hinzufügen'))
@@ -67,6 +68,14 @@ class SupervisorgroupController extends StudipController {
     foreach ($mp->getAddedUsers() as $key) {
       $group->addUser($key);
     }
+  }
+
+  public function deleteUser_action(){
+    $groupId = $_POST['groupId'];
+    $userId = $_POST['userId'];
+    
+    $group = new Supervisorgroup($groupId);
+    $group->deleteUser($userId);
   }
 
 

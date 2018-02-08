@@ -18,10 +18,27 @@
       </td>
       <td></td>
       <td style="text-align:center;">
-        <a onclick="deleteUserFromGroup('<?php echo $user[user_id]; ?>', this);"><?php echo  Icon::create('trash', 'clickable'); ?></a>
+        <a onclick="deleteUserFromGroup('<?php echo $groupId ?>', '<?php echo $user[user_id] ?>', this)"><?php echo  Icon::create('trash', 'clickable'); ?></a>
       </td>
     </tr>
   <?php endforeach; ?>
 </table>
 
 <?php echo $mp; ?>
+
+<script type="text/javascript">
+  function deleteUserFromGroup(groupId, userId, obj){
+    $.ajax({
+      type: "POST",
+      url: "<?php echo URLHelper::getLink('plugins.php/eportfolioplugin/supervisorgroup/deleteUser');?>",
+      data: {
+        groupId: groupId,
+        userId: userId
+      },
+      success:function(data){
+        $(obj).parents('td').fadeOut();
+      }
+    });
+  }
+
+</script>

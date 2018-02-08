@@ -40,6 +40,10 @@ class Supervisorgroup{
     DBManager::get()->query("INSERT INTO supervisor_group_user (supervisor_group_id, user_id) VALUES ('$this->supervisorgroupId', '$userId')");
   }
 
+  public function deleteUser($userId){
+    DBManager::get()->query("DELETE FROM supervisor_group_user WHERE supervisor_group_id = '$this->supervisorgroupId' AND user_id = '$userId'");
+  }
+
   public function save(){
     DBManager::get()->query("INSERT INTO supervisor_group (id, name) VALUES ('$this->supervisorgroupId', '$this->supervisorgroupName')");
   }
