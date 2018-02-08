@@ -5,8 +5,12 @@ class Supervisorgroup{
   var $supervisorgroupId = null;
   var $supervisorgroupName = "DEFAULT_NAME";
 
-  public function __construct() {
-    $this->setId();
+  public function __construct($group_or_false = FALSE) {
+    if ($group_or_false == FALSE) {
+      $this->setId();
+    } else {
+      $this->supervisorgroupId = $group_or_false;
+    }
   }
 
   private function setId(){
@@ -23,7 +27,8 @@ class Supervisorgroup{
   }
 
   public function getName(){
-    return $this->supervisorgroupName;
+    $query = DBManager::get()->query("SELECT name FROM supervisor_group WHERE id = '$this->supervisorgroupId'")->fetchAll();
+    return $query[0][name];
   }
 
   public function save(){
