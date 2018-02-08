@@ -23,6 +23,8 @@ class SupervisorgroupController extends StudipController {
       ->setJSFunctionOnSubmit()
       ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/supervisorgroup/addUser', array()))
       ->render();
+
+    $this->usersOfGroup = $group->getUsersOfGroup();
   }
 
   private function createSidebar(){
@@ -59,8 +61,8 @@ class SupervisorgroupController extends StudipController {
     return $query[0][id];
   }
 
-  public function addUser_action($groupId, $userId){
-    $group = new Supervisorgroup($groupId);
+  public function addUser_action(){
+    $group = new Supervisorgroup($this->id);
     $mp = MultiPersonSearch::load('supervisorgroupSelectUsers');
     foreach ($mp->getAddedUsers() as $key) {
       $group->addUser($key);

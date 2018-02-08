@@ -31,6 +31,11 @@ class Supervisorgroup{
     return $query[0][name];
   }
 
+  public function getUsersOfGroup(){
+    $query = DBManager::get()->query("SELECT * FROM supervisor_group_user WHERE supervisor_group_id = '$this->supervisorgroupId'")->fetchAll();
+    return $query;
+  }
+
   public function addUser($userId){
     DBManager::get()->query("INSERT INTO supervisor_group_user (supervisor_group_id, user_id) VALUES ('$this->supervisorgroupId', '$userId')");
   }
