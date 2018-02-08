@@ -15,6 +15,14 @@ class SupervisorgroupController extends StudipController {
   public function index_action(){
     $group = new Supervisorgroup($this->id);
     $this->title = $group->getName();
+
+    $this->mp = MultiPersonSearch::get('supervisorgroupSelectUsers')
+      ->setLinkText(_('Supervisoren hinzufügen'))
+      ->setTitle(_('Personen zur Supervisorgruppe hinzufügen'))
+      ->setSearchObject(new StandardSearch('user_id'))
+      ->setJSFunctionOnSubmit()
+      ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/supervisorgroup/addUser', array()))
+      ->render();
   }
 
   private function createSidebar(){
@@ -52,7 +60,11 @@ class SupervisorgroupController extends StudipController {
   }
 
   public function addUser_action($groupId, $userId){
-    
+    $group = new Supervisorgroup($groupId);
+    $mp = MultiPersonSearch::load('supervisorgroupSelectUsers');
+    foreach ($mp->getAddedUsers() as $key) {
+      $group->addUser($key);
+    }
   }
 
 
