@@ -9,13 +9,18 @@ class Group{
   }
 
   public static function getTemplates($id){
-    $q = DBManager::get()->query("SELECT templates FROM eportfolio_groups WHERE seminar_id = '$id'")->fetchAll();
-    $q = json_decode($q[0][0], true);
+    $query = "SELECT templates FROM eportfolio_groups WHERE seminar_id = :id";
+    $statement = DBManager::get()->prepare($query);
+    $statement->execute(array(':id'=> $id));
+    $q = json_decode($statement->fetchAll()[0][0], true);
     return $q;
   }
 
   public static function getGroupMember($id) {
-    $q = DBManager::get()->query("SELECT user_id FROM eportfolio_groups_user WHERE Seminar_id = '$id'")->fetchAll();
+    $query = "SELECT user_id FROM eportfolio_groups_user WHERE Seminar_id = :id";
+    $statement = DBManager::get()->prepare($query);
+    $statement->execute(array(':id'=> $id));
+    $q = $statement->fetchAll();
     $array = array();
     foreach ($q as $key) {
       array_push($array, $key[0]);
@@ -33,30 +38,44 @@ class Group{
     $edit->visible = 0;
     $edit->store();
 
-    DBManager::get()->query("UPDATE seminare SET Name = '$title', Beschreibung = '$text', status = 142 WHERE Seminar_id = '$id' ");
-    DBManager::get()->query("INSERT INTO eportfolio_groups (seminar_id, owner_id) VALUES ('$id', '$owner')");
+    $db = DBManager::get();
+    $query = "UPDATE seminare SET Name = :title, Beschreibung = :text, status = 142 WHERE Seminar_id = :id ";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':title'=> $title, ':text'=> $text, ':id'=> $id));
+ 
+    $query = "INSERT INTO eportfolio_groups (seminar_id, owner_id) VALUES (:id, :owner)";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':id'=> $id, ':owner'=> $owner));
 
     echo $id;
   }
 
   public static function deleteUser($userId, $seminar_id){
-    DBManager::get()->query("DELETE FROM eportfolio_groups_user WHERE user_id = '$userId' AND seminar_id = '$seminar_id'");
+    $query = "DELETE FROM eportfolio_groups_user WHERE user_id = :user_id AND seminar_id = :sem_id";
+    $statement = DBManager::get()->prepare($query);
+    $statement->execute(array(':user_id'=> $userId, ':sem_id'=> $seminar_id));
     return true;
   }
 
   public static function getOwner($id){
-    $q = DBManager::get()->query("SELECT owner_id FROM eportfolio_groups WHERE seminar_id = '$id'")->fetchAll();
-    return $q[0][0];
+    $query = "SELECT owner_id FROM eportfolio_groups WHERE seminar_id = :id";
+    $statement = DBManager::get()->prepare($query);
+    $statement->execute(array(':id'=> $id));
+    return $statement->fetchAll()[0][0];
   }
 
   public static function getFirstGroupOfuser($userId){
-    $q = DBManager::get()->query("SELECT seminar_id FROM eportfolio_groups WHERE owner_id = '$userId'")->fetchAll();
-    return $q[0][0];
+    $query = "SELECT seminar_id FROM eportfolio_groups WHERE owner_id = :user_id";
+    $statement = DBManager::get()->prepare($query);
+    $statement->execute(array(':user_id'=> $userId));
+    return $statement->fetchAll()[0][0];
   }
 
   public static function getAllGroupsOfUser($userId){
-    $q = DBManager::get()->query("SELECT seminar_id FROM eportfolio_groups_user WHERE user_id = '$userId'")->fetchAll();
-    return $q;
+    $query = "SELECT seminar_id FROM eportfolio_groups_user WHERE user_id = :user_id";
+    $statement = DBManager::get()->prepare($query);
+    $statement->execute(array(':user_id'=> $userId));
+    return $statement->fetchAll();
   }
 
   public function getGroupId(){
