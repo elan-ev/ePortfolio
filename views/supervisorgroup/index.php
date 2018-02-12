@@ -26,6 +26,31 @@
 
 <?php echo $mp; ?>
 
+<div id="modalNewSupervisorGroup" class="modaloverlay" style="display: none;">
+   <div class="create-question-dialog ui-widget-content ui-dialog studip-confirmation">
+       <div style="background-color: #28497c;" class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">
+           <span style="color:#fff;">Neue Supervisorengruppe</span>
+           <a style="color:#fff;" onclick="hideModalNewSupervisorGroupAction();" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only ui-dialog-titlebar-close">
+               <span class="ui-button-icon-primary ui-icon ui-icon-closethick"></span>
+               <span class="ui-button-text">Schliessen</span>
+           </a>
+       </div>
+       <div style="background:none;padding: 10px;" class="content ui-widget-content ui-dialog-content studip-confirmation">
+           <form id="createGroupForm">
+             <label>
+               <span class="required">Name</span>
+               <input style="width: 100%;" type="text" name="name" id="groupName" maxlength="254" value="" required="" aria-required="true" aria-invalid="true">
+             </label>
+         </form>
+       </div>
+       <div class="buttons ui-widget-content ui-dialog-buttonpane">
+           <div class="ui-dialog-buttonset">
+             <a class="button" onclick="createNewSupervisorGroup();">Erstellen</a>
+           </div>
+       </div>
+   </div>
+</div>
+
 <script type="text/javascript">
   function deleteUserFromGroup(groupId, userId, obj){
     $.ajax({
@@ -37,6 +62,28 @@
       },
       success:function(data){
         $(obj).parents('td').fadeOut();
+      }
+    });
+  }
+
+  function showModalNewSupervisorGroupAction(){
+    $('#modalNewSupervisorGroup').css('display', 'grid');
+  }
+
+  function hideModalNewSupervisorGroupAction(){
+    $('#modalNewSupervisorGroup').css('display', 'none');
+  }
+
+  function createNewSupervisorGroup(){
+    var name = $('#groupName').val();
+    $.ajax({
+      type: "POST",
+      url: "<?php echo URLHelper::getLink('plugins.php/eportfolioplugin/supervisorgroup/newGroup'); ?>",
+      data: {
+        groupName: name
+      },
+      success: function(data){
+        location.reload();
       }
     });
   }

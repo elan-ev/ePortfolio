@@ -19,7 +19,7 @@ class ShowController extends StudipController {
             $this->linkId = '';
           }
         }
-
+        
         $user = get_username();
 
         $sidebar = Sidebar::Get();

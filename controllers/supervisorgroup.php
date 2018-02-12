@@ -34,7 +34,7 @@ class SupervisorgroupController extends StudipController {
 
     $navcreate = new LinksWidget();
     $navcreate->setTitle('Supervisorgruppen');
-    $attr = array("onclick"=>"modalneueGruppe()");
+    $attr = array("onclick"=>"showModalNewSupervisorGroupAction()");
     $navcreate->addLink("Neue Gruppe anlegen", "#", "", $attr);
 
     $navgroups = new LinksWidget();
@@ -73,10 +73,18 @@ class SupervisorgroupController extends StudipController {
   public function deleteUser_action(){
     $groupId = $_POST['groupId'];
     $userId = $_POST['userId'];
-    
+
     $group = new Supervisorgroup($groupId);
     $group->deleteUser($userId);
   }
+
+  public function newGroup_action(){
+    $name = $_POST['groupName'];
+    $group = new Supervisorgroup();
+    $group->setName($name);
+    $group->save();
+  }
+
 
 
 }
