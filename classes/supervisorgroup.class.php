@@ -48,4 +48,9 @@ class Supervisorgroup{
     DBManager::get()->query("INSERT INTO supervisor_group (id, name) VALUES ('$this->supervisorgroupId', '$this->supervisorgroupName')");
   }
 
+  public function delete(){
+    DBManager::get()->query("DELETE FROM supervisor_group WHERE id = '$this->supervisorgroupId'");
+    DBManager::get()->query("DELETE FROM supervisor_group_user WHERE supervisor_group_id = '$this->supervisorgroupId'");
+  }
+
 }

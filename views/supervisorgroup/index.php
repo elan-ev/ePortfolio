@@ -25,6 +25,9 @@
 </table>
 
 <?php echo $mp; ?>
+<hr>
+<?php $url = URLHelper::getLink('plugins.php/eportfolioplugin/supervisorgroup/deleteGroup', array('id' => $linkId));?>
+<?= \Studip\LinkButton::create('Löschen',  $url); ?>
 
 <div id="modalNewSupervisorGroup" class="modaloverlay" style="display: none;">
    <div class="create-question-dialog ui-widget-content ui-dialog studip-confirmation">
