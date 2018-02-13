@@ -90,8 +90,14 @@ class ShowsupervisorController extends StudipController {
         $navcreate->addLink("Neue Gruppe anlegen", "#", "", $attr);
         $navcreate->addLink("Meine Portfolios", "show");
 
+        $navSupervisorGroup = new LinksWidget();
+        $navSupervisorGroup->setTitle("Supervisorengruppen");
+        $navSupervisorGroupURL = URLHelper::getLink("plugins.php/eportfolioplugin/supervisorgroup");
+        $navSupervisorGroup->addLink("Verwalten", $navSupervisorGroupURL);
+
         $sidebar->addWidget($nav);
         $sidebar->addWidget($navcreate);
+        $sidebar->addWidget($navSupervisorGroup);
 
     }
 
