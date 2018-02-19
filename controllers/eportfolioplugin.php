@@ -20,11 +20,11 @@ class EportfoliopluginController extends StudipController {
       $cid = $_GET['cid'];
 
       $sidebar = Sidebar::Get();
-      Sidebar::Get()->setTitle('Übersicht');
+      Sidebar::Get()->setTitle('ï¿½bersicht');
 
       $navOverview = new LinksWidget();
-      $navOverview->setTitle('Übersicht');
-      $navOverview->addLink('Übersicht', URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('portfolioid' => $portfolioid)), null , array('class' => 'active-link'));
+      $navOverview->setTitle('ï¿½bersicht');
+      $navOverview->addLink('ï¿½bersicht', URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('portfolioid' => $portfolioid)), null , array('class' => 'active-link'));
       $sidebar->addWidget($navOverview);
 
       $nav = new LinksWidget();
@@ -94,12 +94,16 @@ class EportfoliopluginController extends StudipController {
     //echo $t;
 
     // get courseware parentId
-    $getCourseware = $db->query("SELECT id FROM mooc_blocks WHERE type = 'Courseware' AND seminar_id = '$cid'")->fetchAll();
-    $getC = $getCourseware[0][id];
+    $query = "SELECT id FROM mooc_blocks WHERE type = 'Courseware' AND seminar_id = :cid";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':cid'=> $cid));
+    $getC = $statement->fetchAll()[0][id];
 
     //get seninar infos
-    $getSeminarInfo = $db->query("SELECT name FROM seminare WHERE Seminar_id = '$cid'")->fetchAll();
-    $getS = $getSeminarInfo[0][name];
+    $query = "SELECT name FROM seminare WHERE Seminar_id = :cid";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':cid'=> $cid));
+    $getS = $statement->fetchAll()[0][name];
 
     //auto insert chapters
     /**
@@ -146,23 +150,30 @@ class EportfoliopluginController extends StudipController {
 
     //get cardinfos for overview
     $return_arr = array();
-    $getCardInfos = $db->query("SELECT id, title FROM mooc_blocks WHERE seminar_id = '$cid' AND type = 'Chapter'")->fetchAll();
-    foreach ($getCardInfos as $value) {
+    $query = "SELECT id, title FROM mooc_blocks WHERE seminar_id = :cid AND type = 'Chapter'";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':cid'=> $cid));
+ 
+    foreach ($statement->fetchAll() as $value) {
       $arrayOne = array();
       $arrayOne['id'] = $value[id];
       $arrayOne['title'] = $value[title];
 
       // get sections of chapter
-      $queryMenuPoints = $db->query("SELECT id, title FROM mooc_blocks WHERE parent_id = '$value[id]'")->fetchAll();
-      $arrayOne['section'] = $queryMenuPoints;
+      $query = "SELECT id, title FROM mooc_blocks WHERE parent_id = :id";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':id'=> $value[id]));
+      $arrayOne['section'] = $statement->fetchAll();
 
       array_push($return_arr, $arrayOne);
     }
 
     //get list chapters
     $chapterListArray = array();
-    $chapterList = $db->query("SELECT * FROM mooc_blocks WHERE type = 'Chapter' AND seminar_id = '$cid'")->fetchAll();
-    foreach ($chapterList as $key) {
+    $query = "SELECT * FROM mooc_blocks WHERE type = 'Chapter' AND seminar_id = :cid";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':cid'=> $cid));
+    foreach ($statement->fetchAll() as $key) {
       $chapterListArray[$key[0]] = array("number" => 0, "user" => array());
     }
 
@@ -181,8 +192,11 @@ class EportfoliopluginController extends StudipController {
     //get viewer
     $viewerList = array();
     $viewerCounter = 0;
-    $viewerListquery = $db->query("SELECT user_id FROM seminar_user WHERE Seminar_id = '$cid'")->fetchAll();
-    foreach ($viewerListquery as $key){
+    
+    $query = "SELECT user_id FROM seminar_user WHERE Seminar_id = :cid";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':cid'=> $cid));
+    foreach ($statement->fetchAll() as $key){
       array_push($viewerList, $key[user_id]);
       $viewerCounter++;
     }
@@ -205,15 +219,19 @@ class EportfoliopluginController extends StudipController {
   public function getCardInfos($cid){
     $db = DBManager::get();
     $return_arr = array();
-    $getCardInfos = $db->query("SELECT id, title FROM mooc_blocks WHERE seminar_id = '$cid' AND type = 'Chapter' ORDER BY id ASC")->fetchAll();
-    foreach ($getCardInfos as $value) {
+    $query = "SELECT id, title FROM mooc_blocks WHERE seminar_id = :cid AND type = 'Chapter' ORDER BY id ASC";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':cid'=> $cid));
+    foreach ($statement->fetchAll() as $value) {
       $arrayOne = array();
       $arrayOne['id'] = $value[id];
       $arrayOne['title'] = $value[title];
 
       // get sections of chapter
-      $queryMenuPoints = $db->query("SELECT id, title FROM mooc_blocks WHERE parent_id = '$value[id]'")->fetchAll();
-      $arrayOne['section'] = $queryMenuPoints;
+      $query = "SELECT id, title FROM mooc_blocks WHERE parent_id = :id";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':id'=> $value[id]));
+      $arrayOne['section'] = $statement->fetchAll();
 
       array_push($return_arr, $arrayOne);
     }
@@ -236,10 +254,12 @@ class EportfoliopluginController extends StudipController {
 
   public function getChapterViewer($nummer, $chapter){
     $db = DBManager::get();
-    $query = $db->query("SELECT eportfolio_access, user_id FROM eportfolio_user WHERE Seminar_id = '$nummer' AND owner = '0' ")->fetchAll();
+    $query = "SELECT eportfolio_access, user_id FROM eportfolio_user WHERE Seminar_id = :nummer AND owner = '0'";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':nummer'=> $nummer));
     $viewer = array();
 
-    foreach ($query as $key) {
+    foreach ($statement->fetchAll() as $key) {
       $array = unserialize($key[eportfolio_access]);
       if( $array[$chapter] > 0 ){
         array_push($viewer, $key[user_id]);
@@ -252,8 +272,11 @@ class EportfoliopluginController extends StudipController {
   }
 
   public function checkIfTemplate($id){
-    $query = DBManager::get()->query("SELECT template_id FROM eportfolio WHERE seminar_id = '$id'")->fetchAll();
-    return $query[0][0];
+    $db = DBManager::get();
+    $query = "SELECT template_id FROM eportfolio WHERE seminar_id = :id";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':id'=> $id));
+    return $statement->fetchAll()[0][0];
   }
 
   public function changeTitle(){
@@ -276,8 +299,10 @@ class EportfoliopluginController extends StudipController {
       $infoboxArray["users"] = array();
 
       //get user list
-      $query = $db->query("SELECT * FROM eportfolio_user WHERE Seminar_id = '$cid'")->fetchAll();
-      foreach ($query as $key) {
+      $query = "SELECT * FROM eportfolio_user WHERE Seminar_id = :cid";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':cid'=> $cid));
+      foreach ($statement->fetchAll() as $key) {
         $newarray = array();
         $newarray["userid"] = $key["user_id"];
         $newarray["access"] = $key["eportfolio_access"];
@@ -304,8 +329,10 @@ class EportfoliopluginController extends StudipController {
     } else {
 
       //get owner Id
-      $query = $db->query("SELECT owner_id FROM eportfolio WHERE Seminar_id = '$cid'")->fetchAll();
-      $userId = $query[0][0];
+      $query = "SELECT owner_id FROM eportfolio WHERE Seminar_id = :cid";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':cid'=> $cid));
+      $userId = $statement->fetchAll()[0][0];
       $supervisor = UserModel::getUser($userId);
       $infoboxArray['firstname'] = $supervisor[Vorname];
       $infoboxArray['lastname'] = $supervisor[Nachname];
@@ -317,8 +344,11 @@ class EportfoliopluginController extends StudipController {
   }
 
   public function checkPersmissionOfChapter($chapter, $userId, $cid){
-    $query = DBManager::get()->query("SELECT eportfolio_access FROM eportfolio_user WHERE user_id = '$userId' AND seminar_id = '$cid'")->fetchAll();
-    $data = unserialize($query[0][0]);
+    $db = DBManager::get();
+    $query = "SELECT eportfolio_access FROM eportfolio_user WHERE user_id = :user_id AND seminar_id = :cid";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':user_id'=> $userId, ':cid'=> $cid));
+    $data = unserialize($statement->fetchAll()[0][0]);
     if ($data[$chapter] == 1) {
       return true;
     } else {

@@ -51,7 +51,7 @@ class CreateController extends StudipController {
         $statement = DBManager::get()->prepare($query);
         $statement->execute($values);
         
-        //table eportfollio_user
+        //table eportfolio_user
         $values2 = array('userid' => $userid, 'Seminar_id' => $sem_id, 'eportfolio_id' => $eportfolio_id, );
         $query2 = "INSERT INTO eportfolio_user(user_id, Seminar_id, eportfolio_id, owner) VALUES (:userid, :Seminar_id , :eportfolio_id, 1)" ;
         $statement2 = DBManager::get()->prepare($query2);
