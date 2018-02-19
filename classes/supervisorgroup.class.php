@@ -1,4 +1,4 @@
-<?
+<?php
 
 class Supervisorgroup{
 
@@ -27,30 +27,51 @@ class Supervisorgroup{
   }
 
   public function getName(){
-    $query = DBManager::get()->query("SELECT name FROM supervisor_group WHERE id = '$this->supervisorgroupId'")->fetchAll();
-    return $query[0][name];
+    $db = DBManager::get();
+    $query = "SELECT name FROM supervisor_group WHERE id = :id";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':id'=> $this->supervisorgroupId));
+    
+    return $statement->fetchAll()[0][name];
   }
 
   public function getUsersOfGroup(){
-    $query = DBManager::get()->query("SELECT * FROM supervisor_group_user WHERE supervisor_group_id = '$this->supervisorgroupId'")->fetchAll();
-    return $query;
+    $db = DBManager::get();
+    $query = "SELECT * FROM supervisor_group_user WHERE supervisor_group_id = :id";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':id'=> $this->supervisorgroupId));
+    return $statement->fetchAll();
   }
 
   public function addUser($userId){
-    DBManager::get()->query("INSERT INTO supervisor_group_user (supervisor_group_id, user_id) VALUES ('$this->supervisorgroupId', '$userId')");
+    $db = DBManager::get();
+    $query = "INSERT INTO supervisor_group_user (supervisor_group_id, user_id) VALUES (:id, :userId)";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':id'=> $this->supervisorgroupId, ':userId' => $userId));
   }
 
   public function deleteUser($userId){
-    DBManager::get()->query("DELETE FROM supervisor_group_user WHERE supervisor_group_id = '$this->supervisorgroupId' AND user_id = '$userId'");
+    $db = DBManager::get();
+    $query = "DELETE FROM supervisor_group_user WHERE supervisor_group_id = :id AND user_id = :userId";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':id'=> $this->supervisorgroupId, ':userId' => $userId));
   }
 
   public function save(){
-    DBManager::get()->query("INSERT INTO supervisor_group (id, name) VALUES ('$this->supervisorgroupId', '$this->supervisorgroupName')");
+    $db = DBManager::get();
+    $query = "INSERT INTO supervisor_group (id, name) VALUES (:id, :name)";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':id'=> $this->supervisorgroupId, ':name' => $this->supervisorgroupName));
   }
 
   public function delete(){
-    DBManager::get()->query("DELETE FROM supervisor_group WHERE id = '$this->supervisorgroupId'");
-    DBManager::get()->query("DELETE FROM supervisor_group_user WHERE supervisor_group_id = '$this->supervisorgroupId'");
+    $db = DBManager::get();
+    $query = "DELETE FROM supervisor_group WHERE id = :id";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':id'=> $this->supervisorgroupId));
+    $query = "DELETE FROM supervisor_group_user WHERE supervisor_group_id = :id";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':id'=> $this->supervisorgroupId));
   }
 
 }

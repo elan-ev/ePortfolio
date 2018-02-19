@@ -27,8 +27,8 @@ class eportfolio {
   public function isEportfolio(){
     $db = DBManager::get();
     $query = "SELECT * FROM eportfolio WHERE Seminar_id = :id";
-        $statement = $db->prepare($query);
-        $statement->execute(array(':id'=> $this->eportfolioId));
+    $statement = $db->prepare($query);
+    $statement->execute(array(':id'=> $this->eportfolioId));
     if (!empty($statement->fetchAll())) {
       return true;
     }
@@ -36,8 +36,10 @@ class eportfolio {
 
   public function getBeschreibung(){
     $db = DBManager::get();
-    $query = $db->query("SELECT Beschreibung FROM seminare WHERE Seminar_id = '$this->eportfolioId'")->fetchAll();
-    return $query[0][Beschreibung];
+    $query = "SELECT Beschreibung FROM seminare WHERE Seminar_id = :id";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':id'=> $this->eportfolioId));
+    return $statement->fetchAll()[0][Beschreibung];
   }
 
   public function getId(){
