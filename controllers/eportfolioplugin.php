@@ -105,49 +105,6 @@ class EportfoliopluginController extends StudipController {
     $statement->execute(array(':cid'=> $cid));
     $getS = $statement->fetchAll()[0][name];
 
-    //auto insert chapters
-    /**
-    if ($t == 0) {
-      //echo  " t - triggered";
-
-      $templateid = DBManager::get()->query("SELECT template_id FROM eportfolio WHERE Seminar_id = '$cid'")->fetchAll();
-      $templateid = $templateid[0][0];
-      $getChapters = DBManager::get()->query("SELECT chapters FROM eportfolio_templates WHERE id = '$templateid'")->fetchAll();
-      $chapters = $getChapters[0][0];
-      $chapters = json_decode($chapters, true);
-
-      $gettempname = DBManager::get()->query("SELECT temp_name FROM eportfolio_templates WHERE id = '$templateid'")->fetchAll();
-      $gettempname = $gettempname[0][0];
-
-      //print_r($chapters);
-
-      //set additional chapter titles
-      $template = array('Reflektionsimpuls 3', 'Reflektionsimpuls 4','Reflektionsimpuls 5', 'Reflektionsimpuls 6');
-      $template = $chapters;
-
-      foreach ($template as $key => $value) {
-
-        if($key > 1){
-          //insert into eportfolio
-          $db->query("INSERT INTO mooc_blocks (type, parent_id, seminar_id, title, position) VALUES ('Chapter', '$getC', '$cid', '$value', '$i')");
-        }
-
-        //update all mooc_blocks field
-        $db->query("UPDATE mooc_blocks SET title = '$gettempname' WHERE type = 'Courseware'");
-
-        //change title of standard chapters
-        $db->query("UPDATE mooc_blocks SET title = '$template[0]' WHERE title = 'Kapitel 1' AND Seminar_id= '$cid'");
-        $db->query("UPDATE mooc_blocks SET title = '$template[1]' WHERE title = 'Kapitel 2' AND Seminar_id= '$cid'");
-
-        //change templateStatus
-        $db->query("UPDATE eportfolio SET templateStatus = '1' WHERE seminar_id = '$cid'");
-
-        $i++;
-      }
-    }
-     *
-     */
-
     //get cardinfos for overview
     $return_arr = array();
     $query = "SELECT id, title FROM mooc_blocks WHERE seminar_id = :cid AND type = 'Chapter'";
