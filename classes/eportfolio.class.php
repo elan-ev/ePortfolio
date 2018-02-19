@@ -34,6 +34,12 @@ class eportfolio {
     }
   }
 
+  public function getBeschreibung(){
+    $db = DBManager::get();
+    $query = $db->query("SELECT Beschreibung FROM seminare WHERE Seminar_id = '$this->eportfolioId'")->fetchAll();
+    return $query[0][Beschreibung];
+  }
+
   public function getId(){
     return $this->eportfolioId;
   }

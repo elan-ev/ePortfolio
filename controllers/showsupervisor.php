@@ -90,8 +90,14 @@ class ShowsupervisorController extends StudipController {
         $navcreate->addLink("Neue Gruppe anlegen", "#", "", $attr);
         $navcreate->addLink("Meine Portfolios", "show");
 
+        $navSupervisorGroup = new LinksWidget();
+        $navSupervisorGroup->setTitle("Supervisorengruppen");
+        $navSupervisorGroupURL = URLHelper::getLink("plugins.php/eportfolioplugin/supervisorgroup");
+        $navSupervisorGroup->addLink("Verwalten", $navSupervisorGroupURL);
+
         $sidebar->addWidget($nav);
         $sidebar->addWidget($navcreate);
+        $sidebar->addWidget($navSupervisorGroup);
 
     }
 
@@ -138,16 +144,8 @@ class ShowsupervisorController extends StudipController {
       **/
 
       $this->url = $_SERVER['REQUEST_URI'];
-
-    }
-
-    public function getCourseBeschreibung($cid){
-
-      $db = DBManager::get();
-      $query = "SELECT Beschreibung FROM seminare WHERE Seminar_id = :cid";
-      $statement = $db->prepare($query);
-      $statement->execute(array(':cid'=> $cid));
-      return $statement->fetchAll()[0][Beschreibung];
+      $course = new Seminar($id);
+      $this->courseName = $course->getName();
 
     }
 
@@ -187,15 +185,6 @@ class ShowsupervisorController extends StudipController {
       }
       print json_encode($array);
 
-    }
-
-    public function getCourseName($id) {
-
-      $db = DBManager::get();
-      $query = "SELECT Name FROM seminare WHERE Seminar_id = :id";
-      $statement = $db->prepare($query);
-      $statement->execute(array(':id'=> $id));
-      return $statement->fetchAll()[0][0];
     }
 
     public function getTemplates(){

@@ -1,93 +1,4 @@
-<head>
-  <meta charset="utf-8"/><meta charset="utf-8"/>
-
-  <!-- Latest compiled and minified CSS -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-  <!-- Latest compiled and minified JavaScript -->
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-  
-  <style media="screen">
-
-    .widget-list, .widget-links li {
-      position: relative;
-    }
-
-    .active-link {
-      background-color: #a9b6cb;
-      box-shadow: inset 0 0 0 1px #7e92b0;
-      color: #fff!important;
-    }
-
-    .active-link::before {
-      border: 10px solid rgba(126,146,176,0);
-      content: "";
-      height: 0;
-      width: 0;
-      position: absolute;
-      border-left-color: #7e92b0;
-      left: 100%;
-      top:50%;
-      margin-top: -10px;
-    }
-
-    .legend {
-      background: rgba(0, 0, 0, 0.01);
-      border: 1px solid rgba(0, 0, 0, 0.2);
-      max-width: 800px;
-      padding: 5px 10px;
-      margin-top: 30px;
-    }
-
-    .legend ul li {
-      margin: 0px;
-      list-style: none;
-    }
-
-    .legend ul {
-      padding:0px;
-    }
-
-    tr {
-      border-bottom: 1px solid #e2e3e5!important;
-    }
-
-    td, th {
-      text-align: center;
-    }
-
-    .widget-custom{
-      border: 1px solid #d0d7e3;
-            margin-bottom: 20px;
-    }
-
-    .widget-custom-head{
-      -webkit-box-sizing: border-box;
-      -moz-box-sizing: border-box;
-      box-sizing: border-box;
-      background-color: #e7ebf1;
-      color: #28497c;
-      font-size: 1.1em;
-      font-weight: bold;
-      line-height: 2em;
-      padding: 0 1ex;
-      text-align: left;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .widget-custom-content {
-      padding: 1ex;
-    }
-
-  </style>
-
-</head>
-
-<!-- <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">
- Neue Supervisionsgruppe erstellen
-</button> -->
-
-<h1>Supervisionsgruppe "<?php echo showsupervisorcontroller::getCourseName($id); ?>"</h1>
+<h1>Supervisionsgruppe "<?php echo $courseName; ?>"</h1>
 
 <?php showsupervisorcontroller::getTemplates($id); ?>
 
@@ -123,10 +34,11 @@
             <?php $temps = ShowsupervisorController::getTemplates();
               foreach ($temps as $key):?>
               <?php $thisPortfolio = new Seminar($key); ?>
+              <?php $eportfolio = new eportfolio($key); ?>
               <?php if (ShowsupervisorController::checkTemplate($id, $key) == false): ?>
                 <tr>
                   <td><?php echo $thisPortfolio->getName(); ?></td>
-                  <td><?php echo ShowsupervisorController::getCourseBeschreibung($key); ?></td>
+                  <td><?php echo $eportfolio->getBeschreibung(); ?></td>
                   <td style="text-align: center;">
                       <a href="<?php echo URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $key)); ?>"><?php echo Icon::create('edit', 'clickable', ['title' => sprintf(_('Portfolio-Vorlage bearbeiten.'))]) ?></a>
                       <a onclick="triggerModalCreate('<?php echo $key; ?>')" href="#"><?php echo Icon::create('add', 'clickable', ['title' => sprintf(_('Portfolio-Vorlage an GruppenmitgliederInnen verteilen.'))]) ?></a>

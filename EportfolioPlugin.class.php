@@ -2,6 +2,7 @@
 require 'bootstrap.php';
 require 'classes/group.class.php';
 require 'classes/eportfolio.class.php';
+require 'classes/supervisorgroup.class.php';
 
 /**
  * EportfolioPlugin.class.php
@@ -113,9 +114,12 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     }
 
     public function initialize () {
+      PageLayout::addStylesheet($this->getPluginURL().'/assets/bootstrap.css');
       PageLayout::addStylesheet($this->getPluginURL().'/assets/style.css');
-      PageLayout::addStylesheet('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css');
+
+      // PageLayout::addStylesheet('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css');
       // script row-link
+      PageLayout::addScript($this->getPluginURL().'/assets/js/bootstrap.min.js');
       PageLayout::addScript($this->getPluginURL().'/assets/js/jasny-bootstrap.min.js');
       PageLayout::addScript($this->getPluginURL().'/assets/js/mustache.min.js');
     }
