@@ -108,7 +108,10 @@ class ShowsupervisorController extends StudipController {
       $this->id = $id;
 
       if(!$id == ''){
-        $check = DBManager::get()->query("SELECT owner_id FROM eportfolio_groups WHERE seminar_id = '$id'")->fetchAll();
+        $query = "SELECT owner_id FROM eportfolio_groups WHERE seminar_id = :id";
+        $statement = DBManager::get()->prepare($query);
+        $statement->execute(array(':id'=> $id));
+        $check = $statement->fetchAll();
 
         //check permission
         if(!$check[0][0] == $GLOBALS["user"]->id){
@@ -124,13 +127,15 @@ class ShowsupervisorController extends StudipController {
       $this->userid = $GLOBALS["user"]->id;
 
       //not working MultiPersonSearch
+      /**
       $mp = MultiPersonSearch::get('eindeutige_id')
-        ->setLinkText(_('Person hinzufÃ¼gen'))
+        ->setLinkText(_('Person hinzufügen'))
         ->setTitle(_('Person zur Gruppe hinzufÃ¼gen'))
         ->setExecuteURL($this->url_for('controller'))
         ->render();
 
       $this->mp = $mp;
+      **/
 
       $this->url = $_SERVER['REQUEST_URI'];
 
@@ -139,23 +144,31 @@ class ShowsupervisorController extends StudipController {
     public function getCourseBeschreibung($cid){
 
       $db = DBManager::get();
-      $query = $db->query("SELECT Beschreibung FROM seminare WHERE Seminar_id = '$cid'")->fetchAll();
-      return $query[0][Beschreibung];
+      $query = "SELECT Beschreibung FROM seminare WHERE Seminar_id = :cid";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':cid'=> $cid));
+      return $statement->fetchAll()[0][Beschreibung];
 
     }
 
     public function countViewer($cid) {
 
-      $query = DBManager::get()->query("SELECT  COUNT(Seminar_id) FROM eportfolio_user WHERE Seminar_id = '$cid' AND owner = 0")->fetchAll();
-      echo $query[0][0];
+      $db = DBManager::get();
+      $query = "SELECT  COUNT(Seminar_id) FROM eportfolio_user WHERE Seminar_id = :cid AND owner = 0";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':cid'=> $cid));
+      echo $statement->fetchAll()[0][0];
 
     }
 
     public function getGroups($id) {
 
-      $q = DBManager::get()->query("SELECT seminar_id FROM eportfolio_groups WHERE owner_id = '$id'")->fetchAll();
+      $db = DBManager::get();
+      $query = "SELECT seminar_id FROM eportfolio_groups WHERE owner_id = :id";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':id'=> $id));
       $array = array();
-      foreach ($q as $key) {
+      foreach ($statement->fetchAll() as $key) {
         array_push($array, $key[0]);
       }
       return $array;
@@ -164,9 +177,12 @@ class ShowsupervisorController extends StudipController {
 
     public function getGroupMemberAjax($cid) {
 
-      $q = DBManager::get()->query("SELECT user_id FROM eportfolio_groups_user WHERE Seminar_id = '$cid'")->fetchAll();
+      $db = DBManager::get();
+      $query = "SELECT user_id FROM eportfolio_groups_user WHERE Seminar_id = :cid";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':cid'=> $cid));
       $array = array();
-      foreach ($q as $key) {
+      foreach ($statement->fetchAll() as $key) {
         array_push($array, $key[0]);
       }
       print json_encode($array);
@@ -174,8 +190,12 @@ class ShowsupervisorController extends StudipController {
     }
 
     public function getCourseName($id) {
-      $q = DBManager::get()->query("SELECT Name FROM seminare WHERE Seminar_id = '$id'")->fetchAll();
-      return $q[0][0];
+
+      $db = DBManager::get();
+      $query = "SELECT Name FROM seminare WHERE Seminar_id = :id";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':id'=> $id));
+      return $statement->fetchAll()[0][0];
     }
 
     public function getTemplates(){
@@ -190,8 +210,10 @@ class ShowsupervisorController extends StudipController {
       }
 
       $db = DBManager::get();
-      $query = $db->query("SELECT Seminar_id FROM seminare WHERE status = '$semId'")->fetchAll();
-      foreach ($query as $key) {
+      $query = "SELECT Seminar_id FROM seminare WHERE status = :semId";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':semId'=> $semId));
+      foreach ($statement->fetchAll() as $key) {
         array_push($seminare, $key[Seminar_id]);
       }
 
@@ -202,11 +224,17 @@ class ShowsupervisorController extends StudipController {
     public function addTempToDB(){
       $groupid = $_POST["groupid"];
       $tempid = $_POST["tempid"];
-      $q = DBManager::get()->query("SELECT templates FROM eportfolio_groups WHERE seminar_id = '$groupid'")->fetchAll();
+      $db = DBManager::get();
+      $query = "SELECT templates FROM eportfolio_groups WHERE seminar_id = :groupid";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':groupid'=> $groupid));
+      $q = $statement->fetchAll();
       if(empty($q[0][0])){
         $array = array($tempid);
         $array = json_encode($array);
-        DBManager::get()->query("UPDATE eportfolio_groups SET templates = '$array' WHERE seminar_id = '$groupid'");
+        $query = "UPDATE eportfolio_groups SET templates = :array WHERE seminar_id = :groupid";
+        $statement = $db->prepare($query);
+        $statement->execute(array(':groupid'=> $groupid, ':array'=> $array));
         echo "created";
       } else {
         $array = json_decode($q[0][0]);
@@ -216,7 +244,9 @@ class ShowsupervisorController extends StudipController {
         }
         array_push($array, $tempid);
         $array = json_encode($array);
-        DBManager::get()->query("UPDATE eportfolio_groups SET templates = '$array' WHERE seminar_id = '$groupid'");
+        $query = "UPDATE eportfolio_groups SET templates = :array WHERE seminar_id = :groupid";
+        $statement = $db->prepare($query);
+        $statement->execute(array(':groupid'=> $groupid, ':array'=> $array));
         echo "created";
       }
 
@@ -231,8 +261,11 @@ class ShowsupervisorController extends StudipController {
     //}
 
     public function getChapters($id){
-      $q = DBManager::get()->query("SELECT title, id FROM mooc_blocks WHERE seminar_id = '$id' AND type = 'Chapter'")->fetchAll();
-      return $q;
+        $db = DBManager::get();
+        $query = "SELECT title, id FROM mooc_blocks WHERE seminar_id = :id AND type = 'Chapter'";
+        $statement = $db->prepare($query);
+        $statement->execute(array(':id'=> $id));
+        return $statement->fetchAll();
     }
 
     public function getTemplateName($id){
@@ -256,23 +289,42 @@ class ShowsupervisorController extends StudipController {
       $groupid = $_POST["groupid"];
 
       //delete templateid in eportfolio_groups-table
-      $q = DBManager::get()->query("SELECT templates FROM eportfolio_groups WHERE seminar_id = '$groupid'")->fetchAll();
-      $templates = json_decode($q[0][0]);
+      $db = DBManager::get();
+      $query = "SELECT templates FROM eportfolio_groups WHERE seminar_id = :groupid";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':groupid'=> $groupid));
+      $templates = json_decode($statement->fetchAll()[0][0]);
       $templates = array_diff($templates, array($tempid));
       $templates = json_encode($templates);
-      DBManager::get()->query("UPDATE eportfolio_groups SET templates = '$templates' WHERE  seminar_id = '$groupid'");
+      $query = "UPDATE eportfolio_groups SET templates = :templates WHERE  seminar_id = :groupid";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':groupid'=> $groupid, ':templates'=> $templates));
 
       //get all seminar ids
-      $q = DBManager::get()->query("SELECT * FROM eportfolio WHERE template_id = '$tempid'")->fetchAll();
+      $query = "SELECT * FROM eportfolio WHERE template_id = :tempid";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':tempid'=> $tempid));
+      $q = $statement->fetchAll();
       $member = Group::getGroupMember($groupid); // get member list as array
       foreach ($q as $key) {
         $sid = $key["Seminar_id"];
-        $ownerid = DBManager::get()->query("SELECT owner_id FROM eportfolio WHERE Seminar_id = '$sid'")->fetchAll();
+        $query = "SELECT owner_id FROM eportfolio WHERE Seminar_id = :sid";
+        $statement = $db->prepare($query);
+        $statement->execute(array(':sid'=> $sid));
+        $ownerid = $statement->fetchAll();
         if (in_array($ownerid[0][0], $member)) { //delete portfolios of group member only
-          DBManager::get()->query("DELETE FROM seminare WHERE Seminar_id = '$sid'"); // delete in seminare
-          DBManager::get()->query("DELETE FROM seminar_user WHERE Seminar_id = '$sid'"); //delete in seminar_user
-          DBManager::get()->query("DELETE FROM eportfolio_user WHERE Seminar_id = '$sid'"); //delete in eportfolio_user
-          DBManager::get()->query("DELETE FROM eportfolio WHERE Seminar_id = '$sid'"); // delete in eportfolio
+            $query = "DELETE FROM seminare WHERE Seminar_id = :sid";
+            $statement = $db->prepare($query);
+            $statement->execute(array(':sid'=> $sid));
+            $query = "DELETE FROM seminar_user WHERE Seminar_id = :sid";
+            $statement = $db->prepare($query);
+            $statement->execute(array(':sid'=> $sid));
+            $query = "DELETE FROM eportfolio_user WHERE Seminar_id = :sid";
+            $statement = $db->prepare($query);
+            $statement->execute(array(':sid'=> $sid));
+            $query = "DELETE FROM eportfolio WHERE Seminar_id = :sid";
+            $statement = $db->prepare($query);
+            $statement->execute(array(':sid'=> $sid));
         }
 
       }
@@ -288,13 +340,19 @@ class ShowsupervisorController extends StudipController {
       $groupowner = Group::getOwner($_POST["groupid"]);
       $groupname  = new Seminar($_POST["groupid"]);
 
-      $groupHasTemplates = DBManager::get()->query("SELECT templates FROM eportfolio_groups WHERE seminar_id = '$groupid'")->fetchAll();
-      $groupHasTemplates = json_decode($groupHasTemplates[0][0]);
+      $db = DBManager::get();
+      $query = "SELECT templates FROM eportfolio_groups WHERE seminar_id = :groupid";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':groupid'=> $groupid));
+      $groupHasTemplates = json_decode($statement->fetchAll()[0][0]);
 
       if (count($groupHasTemplates) >= 1) {
 
         foreach ($member as $key => $value) {
-          $seminarGroupId = DBManager::get()->query("SELECT Seminar_id FROM eportfolio WHERE group_id = '$groupid' AND owner_id = '$value'")->fetchAll(PDO::FETCH_ASSOC);
+          $query = "SELECT Seminar_id FROM eportfolio WHERE group_id = :groupid AND owner_id = :value";
+          $statement = $db->prepare($query);
+          $statement->execute(array(':groupid'=> $groupid, ':value'=> $value));
+          $seminarGroupId = $statement->fetchAll(PDO::FETCH_ASSOC);
           $seminarGroupId = $seminarGroupId[0]['Seminar_id'];
           array_push($semList, $seminarGroupId);
         }
@@ -335,9 +393,15 @@ class ShowsupervisorController extends StudipController {
 
             $eportfolio = new Seminar();
             $eportfolio_id = $eportfolio->createId();
-            DBManager::get()->query("INSERT INTO eportfolio (Seminar_id, eportfolio_id, group_id, owner_id, template_id, supervisor_id) VALUES ('$sem_id', '$eportfolio_id', '$groupid' , '$userid', '$masterid', '$groupowner')"); //table eportfolio
+            $query = "INSERT INTO eportfolio (Seminar_id, eportfolio_id, group_id, owner_id, template_id, supervisor_id) VALUES (:sem_id, :eportfolio_id, :groupid , :userid, :masterid, :groupowner)";
+            $statement = $db->prepare($query);
+            $statement->execute(array(':groupid'=> $groupid, ':sem_id'=> $sem_id, ':eportfolio_id'=> $eportfolio_id, ':userid'=> $userid,  ':masterid'=> $masterid, ':groupowner'=> $groupowner));
             DBManager::get()->query("INSERT INTO eportfolio_user(user_id, Seminar_id, eportfolio_id, owner) VALUES ('$userid', '$Seminar_id' , '$eportfolio_id', 1)"); //table eportfollio_user
-
+            $query = "INSERT INTO eportfolio_user(user_id, Seminar_id, eportfolio_id, owner) VALUES (:userid, :Seminar_id , :eportfolio_id, 1)";
+            $statement = $db->prepare($query);
+            $statement->execute(array(':Seminar_id'=> $Seminar_id, ':eportfolio_id'=> $eportfolio_id, ':userid'=> $userid));
+            
+            
             create_folder(_('Allgemeiner Dateiordner'),
                           _('Ablage für allgemeine Ordner und Dokumente der Veranstaltung'),
                           $sem->Seminar_id,
@@ -361,21 +425,33 @@ class ShowsupervisorController extends StudipController {
     }
 
     public function storeTemplateForGroup($groupid, $postMaster){
-      $query = DBManager::get()->query("SELECT templates FROM eportfolio_groups WHERE seminar_id = '$groupid'")->fetchAll();
+      $db = DBManager::get();
+      $query = "SELECT templates FROM eportfolio_groups WHERE seminar_id = :groupid";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':groupid'=> $groupid));
+      $query = $statement->fetchAll();
       if (!empty($query[0][0])) {
         $array = json_decode($query[0][0]);
         array_push($array, $postMaster);
         $array = json_encode($array);
-        DBManager::get()->query("UPDATE eportfolio_groups SET templates = '$array' WHERE seminar_id = '$groupid'");
+        $query = "UPDATE eportfolio_groups SET templates = :array WHERE seminar_id = :groupid";
+        $statement = $db->prepare($query);
+        $statement->execute(array(':array'=> $array, ':groupid'=> $groupid));
       } else {
         $array = array($postMaster);
         $array = json_encode($array);
-        DBManager::get()->query("UPDATE eportfolio_groups SET templates = '$array' WHERE seminar_id = '$groupid'");
+        $query = "UPDATE eportfolio_groups SET templates = :array WHERE seminar_id = :groupid";
+        $statement = $db->prepare($query);
+        $statement->execute(array(':array'=> $array, ':groupid'=> $groupid));
       }
     }
 
     public function checkTemplate($groupid, $masterid) {
-      $query = DBManager::get()->query("SELECT templates FROM eportfolio_groups WHERE seminar_id = '$groupid'")->fetchAll();
+      $db = DBManager::get();
+      $query = "SELECT templates FROM eportfolio_groups WHERE seminar_id = :groupid";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':groupid'=> $groupid));
+      $query = $statement->fetchAll();
       if (empty($query[0][0])) {
         return false;
       } else {
@@ -409,10 +485,16 @@ class ShowsupervisorController extends StudipController {
 
       # User der Gruppe hinzufügen
       foreach ($mp->getAddedUsers() as $userId) {
-        $query = DBManager::get()->query("SELECT user_id FROM eportfolio_groups_user WHERE user_id = '$userId' AND seminar_id = '$groupid'")->fetchAll(); //checkt ob schon in Gruppe eingetragen ist
-        if(empty($query[0][0])){
-          DBManager::get()->query("INSERT INTO eportfolio_groups_user (user_id, seminar_id) VALUES ('$userId', '$groupid')");
-        }
+          $db = DBManager::get();
+          $query = "SELECT user_id FROM eportfolio_groups_user WHERE user_id = :userId AND seminar_id = :groupid";  //checkt ob schon in Gruppe eingetragen ist
+          $statement = $db->prepare($query);
+          $statement->execute(array(':groupid'=> $groupid, ':userId'=> $userId));
+          $query = $statement->fetchAll();
+          if(empty($query[0][0])){
+            $query = "INSERT INTO eportfolio_groups_user (user_id, seminar_id) VALUES (:userId, :groupid)";
+            $statement = $db->prepare($query);
+            $statement->execute(array(':groupid'=> $groupid, ':userId'=> $userId));
+          }
       }
 
       # Für jedes bereits benutze Template ein Seminar pro Nutzer erstellen
@@ -472,7 +554,11 @@ class ShowsupervisorController extends StudipController {
 
     public function isThereAnyUser() {
       $groupid  = $_GET['id'];
-      $query    = DBManager::get()->query("SELECT user_id FROM eportfolio_groups_user WHERE seminar_id = '$groupid'")->fetchAll();
+      $db = DBManager::get();
+      $query = "SELECT user_id FROM eportfolio_groups_user WHERE seminar_id = :groupid";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':groupid'=> $groupid));
+      $query = $statement->fetchAll();
       if (empty($query[0])) {
         return false;
       } else {
@@ -481,11 +567,21 @@ class ShowsupervisorController extends StudipController {
     }
 
     public function checkSupervisorNotiz($id){
-      $supervisorNotiz = DBManager::get()->query("SELECT id FROM mooc_blocks WHERE parent_id = '$id' ")->fetchAll();
+      $db = DBManager::get();
+      $query = "SELECT id FROM mooc_blocks WHERE parent_id = :id";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':id'=> $id));
+      $supervisorNotiz = $statement->fetchAll();
       foreach ($supervisorNotiz[0] as $key => $value) {
-        $supervisorNotizSubchapter = DBManager::get()->query("SELECT id FROM mooc_blocks WHERE parent_id = '$value' ")->fetchAll();
+        $query = "SELECT id FROM mooc_blocks WHERE parent_id = :value";
+        $statement = $db->prepare($query);
+        $statement->execute(array(':value'=> $value));
+        $supervisorNotizSubchapter = $statement->fetchAll();
         foreach ($supervisorNotizSubchapter[0] as $keySub => $valueSub) {
-          $supervisorNotizSubchapterBlock = DBManager::get()->query("SELECT id FROM mooc_blocks WHERE parent_id = '$valueSub' AND type ='PortfolioBlockSupervisor' ")->fetchAll();
+          $query = "SELECT id FROM mooc_blocks WHERE parent_id = :valueSub AND type ='PortfolioBlockSupervisor' ";
+          $statement = $db->prepare($query);
+          $statement->execute(array(':valueSub'=> $valueSub));
+          $supervisorNotizSubchapterBlock = $statement->fetchAll();
           if (!empty($supervisorNotizSubchapterBlock)) {
             return true;
           }
@@ -494,13 +590,26 @@ class ShowsupervisorController extends StudipController {
     }
 
     public function checkSupervisorFeedback($id){
-      $supervisorNotiz = DBManager::get()->query("SELECT id FROM mooc_blocks WHERE parent_id = '$id' ")->fetchAll();
+      $db = DBManager::get();
+      $query = "SELECT id FROM mooc_blocks WHERE parent_id = :id";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':id'=> $id));
+      $supervisorNotiz = $statement->fetchAll();
       foreach ($supervisorNotiz[0] as $key => $value) {
-        $supervisorNotizSubchapter = DBManager::get()->query("SELECT id FROM mooc_blocks WHERE parent_id = '$value' ")->fetchAll();
+        $query = "SELECT id FROM mooc_blocks WHERE parent_id = :value";  
+        $statement = $db->prepare($query);
+        $statement->execute(array(':value'=> $value));
+        $supervisorNotizSubchapter = $statement->fetchAll();
         foreach ($supervisorNotizSubchapter[0] as $keySub => $valueSub) {
-          $supervisorNotizSubchapterBlock = DBManager::get()->query("SELECT id FROM mooc_blocks WHERE parent_id = '$valueSub' AND type ='PortfolioBlockSupervisor' ")->fetchAll();
+          $query = "SELECT id FROM mooc_blocks WHERE parent_id = :valueSub AND type ='PortfolioBlockSupervisor' ";  
+          $statement = $db->prepare($query);
+          $statement->execute(array(':valueSub'=> $valueSub));
+          $supervisorNotizSubchapterBlock = $statement->fetchAll();
           foreach ($supervisorNotizSubchapterBlock as $keyBlock => $valueBlock) {
-            $supervisorFeedback = DBManager::get()->query("SELECT json_data FROM mooc_fields WHERE block_id = '$valueBlock[id]' AND name = 'supervisorcontent'")->fetchAll();
+            $query = "SELECT json_data FROM mooc_fields WHERE block_id = :block_id AND name = 'supervisorcontent'";  
+            $statement = $db->prepare($query);
+            $statement->execute(array(':block_id'=> $valueBlock[id]));
+            $supervisorFeedback = $statement->fetchAll();
             if (!empty($supervisorFeedback[0][json_data])) {
               return true;
             }
@@ -519,13 +628,21 @@ class ShowsupervisorController extends StudipController {
       }
 
       # get eportfolio id's
-      $eportfolio = DBManager::get()->query("SELECT eportfolio_id, Seminar_id FROM eportfolio WHERE group_id = '$id'")->fetchAll();
+      $db = DBManager::get();
+      $query = "SELECT eportfolio_id, Seminar_id FROM eportfolio WHERE group_id = :id"; 
+      $statement = $db->prepare($query);
+      $statement->execute(array(':id'=> $id));
+      $eportfolio = $statement->fetchAll();
 
       # eportfolio_groups
-      DBManager::get()->query("DELETE FROM eportfolio_groups WHERE seminar_id = '$id'");
+      $query = "DELETE FROM eportfolio_groups WHERE seminar_id = :id";  
+      $statement = $db->prepare($query);
+      $statement->execute(array(':id'=> $id));
 
       # eportfolio_groups_user
-      DBManager::get()->query("DELETE FROM eportfolio_groups_user WHERE seminar_id = '$id'");
+      $query = "DELETE FROM eportfolio_groups_user WHERE seminar_id = :id";  
+      $statement = $db->prepare($query);
+      $statement->execute(array(':id'=> $id));
 
 
       foreach ($eportfolio as $key) {
@@ -533,7 +650,9 @@ class ShowsupervisorController extends StudipController {
         $Seminar_id = $key['Seminar_id'];
 
         # eportfolio_user
-        DBManager::get()->query("DELETE FROM eportfolio_user WHERE eportfolio_id = '$eportfolio_id'");
+        $query = "DELETE FROM eportfolio_user WHERE eportfolio_id = :eportfolio_id";  
+        $statement = $db->prepare($query);
+        $statement->execute(array(':eportfolio_id'=> $eportfolio_id));
 
         $sem = new Seminar($Seminar_id);
         $sem->delete();
@@ -541,7 +660,9 @@ class ShowsupervisorController extends StudipController {
       }
 
       # eportfolio
-      DBManager::get()->query("DELETE FROM eportfolio WHERE group_id = '$id'");
+      $query = "DELETE FROM eportfolio WHERE group_id = :id";  
+      $statement = $db->prepare($query);
+      $statement->execute(array(':id'=> $id));
 
     }
 

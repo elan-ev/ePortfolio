@@ -5,7 +5,7 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <!-- Latest compiled and minified JavaScript -->
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-
+  
   <style media="screen">
 
     .widget-list, .widget-links li {
@@ -208,18 +208,25 @@
                       echo $supervisor[Vorname].' '.$supervisor[Nachname];
                    ?>
                 </td>
-                <?php $getsemid = DBManager::get()->query("SELECT Seminar_id FROM eportfolio WHERE owner_id = '$key' AND template_id = '$tempid' AND group_id = '$groupid'")->fetchAll();
-                $getsemid = $getsemid[0][0];
+                <?php 
+                $query = "SELECT Seminar_id FROM eportfolio WHERE owner_id = :key AND template_id = :tempid AND group_id = :groupid";
+                $statement = DBManager::get()->prepare($query);
+                $statement->execute(array(':key'=> $key, ':tempid'=> $tempid, ':groupid'=> $groupid));
+                $getsemid = $statement->fetchAll()[0][0];
                 ?>
 
                 <?php
-                //$q = DBManager::get()->query("SELECT title, id FROM mooc_blocks WHERE type = 'Chapter' AND seminar_id = 'is22plkvtlt3ms6vvuwjsrwfuwohruq9'")->fetchAll();
-                $status = DBManager::get()->query("SELECT templateStatus FROM eportfolio WHERE Seminar_id = '$getsemid'")->fetchAll();
-                $status = $status[0][0];
+                $query = "SELECT templateStatus FROM eportfolio WHERE Seminar_id = :semid";
+                $statement = DBManager::get()->prepare($query);
+                $statement->execute(array(':semid'=> $getsemid));
+                $status = $statement->fetchAll()[0][0];
 
               //  $q = DBManager::get()->query("SELECT title, id FROM mooc_blocks WHERE type = 'Chapter' AND seminar_id = '$getsemid'")->fetchAll();
               //  $q = ShowsupervisorController::getChapters($tempid);
-              $q = DBManager::get()->query("SELECT title, id FROM mooc_blocks WHERE seminar_id = '$getsemid' AND type = 'Chapter'")->fetchAll();
+              $query = "SELECT title, id FROM mooc_blocks WHERE seminar_id = :semid AND type = 'Chapter'";
+              $statement = DBManager::get()->prepare($query);
+              $statement->execute(array(':semid'=> $getsemid));
+              $q = $statement->fetchAll();
 
               //Übergangslösung Kapitel 1 & Kapitel 2 müssen noch entfernt werden
               //nset($q[0]);
@@ -227,7 +234,11 @@
 
                 foreach ($q as $key => $value): ?>
 
-                    <?php $t = DBManager::get()->query("SELECT freigaben_kapitel FROM eportfolio WHERE Seminar_id = '$getsemid'")->fetchAll();
+                    <?php
+                    $query = "SELECT freigaben_kapitel FROM eportfolio WHERE Seminar_id = :semid";
+                    $statement = DBManager::get()->prepare($query);
+                    $statement->execute(array(':semid'=> $getsemid));
+                    $t = $statement->fetchAll();
 
                     $freigaben_kapitel = json_decode($t[0][0], true);
                     ?>
