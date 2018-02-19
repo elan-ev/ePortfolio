@@ -40,8 +40,8 @@
                   <td><?php echo $thisPortfolio->getName(); ?></td>
                   <td><?php echo $eportfolio->getBeschreibung(); ?></td>
                   <td style="text-align: center;">
-                      <a href="<?php echo URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $key)); ?>"><?php echo Icon::create('edit', 'clickable') ?></a>
-                      <a onclick="triggerModalCreate('<?php echo $key; ?>')" href="#"><?php echo Icon::create('add', 'clickable') ?></a>
+                      <a href="<?php echo URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $key)); ?>"><?php echo Icon::create('edit', 'clickable', ['title' => sprintf(_('Portfolio-Vorlage bearbeiten.'))]) ?></a>
+                      <a onclick="triggerModalCreate('<?php echo $key; ?>')" href="#"><?php echo Icon::create('add', 'clickable', ['title' => sprintf(_('Portfolio-Vorlage an GruppenmitgliederInnen verteilen.'))]) ?></a>
                   </td>
                 </tr>
               <?php endif; ?>
@@ -79,8 +79,7 @@
             </td>
             <td></td>
             <td style="text-align:center;">
-              <?php echo  Icon::create('person', 'clickable'); ?>
-              <a onclick="deleteUserFromGroup('<?php echo $user; ?>', this);"><?php echo  Icon::create('trash', 'clickable'); ?></a>
+              <a onclick="deleteUserFromGroup('<?php echo $user; ?>', this);"><?php echo  Icon::create('trash', 'clickable', ['title' => sprintf(_('Nutzer aus Gruppe austragen'))]); ?></a>
             </td>
           </tr>
         <?php endforeach; ?>
@@ -121,18 +120,25 @@
                       echo $supervisor[Vorname].' '.$supervisor[Nachname];
                    ?>
                 </td>
-                <?php $getsemid = DBManager::get()->query("SELECT Seminar_id FROM eportfolio WHERE owner_id = '$key' AND template_id = '$tempid' AND group_id = '$groupid'")->fetchAll();
-                $getsemid = $getsemid[0][0];
+                <?php 
+                $query = "SELECT Seminar_id FROM eportfolio WHERE owner_id = :key AND template_id = :tempid AND group_id = :groupid";
+                $statement = DBManager::get()->prepare($query);
+                $statement->execute(array(':key'=> $key, ':tempid'=> $tempid, ':groupid'=> $groupid));
+                $getsemid = $statement->fetchAll()[0][0];
                 ?>
 
                 <?php
-                //$q = DBManager::get()->query("SELECT title, id FROM mooc_blocks WHERE type = 'Chapter' AND seminar_id = 'is22plkvtlt3ms6vvuwjsrwfuwohruq9'")->fetchAll();
-                $status = DBManager::get()->query("SELECT templateStatus FROM eportfolio WHERE Seminar_id = '$getsemid'")->fetchAll();
-                $status = $status[0][0];
+                $query = "SELECT templateStatus FROM eportfolio WHERE Seminar_id = :semid";
+                $statement = DBManager::get()->prepare($query);
+                $statement->execute(array(':semid'=> $getsemid));
+                $status = $statement->fetchAll()[0][0];
 
               //  $q = DBManager::get()->query("SELECT title, id FROM mooc_blocks WHERE type = 'Chapter' AND seminar_id = '$getsemid'")->fetchAll();
               //  $q = ShowsupervisorController::getChapters($tempid);
-              $q = DBManager::get()->query("SELECT title, id FROM mooc_blocks WHERE seminar_id = '$getsemid' AND type = 'Chapter'")->fetchAll();
+              $query = "SELECT title, id FROM mooc_blocks WHERE seminar_id = :semid AND type = 'Chapter'";
+              $statement = DBManager::get()->prepare($query);
+              $statement->execute(array(':semid'=> $getsemid));
+              $q = $statement->fetchAll();
 
               //Übergangslösung Kapitel 1 & Kapitel 2 müssen noch entfernt werden
               //nset($q[0]);
@@ -140,7 +146,11 @@
 
                 foreach ($q as $key => $value): ?>
 
-                    <?php $t = DBManager::get()->query("SELECT freigaben_kapitel FROM eportfolio WHERE Seminar_id = '$getsemid'")->fetchAll();
+                    <?php
+                    $query = "SELECT freigaben_kapitel FROM eportfolio WHERE Seminar_id = :semid";
+                    $statement = DBManager::get()->prepare($query);
+                    $statement->execute(array(':semid'=> $getsemid));
+                    $t = $statement->fetchAll();
 
                     $freigaben_kapitel = json_decode($t[0][0], true);
                     ?>

@@ -92,15 +92,20 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     public function getCardInfos($cid){
       $db = DBManager::get();
       $return_arr = array();
-      $getCardInfos = $db->query("SELECT id, title FROM mooc_blocks WHERE seminar_id = '$cid' AND type = 'Chapter' ORDER BY id ASC")->fetchAll();
+      $query = "SELECT id, title FROM mooc_blocks WHERE seminar_id = :id AND type = 'Chapter' ORDER BY id ASC";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':id'=> $cid));
+      $getCardInfos = $statement->fetchAll();
       foreach ($getCardInfos as $value) {
         $arrayOne = array();
         $arrayOne['id'] = $value[id];
         $arrayOne['title'] = $value[title];
 
         // get sections of chapter
-        $queryMenuPoints = $db->query("SELECT id, title FROM mooc_blocks WHERE parent_id = '$value[id]'")->fetchAll();
-        $arrayOne['section'] = $queryMenuPoints;
+        $query = "SELECT id, title FROM mooc_blocks WHERE parent_id = :id";
+        $statement = $db->prepare($query);
+        $statement->execute(array(':id'=> $value[id]));
+        $arrayOne['section'] = $statement->fetchAll();
 
         array_push($return_arr, $arrayOne);
       }
@@ -161,8 +166,10 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
 
     public function getAccess($cid,$userId){
       $db = DBManager::get();
-      $query = $db->query("SELECT eportfolio_access FROM eportfolio_user WHERE Seminar_id = '$cid' AND user_id = '$userId' ")->fetchAll();
-      return $query[0][0];
+      $query = "SELECT eportfolio_access FROM eportfolio_user WHERE Seminar_id = :id AND user_id = :user_id ";
+        $statement = $db->prepare($query);
+        $statement->execute(array(':id'=> $cid, ':user_id' => $userId));
+      return $statement->fetchAll()[0][0];
     }
 
     public function getNotificationObjects($course_id, $since, $user_id) {
@@ -219,15 +226,20 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
 
     public function freigeben($selected, $cid){
       $db = DBManager::get();
-      $query = $db->query("SELECT freigaben_kapitel FROM eportfolio WHERE Seminar_id = '$cid'")->fetchAll();
+      $query = "SELECT freigaben_kapitel FROM eportfolio WHERE Seminar_id = :cid";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':cid'=> $cid));
+      $result = $statement->fetchAll()[0][0];
       # debug print_r($query[0][0]);
-      if(empty($query[0][0])){
+      if(!$result){
         $array = array($selected => '1');
         $array = json_encode($array);
-        $db->query("UPDATE eportfolio SET freigaben_kapitel = '$array' WHERE Seminar_id = '$cid'");
+        $query = "UPDATE eportfolio SET freigaben_kapitel = :kapitel WHERE Seminar_id = :cid";
+        $statement = $db->prepare($query);
+        $statement->execute(array(':kapitel'=> $array, ':cid' => $cid));
         echo true;
       } else {
-        $array = $query[0][0];
+        $array = $result;
         $array = json_decode($array);
         if ($array->$selected == "1") {
           $array->$selected = "0";
@@ -237,13 +249,17 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
           echo true;
         }
         $array = json_encode($array);
-        $db->query("UPDATE eportfolio SET freigaben_kapitel = '$array' WHERE Seminar_id = '$cid'");
+        $query = "UPDATE eportfolio SET freigaben_kapitel = :kapitel WHERE Seminar_id = :cid";
+        $statement = $db->prepare($query);
+        $statement->execute(array(':kapitel'=> $array, ':cid' => $cid));
       }
     }
 
     public function getsettingsColor($cid){
-      $color = DBManager::get()->query("SELECT settings FROM eportfolio WHERE seminar_id = '$cid'")->fetchAll();
-      $color = json_decode($color[0][0]);
+      $query = "SELECT settings FROM eportfolio WHERE seminar_id = :cid";
+      $statement = DBManager::get()->prepare($query);
+      $statement->execute(array(':cid'=> $cid));
+      $color = json_decode($statement->fetchAll()[0][0]);
       echo $color->color;
     }
 

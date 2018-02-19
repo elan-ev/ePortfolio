@@ -1,9 +1,5 @@
 pluginname=ePortfolio
 pluginclassname=EportfolioPlugin
-<<<<<<< HEAD
 origin=uos
-=======
-origin=uos
->>>>>>> 5d0dd0069747f8a8fcdfd26acd14232ecc9425d0
-version=0.1a
+version=0.2
 studipMinVersion=2.4

@@ -18,22 +18,28 @@ class eportfolio {
 
   public function getOwner(){
     $db = DBManager::get();
-    $query = $db->query("SELECT owner_id FROM eportfolio WHERE Seminar_id = '$this->eportfolioId'")->fetchAll();
-    return $query[0][owner_id];
+    $query = "SELECT owner_id FROM eportfolio WHERE Seminar_id = :id";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':id'=> $this->eportfolioId));
+    return $statement->fetchAll()[0][owner_id];
   }
 
   public function isEportfolio(){
     $db = DBManager::get();
-    $query = $db->query("SELECT * FROM eportfolio WHERE Seminar_id = '$this->eportfolioId'")->fetchAll();
-    if (!empty($query)) {
+    $query = "SELECT * FROM eportfolio WHERE Seminar_id = :id";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':id'=> $this->eportfolioId));
+    if (!empty($statement->fetchAll())) {
       return true;
     }
   }
 
   public function getBeschreibung(){
     $db = DBManager::get();
-    $query = $db->query("SELECT Beschreibung FROM seminare WHERE Seminar_id = '$this->eportfolioId'")->fetchAll();
-    return $query[0][Beschreibung];
+    $query = "SELECT Beschreibung FROM seminare WHERE Seminar_id = :id";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':id'=> $this->eportfolioId));
+    return $statement->fetchAll()[0][Beschreibung];
   }
 
   public function getId(){
