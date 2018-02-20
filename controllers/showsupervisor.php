@@ -389,8 +389,8 @@ class ShowsupervisorController extends StudipController {
             $query = "INSERT INTO eportfolio_user(user_id, Seminar_id, eportfolio_id, owner) VALUES (:userid, :Seminar_id , :eportfolio_id, 1)";
             $statement = $db->prepare($query);
             $statement->execute(array(':Seminar_id'=> $Seminar_id, ':eportfolio_id'=> $eportfolio_id, ':userid'=> $userid));
-            
-            
+
+
             create_folder(_('Allgemeiner Dateiordner'),
                           _('Ablage für allgemeine Ordner und Dokumente der Veranstaltung'),
                           $sem->Seminar_id,
@@ -585,17 +585,17 @@ class ShowsupervisorController extends StudipController {
       $statement->execute(array(':id'=> $id));
       $supervisorNotiz = $statement->fetchAll();
       foreach ($supervisorNotiz[0] as $key => $value) {
-        $query = "SELECT id FROM mooc_blocks WHERE parent_id = :value";  
+        $query = "SELECT id FROM mooc_blocks WHERE parent_id = :value";
         $statement = $db->prepare($query);
         $statement->execute(array(':value'=> $value));
         $supervisorNotizSubchapter = $statement->fetchAll();
         foreach ($supervisorNotizSubchapter[0] as $keySub => $valueSub) {
-          $query = "SELECT id FROM mooc_blocks WHERE parent_id = :valueSub AND type ='PortfolioBlockSupervisor' ";  
+          $query = "SELECT id FROM mooc_blocks WHERE parent_id = :valueSub AND type ='PortfolioBlockSupervisor' ";
           $statement = $db->prepare($query);
           $statement->execute(array(':valueSub'=> $valueSub));
           $supervisorNotizSubchapterBlock = $statement->fetchAll();
           foreach ($supervisorNotizSubchapterBlock as $keyBlock => $valueBlock) {
-            $query = "SELECT json_data FROM mooc_fields WHERE block_id = :block_id AND name = 'supervisorcontent'";  
+            $query = "SELECT json_data FROM mooc_fields WHERE block_id = :block_id AND name = 'supervisorcontent'";
             $statement = $db->prepare($query);
             $statement->execute(array(':block_id'=> $valueBlock[id]));
             $supervisorFeedback = $statement->fetchAll();
@@ -618,18 +618,18 @@ class ShowsupervisorController extends StudipController {
 
       # get eportfolio id's
       $db = DBManager::get();
-      $query = "SELECT eportfolio_id, Seminar_id FROM eportfolio WHERE group_id = :id"; 
+      $query = "SELECT eportfolio_id, Seminar_id FROM eportfolio WHERE group_id = :id";
       $statement = $db->prepare($query);
       $statement->execute(array(':id'=> $id));
       $eportfolio = $statement->fetchAll();
 
       # eportfolio_groups
-      $query = "DELETE FROM eportfolio_groups WHERE seminar_id = :id";  
+      $query = "DELETE FROM eportfolio_groups WHERE seminar_id = :id";
       $statement = $db->prepare($query);
       $statement->execute(array(':id'=> $id));
 
       # eportfolio_groups_user
-      $query = "DELETE FROM eportfolio_groups_user WHERE seminar_id = :id";  
+      $query = "DELETE FROM eportfolio_groups_user WHERE seminar_id = :id";
       $statement = $db->prepare($query);
       $statement->execute(array(':id'=> $id));
 
@@ -639,7 +639,7 @@ class ShowsupervisorController extends StudipController {
         $Seminar_id = $key['Seminar_id'];
 
         # eportfolio_user
-        $query = "DELETE FROM eportfolio_user WHERE eportfolio_id = :eportfolio_id";  
+        $query = "DELETE FROM eportfolio_user WHERE eportfolio_id = :eportfolio_id";
         $statement = $db->prepare($query);
         $statement->execute(array(':eportfolio_id'=> $eportfolio_id));
 
@@ -649,7 +649,7 @@ class ShowsupervisorController extends StudipController {
       }
 
       # eportfolio
-      $query = "DELETE FROM eportfolio WHERE group_id = :id";  
+      $query = "DELETE FROM eportfolio WHERE group_id = :id";
       $statement = $db->prepare($query);
       $statement->execute(array(':id'=> $id));
 
