@@ -12,7 +12,6 @@ class AddMoreSemClasses extends Migration
     public function up () {
         $id = $this->insertSupervisionsgruppeSemClass();
         $this->insertPortfolioVorlageSemClass();
-        SimpleORMap::expireTableScheme();
     }
 
 
@@ -56,7 +55,7 @@ class AddMoreSemClasses extends Migration
         $nameType = "Supervisionsgruppe";
         $id = -2;
 
-        //Fügt Spalte an true or false ePortfolio
+        //F�gt Spalte an true or false ePortfolio
         // $nameType = "eportfolioStatus";
         // $statement = $db->prepare("ALTER TABLE seminare ADD ? BOOLEAN");
         // $statement->execute(array($nameType));
@@ -89,12 +88,21 @@ class AddMoreSemClasses extends Migration
 
         // Setting Mooc-courses default datafields: mooc should not to be disabled, courseware and mooc should be active
         $current_modules = $sem_class->getModules(); // get modules
-        $current_modules['Mooc']['activated'] = '0'; // set values
-        $current_modules['Mooc']['sticky'] = '1'; // sticky = 1 -> can't be chosen in "more"-field of course
-        $current_modules['Courseware']['activated'] = '1';
-        $current_modules['Courseware']['sticky'] = '1';
+        $current_modules = $sem_class->getModules(); // get modules
+        $current_modules['EportfolioPlugin']['activated'] = '1';
+        $current_modules['EportfolioPlugin']['sticky'] = '1'; 
+        $current_modules['Courseware']['activated'] = '1';   // set values
+        $current_modules['Courseware']['sticky'] = '1'; // sticky = 1 -> can't be chosen in "more"-field of course
+        $current_modules['CoreParticipants']['activated'] = '0';
+        $current_modules['CoreParticipants']['sticky'] = '0'; 
+        $current_modules['CoreDocuments']['activated'] = '1';
+        $current_modules['CoreDocuments']['sticky'] = '1'; 
+        $current_modules['CoreOverview']['activated'] = '0';
+        $current_modules['CoreOverview']['sticky'] = '1'; 
+        $current_modules['CoreAdmin']['activated'] = '0';
+        $current_modules['CoreAdmin']['sticky'] = '1';
 
-
+        $sem_class->set('overview', 'EportfolioPlugin');
         $sem_class->setModules($current_modules); // set modules
 
         $sem_class->store();
@@ -106,7 +114,7 @@ class AddMoreSemClasses extends Migration
     {
         $db = DBManager::get();
         $name = "ePortfolio-Vorlage";
-        $nameType = "ePortfolio-Vorlage";
+        $nameType = "Portfolio-Vorlage";
         $id = -2;
 
         //Fügt Spalte an true or false ePortfolio
@@ -142,12 +150,20 @@ class AddMoreSemClasses extends Migration
 
         // Setting Mooc-courses default datafields: mooc should not to be disabled, courseware and mooc should be active
         $current_modules = $sem_class->getModules(); // get modules
-        $current_modules['Mooc']['activated'] = '0'; // set values
-        $current_modules['Mooc']['sticky'] = '1'; // sticky = 1 -> can't be chosen in "more"-field of course
-        $current_modules['Courseware']['activated'] = '1';
-        $current_modules['Courseware']['sticky'] = '1';
+        $current_modules['EportfolioPlugin']['activated'] = '1';
+        $current_modules['EportfolioPlugin']['sticky'] = '1'; 
+        $current_modules['Courseware']['activated'] = '1';   // set values
+        $current_modules['Courseware']['sticky'] = '1'; // sticky = 1 -> can't be chosen in "more"-field of course
+        $current_modules['CoreParticipants']['activated'] = '0';
+        $current_modules['CoreParticipants']['sticky'] = '0'; 
+        $current_modules['CoreDocuments']['activated'] = '1';
+        $current_modules['CoreDocuments']['sticky'] = '1'; 
+        $current_modules['CoreOverview']['activated'] = '0';
+        $current_modules['CoreOverview']['sticky'] = '1'; 
+        $current_modules['CoreAdmin']['activated'] = '0';
+        $current_modules['CoreAdmin']['sticky'] = '1';
 
-
+        $sem_class->set('overview', 'EportfolioPlugin');
         $sem_class->setModules($current_modules); // set modules
 
         $sem_class->store();
