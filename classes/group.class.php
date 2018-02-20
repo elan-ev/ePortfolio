@@ -1,4 +1,4 @@
-<?
+<?php
 
 class Group{
 
@@ -6,14 +6,6 @@ class Group{
 
   public function __construct($id) {
     $groupid = $id;
-  }
-
-  public static function getTemplates($id){
-    $query = "SELECT templates FROM eportfolio_groups WHERE seminar_id = :id";
-    $statement = DBManager::get()->prepare($query);
-    $statement->execute(array(':id'=> $id));
-    $q = json_decode($statement->fetchAll()[0][0], true);
-    return $q;
   }
 
   public static function getGroupMember($id) {
@@ -31,17 +23,20 @@ class Group{
   public static function create($owner, $title, $text){
     $course = new Seminar();
     $id = $course->getId();
+    $course->name = 'Unbekannt';
     $course->store();
     $course->addMember($owner, 'dozent', true);
 
     $edit = new Course($id);
     $edit->visible = 0;
+    $edit->name = 'Unbekannt';
     $edit->store();
+    $sem_class = Config::get()->getValue('SEM_CLASS_PORTFOLIO_Supervisionsgruppe');
 
     $db = DBManager::get();
-    $query = "UPDATE seminare SET Name = :title, Beschreibung = :text, status = 142 WHERE Seminar_id = :id ";
+    $query = "UPDATE seminare SET Name = :title, Beschreibung = :text, status = :sem_class WHERE Seminar_id = :id ";
     $statement = $db->prepare($query);
-    $statement->execute(array(':title'=> $title, ':text'=> $text, ':id'=> $id));
+    $statement->execute(array(':title'=> $title, ':text'=> $text, ':id'=> $id, ':sem_class' => $sem_class));
  
     $query = "INSERT INTO eportfolio_groups (seminar_id, owner_id) VALUES (:id, :owner)";
     $statement = $db->prepare($query);
