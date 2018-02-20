@@ -22,8 +22,8 @@ class ShowsupervisorController extends StudipController {
         $this->userid = $GLOBALS["user"]->id;
         $this->ownerid = $GLOBALS["user"]->id;
 
-        $this->groupTemplates = Group::getTemplates($id);
-        $this->templistid = $this->groupTemplates;
+        //$this->groupTemplates = Group::getTemplates($id);
+        //$this->templistid = $this->groupTemplates;
 
         //userData for Modal
 
@@ -39,11 +39,6 @@ class ShowsupervisorController extends StudipController {
 
         if($_POST["type"] == 'delete'){
           $this->deletePortfolio();
-          exit();
-        }
-
-        if($_POST["type"] == 'addTemplateTest'){
-          $this->addTemplateTest();
           exit();
         }
 
@@ -144,8 +139,10 @@ class ShowsupervisorController extends StudipController {
       **/
 
       $this->url = $_SERVER['REQUEST_URI'];
-      $course = new Seminar($id);
-      $this->courseName = $course->getName();
+      if($id){
+        $course = new Seminar($id);
+        $this->courseName = $course->getName();
+      } else $this->courseName = '';
 
     }
 
@@ -209,45 +206,6 @@ class ShowsupervisorController extends StudipController {
       return $seminare;
 
     }
-
-    public function addTempToDB(){
-      $groupid = $_POST["groupid"];
-      $tempid = $_POST["tempid"];
-      $db = DBManager::get();
-      $query = "SELECT templates FROM eportfolio_groups WHERE seminar_id = :groupid";
-      $statement = $db->prepare($query);
-      $statement->execute(array(':groupid'=> $groupid));
-      $q = $statement->fetchAll();
-      if(empty($q[0][0])){
-        $array = array($tempid);
-        $array = json_encode($array);
-        $query = "UPDATE eportfolio_groups SET templates = :array WHERE seminar_id = :groupid";
-        $statement = $db->prepare($query);
-        $statement->execute(array(':groupid'=> $groupid, ':array'=> $array));
-        echo "created";
-      } else {
-        $array = json_decode($q[0][0]);
-        if(in_array($tempid, $array)){
-          echo "already";
-          exit();
-        }
-        array_push($array, $tempid);
-        $array = json_encode($array);
-        $query = "UPDATE eportfolio_groups SET templates = :array WHERE seminar_id = :groupid";
-        $statement = $db->prepare($query);
-        $statement->execute(array(':groupid'=> $groupid, ':array'=> $array));
-        echo "created";
-      }
-
-    //  print_r($array);
-      //DBManager::get()->query("UPDATE eportfolio_groups SET templates = '$array' WHERE seminar_id = '$groupid'");
-    }
-
-    //public function getGroupTemplates($id){
-      //$q = DBManager::get()->query("SELECT templates FROM eportfolio_groups WHERE seminar_id = '$id'")->fetchAll();
-      //$q = json_decode($q[0][0], true);
-      //return $q;
-    //}
 
     public function getChapters($id){
         $db = DBManager::get();
