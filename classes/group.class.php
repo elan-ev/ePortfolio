@@ -88,4 +88,11 @@ class Group{
     return $groupid;
   }
 
+  public static function getSupervisorGroupId($id){
+    $query = "SELECT supervisor_group_id FROM eportfolio_groups WHERE seminar_id = :seminar_id";
+    $statement = DBManager::get()->prepare($query);
+    $statement->execute(array(':seminar_id'=> $id));
+    return $statement->fetchAll()[0][0];
+  }
+
 }
