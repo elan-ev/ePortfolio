@@ -330,6 +330,8 @@ class ShowsupervisorController extends StudipController {
       $groupowner = Group::getOwner($_POST["groupid"]);
       $groupname  = new Seminar($_POST["groupid"]);
 
+      $supervisorgroupid = Group::getSupervisorGroupId($groupid);
+
       $db = DBManager::get();
       $query = "SELECT templates FROM eportfolio_groups WHERE seminar_id = :groupid";
       $statement = $db->prepare($query);
@@ -385,7 +387,7 @@ class ShowsupervisorController extends StudipController {
             $eportfolio_id = $eportfolio->createId();
             $query = "INSERT INTO eportfolio (Seminar_id, eportfolio_id, group_id, owner_id, template_id, supervisor_id) VALUES (:sem_id, :eportfolio_id, :groupid , :userid, :masterid, :groupowner)";
             $statement = $db->prepare($query);
-            $statement->execute(array(':groupid'=> $groupid, ':sem_id'=> $sem_id, ':eportfolio_id'=> $eportfolio_id, ':userid'=> $userid,  ':masterid'=> $masterid, ':groupowner'=> $groupowner));
+            $statement->execute(array(':groupid'=> $groupid, ':sem_id'=> $sem_id, ':eportfolio_id'=> $eportfolio_id, ':userid'=> $userid,  ':masterid'=> $masterid, ':groupowner'=> $supervisorgroupid));
             DBManager::get()->query("INSERT INTO eportfolio_user(user_id, Seminar_id, eportfolio_id, owner) VALUES ('$userid', '$Seminar_id' , '$eportfolio_id', 1)"); //table eportfollio_user
             $query = "INSERT INTO eportfolio_user(user_id, Seminar_id, eportfolio_id, owner) VALUES (:userid, :Seminar_id , :eportfolio_id, 1)";
             $statement = $db->prepare($query);
