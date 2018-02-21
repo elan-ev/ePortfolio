@@ -38,14 +38,20 @@ class Group{
     $edit->visible = 0;
     $edit->store();
 
+    $supervisorgroup = new Supervisorgroup();
+    $supervisorgroup->setName($title);
+    $supervisorgroup->save();
+
+    $supervisorgroupId = $supervisorgroup->getId();
+
     $db = DBManager::get();
     $query = "UPDATE seminare SET Name = :title, Beschreibung = :text, status = 142 WHERE Seminar_id = :id ";
     $statement = $db->prepare($query);
     $statement->execute(array(':title'=> $title, ':text'=> $text, ':id'=> $id));
- 
-    $query = "INSERT INTO eportfolio_groups (seminar_id, owner_id) VALUES (:id, :owner)";
+
+    $query = "INSERT INTO eportfolio_groups (seminar_id, owner_id, supervisor_group_id) VALUES (:id, :owner, :supervisorgroupid)";
     $statement = $db->prepare($query);
-    $statement->execute(array(':id'=> $id, ':owner'=> $owner));
+    $statement->execute(array(':id'=> $id, ':owner'=> $owner, ':supervisorgroupid' => $supervisorgroupId));
 
     echo $id;
   }
