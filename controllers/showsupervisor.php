@@ -80,7 +80,8 @@ class ShowsupervisorController extends StudipController {
             $attr = array('class' => '');
           }
 
-          $nav->addLink($name, "showsupervisor?id=".$key, null, $attr);
+          $navGroupURL = URLHelper::getLink("plugins.php/eportfolioplugin/showsupervisor", array('id' => $key));
+          $nav->addLink($name, $navGroupURL);
         }
 
         $navcreate = new LinksWidget();
@@ -92,7 +93,7 @@ class ShowsupervisorController extends StudipController {
 
         $navSupervisorGroup = new LinksWidget();
         $navSupervisorGroup->setTitle("Supervisorengruppen");
-        $navSupervisorGroupURL = URLHelper::getLink("plugins.php/eportfolioplugin/supervisorgroup");
+        $navSupervisorGroupURL = URLHelper::getLink("plugins.php/eportfolioplugin/showsupervisor/supervisorgroup", array('id' => $id));
         $navSupervisorGroup->addLink("Verwalten", $navSupervisorGroupURL);
 
         $sidebar->addWidget($nav);
@@ -653,6 +654,29 @@ class ShowsupervisorController extends StudipController {
       $statement = $db->prepare($query);
       $statement->execute(array(':id'=> $id));
 
+    }
+
+    public function supervisorgroup_action(){
+      $groupId = $_GET['id'];
+      $sem = new Seminar($groupId);
+      $this->groupName = $sem->getName();
+
+      $supervisorgroupid = Group::getSupervisorGroupId($groupId);
+
+      $group = new Supervisorgroup($supervisorgroupid);
+      $this->title = $group->getName();
+      $this->groupId = $group->getId();
+      $this->linkId = $this->id;
+
+      $this->mp = MultiPersonSearch::get('supervisorgroupSelectUsers')
+        ->setLinkText(_('Supervisoren hinzufügen'))
+        ->setTitle(_('Personen zur Supervisorgruppe hinzufügen'))
+        ->setSearchObject(new StandardSearch('user_id'))
+        ->setJSFunctionOnSubmit()
+        ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/supervisorgroup/addUser', array('id' => $group->getId())))
+        ->render();
+
+      $this->usersOfGroup = $group->getUsersOfGroup();
     }
 
 }
