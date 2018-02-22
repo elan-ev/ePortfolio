@@ -41,6 +41,7 @@ class Group{
     $supervisorgroup = new Supervisorgroup();
     $supervisorgroup->setName($title);
     $supervisorgroup->save();
+    $supervisorgroup->addUser($owner);
 
     $supervisorgroupId = $supervisorgroup->getId();
 
