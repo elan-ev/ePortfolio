@@ -161,17 +161,30 @@ class ShowsupervisorController extends StudipController {
     }
 
     public function getGroups($id) {
-
       $db = DBManager::get();
+      $array = array();
+
+      # Gruppen ohne Supervisorengruppe / damit auch alte Gruppen anzeigt werden
       $query = "SELECT seminar_id FROM eportfolio_groups WHERE owner_id = :id";
       $statement = $db->prepare($query);
       $statement->execute(array(':id'=> $id));
-      $array = array();
       foreach ($statement->fetchAll() as $key) {
         array_push($array, $key[0]);
       }
-      return $array;
 
+      # Gruppe mit Supervisorgruppe
+      $query = "SELECT supervisor_group_id FROM supervisor_group_user WHERE user_id = :id";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':id'=> $id));
+      foreach ($statement->fetchAll() as $key) {
+        $queryForGroupId = "SELECT seminar_id FROM eportfolio_groups WHERE supervisor_group_id = :supervisor_group_id";
+        $statementForGroupId = $db->prepare($queryForGroupId);
+        $statementForGroupId->execute(array(':supervisor_group_id'=> $key["supervisor_group_id"]));
+        foreach ($statementForGroupId->fetchAll() as $keyGroupId) {
+          array_push($array, $keyGroupId[0]);
+        }
+      }
+      return $array;
     }
 
     public function getGroupMemberAjax($cid) {
