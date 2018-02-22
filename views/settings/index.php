@@ -31,9 +31,9 @@
 <?php
   //supervisor Zeile
   //Supervisor Informationen
-  $supervisorId = SettingsController::getSupervisorOfPortfolio($cid);
-  $supervisor = UserModel::getUser($supervisorId);
-  $supervisorName = $supervisor[Vorname].' '.$supervisor[Nachname];
+  $supervisorId = SettingsController::getSupervisorGroupOfPortfolio($cid);
+  //$supervisor = UserModel::getUser($supervisorId);
+  //$supervisorName = $supervisor[Vorname].' '.$supervisor[Nachname];
 
   //Freigaben für Portfolio
   $SupervisorFreigaben = SettingsController::getPortfolioFreigaben($cid);
@@ -46,14 +46,14 @@
   <tr style="background-color: lightblue;">
     <td>
       <img style="border-radius: 30px; width: 15px;" src="<?php echo $GLOBALS[DYNAMIC_CONTENT_URL];?>/user/<?php echo $supervisorId; ?>_small.png" onError="defaultImg(this);">
-      <?php echo $supervisorName; ?> (Supervisor)
+      Supervisoren
     </td>
 
     <?php foreach ($chapterList as $chapter):?>
       <?php if($SupervisorFreigaben[$chapter[id]] == 1): ?>
-        <td id="chapter<?php echo $chapter[id]?>" onclick="freigeben('<?php echo $chapter[id]; ?>', '<?php echo $cid; ?>');"><?php echo  Icon::create('accept', 'clickable'); ?></td>
+        <td id="chapter<?php echo $chapter[id]?>" onclick="freigebenSupervisorGroup('<?php echo $chapter[id]; ?>', '<?php echo $cid; ?>');"><?php echo  Icon::create('accept', 'clickable'); ?></td>
       <?php else: ?>
-        <td id="chapter<?php echo $chapter[id]?>" onclick="freigeben('<?php echo $chapter[id]; ?>', '<?php echo $cid; ?>');"><?php echo  Icon::create('decline', 'clickable'); ?></td>
+        <td id="chapter<?php echo $chapter[id]?>" onclick="freigebenSupervisorGroup('<?php echo $chapter[id]; ?>', '<?php echo $cid; ?>');"><?php echo  Icon::create('decline', 'clickable'); ?></td>
       <?php endif; ?>
     <?php endforeach; ?>
   </tr>
@@ -329,6 +329,31 @@ $('div[data-color="'+color+'"] i').css('opacity', '1').attr('data-status', 'acti
         var activate = $(obj).find('i');
         $(activate).attr('data-status', 'active').css('opacity', '1');
       }
+    });
+  }
+
+  function freigebenSupervisorGroup(selected, cid){
+    console.log(selected + " " + cid);
+    var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin');
+    $('td[id="chapter'+selected+'"]').empty().prepend('<i style="color: #24437c;" class="fa fa-circle-o-notch fa-spin fa-fw"></i>');
+    $.ajax({
+      url: url,
+      type: 'POST',
+      data: {
+        type: "freigeben",
+        selected: selected,
+        cid: cid
+      },
+      success: function(data){
+        console.log(data);
+        if (data == true) {
+          $('td[id="chapter'+selected+'"]').empty().prepend('<?php echo  Icon::create('accept', 'clickable'); ?>');
+        } else {
+          $('td[id="chapter'+selected+'"]').empty().prepend('<?php echo  Icon::create('decline', 'clickable'); ?>');
+        }
+
+      }
+
     });
   }
 
