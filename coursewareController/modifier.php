@@ -171,7 +171,7 @@ $workingArray = json_encode($workingArray);
 
         <div style="display: inline; font-size: 24px; position: relative; top: -3px;margin-left:2px;">
           <a href="<?php echo URLHelper::getLink('plugins.php/eportfolioplugin/settings?cid='.$cid); ?>">
-            <i class="fa fa-cog" aria-hidden="true"></i>
+            <?=Icon::create('admin', 'clickable', ['title' => sprintf(_('Zugriffsrechte bearbeiten'))])?>
           </a>
         </div>
 
@@ -261,6 +261,7 @@ $workingArray = json_encode($workingArray);
       },
       success: function(data){
 
+        console.log(data);
         data = JSON.parse(data);
         console.log(data);
 
@@ -272,6 +273,9 @@ $workingArray = json_encode($workingArray);
           $('#courseware').prepend(Mustache.render(template, data));
         }
 
+      },
+      error: function(data){
+          console.log(data);
       }
     });
 
