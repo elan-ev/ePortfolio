@@ -69,6 +69,8 @@ class SupervisorgroupController extends StudipController {
     foreach ($mp->getAddedUsers() as $key) {
       $group->addUser($key);
     }
+
+    $this->redirect('showsupervisor?id=12234567');
   }
 
   public function deleteUser_action(){
