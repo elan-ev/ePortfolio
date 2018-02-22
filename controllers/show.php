@@ -19,7 +19,7 @@ class ShowController extends StudipController {
             $this->linkId = '';
           }
         }
-        
+
         $user = get_username();
 
         $sidebar = Sidebar::Get();
@@ -131,7 +131,7 @@ class ShowController extends StudipController {
       $statement = $db->prepare($query);
       $statement->execute(array(':cid'=> $cid));
       $ownerid = $statement->fetchAll()[0]["owner_id"];
-      
+
       $query = "SELECT * FROM auth_user_md5 WHERE user_id = :ownerid";
       $statement = $db->prepare($query);
       $statement->execute(array(':ownerid'=> $ownerid));
@@ -186,7 +186,7 @@ class ShowController extends StudipController {
       $statement->execute(array(':sem_id'=> $sem_id, ':eportfolio_id'=> $eportfolio_id, ':userid'=> $userid)); //table eportfolio
       $query = "INSERT INTO eportfolio_user(user_id, Seminar_id, eportfolio_id, owner) VALUES (:userid, :Seminar_id , :eportfolio_id, 1)";
       $statement = $db->prepare($query);
-      $statement->execute(array(':Seminar_id'=> $Seminar_id, ':eportfolio_id'=> $eportfolio_id, ':userid'=> $userid)); //table eportfollio_user
+      $statement->execute(array(':Seminar_id'=> $sem_id, ':eportfolio_id'=> $eportfolio_id, ':userid'=> $userid)); //table eportfollio_user
 
     }
 
