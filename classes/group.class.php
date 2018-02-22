@@ -8,6 +8,14 @@ class Group{
     $groupid = $id;
   }
 
+   public static function getTemplates($id){
+    $query = "SELECT templates FROM eportfolio_groups WHERE seminar_id = :id";
+    $statement = DBManager::get()->prepare($query);
+    $statement->execute(array(':id'=> $id));
+    $q = json_decode($statement->fetchAll()[0][0], true);
+    return $q;
+  }
+  
   public static function getGroupMember($id) {
     $query = "SELECT user_id FROM eportfolio_groups_user WHERE Seminar_id = :id";
     $statement = DBManager::get()->prepare($query);
