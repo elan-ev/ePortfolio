@@ -22,8 +22,8 @@ class ShowsupervisorController extends StudipController {
         $this->userid = $GLOBALS["user"]->id;
         $this->ownerid = $GLOBALS["user"]->id;
 
-        //$this->groupTemplates = Group::getTemplates($id);
-        //$this->templistid = $this->groupTemplates;
+        $this->groupTemplates = Group::getTemplates($id);
+        $this->templistid = $this->groupTemplates;
 
         //userData for Modal
 
@@ -130,7 +130,7 @@ class ShowsupervisorController extends StudipController {
       //not working MultiPersonSearch
       /**
       $mp = MultiPersonSearch::get('eindeutige_id')
-        ->setLinkText(_('Person hinzufügen'))
+        ->setLinkText(_('Person hinzufï¿½gen'))
         ->setTitle(_('Person zur Gruppe hinzufÃ¼gen'))
         ->setExecuteURL($this->url_for('controller'))
         ->render();
@@ -205,6 +205,36 @@ class ShowsupervisorController extends StudipController {
 
       return $seminare;
 
+    }
+    
+        public function addTempToDB(){
+      $groupid = $_POST["groupid"];
+      $tempid = $_POST["tempid"];
+      $db = DBManager::get();
+      $query = "SELECT templates FROM eportfolio_groups WHERE seminar_id = :groupid";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':groupid'=> $groupid));
+      $q = $statement->fetchAll();
+      if(empty($q[0][0])){
+        $array = array($tempid);
+        $array = json_encode($array);
+        $query = "UPDATE eportfolio_groups SET templates = :array WHERE seminar_id = :groupid";
+        $statement = $db->prepare($query);
+        $statement->execute(array(':groupid'=> $groupid, ':array'=> $array));
+        echo "created";
+      } else {
+        $array = json_decode($q[0][0]);
+        if(in_array($tempid, $array)){
+          echo "already";
+          exit();
+        }
+        array_push($array, $tempid);
+        $array = json_encode($array);
+        $query = "UPDATE eportfolio_groups SET templates = :array WHERE seminar_id = :groupid";
+        $statement = $db->prepare($query);
+        $statement->execute(array(':groupid'=> $groupid, ':array'=> $array));
+        echo "created";
+      }
     }
 
     public function getChapters($id){
@@ -350,7 +380,7 @@ class ShowsupervisorController extends StudipController {
             
             
             create_folder(_('Allgemeiner Dateiordner'),
-                          _('Ablage für allgemeine Ordner und Dokumente der Veranstaltung'),
+                          _('Ablage fï¿½r allgemeine Ordner und Dokumente der Veranstaltung'),
                           $sem->Seminar_id,
                           7,
                           $sem->Seminar_id);
@@ -430,7 +460,7 @@ class ShowsupervisorController extends StudipController {
       $templates    = Group::getTemplates($groupid);
       $outputArray  = array();
 
-      # User der Gruppe hinzufügen
+      # User der Gruppe hinzufï¿½gen
       foreach ($mp->getAddedUsers() as $userId) {
           $db = DBManager::get();
           $query = "SELECT user_id FROM eportfolio_groups_user WHERE user_id = :userId AND seminar_id = :groupid";  //checkt ob schon in Gruppe eingetragen ist
@@ -444,7 +474,7 @@ class ShowsupervisorController extends StudipController {
           }
       }
 
-      # Für jedes bereits benutze Template ein Seminar pro Nutzer erstellen
+      # Fï¿½r jedes bereits benutze Template ein Seminar pro Nutzer erstellen
       foreach ($templates as $template) {
 
         $semList    = array();
@@ -459,7 +489,7 @@ class ShowsupervisorController extends StudipController {
           }
         }
 
-        # Erstellt für jeden neu hinzugefügten User ein Seminar
+        # Erstellt fï¿½r jeden neu hinzugefï¿½gten User ein Seminar
         // foreach ($mp->getAddedUsers() as $userid){
         //
         //   $userid           = $userid; //get userid
