@@ -1,4 +1,4 @@
-<?php if(!$supervisorId == NULL):?>
+<!-- <?php if(!$supervisorId == NULL):?>
 
   <?php $supervisor = UserModel::getUser($supervisorId);
       echo $supervisor[Vorname].' '.$supervisor[Nachname].'<br/>';
