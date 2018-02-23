@@ -70,7 +70,7 @@ class SupervisorgroupController extends StudipController {
       $group->addUser($key);
     }
 
-    $this->redirect('showsupervisor?id=12234567');
+    $this->redirect($this->url_for('showsupervisor/supervisorgroup?id='.$_GET['redirect']));
   }
 
   public function deleteUser_action(){
