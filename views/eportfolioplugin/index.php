@@ -148,7 +148,7 @@
   }
 
   function saveTitle(){
-    var text = $('#title_changer input').val();
+    var text = $('#title_changer input').val().replace(/<\/?[^>]+(>|$)/g, "");;
 
     $.ajax({
       type: 'post',
