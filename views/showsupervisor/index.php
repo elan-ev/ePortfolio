@@ -1,3 +1,5 @@
+<? use Studip\LinkButton; ?>
+
 <h1>Supervisionsgruppe "<?php echo $courseName; ?>"</h1>
 
 <?php showsupervisorcontroller::getTemplates($id); ?>
@@ -40,8 +42,14 @@
                   <td><?php echo $thisPortfolio->getName(); ?></td>
                   <td><?php echo $eportfolio->getBeschreibung(); ?></td>
                   <td style="text-align: center;">
+                      
                       <a href="<?php echo URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $key)); ?>"><?php echo Icon::create('edit', 'clickable', ['title' => sprintf(_('Portfolio-Vorlage bearbeiten.'))]) ?></a>
-                      <a onclick="triggerModalCreate('<?php echo $key; ?>')" href="#"><?php echo Icon::create('add', 'clickable', ['title' => sprintf(_('Portfolio-Vorlage an GruppenmitgliederInnen verteilen.'))]) ?></a>
+                       <a data-dialog="size=auto" href="<?= PluginEngine::getLink($this->plugin, array(), 'showsupervisor/createportfolio/' . $key . '/' . $id) ?>">
+                        <? $params = tooltip2(_("Portfolio-Vorlage an Gruppenmitglieder verteilen.")); ?>
+                        <? $params['style'] = 'cursor: pointer'; ?>
+                        <?= Icon::create('add', 'clickable')->asImg(20, $params) ?>
+                       </a>
+               
                   </td>
                 </tr>
               <?php endif; ?>
@@ -79,8 +87,9 @@
             </td>
             <td></td>
             <td style="text-align:center;">
-              <a onclick="deleteUserFromGroup('<?php echo $user; ?>', this);"><?php echo  Icon::create('trash', 'clickable', ['title' => sprintf(_('Nutzer aus Gruppe austragen'))]); ?></a>
-            </td>
+                <a href="<?= $controller->url_for(sprintf('showsupervisor/deleteUserFromGroup/%s/%s', $user, $id)) ?>">
+                    <?=Icon::create('trash', 'clickable', ['title' => sprintf(_('Nutzer aus Gruppe austragen'))])?>
+                </a>
           </tr>
         <?php endforeach; ?>
       </table>

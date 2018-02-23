@@ -45,7 +45,7 @@ class ShowController extends StudipController {
     public function before_filter(&$action, &$args)
     {
         parent::before_filter($action, $args);
-        $this->set_layout($GLOBALS['template_factory']->open('layouts/base.php'));
+        //$this->set_layout($GLOBALS['template_factory']->open('layouts/base.php'));
         PageLayout::setTitle('ePortfolio');
     }
 
@@ -98,9 +98,10 @@ class ShowController extends StudipController {
       $seminare = array();
 
       foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
-        if ($sem_type['name'] == 'Portfolio - Vorlage') {
+        if ($sem_type['name'] == 'ePortfolio-Vorlage') {
           $semId = $id;
         }
+        $semId = '106';
       }
 
       $db = DBManager::get();
@@ -150,12 +151,17 @@ class ShowController extends StudipController {
 
     }
 
+    public function createvorlage_action(){
+        
+    }
+    
     public function newvorlage_action(){
 
       foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
-        if ($sem_type['name'] == 'Portfolio - Vorlage') {
+        if ($sem_type['name'] == 'ePortfolio-Vorlage') {
           $sem_type_id = $id;
         }
+         $sem_type_id = '106';
       }
 
       $userid           = $GLOBALS["user"]->id; //get userid
@@ -186,8 +192,9 @@ class ShowController extends StudipController {
       $statement->execute(array(':sem_id'=> $sem_id, ':eportfolio_id'=> $eportfolio_id, ':userid'=> $userid)); //table eportfolio
       $query = "INSERT INTO eportfolio_user(user_id, Seminar_id, eportfolio_id, owner) VALUES (:userid, :Seminar_id , :eportfolio_id, 1)";
       $statement = $db->prepare($query);
-      $statement->execute(array(':Seminar_id'=> $Seminar_id, ':eportfolio_id'=> $eportfolio_id, ':userid'=> $userid)); //table eportfollio_user
+      $statement->execute(array(':Seminar_id'=> $sem_id, ':eportfolio_id'=> $eportfolio_id, ':userid'=> $userid)); //table eportfollio_user
 
+      $this->redirect("show");
     }
 
 }

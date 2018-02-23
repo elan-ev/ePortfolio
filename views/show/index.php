@@ -1,4 +1,4 @@
-<!-- Supervisor Button -->
+<? use Studip\LinkButton; ?>
 
 <?php if($linkId == 'noId'): ?>
 
@@ -75,8 +75,15 @@
         <?php endforeach; ?>
       </tbody>
     </table>
+        <a data-dialog="size=auto" href="<?= PluginEngine::getLink($this->plugin, array(), 'show/createvorlage') ?>">
+                    <? $params = tooltip2(_("Neue Vorlage erstellen")); ?>
+                    <? $params['style'] = 'cursor: pointer'; ?>
+                    <?= Icon::create('add', 'clickable')->asImg(20, $params) ?>
+        </a>
 
-      <?= \Studip\Button::create('Neue Vorlage erstellen', 'createVorlage', array('onclick' => 'newVorlagenModal()')); ?>
+      
+                
+                <?= \Studip\Button::create('Neue Vorlage erstellen', 'createVorlage', array('onclick' => 'newVorlagenModal()')); ?>
 
     <hr>
   </div>
@@ -279,6 +286,9 @@
         },
         success: function(data) {
           window.document.location.href = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/show');
+        },
+        error: function(data){
+            console.log(data);
         }
       });
     }
