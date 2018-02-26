@@ -194,7 +194,9 @@ class ShowController extends StudipController {
       $statement = $db->prepare($query);
       $statement->execute(array(':Seminar_id'=> $sem_id, ':eportfolio_id'=> $eportfolio_id, ':userid'=> $userid)); //table eportfollio_user
 
-      $this->redirect("show");
+      //$this->redirect("show");
+      $this->response->add_header('X-Dialog-Close', '1');
+      $this->render_nothing();
     }
 
 }

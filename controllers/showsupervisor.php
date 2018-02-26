@@ -27,11 +27,6 @@ class ShowsupervisorController extends StudipController {
 
         //userData for Modal
 
-        if($_GET["create"]){
-          Group::create($_POST["ownerid"], studip_utf8decode(strip_tags($_POST["name"])), studip_utf8decode(strip_tags($_POST["description"])));
-          exit();
-        }
-
         if($_POST["type"] == 'addTemp'){
           $this->addTempToDB();
           exit();
@@ -65,7 +60,7 @@ class ShowsupervisorController extends StudipController {
 
         $nav = new LinksWidget();
         $nav->setTitle(_('Supervisionsgrupppen'));
-        $groups = $this->getGroups($GLOBALS["user"]->id);
+        $groups = Group::getAllGroupsOfSupervisor($GLOBALS["user"]->id);
         foreach ($groups as $key) {
           $seminar = new Seminar($key);
           $name = $seminar->getName();
@@ -81,8 +76,8 @@ class ShowsupervisorController extends StudipController {
         $navcreate = new LinksWidget();
         $navcreate->setTitle('Navigation');
 
-        $attr = array("onclick"=>"modalneueGruppe()");
-        $navcreate->addLink("Neue Gruppe anlegen", "#", "", $attr);
+        $navcreate->addLink("Neue Gruppe anlegen", PluginEngine::getLink($this->plugin, array(), 'showsupervisor/creategroup') , "", array('data-dialog'=>"size=auto;reload-on-close"));
+ 
         $navcreate->addLink("Meine Portfolios", "show");
 
         $navSupervisorGroup = new LinksWidget();
@@ -99,7 +94,6 @@ class ShowsupervisorController extends StudipController {
     public function before_filter(&$action, &$args)
     {
         parent::before_filter($action, $args);
-        //$this->set_layout($GLOBALS['template_factory']->open('layouts/base.php'));
     }
 
     public function index_action()
@@ -142,20 +136,6 @@ class ShowsupervisorController extends StudipController {
       $statement = $db->prepare($query);
       $statement->execute(array(':cid'=> $cid));
       echo $statement->fetchAll()[0][0];
-
-    }
-
-    public function getGroups($id) {
-
-      $db = DBManager::get();
-      $query = "SELECT seminar_id FROM eportfolio_groups WHERE owner_id = :id";
-      $statement = $db->prepare($query);
-      $statement->execute(array(':id'=> $id));
-      $array = array();
-      foreach ($statement->fetchAll() as $key) {
-        array_push($array, $key[0]);
-      }
-      return $array;
 
     }
 
@@ -296,6 +276,18 @@ class ShowsupervisorController extends StudipController {
       }
     }
 
+    public function creategroup_action($master = NULL, $groupid = NULL){
+       
+        $this->ownerid = $GLOBALS["user"]->id;
+        if($_POST["create"]){
+          $group_id = Group::create($this->ownerid, studip_utf8decode(strip_tags($_POST["name"])), studip_utf8decode(strip_tags($_POST["beschreibung"])));
+          $this->response->add_header('X-Dialog-Close', '1');
+          $this->render_nothing();
+        }
+        
+    }
+    
+    
     public function createportfolio_action($master = NULL, $groupid = NULL){
 
       $this->semList = array();

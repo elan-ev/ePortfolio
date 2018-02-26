@@ -1,10 +1,12 @@
 
-<form data-dialog="size=auto;reload-on-close" action="<?= URLHelper::getLink("plugins.php/eportfolioplugin/show/newvorlage") ?>"
+<form data-dialog="size=auto;reload-on-close" action="<?= URLHelper::getLink("plugins.php/eportfolioplugin/showsupervisor/creategroup") ?>"
       method="post" enctype="multipart/form-data"
       <?= Request::isAjax() ? "data-dialog" : "" ?>>
     
-    <fieldset>
-        <legend><?= _("Neue Vorlage") ?></legend>
+      <input type="hidden" name="create" required="" value="1">
+
+      <fieldset>
+        <legend><?= _("Neue Gruppe erstellen") ?></legend>
         <label>
             <?= _("Name") ?>
             <input type="text" name="name" required="" class="size-l">
@@ -17,7 +19,7 @@
     
     
      <div data-dialog-button>
-        <?= \Studip\Button::create(_("Speichern"), 'newvorlage', array("data-dialog"=>"")) ?>
+        <?= \Studip\Button::create(_("Speichern"), array("data-dialog"=>"")) ?>
     </div>
 </form>
 

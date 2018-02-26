@@ -244,39 +244,6 @@
   </ul>
 </div>
 
-<!-- <div id="myModal" class="modal fade" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Neue Supervisionsgruppe erstellen</h4>
-      </div>
-      <div class="modal-body">
-
-        <form id="createGroupForm">
-
-          <label>
-            <span class="required">Name</span>
-            <input type="text" name="name" id="wizard-name" size="75" maxlength="254" value="" required="" aria-required="true" aria-invalid="true">
-          </label>
-
-        <label>
-          <span>Beschreibung</span>
-          <textarea name="description" id="wizard-description" cols="75" rows="4"></textarea>
-        </label>
-
-      </form>
-
-
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" onClick="createGroup();">Save changes</button>
-      </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
-
 <div id="userInfoModel" class="modal fade" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -312,30 +279,6 @@ if ( $('#table_templates').find("td").length === 0 ) {
     $('#wrapper_table_tamplates').css('display', 'none');
 }
 
-function createGroup(){
-  var name        = $('#wizard-name').val();
-  var description = $('#wizard-description').val();
-  var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/showsupervisor', {create:1});
-  console.log('<?php echo $ownerid; ?>');
-  $.ajax({
-    type: "POST",
-    url: url,
-    data: {
-      name: name,
-      description: description,
-      ownerid: "<?php echo $ownerid; ?>"
-    },
-    success: function(data) {
-      console.log(data);
-      // alert(data);
-      // var neu = $("#createGroupForm").serialize();
-      var id = data;
-      // console.log(id);
-      window.document.location.href = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/showsupervisor', {id: id});
-      //window.document.location.href = "/studip/portfolio/plugins.php/eportfolioplugin/showsupervisor?id="+id;
-    }
-  });
-}
 
 function addUserToGroup(item_id, item_name, item_firstname, item_userid){
   console.log(item_id[0]);
@@ -401,63 +344,6 @@ function createPortfolio(master){
   });
 }
 
-function exportPortfolio(master, targets){
-
-  //debug
-  //console.log(master);
-  //console.log(targets);
-
-  urlexport = STUDIP.URLHelper.getURL('plugins.php/courseware/exportportfolio', {cid: master}); //url export
-
-  $.ajax({
-    type: "GET",
-    url: urlexport,
-    success: function(exportData){
-      var path = exportData; //export data
-      console.log("###exportPath:");
-      console.log(path);
-
-      urlimport = STUDIP.URLHelper.getURL('plugins.php/courseware/importportfolio', {cid: 'e10c5a03a8248cbd14abab70f0655475'}); //url import
-
-      // $.ajax({
-      //     type: "POST",
-      //     url: urlimport,
-      //     data: {
-      //       master: master,
-      //       path: path,
-      //     },
-      //     success: function(importData){
-      //       console.log(importData);
-      //       //closeModal();
-      //       //location.reload();
-      //     }
-      //   });
-
-      targets.forEach(function(target) {
-
-        urlimport = STUDIP.URLHelper.getURL('plugins.php/courseware/importportfolio', {cid: target}); //url import
-
-        $.ajax({
-          type: "POST",
-          url: urlimport,
-          data: {
-            // xml: xml,
-            master: master,
-            target: target,
-            path: path,
-          },
-          success: function(importData){
-            console.log("###importData:");
-            console.log(importData);
-            closeModal();
-            //location.reload();
-          }
-        });
-      });
-
-    }
-  });
-}
 
 function loadingAnimation(){
   $('.content').empty().css({
@@ -536,45 +422,7 @@ function testfunction(){
   });
 }
 
-// function testfunctionbeta(){
-//
-//
-//   var url = STUDIP.URLHelper.getURL('plugins.php/courseware/export?cid=43ff6d96a50cf30836ef6b8d1ea60667');
-//
-//   $.ajax({
-//     type: "GET",
-//     url: '<?php echo URLHelper::getLink('plugins.php/courseware/exportportfolio', array('cid' => '43ff6d96a50cf30836ef6b8d1ea60667', 'uniqid' => uniqID())); ?>',
-//     success: function(exportData){
-//
-//       var urlMembers = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/showsupervisor');
-//       $.ajax({
-//         type: 'POST',
-//         url: urlMembers,
-//         data: {
-//           type: 'getGroupMember',
-//           id: '<?php echo $id; ?>'
-//         },
-//         success: function(members){
-//           members = JSON.parse(members);
-//           console.log(members);
-//         }
-//       });
-//
-//       // var xml = exportData;
-//       //
-//       // $.ajax({
-//       //   type: "POST",
-//       //   url: '<?php echo URLHelper::getLink('plugins.php/courseware/importportfolio', array('cid' => '4fa67ff89828d7c6926a0e23c04aa283', 'uniqid' => uniqID())); ?>',
-//       //   data: {xml: xml},
-//       //   success: function(importData){
-//       //     console.log(importData);
-//       //   }
-//       // });
-//
-//
-//     }
-//   });
-// }
+
 
 var unique = function(origArr) {
     var newArr = [],
@@ -634,60 +482,3 @@ function modalneueGruppe(){
 
 </script>
 
-<script id="modal-template" type="x-tmpl-mustache">
-   <div class="modaloverlay">
-      <div class="create-question-dialog ui-widget-content ui-dialog studip-confirmation">
-          <div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">
-              <span>{{titel}}</span>
-              <a onclick="closeModal();" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only ui-dialog-titlebar-close">
-                  <span class="ui-button-icon-primary ui-icon ui-icon-closethick"></span>
-                  <span class="ui-button-text">Schliessen</span>
-              </a>
-          </div>
-          <div class="content ui-widget-content ui-dialog-content studip-confirmation">
-              <div class="formatted-content">{{text}}</div>
-          </div>
-          <div class="buttons ui-widget-content ui-dialog-buttonpane">
-              <div class="ui-dialog-buttonset">
-                <a class="accept button" onclick="createPortfolio('{{id}}')">Ja</a>
-                <a class="cancel button" onclick="closeModal();">Nein</a>
-              </div>
-          </div>
-      </div>
-  </div>
-</script>
-
-<script id="modal-template-neueGruppe" type="x-tmpl-mustache">
-   <div class="modaloverlay">
-      <div class="create-question-dialog ui-widget-content ui-dialog studip-confirmation">
-          <div style="background-color: #28497c;" class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">
-              <span style="color:#fff;">{{titel}}</span>
-              <a style="color:#fff;" onclick="closeModal();" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only ui-dialog-titlebar-close">
-                  <span class="ui-button-icon-primary ui-icon ui-icon-closethick"></span>
-                  <span class="ui-button-text">Schliessen</span>
-              </a>
-          </div>
-          <div style="background:none;padding: 10px;" class="content ui-widget-content ui-dialog-content studip-confirmation">
-              <div class="formatted-content">{{text}}</div>
-              <form id="createGroupForm">
-
-                <label>
-                  <span class="required">Name</span>
-                  <input style="width: 100%;" type="text" name="name" id="wizard-name" maxlength="254" value="" required="" aria-required="true" aria-invalid="true">
-                </label>
-
-              <label>
-                <span>Beschreibung</span>
-                <textarea style="width: 100%;" name="description" id="wizard-description" cols="75" rows="4"></textarea>
-              </label>
-
-            </form>
-          </div>
-          <div class="buttons ui-widget-content ui-dialog-buttonpane">
-              <div class="ui-dialog-buttonset">
-                <a class="button" onclick="createGroup();">Erstellen</a>
-              </div>
-          </div>
-      </div>
-  </div>
-</script>

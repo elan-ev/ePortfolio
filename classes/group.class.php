@@ -31,13 +31,14 @@ class Group{
   public static function create($owner, $title, $text){
     $course = new Seminar();
     $id = $course->getId();
-    $course->name = 'Unbekannt';
+    $course->name = $title;
     $course->store();
     $course->addMember($owner, 'dozent', true);
 
+    //was machen die folgenden vier Zeilen?
     $edit = new Course($id);
     $edit->visible = 0;
-    $edit->name = 'Unbekannt';
+    $edit->name = $title;
     $edit->store();
     $sem_class = Config::get()->getValue('SEM_CLASS_PORTFOLIO_Supervisionsgruppe');
 
@@ -50,7 +51,7 @@ class Group{
     $statement = $db->prepare($query);
     $statement->execute(array(':id'=> $id, ':owner'=> $owner));
 
-    echo $id;
+    return $id;
   }
 
   public static function deleteUser($userId, $seminar_id){
@@ -79,6 +80,17 @@ class Group{
     $statement = DBManager::get()->prepare($query);
     $statement->execute(array(':user_id'=> $userId));
     return $statement->fetchAll();
+  }
+  
+  public static function getAllGroupsOfSupervisor($userId){
+      $query = "SELECT seminar_id FROM eportfolio_groups WHERE owner_id = :id";
+      $statement = DBManager::get()->prepare($query);
+      $statement->execute(array(':id'=> $userId));
+      $array = array();
+      foreach ($statement->fetchAll() as $key) {
+        array_push($array, $key[0]);
+      }
+      return $array;
   }
 
   public function getGroupId(){
