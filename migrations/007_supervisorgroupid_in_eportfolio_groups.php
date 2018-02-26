@@ -2,16 +2,16 @@
 
 require __DIR__.'/../vendor/autoload.php';
 
-class GroupidInEportfolios extends Migration
+class SupervisorgroupidInEportfolioGroups extends Migration
 {
     public function description () {
-        return 'add groupid column';
+        return 'add Supervisorgroupid column';
     }
 
 
     public function up () {
         $db = DBManager::get();
-        $db->exec("ALTER TABLE eportfolio ADD COLUMN group_id varchar(32) NOT NULL");
+        $db->exec("ALTER TABLE eportfolio_groups ADD COLUMN supervisor_group_id varchar(32) NOT NULL");
         
         
         SimpleORMap::expireTableScheme();
