@@ -129,7 +129,7 @@
                       echo $supervisor[Vorname].' '.$supervisor[Nachname];
                    ?>
                 </td>
-                <?php 
+                <?php
                 $query = "SELECT Seminar_id FROM eportfolio WHERE owner_id = :key AND template_id = :tempid AND group_id = :groupid";
                 $statement = DBManager::get()->prepare($query);
                 $statement->execute(array(':key'=> $key, ':tempid'=> $tempid, ':groupid'=> $groupid));
@@ -327,6 +327,8 @@ function addTemp(){
 
 function createPortfolio(master){
   // exportPortfolio(master);
+  console.log("createPortfolio");
+  console.log("<?php echo $id ?>");
   var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/showsupervisor/createportfolio');
   loadingAnimation();
   $.ajax({
@@ -337,7 +339,6 @@ function createPortfolio(master){
       master: master
     },
     success: function(data){
-      //console.log(data);
       targets = JSON.parse(data);
       exportPortfolio(master, targets);
     }

@@ -77,7 +77,7 @@ $workingArray = json_encode($workingArray);
     background-color: #e7ebf1;
     padding: 6px 10px 0;
     margin-bottom: 20px;
-    margin-right: 100px; 
+    margin-right: 100px;
   }
 
   .viewer_icon {

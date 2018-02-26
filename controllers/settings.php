@@ -31,20 +31,6 @@ class settingsController extends StudipController {
         exit();
       }
 
-      # Aktuelle Seite
-      $seminar = new Seminar($_GET["cid"]);
-      PageLayout::setTitle('ePortfolio - Zugriffsrechte: '.$seminar->getName());
-
-      //autonavigation
-      Navigation::activateItem("course/settings");
-
-      $sidebar = Sidebar::Get();
-      $sidebar->setTitle('Navigation');
-
-      $views = new ViewsWidget();
-      $views->setTitle('Rechte');
-      $views->addLink(_('Rechteverwaltung'), '#')->setActive(true);
-      Sidebar::get()->addWidget($views);
   }
 
   public function before_filter(&$action, &$args)
@@ -60,6 +46,21 @@ class settingsController extends StudipController {
     $cid = $_GET["cid"];
     $db = DBManager::get();
     $this->cid = $cid;
+
+    # Aktuelle Seite
+    $seminar = new Seminar($_GET["cid"]);
+    PageLayout::setTitle('ePortfolio - Zugriffsrechte: '.$seminar->getName());
+
+    //autonavigation
+    Navigation::activateItem("course/settings");
+
+    $sidebar = Sidebar::Get();
+    $sidebar->setTitle('Navigation');
+
+    $views = new ViewsWidget();
+    $views->setTitle('Rechte');
+    $views->addLink(_('Rechteverwaltung'), '#')->setActive(true);
+    Sidebar::get()->addWidget($views);
 
     # Überprüft ob Besitzer der Veranstaltung
     // if (!$this->checkIfOwner($userId, $cid) == true) {
@@ -211,7 +212,7 @@ class settingsController extends StudipController {
       $query = "INSERT INTO seminar_user (seminar_id, user_id, status, visible) VALUES (:cid, :viewerId, 'autor', 1)";
       $statement = $db->prepare($query);
       $statement->execute(array(':viewerId'=> $viewerId, ':cid'=> $cid));
-      
+
       $query = "INSERT INTO eportfolio_user (user_id, Seminar_id, eportfolio_id, status, eportfolio_access, owner) VALUES (:viewerId, :cid, :eportfolio_id, 'autor', :json, 0)";
       $statement = $db->prepare($query);
       $statement->execute(array(':viewerId'=> $viewerId, ':cid'=> $cid, ':eportfolio_id'=> $eportfolio_id, ':json'=> $json));
@@ -285,7 +286,7 @@ class settingsController extends StudipController {
     $statement->execute(array(':id'=> $id, ':sid'=> $sid, ':pushArray' => $pushArray));
   }
 
-  public function getSupervisorOfPortfolio($id){
+  public function getSupervisorGroupOfPortfolio($id){
     $db = DBManager::get();
     $query = "SELECT supervisor_id FROM eportfolio WHERE seminar_id = :id";
     $statement = $db->prepare($query);

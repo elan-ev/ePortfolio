@@ -19,7 +19,7 @@ class ShowController extends StudipController {
             $this->linkId = '';
           }
         }
-        
+
         $user = get_username();
 
         $sidebar = Sidebar::Get();
@@ -132,7 +132,7 @@ class ShowController extends StudipController {
       $statement = $db->prepare($query);
       $statement->execute(array(':cid'=> $cid));
       $ownerid = $statement->fetchAll()[0]["owner_id"];
-      
+
       $query = "SELECT * FROM auth_user_md5 WHERE user_id = :ownerid";
       $statement = $db->prepare($query);
       $statement->execute(array(':ownerid'=> $ownerid));

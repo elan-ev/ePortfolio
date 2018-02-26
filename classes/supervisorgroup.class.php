@@ -31,7 +31,7 @@ class Supervisorgroup{
     $query = "SELECT name FROM supervisor_group WHERE id = :id";
     $statement = $db->prepare($query);
     $statement->execute(array(':id'=> $this->supervisorgroupId));
-    
+
     return $statement->fetchAll()[0][name];
   }
 
@@ -48,6 +48,18 @@ class Supervisorgroup{
     $query = "INSERT INTO supervisor_group_user (supervisor_group_id, user_id) VALUES (:id, :userId)";
     $statement = $db->prepare($query);
     $statement->execute(array(':id'=> $this->supervisorgroupId, ':userId' => $userId));
+  }
+
+  public static function isUserInGroup($userId){
+    $db = DBManager::get();
+    $query = "SELECT * FROM supervisor_group_user WHERE user_id = :user_id AND supervisor_group_id = :id";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':id'=> $this->supervisorgroupId, ':user_id' => $userId));
+    if($statement->fetchAll()[0][0] == null) {
+      return false;
+    } else {
+      return true;
+    }
   }
 
   public function deleteUser($userId){

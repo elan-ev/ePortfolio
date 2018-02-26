@@ -70,7 +70,8 @@ class ShowsupervisorController extends StudipController {
             $attr = array('class' => '');
           }
 
-          $nav->addLink($name, "showsupervisor?id=".$key, null, $attr);
+          $navGroupURL = URLHelper::getLink("plugins.php/eportfolioplugin/showsupervisor", array('id' => $key));
+          $nav->addLink($name, $navGroupURL);
         }
 
         $navcreate = new LinksWidget();
@@ -82,7 +83,7 @@ class ShowsupervisorController extends StudipController {
 
         $navSupervisorGroup = new LinksWidget();
         $navSupervisorGroup->setTitle("Supervisorengruppen");
-        $navSupervisorGroupURL = URLHelper::getLink("plugins.php/eportfolioplugin/supervisorgroup");
+        $navSupervisorGroupURL = URLHelper::getLink("plugins.php/eportfolioplugin/showsupervisor/supervisorgroup", array('id' => $id));
         $navSupervisorGroup->addLink("Verwalten", $navSupervisorGroupURL);
 
         $sidebar->addWidget($nav);
@@ -298,6 +299,8 @@ class ShowsupervisorController extends StudipController {
       $groupowner = Group::getOwner($groupid);
       $groupname  = new Seminar($groupid);
 
+      $supervisorgroupid = Group::getSupervisorGroupId($groupid);
+
       $db = DBManager::get();
       $query = "SELECT templates FROM eportfolio_groups WHERE seminar_id = :groupid";
       $statement = $db->prepare($query);
@@ -305,7 +308,7 @@ class ShowsupervisorController extends StudipController {
       $groups = $statement->fetchAll()[0][0];
       $groupHasTemplates = json_decode($groups);
 
-      //wenn bereits Vorlagen an diese Gruppe verteilt wurden, verwende die zugehörigen Portfolios um die weiteren Vorlagen hinzuzufügen
+      //wenn bereits Vorlagen an diese Gruppe verteilt wurden, verwende die zugehï¿½rigen Portfolios um die weiteren Vorlagen hinzuzufï¿½gen
       if (count($groupHasTemplates) >= 1) {
         foreach ($member as $key => $value) {
           $query = "SELECT Seminar_id FROM eportfolio WHERE group_id = :groupid AND owner_id = :value";
@@ -317,7 +320,7 @@ class ShowsupervisorController extends StudipController {
         }
 
       } else {
-        //Falls noch keine Vorlagen verteilt wurden erhält jeder Nutzer ein eigenes ePortfolio
+        //Falls noch keine Vorlagen verteilt wurden erhï¿½lt jeder Nutzer ein eigenes ePortfolio
         $master = new Seminar($masterid);
         $sem_type_id = $this->getPortfolioSemId();
 
@@ -361,14 +364,14 @@ class ShowsupervisorController extends StudipController {
             
             
             create_folder(_('Allgemeiner Dateiordner'),
-                          _('Ablage für allgemeine Ordner und Dokumente der Veranstaltung'),
+                          _('Ablage fï¿½r allgemeine Ordner und Dokumente der Veranstaltung'),
                           $sem->Seminar_id,
                           7,
                           $sem->Seminar_id);
         }
 
       }
-      //ids der Studentenportfolios speichern, damit zukünftige weitere Vorlagen dort angehängt werden
+      //ids der Studentenportfolios speichern, damit zukï¿½nftige weitere Vorlagen dort angehï¿½ngt werden
       $this->storeTemplateForGroup($groupid, $masterid);
       
       
@@ -557,17 +560,17 @@ class ShowsupervisorController extends StudipController {
       $statement->execute(array(':id'=> $id));
       $supervisorNotiz = $statement->fetchAll();
       foreach ($supervisorNotiz[0] as $key => $value) {
-        $query = "SELECT id FROM mooc_blocks WHERE parent_id = :value";  
+        $query = "SELECT id FROM mooc_blocks WHERE parent_id = :value";
         $statement = $db->prepare($query);
         $statement->execute(array(':value'=> $value));
         $supervisorNotizSubchapter = $statement->fetchAll();
         foreach ($supervisorNotizSubchapter[0] as $keySub => $valueSub) {
-          $query = "SELECT id FROM mooc_blocks WHERE parent_id = :valueSub AND type ='PortfolioBlockSupervisor' ";  
+          $query = "SELECT id FROM mooc_blocks WHERE parent_id = :valueSub AND type ='PortfolioBlockSupervisor' ";
           $statement = $db->prepare($query);
           $statement->execute(array(':valueSub'=> $valueSub));
           $supervisorNotizSubchapterBlock = $statement->fetchAll();
           foreach ($supervisorNotizSubchapterBlock as $keyBlock => $valueBlock) {
-            $query = "SELECT json_data FROM mooc_fields WHERE block_id = :block_id AND name = 'supervisorcontent'";  
+            $query = "SELECT json_data FROM mooc_fields WHERE block_id = :block_id AND name = 'supervisorcontent'";
             $statement = $db->prepare($query);
             $statement->execute(array(':block_id'=> $valueBlock[id]));
             $supervisorFeedback = $statement->fetchAll();
@@ -590,18 +593,18 @@ class ShowsupervisorController extends StudipController {
 
       # get eportfolio id's
       $db = DBManager::get();
-      $query = "SELECT eportfolio_id, Seminar_id FROM eportfolio WHERE group_id = :id"; 
+      $query = "SELECT eportfolio_id, Seminar_id FROM eportfolio WHERE group_id = :id";
       $statement = $db->prepare($query);
       $statement->execute(array(':id'=> $id));
       $eportfolio = $statement->fetchAll();
 
       # eportfolio_groups
-      $query = "DELETE FROM eportfolio_groups WHERE seminar_id = :id";  
+      $query = "DELETE FROM eportfolio_groups WHERE seminar_id = :id";
       $statement = $db->prepare($query);
       $statement->execute(array(':id'=> $id));
 
       # eportfolio_groups_user
-      $query = "DELETE FROM eportfolio_groups_user WHERE seminar_id = :id";  
+      $query = "DELETE FROM eportfolio_groups_user WHERE seminar_id = :id";
       $statement = $db->prepare($query);
       $statement->execute(array(':id'=> $id));
 
@@ -611,7 +614,7 @@ class ShowsupervisorController extends StudipController {
         $Seminar_id = $key['Seminar_id'];
 
         # eportfolio_user
-        $query = "DELETE FROM eportfolio_user WHERE eportfolio_id = :eportfolio_id";  
+        $query = "DELETE FROM eportfolio_user WHERE eportfolio_id = :eportfolio_id";
         $statement = $db->prepare($query);
         $statement->execute(array(':eportfolio_id'=> $eportfolio_id));
 
@@ -621,7 +624,7 @@ class ShowsupervisorController extends StudipController {
       }
 
       # eportfolio
-      $query = "DELETE FROM eportfolio WHERE group_id = :id";  
+      $query = "DELETE FROM eportfolio WHERE group_id = :id";
       $statement = $db->prepare($query);
       $statement->execute(array(':id'=> $id));
 
@@ -630,6 +633,29 @@ class ShowsupervisorController extends StudipController {
     public function deleteUserFromGroup_action($id, $group_id){
         Group::deleteUser($id, $group_id);
         $this->redirect('showsupervisor?id=' . $group_id);
+    }
+
+    public function supervisorgroup_action(){
+      $groupId = $_GET['id'];
+      $sem = new Seminar($groupId);
+      $this->groupName = $sem->getName();
+
+      $supervisorgroupid = Group::getSupervisorGroupId($groupId);
+
+      $group = new Supervisorgroup($supervisorgroupid);
+      $this->title = $group->getName();
+      $this->groupId = $group->getId();
+      $this->linkId = $this->id;
+
+      $this->mp = MultiPersonSearch::get('supervisorgroupSelectUsers')
+        ->setLinkText(_('Supervisoren hinzufï¿½gen'))
+        ->setTitle(_('Personen zur Supervisorgruppe hinzufï¿½gen'))
+        ->setSearchObject(new StandardSearch('user_id'))
+        ->setJSFunctionOnSubmit()
+        ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/supervisorgroup/addUser', array('id' => $group->getId(), 'redirect' => $this->id)))
+        ->render();
+
+      $this->usersOfGroup = $group->getUsersOfGroup();
     }
 
 }
