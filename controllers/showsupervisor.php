@@ -298,7 +298,7 @@ class ShowsupervisorController extends StudipController {
 
     public function createportfolio_action($master = NULL, $groupid = NULL){
 
-      $this->flash['semList'] = array();
+      $this->semList = array();
       $masterid = $_POST['master'] ? $_POST['master'] : $master;
       $groupid = $_POST['groupid'] ? $_POST['groupid'] : $groupid;
 
@@ -311,20 +311,17 @@ class ShowsupervisorController extends StudipController {
       $statement = $db->prepare($query);
       $statement->execute(array(':groupid'=> $groupid));
       $groups = $statement->fetchAll()[0][0];
-      $groupHasTemplates = json_decode('{'.$groups. ']');
-      //var_dump('masterid: ' . $masterid . ' groupid: ' . $groupid . ' groupHasTemplates ' .$groups);
+      $groupHasTemplates = json_decode($groups);
 
       //wenn bereits Vorlagen an diese Gruppe verteilt wurden, verwende die zugehörigen Portfolios um die weiteren Vorlagen hinzuzufügen
       if (count($groupHasTemplates) >= 1) {
-
         foreach ($member as $key => $value) {
           $query = "SELECT Seminar_id FROM eportfolio WHERE group_id = :groupid AND owner_id = :value";
           $statement = $db->prepare($query);
           $statement->execute(array(':groupid'=> $groupid, ':value'=> $value));
           $seminarGroupId = $statement->fetchAll(PDO::FETCH_ASSOC);
           $seminarGroupId = $seminarGroupId[0]['Seminar_id'];
-          //var_dump($seminarGroupId);
-          array_push($this->flash['semList'], $seminarGroupId);
+          array_push($this->semList, $seminarGroupId);
         }
 
       } else {
@@ -359,7 +356,7 @@ class ShowsupervisorController extends StudipController {
 
             $sem->store(); //save sem
 
-            array_push($this->flash['semList'], $sem->Seminar_id);
+            array_push($this->semList, $sem->Seminar_id);
 
             $eportfolio = new Seminar();
             $eportfolio_id = $eportfolio->createId();
@@ -379,36 +376,13 @@ class ShowsupervisorController extends StudipController {
         }
 
       }
-
-      $this->storeTemplateForGroup($_POST['groupid'], $_POST['master']);
+      //ids der Studentenportfolios speichern, damit zukünftige weitere Vorlagen dort angehängt werden
+      $this->storeTemplateForGroup($groupid, $masterid);
+      
+      
       $this->masterid = $masterid;
       $this->groupid = $groupid;
       
-    }
-    
-    public function distributePortfolioContents_action($path = NULL){
-
-     //ausgewählte Vorlage exportieren und temporären Speicherort merken
-      //$urlexport = URLHelper::getLink('plugins.php/courseware/exportportfolio?cid='. $masterid); //url export
-      $this->path = $GLOBALS['PORTFOLIO_UPLOAD_PATH'];//path;
-      $this->studentportfolios = array();
-      
-      foreach($this->flash['semList'] as $sem){
-        $this->studentportfolios[]['id'] = $sem;
-        //$url_import = 'localhost/studip3.5/public/plugins.php/courseware/importportfolio?cid='. $sem; //url import
-        
-      } 
-      
-
-    
-      //semlist in DB schreiben
-      //$query = "INSERT INTO eportfolio_groups(templates) VALUES (:userid, :Seminar_id , :eportfolio_id, 1)";
-      //      $statement = $db->prepare($query);
-      //      $statement->execute(array(':Seminar_id'=> $sem_id, ':eportfolio_id'=> $eportfolio_id, ':userid'=> $userid));
-      //
- 
-        //$this->redirect('/showsupervisor');
-        
     }
 
     public function getPortfolioSemId(){
