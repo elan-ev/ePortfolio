@@ -44,7 +44,7 @@
                   <td style="text-align: center;">
                       
                       <a href="<?php echo URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $key)); ?>"><?php echo Icon::create('edit', 'clickable', ['title' => sprintf(_('Portfolio-Vorlage bearbeiten.'))]) ?></a>
-                       <a data-dialog="size=auto" href="<?= PluginEngine::getLink($this->plugin, array(), 'showsupervisor/createportfolio/' . $key . '/' . $id) ?>">
+                       <a data-dialog="size=auto;reload-on-close" href="<?= PluginEngine::getLink($this->plugin, array(), 'showsupervisor/createportfolio/' . $key . '/' . $id) ?>">
                         <? $params = tooltip2(_("Portfolio-Vorlage an Gruppenmitglieder verteilen.")); ?>
                         <? $params['style'] = 'cursor: pointer'; ?>
                         <?= Icon::create('add', 'clickable')->asImg(20, $params) ?>
@@ -228,7 +228,7 @@
     ->render();
  ?>
 
-<?php if (empty($groupTemplates)):?>
+<?php if (true || empty($groupTemplates)):?>
    <a href="<?php echo URLHelper::getLink('dispatch.php/multipersonsearch/js_form/eindeutige_id'); ?>" class="multi_person_search_link" data-dialog="width=720;height=460;id=mp-search" data-dialogname="eindeutige_id" title="Personen zur Gruppe hinzufügen" data-js-form="<?php echo URLHelper::getLink('dispatch.php/multipersonsearch/js_form/eindeutige_id'); ?>">
      <?= \Studip\Button::create('Personen hinzufügen', 'klickMichButton', array('data-dialogname' => 'eindeutige_id', 'data-js-form' => URLHelper::getLink('dispatch.php/multipersonsearch/js_form/eindeutige_id'))); ?>
    </a>
@@ -244,26 +244,7 @@
   </ul>
 </div>
 
-<div id="userInfoModel" class="modal fade" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title"></h4>
-      </div>
-      <div class="modal-body">
 
-        <div id="dataOutputer">
-
-        </div>
-
-
-      </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
-
-<div class="modal-area"></div>
 
 <script type="text/javascript">
 
@@ -325,36 +306,6 @@ function addTemp(){
   });
 }
 
-function createPortfolio(master){
-  // exportPortfolio(master);
-  console.log("createPortfolio");
-  console.log("<?php echo $id ?>");
-  var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/showsupervisor/createportfolio');
-  loadingAnimation();
-  $.ajax({
-    type: "POST",
-    url: url,
-    data: {
-      groupid: '<?php echo $id ?>',
-      master: master
-    },
-    success: function(data){
-      targets = JSON.parse(data);
-      exportPortfolio(master, targets);
-    }
-  });
-}
-
-
-function loadingAnimation(){
-  $('.content').empty().css({
-    'background': 'none',
-    'text-align': 'center',
-    'padding': '20px 0',
-  }).append('<i style="color: #24437c;" class="fa fa-circle-o-notch fa-3x fa-spin fa-fw"></i>');
-  $('.ui-dialog-buttonpane').remove();
-  $('.ui-dialog-titlebar-close').css('display', 'none');
-}
 
 function deleteUserFromGroup(userid, obj) {
   var deleteThis    = $(obj).parents('tr');
@@ -463,23 +414,12 @@ function defaultImg(img) { //setzt default Profilbild falls keins vorhanden
   img.src = "<?php echo $GLOBALS[DYNAMIC_CONTENT_URL]; ?>/user/nobody_small.png";
 }
 
-function triggerModalCreate(id){
-  var template = $('#modal-template').html();
-  Mustache.parse(template);   // optional, speeds up future uses
-  var rendered = Mustache.render(template, {id: id, titel: "Template verteilen", text: "Wollen Sie dieses Template wirklich an die aktuellen Gruppenmitglieder verteilen?"});
-  $('.modal-area').html(rendered);
-}
 
 function closeModal(){
   $('.modal-area').empty();
 }
 
-function modalneueGruppe(){
-  var template = $('#modal-template-neueGruppe').html();
-  Mustache.parse(template);   // optional, speeds up future uses
-  var rendered = Mustache.render(template, {titel: 'Neue Gruppe erstellen'});
-  $('.modal-area').html(rendered);
-}
+
 
 </script>
 

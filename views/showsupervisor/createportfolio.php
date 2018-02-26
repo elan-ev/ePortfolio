@@ -1,7 +1,13 @@
-
-<div data-dialog-button>
-    <?= \Studip\Button::create(_("Vorlage verteilen"), 'newvorlage', array('onclick' => "exportPortfolio('$masterid')", "data-dialog"=>"close")) ?>
+<form data-dialog="size=auto;reload-on-close" action="<?= URLHelper::getLink("plugins.php/eportfolioplugin/showsupervisor/distributeportfolios") ?>"
+      method="post" enctype="multipart/form-data"
+      <?= Request::isAjax() ? "data-dialog" : "" ?>>
+    
+    
+     <div data-dialog-button>
+    <?= \Studip\Button::create(_("Vorlage verteilen"), 'newvorlage', array('onclick' => "exportPortfolio('$masterid')", "data-dialog"=>"")) ?>
 </div>
+</form>
+
 
 
 <script>

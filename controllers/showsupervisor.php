@@ -364,7 +364,7 @@ class ShowsupervisorController extends StudipController {
             
             
             create_folder(_('Allgemeiner Dateiordner'),
-                          _('Ablage fï¿½r allgemeine Ordner und Dokumente der Veranstaltung'),
+                          _('Ablage für allgemeine Ordner und Dokumente der Veranstaltung'),
                           $sem->Seminar_id,
                           7,
                           $sem->Seminar_id);
@@ -377,7 +377,13 @@ class ShowsupervisorController extends StudipController {
       
       $this->masterid = $masterid;
       $this->groupid = $groupid;
+      //$this->response->add_header('X-Dialog-Close', '1');
       
+    }
+    
+    public function distributeportfolios_action(){
+        $this->response->add_header('X-Dialog-Close', '1');
+        $this->render_nothing();
     }
 
     public function getPortfolioSemId(){
