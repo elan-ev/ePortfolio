@@ -71,7 +71,7 @@ class ShowsupervisorController extends StudipController {
           }
 
           $navGroupURL = URLHelper::getLink("plugins.php/eportfolioplugin/showsupervisor", array('id' => $key));
-          $nav->addLink($name, $navGroupURL);
+          $nav->addLink($name, $navGroupURL, null, $attr);
         }
 
         $navcreate = new LinksWidget();
