@@ -99,18 +99,18 @@
     <?php else: ?>
 
     <!-- Nav tabs -->
-    <ul class="nav nav-tabs" role="tablist">
+    <div id="tabs">
+    <ul>
       <?php foreach ($templistid as $key => $value): ?>
         <?php $template = new Seminar($value);?>
-        <li role="presentation"><a href="#<?php echo $value; ?>" aria-controls="<?php echo $value; ?>" role="tab" data-toggle="tab"><?php echo $template->getName(); ?></a></li>
+        <li><a href="#tabs-<?= $value; ?>"><?= $template->getName(); ?></a></li>
       <?php endforeach; ?>
     </ul>
     <!-- Tab panes -->
 
-    <div class="tab-content">
       <?php foreach ($templistid as $key => $value): ?>
         <?php $tempid = $value ?>
-        <div role="tabpanel" class="tab-pane" id="<?php echo $value; ?>">
+        <div id="tabs-<?= $value; ?>">
           <table class="default">
             <tr>
               <th style="width: 200px;border-bottom: 1px solid;">Name</th>
@@ -299,6 +299,11 @@
 <div class="modal-area"></div>
 
 <script type="text/javascript">
+
+$( function() {
+    $( "#tabs" ).tabs();
+} );
+    
 $('#myModal').on('shown.bs.modal', function () {
 $('#myInput').focus()
 })
