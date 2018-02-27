@@ -1,15 +1,5 @@
 <? use Studip\LinkButton; ?>
 
-<?php if($linkId == 'noId'): ?>
-
-  <script type="text/javascript">
-  //$('.helpbar-container').prepend('<div class="supervisor-btn"><a href="showsupervisor?id=<?php echo $linkId; ?>"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a></div>');
-  </script>
-
-<?php endif; ?>
-
-
-<!-- End Supervisor Button -->
 
 <div class="row">
 
@@ -92,7 +82,6 @@
   <div class="col-md-12">
 
     <?php ?>
-    <div class="alert alert-success createPortfolioBanner" role="alert">Portfolio <span id="createPortfolioName"></span> wurde erstellt</div>
 
     <table class="default">
       <caption>Meine Portfolios</caption>
@@ -124,7 +113,7 @@
           </tr>
         <?php endforeach; ?>
       </tbody>
-
+      
       <script type="text/javascript">
 
         function PortfolioHeadline(i) {
@@ -143,6 +132,11 @@
       </script>
 
     </table>
+     <a data-dialog="size=auto;reload-on-close" href="<?= PluginEngine::getLink($this->plugin, array(), 'show/createportfolio') ?>">
+                    <? $params = tooltip2(_("Neues Portfolio erstellen")); ?>
+                    <? $params['style'] = 'cursor: pointer'; ?>
+                    <?= Icon::create('add', 'clickable')->asImg(20, $params) ?>
+        </a>
   </div>
 </div>
 
@@ -183,104 +177,4 @@
   </div>
 </div>
 
-<div class="modal-area"></div>
 
-<!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Neues Portfolio erstellen</h4>
-      </div>
-      <div class="modal-body">
-        <!-- Input Form  -->
-
-        <form id="createForm" method="post">
-          <div class="form-group">
-            <label for="PortfolioName">Portfolio Name</label>
-            <input type="Text" class="form-control" id="PortfolioName" placeholder="Portfolio Name" name="name">
-          </div>
-          <div class="form-group">
-            <label for="Beschreibung">Beschreibung</label>
-            <input type="text" class="form-control" id="Beschreibung" placeholder="Beschreibung des Portfolios" name="text">
-          </div>
-
-          <!-- Error msg -->
-          <div class="alert alert-danger createPortfolioBanner" role="alert" id="createBannerAlert">Bitte füllen Sie alle Felder aus</div>
-
-          <?= \Studip\Button::create('Erstellen', 'Button', array('type' => 'submit')); ?>
-        </form>
-
-        <!-- Form Ende  -->
-      </div>
-    </div>
-  </div>
-</div>
-<script type="text/javascript" src="<?php echo URLHelper::getLink("plugins_packages/uos/EportfolioPlugin/assets/js/eportfolio.js"); ?>"></script>
-<script>
-
-  function updater() {
-    updatePortfolioTable();
-  }
-
-  function newPortfolioModal(){
-    var template = $('#modal-template-neuesPortfolio').html();
-    Mustache.parse(template);   // optional, speeds up future uses
-    var rendered = Mustache.render(template, {titel: 'Neues Portfolio erstellen'});
-    $('.modal-area').html(rendered);
-  }
-
-
-  function closeModal(){
-    $('.modal-area').empty();
-  }
-
-  //Trigger Modal
-  $('#myModal').on('shown.bs.modal', function () {
-    $('#myInput').focus()
-  })
-
-  <?php if($linkId == 'noId'): ?>
-    console.log("no supervisor");
-  <?php elseif ($linkId):?>
-    //$('.customLinkList1').append('<li><a href="showsupervisor?id=<?php echo $linkId; ?>">Supervisoransicht</a></li>');
-  <?php endif; ?>
-
-</script>
-
-<script id="modal-template-neuesPortfolio" type="x-tmpl-mustache">
-   <div class="modaloverlay">
-      <div class="create-question-dialog ui-widget-content ui-dialog studip-confirmation">
-          <div style="background-color: #28497c;" class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">
-              <span style="color:#fff;">{{titel}}</span>
-              <a style="color:#fff!important;" onclick="closeModal();" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only ui-dialog-titlebar-close">
-                  <span class="ui-button-icon-primary ui-icon ui-icon-closethick"></span>
-                  <span class="ui-button-text">Schliessen</span>
-              </a>
-          </div>
-          <div style="background:none;padding: 10px;" class="content ui-widget-content ui-dialog-content studip-confirmation">
-              <div class="formatted-content">{{text}}</div>
-              <form id="createGroupForm">
-
-                <label>
-                  <span class="required">Name</span>
-                  <input style="width: 100%;" type="text" name="name" id="wizard-name" maxlength="254" value="" required="" aria-required="true" aria-invalid="true">
-                </label>
-
-              <label>
-                <span>Beschreibung</span>
-                <textarea style="width: 100%;" name="description" id="wizard-description" cols="75" rows="4"></textarea>
-              </label>
-
-            </form>
-            <span class="error-log" style="color: red;margin: 10px 0;display: none;">Bitte alle Felder ausfüllen!</span>
-          </div>
-          <div class="buttons ui-widget-content ui-dialog-buttonpane">
-              <div class="ui-dialog-buttonset">
-                <a class="button" onclick="createNewPortfolio();">Erstellen</a>
-              </div>
-          </div>
-      </div>
-  </div>
-</script>

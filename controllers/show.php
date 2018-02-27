@@ -155,6 +155,10 @@ class ShowController extends StudipController {
         
     }
     
+    public function createportfolio_action(){
+        
+    }
+    
     public function newvorlage_action(){
 
       foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
