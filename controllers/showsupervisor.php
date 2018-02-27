@@ -365,7 +365,7 @@ class ShowsupervisorController extends StudipController {
             
             
             create_folder(_('Allgemeiner Dateiordner'),
-                          _('Ablage fï¿½r allgemeine Ordner und Dokumente der Veranstaltung'),
+                          _('Ablage für allgemeine Ordner und Dokumente der Veranstaltung'),
                           $sem->Seminar_id,
                           7,
                           $sem->Seminar_id);
@@ -645,8 +645,8 @@ class ShowsupervisorController extends StudipController {
         $this->redirect('showsupervisor?id=' . $group_id);
     }
 
-    public function supervisorgroup_action(){
-      $groupId = $_GET['id'];
+    public function supervisorgroup_action($groupId){
+      //$groupId = $_GET['id'];
       $sem = new Seminar($groupId);
       $this->groupName = $sem->getName();
 
@@ -655,14 +655,24 @@ class ShowsupervisorController extends StudipController {
       $group = new Supervisorgroup($supervisorgroupid);
       $this->title = $group->getName();
       $this->groupId = $group->getId();
-      $this->linkId = $this->id;
+      $this->linkId = $groupId;
 
+      $search_obj = new SQLSearch("SELECT auth_user_md5.user_id, CONCAT(auth_user_md5.nachname, ', ', auth_user_md5.vorname, ' (' , auth_user_md5.email, ')' ) as fullname, username, perms "
+                            . "FROM auth_user_md5 "
+                            . "WHERE (CONCAT(auth_user_md5.Vorname, \" \", auth_user_md5.Nachname) LIKE :input " 
+                            . "OR CONCAT(auth_user_md5.Nachname, \" \", auth_user_md5.Vorname) LIKE :input " 
+                            . "OR auth_user_md5.username LIKE :input)"
+                            . "AND auth_user_md5.user_id NOT IN "
+                            . "(SELECT supervisor_group_user.user_id FROM supervisor_group_user)  "
+                            . "ORDER BY Vorname, Nachname ",
+                _("Teilnehmer suchen"), "username");
+      
       $this->mp = MultiPersonSearch::get('supervisorgroupSelectUsers')
-        ->setLinkText(_('Supervisoren hinzufï¿½gen'))
-        ->setTitle(_('Personen zur Supervisorgruppe hinzufï¿½gen'))
-        ->setSearchObject(new StandardSearch('user_id'))
+        ->setLinkText(_('Supervisoren hinzufügen'))
+        ->setTitle(_('Personen zur Supervisorgruppe hinzufügen'))
+        ->setSearchObject($search_obj)
         ->setJSFunctionOnSubmit()
-        ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/supervisorgroup/addUser', array('id' => $group->getId(), 'redirect' => $this->id)))
+        ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/supervisorgroup/addUser', array('id' => $group->getId(), 'redirect' => $this->url_for('showsupervisor/supervisorgroup/'. $this->linkId))))
         ->render();
 
       $this->usersOfGroup = $group->getUsersOfGroup();
