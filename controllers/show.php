@@ -94,14 +94,14 @@ class ShowController extends StudipController {
 
     public function getTemplates(){
 
+      global $perm;
       $semId;
       $seminare = array();
 
       foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
         if ($sem_type['name'] == 'ePortfolio-Vorlage') {
           $semId = $id;
-        }
-        $semId = '106';
+        }   
       }
 
       $db = DBManager::get();
@@ -109,7 +109,9 @@ class ShowController extends StudipController {
       $statement = $db->prepare($query);
       $statement->execute(array(':semId'=> $semId));
       foreach ($statement->fetchAll() as $key) {
-        array_push($seminare, $key[Seminar_id]);
+        if($perm->have_studip_perm('autor', $semId)){
+            array_push($seminare, $key[Seminar_id]);
+        }
       }
 
       return $seminare;
