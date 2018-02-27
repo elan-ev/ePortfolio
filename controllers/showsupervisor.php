@@ -316,7 +316,8 @@ class ShowsupervisorController extends StudipController {
           $statement->execute(array(':groupid'=> $groupid, ':value'=> $value));
           $seminarGroupId = $statement->fetchAll(PDO::FETCH_ASSOC);
           $seminarGroupId = $seminarGroupId[0]['Seminar_id'];
-          array_push($this->semList, $seminarGroupId);
+          $user = new StudIPUser($value);
+          $this->semList[$user->surname] = $seminarGroupId;
         }
 
       } else {
@@ -351,7 +352,7 @@ class ShowsupervisorController extends StudipController {
 
             $sem->store(); //save sem
 
-            array_push($this->semList, $sem->Seminar_id);
+            $this->semList[$userid] = $sem->Seminar_id;
 
             $eportfolio = new Seminar();
             $eportfolio_id = $eportfolio->createId();

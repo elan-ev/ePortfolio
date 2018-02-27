@@ -2,8 +2,8 @@
 
 <input id='path' value=''/>
 <fieldset>
-<? foreach($semList as $sem):?>
-    <?= \Studip\Button::create(_("Vorlage verteilen für " . $sem), '', array('onclick' => "importPortfolio('$sem')", 'id' => $sem)) ?><br/>
+<? foreach($semList as $user => $sem):?>
+    <?= \Studip\Button::create(_("Vorlage verteilen für " . $user), '', array('onclick' => "importPortfolio('$sem')", 'id' => $sem)) ?><br/>
 
 
 <? endforeach ?>
