@@ -83,7 +83,7 @@ class ShowsupervisorController extends StudipController {
 
         $navSupervisorGroup = new LinksWidget();
         $navSupervisorGroup->setTitle("Supervisorengruppen");
-        $navSupervisorGroupURL = URLHelper::getLink("plugins.php/eportfolioplugin/showsupervisor/supervisorgroup", array('id' => $id));
+        $navSupervisorGroupURL = URLHelper::getLink("plugins.php/eportfolioplugin/showsupervisor/supervisorgroup/". $id);
         $navSupervisorGroup->addLink("Verwalten", $navSupervisorGroupURL);
 
         $sidebar->addWidget($nav);
@@ -365,7 +365,7 @@ class ShowsupervisorController extends StudipController {
             
             
             create_folder(_('Allgemeiner Dateiordner'),
-                          _('Ablage für allgemeine Ordner und Dokumente der Veranstaltung'),
+                          _('Ablage fï¿½r allgemeine Ordner und Dokumente der Veranstaltung'),
                           $sem->Seminar_id,
                           7,
                           $sem->Seminar_id);
