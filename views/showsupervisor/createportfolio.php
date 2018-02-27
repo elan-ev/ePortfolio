@@ -1,10 +1,20 @@
-<form data-dialog="size=auto;reload-on-close" action="<?= URLHelper::getLink("plugins.php/eportfolioplugin/showsupervisor/distributeportfolios") ?>"
+<?= \Studip\Button::create(_("Vorlage verteilen"), 'newvorlage', array('onclick' => "exportPortfolio('$masterid')")) ?>
+
+<input id='path' value=''/>
+<fieldset>
+<? foreach($semList as $sem):?>
+    <?= \Studip\Button::create(_("Vorlage verteilen für " . $sem), '', array('onclick' => "importPortfolio('$sem')", 'id' => $sem)) ?><br/>
+
+
+<? endforeach ?>
+</fieldset>
+
+<form data-dialog="size=auto;reload-on-close" action="<?= URLHelper::getLink("plugins.php/eportfolioplugin/showsupervisor/distributeportfolios/". $groupid . '/' . $masterid) ?>"
       method="post" enctype="multipart/form-data"
       <?= Request::isAjax() ? "data-dialog" : "" ?>>
-    
-    
-     <div data-dialog-button>
-    <?= \Studip\Button::create(_("Vorlage verteilen"), 'newvorlage', array('onclick' => "exportPortfolio('$masterid')", "data-dialog"=>"")) ?>
+
+<div data-dialog-button>
+    <?= \Studip\Button::create(_("Abschließen"), 'finish', array("data-dialog"=>"")) ?>
 </div>
 </form>
 
@@ -23,33 +33,37 @@ function exportPortfolio(master){
       var path = exportData; //export data
       console.log("###exportPath:");
       console.log(path);
-
-      urlimport = STUDIP.URLHelper.getURL('plugins.php/courseware/importportfolio', {cid: 'e10c5a03a8248cbd14abab70f0655475'}); //url import
-
-      targets = <?php echo json_encode($semList);?>;
-      targets.forEach(function(target) {
-
-        urlimport = STUDIP.URLHelper.getURL('plugins.php/courseware/importportfolio', {cid: target}); //url import
-
+      patharray = path.split(' ');
+      path = patharray[patharray.length-1]
+      $('#path').val(path);
+    },
+    error: function(data){
+        alert('Beim Export ist ein Fehler aufgetreten: ' + data);
+    }    
+  });
+}
+  
+function importPortfolio(target){
+    urlimport = STUDIP.URLHelper.getURL('plugins.php/courseware/importportfolio', {cid: target}); //url import
+    //$('#'+target).prop('disabled', true);
+    $('#'+target).hide();
         $.ajax({
           type: "POST",
           url: urlimport,
           data: {
-            // xml: xml,
-            master: master,
             target: target,
-            path: path,
+            path: $('#path').val(),
           },
           success: function(importData){
             console.log("###importData:");
             console.log(importData);
-            closeModal();
-            //location.reload();
-          }
+            $('#'+target).prop('disabled', true);
+            //window.location = "";
+          },
+          error: function(data){
+                alert('Beim Import ist ein Fehler aufgetreten: ' + data);
+          }  
         });
-      });
-
-    }
-  });
 }
+  
 </script>

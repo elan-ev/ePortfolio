@@ -370,9 +370,7 @@ class ShowsupervisorController extends StudipController {
                           $sem->Seminar_id);
         }
 
-      }
-      //ids der Studentenportfolios speichern, damit zuk�nftige weitere Vorlagen dort angeh�ngt werden
-      $this->storeTemplateForGroup($groupid, $masterid);
+      } 
       
       
       $this->masterid = $masterid;
@@ -381,7 +379,12 @@ class ShowsupervisorController extends StudipController {
       
     }
     
-    public function distributeportfolios_action(){
+    public function distributeportfolios_action($groupid, $master){
+        //speichern, welche Volagen bereits verteilt wurden
+        if($groupid && $master){
+            $this->storeTemplateForGroup($groupid, $master);
+        }
+      
         $this->response->add_header('X-Dialog-Close', '1');
         $this->render_nothing();
     }
@@ -664,4 +667,22 @@ class ShowsupervisorController extends StudipController {
       $this->usersOfGroup = $group->getUsersOfGroup();
     }
 
+    function url_for($to)
+    {
+        $args = func_get_args();
+
+        # find params
+        $params = array();
+        if (is_array(end($args))) {
+            $params = array_pop($args);
+        }
+
+        # urlencode all but the first argument
+        $args = array_map('urlencode', $args);
+        $args[0] = $to;
+
+        return PluginEngine::getURL($this->dispatcher->plugin, $params, join('/', $args));
+    } 
+    
+    
 }
