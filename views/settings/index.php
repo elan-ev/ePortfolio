@@ -63,8 +63,17 @@
  <?php foreach ($viewerList as $viewer):?>
    <tr>
      <td>
-       <img style="border-radius: 30px; width: 15px;" src="<?php echo $GLOBALS[DYNAMIC_CONTENT_URL];?>/user/<?php echo $viewer[viewer_id]; ?>_small.png" onError="defaultImg(this);">
-       <?php echo $viewer[Vorname].' '.$viewer[Nachname]; ?>
+       
+       <?php $userInfo = UserModel::getUser($viewer[viewer_id]);?>
+         <a href="<?= URLHelper::getLink('dispatch.php/profile?username=' . $userInfo['username']) ?>" >
+                        <?= Avatar::getAvatar($viewer[viewer_id], $userInfo['username'])->getImageTag(Avatar::SMALL,
+                                array('style' => 'margin-right: 5px;border-radius: 30px; width: 25px; border: 1px solid #28497c;', 'title' => htmlReady($userInfo['Vorname']." ".$userInfo['Nachname']))); ?>
+                        <?= htmlReady($userInfo['Vorname']." ".$userInfo['Nachname']) ?>         
+                    </a>
+       
+       
+       
+       
        <a onclick="deleteUserAccess('<?php echo $viewer[viewer_id] ?>', '<?php echo $cid ?>', this);">
           <?php echo Icon::create('trash', 'clickable') ?>
        </a>
@@ -163,29 +172,6 @@ $('div[data-color="'+color+'"] i').css('opacity', '1').attr('data-status', 'acti
   </div>
 </div>
 
-<!-- Modal Suche Viewer -->
-<div class="modal fade" id="addViewerModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Neue Zugriffsrechte vergeben</h4>
-      </div>
-      <div class="modal-body" id="modalDeleteBody">
-
-          <p>
-            <div class="input-group" style="margin-bottom:20px;">
-              <div class="input-group-addon"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></div>
-              <input type="text" class="form-control" id="inputSearchViewer" placeholder="Name der Person">
-            </div>
-
-            <div id="searchResultViewer"></div>
-
-          </p>
-      </div>
-    </div>
-  </div>
-</div>
 
 <script type="text/javascript" src="<?php echo $GLOBALS['ABSOLUTE_URI_STUDIP'] . 'plugins_packages/uos/EportfolioPlugin/assets/js/eportfolio.js'; ?>"></script>
 <script type="text/javascript">
