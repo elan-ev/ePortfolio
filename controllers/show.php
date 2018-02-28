@@ -109,7 +109,7 @@ class ShowController extends StudipController {
       $statement = $db->prepare($query);
       $statement->execute(array(':semId'=> $semId));
       foreach ($statement->fetchAll() as $key) {
-        if($perm->have_studip_perm('autor', $semId)){
+        if($perm->have_studip_perm('autor', $key[Seminar_id])){
             array_push($seminare, $key[Seminar_id]);
         }
       }
