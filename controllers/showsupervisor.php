@@ -209,7 +209,7 @@ class ShowsupervisorController extends StudipController {
 
     public function getChapters($id){
         $db = DBManager::get();
-        $query = "SELECT title, id FROM mooc_blocks WHERE seminar_id = :id AND type = 'Chapter'";
+        $query = "SELECT title, id FROM mooc_blocks WHERE seminar_id = :id AND type = 'Chapter' ORDER BY position ASC";
         $statement = $db->prepare($query);
         $statement->execute(array(':id'=> $id));
         return $statement->fetchAll();
@@ -308,7 +308,7 @@ class ShowsupervisorController extends StudipController {
       $groups = $statement->fetchAll()[0][0];
       $groupHasTemplates = json_decode($groups);
 
-      //wenn bereits Vorlagen an diese Gruppe verteilt wurden, verwende die zugehï¿½rigen Portfolios um die weiteren Vorlagen hinzuzufï¿½gen
+      //wenn bereits Vorlagen an diese Gruppe verteilt wurden, verwende die zugehörigen Portfolios um die weiteren Vorlagen hinzuzufügen
       if (count($groupHasTemplates) >= 1) {
         foreach ($member as $key => $value) {
           $query = "SELECT Seminar_id FROM eportfolio WHERE group_id = :groupid AND owner_id = :value";
@@ -352,7 +352,8 @@ class ShowsupervisorController extends StudipController {
 
             $sem->store(); //save sem
 
-            $this->semList[$userid] = $sem->Seminar_id;
+            $user = new StudIPUser($userid);
+            $this->semList[$user->surname] = $sem->Seminar_id;
 
             $eportfolio = new Seminar();
             $eportfolio_id = $eportfolio->createId();
@@ -362,7 +363,10 @@ class ShowsupervisorController extends StudipController {
             $query = "INSERT INTO eportfolio_user(user_id, Seminar_id, eportfolio_id, owner) VALUES (:userid, :Seminar_id , :eportfolio_id, 1)";
             $statement = $db->prepare($query);
             $statement->execute(array(':Seminar_id'=> $sem_id, ':eportfolio_id'=> $eportfolio_id, ':userid'=> $userid));
-            
+            //delete dummy courseware chapters //TODO funktionier noch nicht
+            $query = "DELETE FROM mooc_blocks WHERE seminar_id = :sem_id AND type NOT LIKE 'Courseware'";
+            $statement = $db->prepare($query);
+            $statement->execute(array(':sem_id'=> $sem_id));
             
             create_folder(_('Allgemeiner Dateiordner'),
                           _('Ablage für allgemeine Ordner und Dokumente der Veranstaltung'),
