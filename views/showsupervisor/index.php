@@ -108,6 +108,7 @@
     </ul>
     <!-- Tab panes -->
 
+    <!-- für alle verteilten Vorlagen: -->
       <?php foreach ($templistid as $key => $value): ?>
         <?php $tempid = $value ?>
         <div id="tabs-<?= $value; ?>">
@@ -115,11 +116,13 @@
             <tr>
               <th style="width: 200px;border-bottom: 1px solid;">Name</th>
               <?php
+                // hole die Kapitel der verteilten Vorlagen 
                 $q = ShowsupervisorController::getChapters($value);
                 foreach ($q as $key): ?>
-                  <th style="width: 100px; border-bottom: 1px solid;"><?php print_r($key[0]); ?></th>
+                  <th style="width: 100px; border-bottom: 1px solid;"><?php print_r($key['title']); ?></th>
               <?php endforeach; ?>
             </tr>
+            <!-- für alle Gruppenteilnehmer: -->
             <?php foreach ($groupList as $key):?>
               <tr>
                 <td style="text-align: left;">
@@ -130,6 +133,7 @@
                    ?>
                 </td>
                 <?php
+                // hole das zugehörige Portfolio des Teilnehmers
                 $query = "SELECT Seminar_id FROM eportfolio WHERE owner_id = :key AND template_id = :tempid AND group_id = :groupid";
                 $statement = DBManager::get()->prepare($query);
                 $statement->execute(array(':key'=> $key, ':tempid'=> $tempid, ':groupid'=> $groupid));
@@ -137,23 +141,20 @@
                 ?>
 
                 <?php
+                // wozu ist das hier??
                 $query = "SELECT templateStatus FROM eportfolio WHERE Seminar_id = :semid";
                 $statement = DBManager::get()->prepare($query);
                 $statement->execute(array(':semid'=> $getsemid));
                 $status = $statement->fetchAll()[0][0];
 
-              //  $q = DBManager::get()->query("SELECT title, id FROM mooc_blocks WHERE type = 'Chapter' AND seminar_id = '$getsemid'")->fetchAll();
-              //  $q = ShowsupervisorController::getChapters($tempid);
-              $query = "SELECT title, id FROM mooc_blocks WHERE seminar_id = :semid AND type = 'Chapter'";
-              $statement = DBManager::get()->prepare($query);
-              $statement->execute(array(':semid'=> $getsemid));
-              $q = $statement->fetchAll();
+                // hole alle Kapitel des Portfolios des Teilnemers
+                $q = ShowsupervisorController::getChapters($getsemid);
 
               //Übergangslösung Kapitel 1 & Kapitel 2 müssen noch entfernt werden
               //nset($q[0]);
               //unset($q[1]);
 
-                foreach ($q as $key => $value): ?>
+                foreach ($q as $value): ?>
 
                     <?php
                     $query = "SELECT freigaben_kapitel FROM eportfolio WHERE Seminar_id = :semid";
