@@ -663,7 +663,7 @@ class ShowsupervisorController extends StudipController {
                             . "OR CONCAT(auth_user_md5.Nachname, \" \", auth_user_md5.Vorname) LIKE :input " 
                             . "OR auth_user_md5.username LIKE :input)"
                             . "AND auth_user_md5.user_id NOT IN "
-                            . "(SELECT supervisor_group_user.user_id FROM supervisor_group_user)  "
+                            . "(SELECT supervisor_group_user.user_id FROM supervisor_group_user WHERE supervisor_group_user.supervisor_group_id = '". $supervisorgroupid ."')  "
                             . "ORDER BY Vorname, Nachname ",
                 _("Teilnehmer suchen"), "username");
       
