@@ -17,7 +17,7 @@
     
     
      <div data-dialog-button>
-        <?= \Studip\Button::create(_("Speichern"), '', array("data-dialog"=>"")) ?>
+        <?= \Studip\Button::create(_("Speichern"), '', array("data-dialog"=>"size=auto;reload-on-close")) ?>
     </div>
 </form>
 

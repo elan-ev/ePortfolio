@@ -57,8 +57,9 @@ class CreateController extends StudipController {
         $statement2 = DBManager::get()->prepare($query2);
         $statement2->execute($values2);
 
-        $this->response->add_header('X-Dialog-Close', '1');
-        $this->render_nothing();
+        PageLayout::postMessage(MessageBox::success(_("Portfolio wurde angelegt.")));
+        //$this->response->add_header('X-Dialog-Close', '1');
+        //$this->render_nothing();
         
     }
 }
