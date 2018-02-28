@@ -11,10 +11,6 @@ class settingsController extends StudipController {
 
       $cid = $_GET['cid'];
 
-      if ($_GET['action'] == 'addZugriff') {
-        $this->addZugriff($_GET['id']);
-        exit();
-      }
 
       if ($_POST['action'] == 'deleteUserAccess') {
         $this->deleteUserAccess($_POST['userId'], $_POST['seminar_id']);
@@ -38,12 +34,12 @@ class settingsController extends StudipController {
     parent::before_filter($action, $args);
   }
 
-  public function index_action()
+  public function index_action($cid)
   {
 
     // set vars
     $userid = $GLOBALS["user"]->id;
-    $cid = $_GET["cid"];
+    $cid = $_GET["cid"]?  $_GET["cid"] : $cid;
     $db = DBManager::get();
     $this->cid = $cid;
 
@@ -303,7 +299,7 @@ class settingsController extends StudipController {
     return $query;
   }
 
-  public function addZugriff($id){
+  public function addZugriff_action($id){
     $mp             = MultiPersonSearch::load('eindeutige_id');
     $seminar        = new Seminar($id);
     $eportfolio_id  = $this->getEportfolioId($id);
@@ -322,6 +318,7 @@ class settingsController extends StudipController {
       $statement->execute(array(':id'=> $id, ':userId'=> $userId, ':eportfolio_id' => $eportfolio_id));
     }
 
+    $this->redirect($this->url_for('settings/index/'. $id));
     # Seminar speichern
     //$seminar->store();
 
@@ -399,5 +396,23 @@ class settingsController extends StudipController {
       return false;
     }
   }
+  
+  
+  function url_for($to)
+    {
+        $args = func_get_args();
+
+        # find params
+        $params = array();
+        if (is_array(end($args))) {
+            $params = array_pop($args);
+        }
+
+        # urlencode all but the first argument
+        $args = array_map('urlencode', $args);
+        $args[0] = $to;
+
+        return PluginEngine::getURL($this->dispatcher->plugin, $params, join('/', $args));
+    } 
 
 }
