@@ -3,10 +3,32 @@
   border: 1px solid #ddd;
 }
 
+/* portfolio cards */ 
+.col-md-4 {
+    width: 32%;
+    float: left;
+    
+}
+.card-wrapper {
+    padding: 5px;
+    padding-bottom: 50px;
+}
+.card-inner {
+    padding: 10px;
+    padding-bottom: 50px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+}
+
+
 .list-group-item:hover {
   cursor: pointer;
   background-color: #33568b;
   color: #fff;
+  position: relative;
+  min-height: 1px;
+  padding-right: 15px;
+  padding-left: 15px;
 }
 
 .badge {
