@@ -46,12 +46,9 @@ class EportfoliopluginController extends StudipController {
 
       $getCoursewareChapters = $this->getCardInfos($cid);
       foreach ($getCoursewareChapters as $key => $value) {
-        $isOwner = $eportfolio->isOwner($GLOBALS["user"]->id);
-        if ($this->checkPersmissionOfChapter($value[id], $GLOBALS["user"]->id, $cid) == true && $isOwner == NULL) {
+        if (EportfolioFreigabe::hasAccess($GLOBALS["user"]->id, $cid, $value[id])){    
           $nav->addLink($value[title], URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $cid, 'selected' => $value[id])));
-        } else {
-          $nav->addLink($value[title], URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $cid, 'selected' => $value[id])));
-        }
+        } 
       }
 
       $sidebar->addWidget($nav);
@@ -107,7 +104,7 @@ class EportfoliopluginController extends StudipController {
 
     //get cardinfos for overview
     $return_arr = array();
-    $query = "SELECT id, title FROM mooc_blocks WHERE seminar_id = :cid AND type = 'Chapter'";
+    $query = "SELECT id, title FROM mooc_blocks WHERE seminar_id = :cid AND type = 'Chapter' ORDER BY position ASC";
     $statement = $db->prepare($query);
     $statement->execute(array(':cid'=> $cid));
  

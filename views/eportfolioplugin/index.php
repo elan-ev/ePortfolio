@@ -43,10 +43,12 @@
       <?php $imageNumber = 0; ?>
       <?php foreach ($cardInfo as $key): ?>
 
+        <?php if(EportfolioFreigabe::hasAccess($userid, $cid, $key[id])): ?>
         <?php
-          $link = URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $cid, 'selected' => $key[id]));
-          //$link = '/studip/plugins.php/courseware/courseware?cid='.$cid.'&selected='.$key[id];
-          $linkAdmin = $link.'#author';
+         
+            $link = URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $cid, 'selected' => $key[id]));
+            //$link = '/studip/plugins.php/courseware/courseware?cid='.$cid.'&selected='.$key[id];
+            $linkAdmin = $link.'#author';
         ?>
 
         <div data-blockid="<?php echo $key[id]; ?>" class="col-md-4 card-wrapper">
@@ -96,7 +98,7 @@
           <?php endif; ?>
         </div>
       </div>
-
+        <?php endif; ?>
       <?php endforeach; ?>
     </div>
   </div>
