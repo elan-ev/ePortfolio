@@ -34,7 +34,7 @@ class settingsController extends StudipController {
     parent::before_filter($action, $args);
   }
 
-  public function index_action($cid)
+  public function index_action($cid = NULL)
   {
 
     // set vars
@@ -232,6 +232,13 @@ class settingsController extends StudipController {
     $this->portfolioInfo = $portfolioInfo;
     $this->access = $access;
 
+  }
+  
+  public function setAccess_action($user_id, $seminar_id, $chapter_id, $status)
+  {
+      $freigabe= new EportfolioFreigabe();
+      $freigabe->setAccess($user_id, $seminar_id, $chapter_id, $status);
+      $this->render_nothing();
   }
 
   public function saveChanges(){

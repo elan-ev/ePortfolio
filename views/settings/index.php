@@ -78,15 +78,15 @@
           <?php echo Icon::create('trash', 'clickable') ?>
        </a>
      </td>
-     <?php $access = settingsController::getEportfolioAccess($viewer[viewer_id], $cid);?>
      <?php foreach ($chapterList as $chapter):?>
 
       <?php $viewer_id = $viewer[viewer_id]; ?>
-      <td onClick="setAccess(<?php echo $chapter[id]?>, '<?php echo $viewer_id ?>', this);" class="righttable-inner">
+      <?php $hasAccess = EportfolioFreigabe::hasAccess($viewer_id, $cid, $chapter[id]); ?>
+      <td onClick="setAccess('<?= $chapter[id]?>', '<?= $viewer_id ?>', this, '<?= $cid ?>');" class="righttable-inner">
 
-        <?php if($access[$chapter[id]] == 1):?>
+        <?php if($hasAccess):?>
           <span id="icon-<?php echo $viewer[viewer_id].'-'.$chapter[id]; ?>" class="glyphicon glyphicon-ok"><?= Icon::create('accept', 'clickable'); ?></span>
-        <?php elseif($access[$chapter[id]] == 0):?>
+        <?php else :?>
           <span id="icon-<?php echo $viewer[viewer_id].'-'.$chapter[id]; ?>" class="glyphicon glyphicon-remove"><?= Icon::create('decline', 'clickable'); ?></span>
         <?php endif;?>
 
@@ -152,7 +152,7 @@ $('div[data-color="'+color+'"] i').css('opacity', '1').attr('data-status', 'acti
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Supervisor hinzufï¿½gen</h4>
+        <h4 class="modal-title">Supervisor hinzufügen</h4>
       </div>
       <div class="modal-body" id="modalDeleteBody">
 
@@ -343,17 +343,12 @@ $('div[data-color="'+color+'"] i').css('opacity', '1').attr('data-status', 'acti
     });
   }
   
-  function setAccess(id, viewerId, obj){
+  function setAccess(id, viewerId, obj, cid){
   var status = $(obj).children('span').hasClass('glyphicon-ok');
-  var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/settings', {cid: cid});
+  var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/settings/setAccess/'+viewerId+ '/' +cid+ '/' +id +'/' +!status);
   $.ajax({
     type: "POST",
     url: url,
-    data: {
-      'setAccess':'1',
-      'block_id': id,
-      'viewer_id': viewerId,
-    },
     success: function(data) {
      if (status === false) {
         $(obj).empty().append('<span class="glyphicon glyphicon-ok"><?php echo  Icon::create('accept', 'clickable'); ?></span>');
