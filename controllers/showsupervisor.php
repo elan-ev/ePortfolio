@@ -14,7 +14,7 @@ class ShowsupervisorController extends StudipController {
         parent::__construct($dispatcher);
         $this->plugin = $dispatcher->plugin;
         $user = get_username();
-        $id = $_GET["id"];
+        $id = $_GET["cid"];
         $this->groupid = $id;
         $this->userid = $GLOBALS["user"]->id;
         $this->ownerid = $GLOBALS["user"]->id;
@@ -64,13 +64,13 @@ class ShowsupervisorController extends StudipController {
         foreach ($groups as $key) {
           $seminar = new Seminar($key);
           $name = $seminar->getName();
-          if($_GET['id'] == $key){
+          if($_GET['cid'] == $key){
             $attr = array('class' => 'active-link');
           } else {
             $attr = array('class' => '');
           }
 
-          $navGroupURL = URLHelper::getLink("plugins.php/eportfolioplugin/showsupervisor", array('id' => $key));
+          $navGroupURL = URLHelper::getLink("plugins.php/eportfolioplugin/showsupervisor", array('cid' => $key));
           $nav->addLink($name, $navGroupURL, null, $attr);
         }
 
@@ -83,7 +83,7 @@ class ShowsupervisorController extends StudipController {
 
         $navSupervisorGroup = new LinksWidget();
         $navSupervisorGroup->setTitle("Supervisorengruppen");
-        $navSupervisorGroupURL = URLHelper::getLink("plugins.php/eportfolioplugin/showsupervisor/supervisorgroup/". $id);
+        $navSupervisorGroupURL = URLHelper::getLink("plugins.php/eportfolioplugin/showsupervisor/supervisorgroup/". $id, array('cid' => $id));
         $navSupervisorGroup->addLink("Verwalten", $navSupervisorGroupURL);
 
         $sidebar->addWidget($nav);
@@ -99,8 +99,7 @@ class ShowsupervisorController extends StudipController {
 
     public function index_action()
     {
-
-      $id = $_GET["id"];
+      $id = $_GET["cid"];
       $this->id = $id;
 
       if(!$id == ''){
@@ -457,7 +456,7 @@ class ShowsupervisorController extends StudipController {
     public function addUsersToGroup(){
 
       $mp           = MultiPersonSearch::load('eindeutige_id');
-      $groupid      = $_GET['id'];
+      $groupid      = $_GET['cid'];
       $templates    = Group::getTemplates($groupid);
       $outputArray  = array();
 
@@ -531,7 +530,7 @@ class ShowsupervisorController extends StudipController {
     }
 
     public function isThereAnyUser() {
-      $groupid  = $_GET['id'];
+      $groupid  = $_GET['cid'];
       $db = DBManager::get();
       $query = "SELECT user_id FROM eportfolio_groups_user WHERE seminar_id = :groupid";
       $statement = $db->prepare($query);
@@ -649,16 +648,17 @@ class ShowsupervisorController extends StudipController {
         $this->redirect('showsupervisor?id=' . $group_id);
     }
 
-    public function supervisorgroup_action($groupId){
-      //$groupId = $_GET['id'];
+    public function supervisorgroup_action($group_Id){
+      
+      $groupId = $group_Id ? $group_Id : $_GET['cid'];
       $sem = new Seminar($groupId);
       $this->groupName = $sem->getName();
 
       $supervisorgroupid = Group::getSupervisorGroupId($groupId);
 
       $group = new Supervisorgroup($supervisorgroupid);
-      $this->title = $group->getName();
-      $this->groupId = $group->getId();
+      $this->title = $group->name;
+      $this->groupId = $group->id;
       $this->linkId = $groupId;
 
       $search_obj = new SQLSearch("SELECT auth_user_md5.user_id, CONCAT(auth_user_md5.nachname, ', ', auth_user_md5.vorname, ' (' , auth_user_md5.email, ')' ) as fullname, username, perms "
@@ -666,6 +666,7 @@ class ShowsupervisorController extends StudipController {
                             . "WHERE (CONCAT(auth_user_md5.Vorname, \" \", auth_user_md5.Nachname) LIKE :input " 
                             . "OR CONCAT(auth_user_md5.Nachname, \" \", auth_user_md5.Vorname) LIKE :input " 
                             . "OR auth_user_md5.username LIKE :input)"
+                            . "AND auth_user_md5.perms LIKE 'dozent'"
                             . "AND auth_user_md5.user_id NOT IN "
                             . "(SELECT supervisor_group_user.user_id FROM supervisor_group_user WHERE supervisor_group_user.supervisor_group_id = '". $supervisorgroupid ."')  "
                             . "ORDER BY Vorname, Nachname ",
@@ -676,10 +677,10 @@ class ShowsupervisorController extends StudipController {
         ->setTitle(_('Personen zur Supervisorgruppe hinzufügen'))
         ->setSearchObject($search_obj)
         ->setJSFunctionOnSubmit()
-        ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/supervisorgroup/addUser', array('id' => $group->getId(), 'redirect' => $this->url_for('showsupervisor/supervisorgroup/'. $this->linkId))))
+        ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/supervisorgroup/addUser/'. $group->id, array('id' => $group_id, 'redirect' => $this->url_for('showsupervisor/supervisorgroup/'. $this->linkId))))
         ->render();
 
-      $this->usersOfGroup = $group->getUsersOfGroup();
+      $this->usersOfGroup = $group->user;
     }
 
     function url_for($to)

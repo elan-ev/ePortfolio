@@ -7,7 +7,7 @@ class SupervisorgroupController extends StudipController {
   public function __construct($dispatcher){
     parent::__construct($dispatcher);
     $this->plugin = $dispatcher->plugin;
-    $this->id = $_GET['id'];
+    $this->id = $_GET['cid'];
     $this->createSidebar();
     $this->checkGetId();
   }
@@ -63,14 +63,14 @@ class SupervisorgroupController extends StudipController {
     return $query[0][id];
   }
 
-  public function addUser_action(){
-    $group = new Supervisorgroup($this->id);
+  public function addUser_action($group){
     $mp = MultiPersonSearch::load('supervisorgroupSelectUsers');
+    $group = new SupervisorGroup($group);
     foreach ($mp->getAddedUsers() as $key) {
       $group->addUser($key);
     }
-
-    $this->redirect($this->url_for('showsupervisor/supervisorgroup?id='.$_GET['redirect']));
+    //$this->render_nothing();
+    $this->redirect($this->url_for('showsupervisor/supervisorgroup/'. $group->eportfolio_group), array('cid' => $group->eportfolio_group ));
   }
 
   public function deleteUser_action(){
@@ -83,17 +83,29 @@ class SupervisorgroupController extends StudipController {
 
   public function newGroup_action(){
     $name = $_POST['groupName'];
-    $group = new Supervisorgroup();
-    $group->setName($name);
-    $group->save();
+    Supervisorgroup::newGroup($name);
   }
 
   public function deleteGroup_action(){
-    $id = $_GET['id'];
-    $group = new Supervisorgroup($id);
-    $group->delete();
+    $id = $_GET['cid'];
+    Supervisorgroup::deleteGroup($id);
   }
 
+    function url_for($to)
+    {
+        $args = func_get_args();
 
+        # find params
+        $params = array();
+        if (is_array(end($args))) {
+        $params = array_pop($args);
+        }
+
+        # urlencode all but the first argument
+        $args = array_map('urlencode', $args);
+        $args[0] = $to;
+
+        return PluginEngine::getURL($this->dispatcher->plugin, $params, join('/', $args));
+    } 
 
 }

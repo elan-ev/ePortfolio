@@ -219,7 +219,7 @@
     ->setTitle(_('Personen zur Gruppe hinzufügen'))
     ->setSearchObject(new StandardSearch('user_id'))
     ->setJSFunctionOnSubmit('addUserToGroup')
-    ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor', array('id' => $groupid, 'action' => 'addUsersToGroup')))
+    ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor', array('cid' => $groupid, 'action' => 'addUsersToGroup')))
     ->render();
  ?>
 
