@@ -29,16 +29,11 @@
 <tbody>
 
 <?php
-  //supervisor Zeile
-  //Supervisor Informationen
-  $supervisorId = SettingsController::getSupervisorGroupOfPortfolio($cid);
-  //$supervisor = UserModel::getUser($supervisorId);
-  //$supervisorName = $supervisor[Vorname].' '.$supervisor[Nachname];
-
+  
   //Freigaben fï¿½r Portfolio
   $SupervisorFreigaben = SettingsController::getPortfolioFreigaben($cid);
 
-  # Prï¿½fen ob eigenes Portfolio
+  # Prüfen ob eigenes Portfolio
   $eigenesPortfolio = SettingsController::eigenesPortfolio($cid);
  ?>
 
@@ -46,16 +41,22 @@
   <tr style="background-color: lightblue;">
     <td>
       <img style="border-radius: 30px; width: 15px;" src="<?php echo $GLOBALS[DYNAMIC_CONTENT_URL];?>/user/<?php echo $supervisorId; ?>_small.png" onError="defaultImg(this);">
-      Supervisoren
+      Gruppen-Supervisoren
     </td>
 
     <?php foreach ($chapterList as $chapter):?>
-      <?php if($SupervisorFreigaben[$chapter[id]] == 1): ?>
-        <td id="chapter<?php echo $chapter[id]?>" onclick="freigebenSupervisorGroup('<?php echo $chapter[id]; ?>', '<?php echo $cid; ?>');"><?= Icon::create('accept', 'clickable'); ?></td>
-      <?php else: ?>
-        <td id="chapter<?php echo $chapter[id]?>" onclick="freigebenSupervisorGroup('<?php echo $chapter[id]; ?>', '<?php echo $cid; ?>');"><?= Icon::create('decline', 'clickable'); ?></td>
-      <?php endif; ?>
-    <?php endforeach; ?>
+      <?php $hasAccess = EportfolioFreigabe::hasAccess($supervisorId, $cid, $chapter[id]); ?>
+      <td onClick="setAccess('<?= $chapter[id]?>', '<?= $supervisorId ?>', this, '<?= $cid ?>');" class="righttable-inner">
+
+        <?php if($hasAccess):?>
+          <span id="icon-<?php echo $supervisorId.'-'.$chapter[id]; ?>" class="glyphicon glyphicon-ok"><?= Icon::create('accept', 'clickable'); ?></span>
+        <?php else :?>
+          <span id="icon-<?php echo $supervisorId.'-'.$chapter[id]; ?>" class="glyphicon glyphicon-remove"><?= Icon::create('decline', 'clickable'); ?></span>
+        <?php endif;?>
+
+      </td>
+
+      <?php endforeach; ?>
   </tr>
 <?php endif; ?>
 
@@ -318,30 +319,6 @@ $('div[data-color="'+color+'"] i').css('opacity', '1').attr('data-status', 'acti
     });
   }
 
-  function freigebenSupervisorGroup(selected, cid){
-    console.log(selected + " " + cid);
-    var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin');
-    $('td[id="chapter'+selected+'"]').empty().prepend('<i style="color: #24437c;" class="fa fa-circle-o-notch fa-spin fa-fw"></i>');
-    $.ajax({
-      url: url,
-      type: 'POST',
-      data: {
-        type: "freigeben",
-        selected: selected,
-        cid: cid
-      },
-      success: function(data){
-        console.log(data);
-        if (data == true) {
-          $('td[id="chapter'+selected+'"]').empty().prepend('<?php echo  Icon::create('accept', 'clickable'); ?>');
-        } else {
-          $('td[id="chapter'+selected+'"]').empty().prepend('<?php echo  Icon::create('decline', 'clickable'); ?>');
-        }
-
-      }
-
-    });
-  }
   
   function setAccess(id, viewerId, obj, cid){
   var status = $(obj).children('span').hasClass('glyphicon-ok');

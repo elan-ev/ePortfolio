@@ -20,6 +20,12 @@
     cursor: pointer;
 }
 
+/* portfolio freigabe-links */
+#vorlagen-tabs a.freigabe-link{
+    padding-left: 1em;
+    padding-right: 1em;
+    display: inline;
+}
 
 .list-group-item:hover {
   cursor: pointer;

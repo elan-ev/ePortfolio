@@ -224,37 +224,6 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         return $this->getSemClass()->isSlotModule(get_class($this));
     }
 
-    public function freigeben($selected, $cid){
-      $db = DBManager::get();
-      $query = "SELECT freigaben_kapitel FROM eportfolio WHERE Seminar_id = :cid";
-      $statement = $db->prepare($query);
-      $statement->execute(array(':cid'=> $cid));
-      $result = $statement->fetchAll()[0][0];
-      # debug print_r($query[0][0]);
-      if(!$result){
-        $array = array($selected => '1');
-        $array = json_encode($array);
-        $query = "UPDATE eportfolio SET freigaben_kapitel = :kapitel WHERE Seminar_id = :cid";
-        $statement = $db->prepare($query);
-        $statement->execute(array(':kapitel'=> $array, ':cid' => $cid));
-        echo true;
-      } else {
-        $array = $result;
-        $array = json_decode($array);
-        if ($array->$selected == "1") {
-          $array->$selected = "0";
-          echo false;
-        } else {
-          $array->$selected = "1";
-          echo true;
-        }
-        $array = json_encode($array);
-        $query = "UPDATE eportfolio SET freigaben_kapitel = :kapitel WHERE Seminar_id = :cid";
-        $statement = $db->prepare($query);
-        $statement->execute(array(':kapitel'=> $array, ':cid' => $cid));
-      }
-    }
-
     public function getsettingsColor($cid){
       $query = "SELECT settings FROM eportfolio WHERE seminar_id = :cid";
       $statement = DBManager::get()->prepare($query);

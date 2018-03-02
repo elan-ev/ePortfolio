@@ -99,7 +99,7 @@
     <?php else: ?>
 
     <!-- Nav tabs -->
-    <div id="tabs">
+    <div id="vorlagen-tabs">
     <ul>
       <?php foreach ($templistid as $key => $value): ?>
         <?php $template = new Seminar($value);?>
@@ -156,36 +156,30 @@
 
                 foreach ($q as $value): ?>
 
-                    <?php
-                    $query = "SELECT freigaben_kapitel FROM eportfolio WHERE Seminar_id = :semid";
-                    $statement = DBManager::get()->prepare($query);
-                    $statement->execute(array(':semid'=> $getsemid));
-                    $t = $statement->fetchAll();
+                    <td>
+                        <?php 
+                        $idNew = $value[id];
+                        $hasAccess = EportfolioFreigabe::hasAccess($supervisorGroupId, $getsemid, $idNew); ?>
+                        
+                        <?php if($hasAccess):?>
+                            <?php $link = URLHelper::getLink("plugins.php/courseware/courseware", array('cid' => $getsemid , 'selected' => $idNew));?>
+                            <a class='freigabe-link' href="<?php echo $link; ?>">
+                              <?= Icon::create('accept', 'clickable'); ?>
+                            </a>
 
-                    $freigaben_kapitel = json_decode($t[0][0], true);
-                    ?>
+                            <?php if (ShowsupervisorController::checkSupervisorNotiz($idNew) == true): ?>
+                            <a class='freigabe-link' href="<?php echo URLHelper::getLink("plugins.php/courseware/courseware", array('cid' => $getsemid , 'selected' => $idNew)) ?>">
+                              <?= Icon::create('file', 'clickable'); ?>
+                            </a>
+                            <?php endif; ?>
 
-                    <td><?php $idNew = $value[id];
-                      if($freigaben_kapitel[$idNew]):?>
-                        <?php $link = URLHelper::getLink("plugins.php/courseware/courseware", array('cid' => $getsemid , 'selected' => $idNew));?>
-                        <a href="<?php echo $link; ?>">
-                          <?php echo  Icon::create('accept', 'clickable'); ?>
-                        </a>
-                      <?php else: ?>
-                        &nbsp;
-                      <?php endif; ?>
-
-                      <a href="<?php echo URLHelper::getLink("plugins.php/courseware/courseware", array('cid' => $getsemid , 'selected' => $idNew)) ?>">
-                        <?php if (ShowsupervisorController::checkSupervisorNotiz($idNew) == true) {
-                          echo  Icon::create('file', 'clickable');
-                        }?>
-                      </a>
-
-                      <a href="<?php echo URLHelper::getLink("plugins.php/courseware/courseware", array('cid' => $getsemid , 'selected' => $idNew)) ?>">
-                        <?php if (ShowsupervisorController::checkSupervisorFeedback($idNew) == true) {
-                          echo  Icon::create('forum', 'clickable');
-                        } ?>
-                      </a
+                            <?php if (ShowsupervisorController::checkSupervisorFeedback($idNew) == true): ?>
+                            <a class='freigabe-link' href="<?php echo URLHelper::getLink("plugins.php/courseware/courseware", array('cid' => $getsemid , 'selected' => $idNew)) ?>">
+                              <?= Icon::create('forum', 'clickable'); ?>
+                            </a
+                            <?php endif; ?>
+                            
+                        <?php endif; ?>
 
                     </td>
 
@@ -250,7 +244,7 @@
 <script type="text/javascript">
 
 $( function() {
-    $( "#tabs" ).tabs();
+    $( "#vorlagen-tabs" ).tabs();
 } );
     
 $('#myModal').on('shown.bs.modal', function () {

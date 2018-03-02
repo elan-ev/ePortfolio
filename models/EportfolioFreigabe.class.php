@@ -1,6 +1,9 @@
 
 <?php
 require_once get_config('PLUGINS_PATH') . '/uos/EportfolioPlugin/models/Eportfoliomodel.class.php';
+require_once get_config('PLUGINS_PATH') . '/uos/EportfolioPlugin/models/EportfolioGroups.class.php';
+require_once get_config('PLUGINS_PATH') . '/uos/EportfolioPlugin/models/SupervisorGroupsUser.class.php';
+require_once get_config('PLUGINS_PATH') . '/uos/EportfolioPlugin/models/SupervisorGroupsUser.class.php';
 
 /**
  * @author  <asudau@uos.de>
@@ -35,15 +38,15 @@ class EportfolioFreigabe extends SimpleORMap
         
         $portfolio = Eportfoliomodel::findBySQL('seminar_id = :id', array(':id'=> $seminar_id));
         
-        if ($portfolio->group_id){
-            $portfoliogroup = EportfolioGroups::findbySQL('seminar_id = :id', array(':id'=> $portfolio->group_id));
+        if ($portfolio[0]->group_id){
+            $portfoliogroup = EportfolioGroups::findbySQL('seminar_id = :id', array(':id'=> $portfolio[0]->group_id));
             
-        } if ($portfoliogroup->supervisor_group_id){
+        } if ($portfoliogroup[0]->supervisor_group_id){
             $isUser = SupervisorGroupsUser::findbySQL('supervisor_group_id = :id AND user_id = :user_id', 
-                    array(':id'=> $portfoliogroup->supervisor_group_id, ':user_id' => $user_id));
+                    array(':id'=> $portfoliogroup[0]->supervisor_group_id, ':user_id' => $user_id));
             
         } if ($isUser){
-            $user_id = $portfoliogroup->supervisor_group_id;
+            $user_id = $portfoliogroup[0]->supervisor_group_id;
         }
         
         $hasAccess = EportfolioFreigabe::findBySQL('Seminar_id = :seminar_id AND block_id = :block_id AND user_id = :user_id',

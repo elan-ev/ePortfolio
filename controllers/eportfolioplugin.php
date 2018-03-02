@@ -297,17 +297,4 @@ class EportfoliopluginController extends StudipController {
 
   }
 
-  public function checkPersmissionOfChapter($chapter, $userId, $cid){
-    $db = DBManager::get();
-    $query = "SELECT eportfolio_access FROM eportfolio_user WHERE user_id = :user_id AND seminar_id = :cid";
-    $statement = $db->prepare($query);
-    $statement->execute(array(':user_id'=> $userId, ':cid'=> $cid));
-    $data = unserialize($statement->fetchAll()[0][0]);
-    if ($data[$chapter] == 1) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
 }
