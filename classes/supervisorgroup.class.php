@@ -1,6 +1,6 @@
 <?php
 
-class Supervisorgroup{
+class Supervisorgroup_orig{
 
   var $supervisorgroupId = null;
   var $supervisorgroupName = "DEFAULT_NAME";

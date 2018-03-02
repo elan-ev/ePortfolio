@@ -4,13 +4,10 @@
 /**
  * @author  <asudau@uos.de>
  *
- * @property int     $id
- * @property string  $type
- * @property int     $related_contact
- * @property string  $content
- * @property int     $mkdate
+ * @property varchar     $supervisor_group_id
+ * @property varchar     $user_id
  */
-class SupervisorGroupsUser extends SimpleORMap
+class SupervisorGroupUser extends SimpleORMap
 {
 
     public $errors = array();
@@ -27,6 +24,11 @@ class SupervisorGroupsUser extends SimpleORMap
         $this->db_table = 'supervisor_group_user';
 
         parent::__construct($id);
+    }
+    
+    public static function findBySupervisorGroupId($id)
+    {
+        return static::findBySQL('supervisor_group_id = ?', array($id));
     }
     
     
