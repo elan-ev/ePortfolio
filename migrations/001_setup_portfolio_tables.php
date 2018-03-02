@@ -41,6 +41,7 @@ class SetupPortfolioTables extends Migration
           )");
         $db->exec("CREATE TABLE `supervisor_group` (
           `id` varchar(32) NOT NULL,
+          `supervisor_group_id` varchar(32) NOT NULL,
           `name` varchar(100) NOT NULL,
           PRIMARY KEY (id)
           )");
