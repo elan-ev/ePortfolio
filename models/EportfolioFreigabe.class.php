@@ -1,9 +1,5 @@
 
 <?php
-require_once get_config('PLUGINS_PATH') . '/uos/EportfolioPlugin/models/Eportfoliomodel.class.php';
-require_once get_config('PLUGINS_PATH') . '/uos/EportfolioPlugin/models/EportfolioGroups.class.php';
-require_once get_config('PLUGINS_PATH') . '/uos/EportfolioPlugin/models/SupervisorGroupsUser.class.php';
-require_once get_config('PLUGINS_PATH') . '/uos/EportfolioPlugin/models/SupervisorGroupsUser.class.php';
 
 /**
  * @author  <asudau@uos.de>
@@ -44,7 +40,7 @@ class EportfolioFreigabe extends SimpleORMap
             $portfoliogroup = EportfolioGroups::findbySQL('seminar_id = :id', array(':id'=> $portfolio[0]->group_id));
             
         } if ($portfoliogroup[0]->supervisor_group_id){
-            $isUser = SupervisorGroupsUser::findbySQL('supervisor_group_id = :id AND user_id = :user_id', 
+            $isUser = SupervisorGroupUser::findbySQL('supervisor_group_id = :id AND user_id = :user_id', 
                     array(':id'=> $portfoliogroup[0]->supervisor_group_id, ':user_id' => $user_id));
             
         } if ($isUser){
