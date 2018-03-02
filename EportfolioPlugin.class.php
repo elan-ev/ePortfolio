@@ -2,8 +2,12 @@
 require 'bootstrap.php';
 require 'classes/group.class.php';
 require 'classes/eportfolio.class.php';
-require 'classes/supervisorgroup.class.php';
-require_once 'models/EportfolioFreigabe.class.php';
+//require 'classes/supervisorgroup.class.php';
+require 'models/EportfolioFreigabe.class.php';
+require 'models/Eportfoliomodel.class.php';
+require 'models/EportfolioGroups.class.php';
+require 'models/SupervisorGroupUser.class.php';
+require 'models/SupervisorGroup.class.php';
 
 /**
  * EportfolioPlugin.class.php
@@ -131,7 +135,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
       $tabs = array();
 
       //uebersicht navigation point
-      $navigation = new Navigation('Übersicht', PluginEngine::getURL($this, compact('cid'), 'eportfolioplugin', true));
+      $navigation = new Navigation('ï¿½bersicht', PluginEngine::getURL($this, compact('cid'), 'eportfolioplugin', true));
       $navigation->setImage('icons/16/white/group4.png');
       $navigation->setActiveImage('icons/16/black/group4.png');
 
