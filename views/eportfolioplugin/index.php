@@ -33,10 +33,6 @@
     <?php endif; ?>
 
     <hr>
-    <?php $img = eportfoliopluginController::getImg($cid);
-      $img = json_decode($img);
-      $imgcount = 0;
-     ?>
 
     <div class="row">
 

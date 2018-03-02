@@ -9,9 +9,9 @@ $cid = $_GET["cid"];
 $userId = $GLOBALS["user"]->id;
 $selected = $_GET["selected"];
 
-$workingArray = $this->getAccess($cid, $userId);
-$workingArray = unserialize($workingArray);
-$workingArray = json_encode($workingArray);
+$workingArray = EportfolioFreigabe::hasAccess($userId, $cid, $selected);
+//$workingArray = unserialize($workingArray);
+//$workingArray = json_encode($workingArray);
 
 ?>
 

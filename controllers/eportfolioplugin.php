@@ -198,16 +198,13 @@ class EportfoliopluginController extends StudipController {
 
     return $return_arr;
   }
-
-  public function getImg($cid){
-    //$q = DBManager::get()->query("SELECT * FROM eportfolio WHERE Seminar_id = '$cid'")->fetchAll();
-    //$tempid = $q[0][7];
-    //$img = DBManager::get()->query("SELECT * FROM eportfolio_templates WHERE id = '$tempid'")->fetchAll();
-    //return $img[0]["img"];
-  }
-
+  
+  
+  //TODO umschreiben
   public function getChapterViewer($nummer, $chapter){
-    $db = DBManager::get();
+    
+      
+      $db = DBManager::get();
     $query = "SELECT eportfolio_access, user_id FROM eportfolio_user WHERE Seminar_id = :nummer AND owner = '0'";
     $statement = $db->prepare($query);
     $statement->execute(array(':nummer'=> $nummer));

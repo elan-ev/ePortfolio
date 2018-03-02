@@ -3,6 +3,7 @@ require 'bootstrap.php';
 require 'classes/group.class.php';
 require 'classes/eportfolio.class.php';
 require 'classes/supervisorgroup.class.php';
+require_once 'models/EportfolioFreigabe.class.php';
 
 /**
  * EportfolioPlugin.class.php
@@ -162,14 +163,6 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
       $tabs['settings'] = $navigationSettings;
       return $tabs;
 
-    }
-
-    public function getAccess($cid,$userId){
-      $db = DBManager::get();
-      $query = "SELECT eportfolio_access FROM eportfolio_user WHERE Seminar_id = :id AND user_id = :user_id ";
-        $statement = $db->prepare($query);
-        $statement->execute(array(':id'=> $cid, ':user_id' => $userId));
-      return $statement->fetchAll()[0][0];
     }
 
     public function getNotificationObjects($course_id, $since, $user_id) {

@@ -200,7 +200,7 @@ class settingsController extends StudipController {
   public function setAccess_action($user_id, $seminar_id, $chapter_id, $status)
   {
       $freigabe= new EportfolioFreigabe();
-      $freigabe->setAccess($user_id, $seminar_id, $chapter_id, $status);
+      $freigabe::setAccess($user_id, $seminar_id, $chapter_id, $status);
       $this->render_nothing();
   }
 

@@ -17,7 +17,6 @@ class SetupPortfolioTables extends Migration
           `templateStatus` int(11) NOT NULL DEFAULT '0',
           `owner_id` varchar(32) NOT NULL,
           `supervisor_id` varchar(32) DEFAULT NULL,
-          `freigaben_kapitel` text,
           `template_id` varchar(60) DEFAULT NULL,
           `settings` text,
           PRIMARY KEY (eportfolio_id)
@@ -37,7 +36,6 @@ class SetupPortfolioTables extends Migration
           `Seminar_id` varchar(32) NOT NULL,
           `eportfolio_id` varchar(32) NOT NULL,
           `status` enum('user','autor','tutor','dozent') NOT NULL,
-          `eportfolio_access` text,
           `owner` int(11) NOT NULL,
           PRIMARY KEY (eportfolio_id, user_id)
           )");

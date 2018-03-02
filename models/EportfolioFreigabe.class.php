@@ -38,6 +38,8 @@ class EportfolioFreigabe extends SimpleORMap
         
         $portfolio = Eportfoliomodel::findBySQL('seminar_id = :id', array(':id'=> $seminar_id));
         
+        //Wenn das Portfolio Teil einer Gruppe mit zugehöriger Supervisorgruppe ist:
+        //checke ob user Teil der Supervisorgruppe ist und prüfe in diesem Fall Berechtigung für Supervisorgruppe
         if ($portfolio[0]->group_id){
             $portfoliogroup = EportfolioGroups::findbySQL('seminar_id = :id', array(':id'=> $portfolio[0]->group_id));
             
@@ -60,7 +62,7 @@ class EportfolioFreigabe extends SimpleORMap
         else return false;
     }
     
-    public function setAccess($user_id, $seminar_id, $chapter_id, $status){
+    public static function setAccess($user_id, $seminar_id, $chapter_id, $status){
         if ($status && !$this::hasAccess($user_id, $seminar_id, $chapter_id)){
             $access = new EportfolioFreigabe();
             $access->mkdate  = time();
@@ -74,5 +76,7 @@ class EportfolioFreigabe extends SimpleORMap
         }
     }
     
-    
+    public static function getUserWithAccess($seminar_id, $chapter_id){
+        
+    }
 }
