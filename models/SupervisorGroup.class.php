@@ -4,9 +4,10 @@
 /**
  * @author  <asudau@uos.de>
  *
- * @property varchar  $id
- * @property varchar  $eportfolio_group
- * @property string   $name
+ * @property varchar                $id
+ * @property varchar                $eportfolio_group
+ * @property string                 $name
+ * @property SupervisorGroupUser[]  $user
  */
 class SupervisorGroup extends SimpleORMap
 {
@@ -75,12 +76,9 @@ class SupervisorGroup extends SimpleORMap
     $group = SupervisorGroup($group_id); 
     $group->delete();
   }
-  
-  public function getUsersOfGroup(){
-    $db = DBManager::get();
-    $query = "SELECT * FROM supervisor_group_user WHERE supervisor_group_id = :id";
-    $statement = $db->prepare($query);
-    $statement->execute(array(':id'=> $this->supervisorgroupId));
-    return $statement->fetchAll();
+  //testen
+  public function isUserInGroup($userId){
+      $user = new SupervisorGroupUser($userId);
+      return in_array($user, $this->user);
   }
 }
