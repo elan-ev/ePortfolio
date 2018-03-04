@@ -37,6 +37,7 @@ class ShowsupervisorController extends StudipController {
           exit();
         }
 
+        //todo wird das noch benutzt??
         if($_POST["type"] == 'getGroupMember'){
           $this->getGroupMemberAjax($_POST['id']);
           exit();
