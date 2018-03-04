@@ -10,7 +10,7 @@
  * @property string  $content
  * @property int     $mkdate
  */
-class EportfolioGroupsUser extends SimpleORMap
+class EportfolioGroupUser extends SimpleORMap
 {
 
     public $errors = array();
@@ -29,5 +29,9 @@ class EportfolioGroupsUser extends SimpleORMap
         parent::__construct($id);
     }
     
+     public static function findByGroupId($id)
+    {
+        return static::findBySQL('seminar_id = ?', array($id));
+    }
     
 }
