@@ -5,7 +5,8 @@ require 'classes/eportfolio.class.php';
 //require 'classes/supervisorgroup.class.php';
 require 'models/EportfolioFreigabe.class.php';
 require 'models/Eportfoliomodel.class.php';
-require 'models/EportfolioGroups.class.php';
+require 'models/EportfolioGroup.class.php';
+require 'models/EportfolioGroupUser.class.php';
 require 'models/SupervisorGroupUser.class.php';
 require 'models/SupervisorGroup.class.php';
 
