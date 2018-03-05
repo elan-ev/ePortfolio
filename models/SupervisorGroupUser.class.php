@@ -31,5 +31,13 @@ class SupervisorGroupUser extends SimpleORMap
         return static::findBySQL('supervisor_group_id = ?', array($id));
     }
     
+    public static function getSupervisorGroups($user_id){
+        $array = array();
+        $groups = SupervisorGroupUser::findBySQL('user_id = ?', array($user_id));
+        foreach ($groups as $group) {
+            array_push($array, $group->supervisor_group_id);
+        }
+      return $array;
+    }
     
 }
