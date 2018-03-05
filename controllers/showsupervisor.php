@@ -61,7 +61,7 @@ class ShowsupervisorController extends StudipController {
 
         $nav = new LinksWidget();
         $nav->setTitle(_('Supervisionsgrupppen'));
-        $groups = Group::getAllGroupsOfSupervisor($GLOBALS["user"]->id);
+        $groups = EportfolioGroup::getAllGroupsOfSupervisor($GLOBALS["user"]->id);
         foreach ($groups as $key) {
           $seminar = new Seminar($key);
           $name = $seminar->getName();
@@ -113,7 +113,7 @@ class ShowsupervisorController extends StudipController {
         if(!$check[0][0] == $GLOBALS["user"]->id){
           throw new AccessDeniedException(_("Sie haben keine Berechtigung"));
         } else {
-          $this->groupList = Group::getGroupMember($id);
+          $this->groupList = EportfolioGroup::getGroupMember($id);
 
         }
       } else {
@@ -281,7 +281,7 @@ class ShowsupervisorController extends StudipController {
        
         $this->ownerid = $GLOBALS["user"]->id;
         if($_POST["create"]){
-          $group_id = Group::create($this->ownerid, studip_utf8decode(strip_tags($_POST["name"])), studip_utf8decode(strip_tags($_POST["beschreibung"])));
+          $group_id = EportfolioGroup::create($this->ownerid, studip_utf8decode(strip_tags($_POST["name"])), studip_utf8decode(strip_tags($_POST["beschreibung"])));
           $this->response->add_header('X-Dialog-Close', '1');
           $this->render_nothing();
         }
@@ -348,6 +348,11 @@ class ShowsupervisorController extends StudipController {
 
             if (!in_array($groupowner, $member)) {
               $sem->addMember($groupowner, 'dozent');
+            }
+            //TODO add all Supervisors
+            $supervisors = EportfolioGroup::getAllSupervisors($groupid);
+            foreach($supervisors as $supervisor){
+                $sem->addMember($supervisor, 'dozent');
             }
 
             $sem->store(); //save sem
@@ -698,7 +703,7 @@ class ShowsupervisorController extends StudipController {
         $args = array_map('urlencode', $args);
         $args[0] = $to;
 
-        return PluginEngine::getURL($this->dispatcher->plugin, $params, join('/', $args));
+        return PluginEngine::getURL($this->dispatcher->current_plugin, $params, join('/', $args));
     } 
     
     

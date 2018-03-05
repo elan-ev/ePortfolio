@@ -70,7 +70,8 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
           $id = $_GET["cid"];
 
           if ($eportfolio->isEportfolio() == true) {
-            include 'coursewareController/modifier.php';
+            //TODO ggf ersetzen
+            //include 'coursewareController/modifier.php';
 
             # modifier for the menubar
             if (!$id == NULL) {
@@ -130,7 +131,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
       $tabs = array();
 
       //uebersicht navigation point
-      $navigation = new Navigation('ï¿½bersicht', PluginEngine::getURL($this, compact('cid'), 'eportfolioplugin', true));
+      $navigation = new Navigation('Übersicht', PluginEngine::getURL($this, compact('cid'), 'eportfolioplugin', true));
       $navigation->setImage('icons/16/white/group4.png');
       $navigation->setActiveImage('icons/16/black/group4.png');
 

@@ -1,5 +1,6 @@
 <?php
 
+include_once __DIR__.'/../models/EportfolioFreigabe.class.php';
 //print_r($GLOBALS);
 
 //print('modifier.php active');
@@ -135,14 +136,13 @@ $workingArray = EportfolioFreigabe::hasAccess($userId, $cid, $selected);
 <script type="text/javascript">
   $(document).ready(function(){
     //console.log("modifier.php loaded");
-    var workingArray = <?php echo $workingArray ?>;
-    console.log(workingArray);
-    $.each(workingArray, function(key, value){
-      console.log(key +": "+value);
-      if(value == 0){
-        $('*[data-blockid='+ key +']').remove();
-      }
-    });
+
+    //$.each(workingArray, function(key, value){
+    //  console.log(key +": "+value);
+    //  if(value == 0){
+    //    $('*[data-blockid='+ key +']').remove();
+    //  }
+    //});
   });
 
   $('#nav_course_files, #nav_course_mooc_progress').css('display', 'none');

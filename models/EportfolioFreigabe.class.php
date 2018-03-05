@@ -1,6 +1,11 @@
 
 <?php
 
+include_once __DIR__.'/Eportfoliomodel.class.php';
+include_once __DIR__.'/EportfolioGroup.class.php';
+include_once __DIR__.'/EportfolioGroupUser.class.php';
+include_once __DIR__.'/SupervisorGroupUser.class.php';
+
 /**
  * @author  <asudau@uos.de>
  *
@@ -59,7 +64,7 @@ class EportfolioFreigabe extends SimpleORMap
     }
     
     public static function setAccess($user_id, $seminar_id, $chapter_id, $status){
-        if ($status && !$this::hasAccess($user_id, $seminar_id, $chapter_id)){
+        if ($status && !self::hasAccess($user_id, $seminar_id, $chapter_id)){
             $access = new EportfolioFreigabe();
             $access->mkdate  = time();
             $access->Seminar_id = $seminar_id;
