@@ -1,14 +1,15 @@
 <?php
 
+include_once __DIR__.'/SupervisorGroup.class.php';
 
 /**
  * @author  <asudau@uos.de>
  *
- * @property int     $id
- * @property string  $type
- * @property int     $related_contact
- * @property string  $content
- * @property int     $mkdate
+ * @property varchar                $seminar_id
+ * @property varchar                $owner_id
+ * @property text                   $templates
+ * @property varchar                $supervisor_group_id
+ * @property EportfolioGroupUser[]  $user
  */
 class EportfolioGroup extends SimpleORMap
 {
@@ -47,7 +48,7 @@ class EportfolioGroup extends SimpleORMap
     }
     //testen
     public static function getTemplates($id){
-        $group = EportfolioGroup::findById();
+        $group = EportfolioGroup::findById($id);
         $q = json_decode($group->templates, true);
         return $q;
     }
@@ -56,6 +57,16 @@ class EportfolioGroup extends SimpleORMap
     $group = new EportfolioGroup($id);
     $array = array();
     foreach ($group->user as $user) {
+      array_push($array, $user->user_id);
+    }
+    return $array;
+  }
+  
+  public static function getAllSupervisors($id) {
+    $group = new EportfolioGroup($id);
+    $supervisorGroup = new SupervisorGroup($group->supervisor_group_id);
+    $array = array();
+    foreach ($supervisorGroup->user as $user) {
       array_push($array, $user->user_id);
     }
     return $array;
@@ -127,26 +138,43 @@ class EportfolioGroup extends SimpleORMap
     return $statement->fetchAll();
   }
   
+  //brauchen wir auf jeden Fall
   public static function getAllGroupsOfSupervisor($userId){
-      $query = "SELECT seminar_id FROM eportfolio_groups WHERE owner_id = :id";
-      $statement = DBManager::get()->prepare($query);
-      $statement->execute(array(':id'=> $userId));
+      $ownGroups = EportfolioGroup::findBySQL('owner_id = :id', array(':id'=> $userId));
+      $addedGroups = SupervisorGroupUser::getSupervisorGroups($userId);
+      
       $array = array();
-      foreach ($statement->fetchAll() as $key) {
-        array_push($array, $key[0]);
+      foreach ($ownGroups as $group) {
+        array_push($array, $group->seminar_id);
       }
-      return $array;
+      foreach ($addedGroups as $group) {
+        $group = new SupervisorGroup($group);
+        if ($group->eportfolio_group){
+            array_push($array, $group->eportfolio_group);
+        }
+      }
+      
+      return array_unique($array);
   }
 
   public function getGroupId(){
-    return $groupid;
+    return $this->seminar_id;
   }
 
   public static function getSupervisorGroupId($id){
-    $query = "SELECT supervisor_group_id FROM eportfolio_groups WHERE seminar_id = :seminar_id";
-    $statement = DBManager::get()->prepare($query);
-    $statement->execute(array(':seminar_id'=> $id));
-    return $statement->fetchAll()[0][0];
+    return self::findById($id)->supervisor_group_id;
   }
     
+  public function getRelatedStudentPortfolios(){
+      $member = $this->user;
+      $portfolios = array();
+      if (count(self::getTemplates($this->seminar_id)) >= 1) {
+        foreach ($member as $key) {
+          $portfolio = Eportfoliomodel::findBySQL('group_id = :groupid AND owner_id = :value', array(':groupid'=> $this->seminar_id, ':value'=> $key->user_id));
+          array_push($portfolios, $portfolio->Seminar_id);
+        }
+        return $portfolios;
+      } else return NULL;
+  }
+  
 }
