@@ -22,7 +22,7 @@ class ShowsupervisorController extends StudipController {
         $this->groupTemplates = Group::getTemplates($id);
         $this->templistid = $this->groupTemplates;
         
-        $group = EportfolioGroups::findbySQL('seminar_id = :id', array(':id'=> $this->groupid));
+        $group = EportfolioGroup::findbySQL('seminar_id = :id', array(':id'=> $this->groupid));
         $this->supervisorGroupId = $group[0]->supervisor_group_id;
 
         //userData for Modal

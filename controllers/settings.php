@@ -258,7 +258,7 @@ class settingsController extends StudipController {
   public function getSupervisorGroupOfPortfolio($id){
     $portfolio = Eportfoliomodel::findBySQL('seminar_id = :id', array(':id'=> $id));
      if ($portfolio[0]->group_id){
-        $portfoliogroup = EportfolioGroups::findbySQL('seminar_id = :id', array(':id'=> $portfolio[0]->group_id));
+        $portfoliogroup = EportfolioGroup::findbySQL('seminar_id = :id', array(':id'=> $portfolio[0]->group_id));
      } if ($portfoliogroup[0]->supervisor_group_id){
      
             return $portfoliogroup[0]->supervisor_group_id;

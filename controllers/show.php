@@ -36,7 +36,7 @@ class ShowController extends StudipController {
           } else {
             $linkIdMenu = '';
           }
-          $navcreate->addLink("Supervisionsansicht", "showsupervisor?id=".$linkIdMenu);
+          $navcreate->addLink("Supervisionsansicht", "showsupervisor?cid=".$linkIdMenu);
         }
         $sidebar->addWidget($navcreate);
 
