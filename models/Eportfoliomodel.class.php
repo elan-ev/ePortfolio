@@ -29,5 +29,12 @@ class Eportfoliomodel extends SimpleORMap
         parent::__construct($id);
     }
     
-    
+    public static function getAllSupervisors($cid){
+        $supervisoren = array();
+        $portfolio = Eportfoliomodel::findBySQL('Seminar_id = :cid', array(':cid' => $cid));
+        if ($portfolio[0]->group_id){
+            array_push($supervisoren, EportfolioGroup::getAllSupervisors($portfolio[0]->group_id));
+        }
+        return $supervisoren[0];
+    }
 }
