@@ -6,7 +6,7 @@ class SupervisorgroupController extends StudipController {
 
   public function __construct($dispatcher){
     parent::__construct($dispatcher);
-    $this->plugin = $dispatcher->plugin;
+    $this->plugin = $dispatcher->current_plugin;
     $this->id = $_GET['cid'];
     $this->createSidebar();
     $this->checkGetId();

@@ -5,7 +5,7 @@ class CreateController extends StudipController {
     public function __construct($dispatcher)
     {
         parent::__construct($dispatcher);
-        $this->plugin = $dispatcher->plugin;
+        $this->plugin = $dispatcher->current_plugin;
 
     }
 

@@ -5,7 +5,7 @@ class CoursewareinfoblockController extends StudipController {
   public function __construct($dispatcher)
   {
       parent::__construct($dispatcher);
-      $this->plugin = $dispatcher->plugin;
+      $this->plugin = $dispatcher->current_plugin;
 
       if ($_POST['infobox']) {
         $this->infobox($_POST["cid"], $_POST["userid"], $_POST["selected"]);

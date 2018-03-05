@@ -2,13 +2,7 @@
 require 'bootstrap.php';
 require 'classes/group.class.php';
 require 'classes/eportfolio.class.php';
-//require 'classes/supervisorgroup.class.php';
-require 'models/EportfolioFreigabe.class.php';
-require 'models/Eportfoliomodel.class.php';
-require 'models/EportfolioGroup.class.php';
-require 'models/EportfolioGroupUser.class.php';
-require 'models/SupervisorGroupUser.class.php';
-require 'models/SupervisorGroup.class.php';
+
 
 /**
  * EportfolioPlugin.class.php
@@ -185,26 +179,13 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     public function perform($unconsumed_path)
     {
       $this->setupAutoload();
-      $dispatcher = new Trails_Dispatcher(
-          $this->getPluginPath(),
-          rtrim(PluginEngine::getLink($this, array(), null), '/'),
-          'show'
-      );
-
-      $dispatcher->plugin = $this;
-      $dispatcher->dispatch($unconsumed_path);
+      parent::perform($unconsumed_path);
 
     }
 
     private function setupAutoload()
     {
-        if (class_exists('StudipAutoloader')) {
-            StudipAutoloader::addAutoloadPath(__DIR__ . '/models');
-        } else {
-            spl_autoload_register(function ($class) {
-                include_once __DIR__ . $class . '.php';
-            });
-        }
+        StudipAutoloader::addAutoloadPath(__DIR__ . '/models');
     }
 
     private function getSemClass()
