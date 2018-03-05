@@ -4,11 +4,12 @@
 /**
  * @author  <asudau@uos.de>
  *
- * @property int     $id
- * @property string  $type
- * @property int     $related_contact
- * @property string  $content
- * @property int     $mkdate
+ * @property varchar    $user_id
+ * @property varchar    $Seminar_id
+ * @property varchar    $eportfolio_id
+ * @property string     $status
+ * @property text       $eportfolio_access
+ * @property int        $owner
  */
 class EportfolioUser extends SimpleORMap
 {
