@@ -1,9 +1,10 @@
-<?= \Studip\Button::create(_("Vorlage verteilen"), 'newvorlage', array('onclick' => "exportPortfolio('$masterid')")) ?>
+<?= \Studip\Button::create(_("Vorlage verteilen"), 'newvorlage', array('onclick' => "exportPortfolio('$masterid')", 'id' => 'export')) ?>
 
-<input id='path' value=''/>
-<fieldset>
+<input id='path' type="hidden" value=''/>
+<fieldset id="userportfolios" style="display:none">
+    <h1>Verteilen an: </h1>
 <? foreach($semList as $user => $sem):?>
-    <?= \Studip\Button::create(_("Vorlage verteilen für " . $user), '', array('onclick' => "importPortfolio('$sem')", 'id' => $sem)) ?><br/>
+    <?= \Studip\Button::create(_($user), '', array('onclick' => "importPortfolio('$sem')", 'id' => $sem)) ?><br/>
 
 
 <? endforeach ?>
@@ -30,12 +31,13 @@ function exportPortfolio(master){
     type: "GET",
     url: urlexport,
     success: function(exportData){
-      var path = exportData; //export data
+      var data = exportData; //export data
       console.log("###exportPath:");
-      console.log(path);
-      patharray = path.split(' ');
-      path = patharray[patharray.length-1]
+      console.log(data);
+      path = data.substring(data.lastIndexOf("<path>")+6,data.lastIndexOf("</path>"));
       $('#path').val(path);
+      $('#userportfolios').css("display", "block"); 
+      $('#export').css("display", "none"); 
     },
     error: function(data){
         alert('Beim Export ist ein Fehler aufgetreten: ' + data);
