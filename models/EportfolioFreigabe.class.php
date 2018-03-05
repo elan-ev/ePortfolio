@@ -37,7 +37,7 @@ class EportfolioFreigabe extends SimpleORMap
         //Wenn das Portfolio Teil einer Gruppe mit zugehöriger Supervisorgruppe ist:
         //checke ob user Teil der Supervisorgruppe ist und prüfe in diesem Fall Berechtigung für Supervisorgruppe
         if ($portfolio[0]->group_id){
-            $portfoliogroup = EportfolioGroups::findbySQL('seminar_id = :id', array(':id'=> $portfolio[0]->group_id));
+            $portfoliogroup = EportfolioGroup::findbySQL('seminar_id = :id', array(':id'=> $portfolio[0]->group_id));
             
         } if ($portfoliogroup[0]->supervisor_group_id){
             $isUser = SupervisorGroupUser::findbySQL('supervisor_group_id = :id AND user_id = :user_id', 

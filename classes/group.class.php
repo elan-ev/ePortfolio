@@ -43,12 +43,14 @@ class Group{
     $sem_class = Config::get()->getValue('SEM_CLASS_PORTFOLIO_Supervisionsgruppe');
 
     $supervisorgroup = new Supervisorgroup();
-    $supervisorgroup->setName($title);
-    $supervisorgroup->save();
+    $supervisorgroup->name = $title;
+    $supervisorgroup->eportfolio_group = $id;
+    $supervisorgroup->store();
     $supervisorgroup->addUser($owner);
 
     $supervisorgroupId = $supervisorgroup->getId();
 
+    //TODO anpassen
     $db = DBManager::get();
     $query = "UPDATE seminare SET Name = :title, Beschreibung = :text, status = :sem_class WHERE Seminar_id = :id ";
     $statement = $db->prepare($query);

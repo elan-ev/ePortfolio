@@ -19,7 +19,7 @@ class SupervisorGroup extends SimpleORMap
         $config['db_table'] = 'supervisor_group';
 
         $config['belongs_to']['eportfolio_group'] = array(
-            'class_name' => 'EportfolioGroups',
+            'class_name' => 'EportfolioGroup',
             'foreign_key' => 'eportfolio_group', );
 
         $config['has_many']['user'] = array(
