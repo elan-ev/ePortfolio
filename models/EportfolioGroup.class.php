@@ -87,7 +87,7 @@ class EportfolioGroup extends SimpleORMap
     $edit->store();
     $sem_class = Config::get()->getValue('SEM_CLASS_PORTFOLIO_Supervisionsgruppe');
 
-    $supervisorgroup = new Supervisorgroup();
+    $supervisorgroup = new SupervisorGroup();
     $supervisorgroup->name = $title;
     $supervisorgroup->store();
     

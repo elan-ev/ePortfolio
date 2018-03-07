@@ -16,7 +16,7 @@ class EportfolioGroupUser extends SimpleORMap
     {
         $config['db_table'] = 'eportfolio_groups_user';
 
-        $config['belongs_to']['seminar_id'] = array(
+        $config['belongs_to']['eportfolio_group'] = array(
             'class_name' => 'EportfolioGroup',
             'foreign_key' => 'seminar_id', );
         
