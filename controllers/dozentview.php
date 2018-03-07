@@ -33,7 +33,7 @@ class dozentviewController extends StudipController {
     }
 
     // customized #url_for for plugins
-    function url_for($to)
+    function url_for($to = '')
     {
         $args = func_get_args();
 

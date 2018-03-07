@@ -127,7 +127,7 @@ class ShowsupervisorController extends StudipController {
         $course = new Seminar($id);
         $this->courseName = $course->getName();
       } else $this->courseName = '';
-
+  
     }
 
     public function countViewer($cid) {
@@ -281,7 +281,7 @@ class ShowsupervisorController extends StudipController {
        
         $this->ownerid = $GLOBALS["user"]->id;
         if($_POST["create"]){
-          $group_id = EportfolioGroup::create($this->ownerid, studip_utf8decode(strip_tags($_POST["name"])), studip_utf8decode(strip_tags($_POST["beschreibung"])));
+          $group_id = EportfolioGroup::newGroup($this->ownerid, studip_utf8decode(strip_tags($_POST["name"])), studip_utf8decode(strip_tags($_POST["beschreibung"])));
           $this->response->add_header('X-Dialog-Close', '1');
           $this->render_nothing();
         }
@@ -349,7 +349,7 @@ class ShowsupervisorController extends StudipController {
             if (!in_array($groupowner, $member)) {
               $sem->addMember($groupowner, 'dozent');
             }
-            //TODO add all Supervisors
+            //add all Supervisors
             $supervisors = EportfolioGroup::getAllSupervisors($groupid);
             foreach($supervisors as $supervisor){
                 $sem->addMember($supervisor, 'dozent');
@@ -689,7 +689,7 @@ class ShowsupervisorController extends StudipController {
       $this->usersOfGroup = $group->user;
     }
 
-    function url_for($to)
+    function url_for($to = '')
     {
         $args = func_get_args();
 

@@ -21,7 +21,7 @@ class EportfolioGroup extends SimpleORMap
     {
         $config['db_table'] = 'eportfolio_groups';
 
-        $config['belongs_to']['owner_id'] = array(
+        $config['belongs_to']['owner'] = array(
             'class_name' => 'StudipUser',
             'foreign_key' => 'owner_id', );
 
@@ -46,12 +46,8 @@ class EportfolioGroup extends SimpleORMap
 
         parent::__construct($id);
     }
-    //testen
-    public static function getTemplates($id){
-        $group = EportfolioGroup::findById($id);
-        $q = json_decode($group->templates, true);
-        return $q;
-    }
+    
+    
   
   public static function getGroupMember($id) {
     $group = new EportfolioGroup($id);
@@ -73,12 +69,16 @@ class EportfolioGroup extends SimpleORMap
   }
 
   //TODO anpassen
-  public static function create($owner, $title, $text){
+  public static function newGroup($owner, $title, $text){
     $course = new Seminar();
     $id = $course->getId();
     $course->name = $title;
     $course->store();
-    $course->addMember($owner, 'dozent', true);
+    
+    $db = DBManager::get();
+    $query = "UPDATE seminare SET Name = :title, Beschreibung = :text, status = :sem_class WHERE Seminar_id = :id ";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':title'=> $title, ':text'=> $text, ':id'=> $id, ':sem_class' => $sem_class));
 
     //was machen die folgenden vier Zeilen?
     $edit = new Course($id);
@@ -89,20 +89,16 @@ class EportfolioGroup extends SimpleORMap
 
     $supervisorgroup = new Supervisorgroup();
     $supervisorgroup->name = $title;
-    $supervisorgroup->eportfolio_group = $id;
+    $supervisorgroup->store();
+    
+    $group = new EportfolioGroup($id);
+    $group->supervisor_group_id = $supervisorgroup->id;
+    $group->owner_id = $owner;
+    $group->store();
+    
+    $supervisorgroup->eportfolio_group = $group;
     $supervisorgroup->store();
     $supervisorgroup->addUser($owner);
-
-    $supervisorgroupId = $supervisorgroup->getId();
-
-    $db = DBManager::get();
-    $query = "UPDATE seminare SET Name = :title, Beschreibung = :text, status = :sem_class WHERE Seminar_id = :id ";
-    $statement = $db->prepare($query);
-    $statement->execute(array(':title'=> $title, ':text'=> $text, ':id'=> $id, ':sem_class' => $sem_class));
- 
-    $query = "INSERT INTO eportfolio_groups (seminar_id, owner_id, supervisor_group_id) VALUES (:id, :owner, :supervisorgroupid)";
-    $statement = $db->prepare($query);
-    $statement->execute(array(':id'=> $id, ':owner'=> $owner, ':supervisorgroupid' => $supervisorgroupId));
 
     return $id;
   }
@@ -148,9 +144,8 @@ class EportfolioGroup extends SimpleORMap
         array_push($array, $group->seminar_id);
       }
       foreach ($addedGroups as $group) {
-        $group = new SupervisorGroup($group);
-        if ($group->eportfolio_group){
-            array_push($array, $group->eportfolio_group);
+        if ($group->eportfolio_group->seminar_id){
+            array_push($array, $group->eportfolio_group->seminar_id);
         }
       }
       
@@ -168,10 +163,11 @@ class EportfolioGroup extends SimpleORMap
   public function getRelatedStudentPortfolios(){
       $member = $this->user;
       $portfolios = array();
-      if (count(self::getTemplates($this->seminar_id)) >= 1) {
+      if (count($this->templates) >= 1) {
+          
         foreach ($member as $key) {
           $portfolio = Eportfoliomodel::findBySQL('group_id = :groupid AND owner_id = :value', array(':groupid'=> $this->seminar_id, ':value'=> $key->user_id));
-          array_push($portfolios, $portfolio->Seminar_id);
+          array_push($portfolios, $portfolio[0]->Seminar_id);
         }
         return $portfolios;
       } else return NULL;

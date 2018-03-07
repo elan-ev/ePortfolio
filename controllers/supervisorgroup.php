@@ -96,7 +96,7 @@ class SupervisorgroupController extends StudipController {
     Supervisorgroup::deleteGroup($id);
   }
 
-    function url_for($to)
+    function url_for($to = '')
     {
         $args = func_get_args();
 

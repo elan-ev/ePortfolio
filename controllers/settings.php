@@ -375,7 +375,7 @@ class settingsController extends StudipController {
   }
   
   
-  function url_for($to)
+  function url_for($to = '')
     {
         $args = func_get_args();
 

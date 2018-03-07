@@ -18,9 +18,10 @@ class SupervisorGroup extends SimpleORMap
     {
         $config['db_table'] = 'supervisor_group';
 
-        $config['belongs_to']['eportfolio_group'] = array(
+        $config['has_one']['eportfolio_group'] = array(
             'class_name' => 'EportfolioGroup',
-            'foreign_key' => 'eportfolio_group', );
+            'assoc_foreign_key' => 'supervisor_group_id',
+        );
 
         $config['has_many']['user'] = array(
             'class_name' => 'SupervisorGroupUser',
@@ -41,7 +42,6 @@ class SupervisorGroup extends SimpleORMap
      * @param mixed $id primary key of table
      */
     public function __construct($id = null) {
-
         parent::__construct($id);
     }
     
@@ -49,18 +49,38 @@ class SupervisorGroup extends SimpleORMap
         $user = new SupervisorGroupUser();
         $user->supervisor_group_id = $this->id;
         $user->user_id = $user_id;
-        $user->store();
+        $user->store(); 
         
-        $seminar = new Seminar($this->eportfolio_group);
+        //als user in alle ePortfolios der StudentInnen eintragen
+        $group = $this->eportfolio_group;
+        $seminare = $group->getRelatedStudentPortfolios();
+        foreach($seminare as $seminar){
+            $seminar = new Seminar($seminar);
+            $seminar->addMember($user_id, 'dozent');
+            $seminar->store();
+        }
+
+        $seminar = new Seminar($this->eportfolio_group->seminar_id);
         $seminar->addMember($user_id, 'dozent');
         $seminar->store();
+        
     }
 
     public function deleteUser($user_id){
+        //aus Supervisorgruppe austragen
         $user = SupervisorGroupUser::findBySQL('user_id = :user_id AND supervisor_group_id = :supervisor_group_id',
                 array(':user_id' => $user_id, ':supervisor_group_id' => $this->id));
         $user->delete();
         
+        //als user aus allen ePortfolios der StudentInnen austragen
+        $group = new EportfolioGroup($this->eportfolio_group);
+        $seminare = $group->getRelatedStudentPortfolios();
+        foreach($seminare as $seminar){
+            $seminar = new Seminar($seminar);
+            $seminar->deleteMember($user_id);
+            $seminar->store();
+        }
+        //aus Portfoliogruppen-veranstaltung austragen
         $seminar = new Seminar($this->eportfolio_group);
         $seminar->deleteMember($user_id);
         $sem->store();
