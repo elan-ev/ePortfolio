@@ -52,6 +52,18 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         $navigation->setURL(PluginEngine::GetURL($this, array(), $renderView));
         Navigation::addItem('/eportfolioplugin', $navigation);
         //Navigation::activateItem("/eportfolioplugin");
+        
+        if ($this->isPortfolio() ){
+            /** changes of navigation in portfolios (Examples)
+             * Umbenennen uoder URL ändern:
+                Navigation::getItem('/browse')->setURL("/plugins.php/");
+                Navigation::getItem('/browse')->setTitle("Mein Kurs");
+             Items löschen:
+			if (Navigation::hasItem('/start')) {
+					Navigation::removeItem('/start');
+        		}
+			**/
+        }
 
         //set Menu Point for Supervisor
         $thisperm = get_global_perm($GLOBALS["user"]->id);
@@ -212,4 +224,27 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
       echo $color->color;
     }
 
+    //aktuelle cid/seminarid
+    static function getSeminarId()
+    {
+        if (!Request::option('cid')) {
+            if ($GLOBALS['SessionSeminar']) {
+                URLHelper::bindLinkParam('cid', $GLOBALS['SessionSeminar']);
+                return $GLOBALS['SessionSeminar'];
+            }
+            return false;
+        }
+        return Request::option('cid');
+    }
+
+    private function isPortfolio($semID)
+    {
+        $seminar = Seminar::getInstance($this->getSeminarId());
+        $status = $seminar->getStatus();
+        if ($status == Config::get()->getValue('SEM_CLASS_PORTFOLIO')){
+            return true;
+        }
+        else return false;
+    }
+    
 }
