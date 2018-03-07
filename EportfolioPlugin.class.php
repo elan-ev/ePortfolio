@@ -15,6 +15,8 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     public function __construct() {
         parent::__construct();
 
+        global $perm;
+        
         if($_POST["type"] == "freigeben"){
           $this->freigeben($_POST["selected"], $_POST["cid"]);
           exit;
@@ -24,32 +26,13 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
           $this->getsettingsColor($_GET['cid']);
           exit;
         }
-
-        function checkPermission(){
-          $userId = $GLOBALS["user"]->id;
-          $perm = get_global_perm($userId);
-
-          // $havePerm = array("root", "dozent", "admin");
-          $havePerm = array();
-          if (in_array($perm, $havePerm)){
-            $GLOBALS["permission"] = 1;
-          }
-
-        }
-
         $eportfolio = new eportfolio($_GET['cid']);
 
-        $GLOBALS["permission"] = 0;
-        $renderView = "show";
-        checkPermission();
 
-        if ($GLOBALS["permission"] == 1){
-          $renderView = "dozentview";
-        }
 
         $navigation = new AutoNavigation(_('ePortfolio'));
         $navigation->setImage(Assets::image_path('lightblue/edit'));
-        $navigation->setURL(PluginEngine::GetURL($this, array(), $renderView));
+        $navigation->setURL(PluginEngine::GetURL($this, array(), "show"));
         Navigation::addItem('/eportfolioplugin', $navigation);
         //Navigation::activateItem("/eportfolioplugin");
         
