@@ -75,7 +75,7 @@ class SupervisorgroupController extends StudipController {
       $group->addUser($key);
     }
     //$this->render_nothing();
-    $this->redirect($this->url_for('showsupervisor/supervisorgroup/'. $group->eportfolio_group), array('cid' => $group->eportfolio_group ));
+    $this->redirect($this->url_for('showsupervisor/supervisorgroup/'. $group->eportfolio_group->seminar_id), array('cid' => $group->eportfolio_group->seminar_id ));
   }
 
   public function deleteUser_action(){
