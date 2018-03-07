@@ -2,12 +2,11 @@
 
 <h1>Supervisionsgruppe "<?php echo $courseName; ?>"</h1>
 
-<?php showsupervisorcontroller::getTemplates($id); ?>
 
 <div>
 
       <!-- <select class="" id="tempselector" name="template">
-        <?php  $templates = showsupervisorcontroller::getTemplates($id); ?>
+        <?php  $templates = Eportfoliomodel::getPortfolioVorlagen(); ?>
         <?php foreach ($templates as $key => $value):?>
           <option value="<?php echo $value[id] ?>"><?php echo $value[temp_name] ?></option>
         <?php endforeach; ?>
@@ -33,7 +32,7 @@
           </thead>
 
           <tbody>
-            <?php $temps = ShowsupervisorController::getTemplates();
+            <?php $temps = Eportfoliomodel::getPortfolioVorlagen();
               foreach ($temps as $key):?>
               <?php $thisPortfolio = new Seminar($key); ?>
               <?php $eportfolio = new eportfolio($key); ?>

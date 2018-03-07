@@ -121,10 +121,7 @@ class EportfolioGroup extends SimpleORMap
   }
 
   public static function getFirstGroupOfuser($userId){
-    $query = "SELECT seminar_id FROM eportfolio_groups WHERE owner_id = :user_id";
-    $statement = DBManager::get()->prepare($query);
-    $statement->execute(array(':user_id'=> $userId));
-    return $statement->fetchAll()[0][0];
+    return self::getAllGroupsOfSupervisor($userId)[0];
   }
 
   public static function getAllGroupsOfUser($userId){

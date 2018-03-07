@@ -12,7 +12,7 @@ class ShowController extends StudipController {
         $this->perm = $perm;
         if($perm == "dozent"){
           $this->linkId = $output;
-          $output = Group::getFirstGroupOfUser($GLOBALS["user"]->id);
+          $output = EportfolioGroup::getFirstGroupOfUser($GLOBALS["user"]->id);
           if(!$output == '') {
             $this->linkId = $output;
           } else {
@@ -30,7 +30,7 @@ class ShowController extends StudipController {
         $attr = array('onclick' => 'newPortfolioModal()');
         $navcreate->addLink("Eigenes ePortfolio erstellen", "#", null, $attr);
         if ($perm == "dozent") {
-          $output = Group::getFirstGroupOfUser($GLOBALS["user"]->id);
+          $output = EportfolioGroup::getFirstGroupOfUser($GLOBALS["user"]->id);
           if(!$output == '') {
             $linkIdMenu = $output;
           } else {
@@ -90,32 +90,6 @@ class ShowController extends StudipController {
       }
 
       return $accessPortfolios;
-    }
-
-    public function getTemplates(){
-
-      global $perm;
-      $semId;
-      $seminare = array();
-
-      foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
-        if ($sem_type['name'] == 'ePortfolio-Vorlage') {
-          $semId = $id;
-        }   
-      }
-
-      $db = DBManager::get();
-      $query = "SELECT Seminar_id FROM seminare WHERE status = :semId";
-      $statement = $db->prepare($query);
-      $statement->execute(array(':semId'=> $semId));
-      foreach ($statement->fetchAll() as $key) {
-        if($perm->have_studip_perm('autor', $key[Seminar_id])){
-            array_push($seminare, $key[Seminar_id]);
-        }
-      }
-
-      return $seminare;
-
     }
 
     public function getCourseBeschreibung($cid){
