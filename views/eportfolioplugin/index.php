@@ -1,12 +1,12 @@
 <?php
 
   $images = array(
-    "http://www.arbeitstipps.de/wp-content/uploads/2010/06/leere-blatt-syndrom-mangelnde-kreativitaet-tipps.jpg",
-    "http://www.ahs-institut.de/wp-content/uploads/2015/03/2015-ahs-kollegial.jpg",
-    "http://www.maz-online.de/var/storage/images/maz/lokales/teltow-flaeming/sorge-um-unterrichtsausfall-trotz-neuer-lehrer/262589062-1-ger-DE/Sorge-um-Unterrichtsausfall-trotz-neuer-Lehrer_pdaArticleWide.jpg",
+    "https://www.arbeitstipps.de/wp-content/uploads/2010/06/leere-blatt-syndrom-mangelnde-kreativitaet-tipps.jpg",
+    "https://www.pointer.de/bilder/teaser_top/2374lernen_bibliothek_studium.jpg",
+    "https://www.maz-online.de/var/storage/images/maz/lokales/teltow-flaeming/sorge-um-unterrichtsausfall-trotz-neuer-lehrer/262589062-1-ger-DE/Sorge-um-Unterrichtsausfall-trotz-neuer-Lehrer_pdaArticleWide.jpg",
     "https://www.daad.de/medien/ausland/symbole/fittosize_558_314_3de6fbc25ed35bc4e67ac128c2c40130_abschlussfeier_by_thomas_koelsch_pixelio.jpg",
-    "http://p5.focus.de/img/fotos/origs2589632/6655443606-w630-h354-o-q75-p5/schule-lehrer.jpg",
-    "http://p5.focus.de/img/fotos/origs1094264/3255449779-w630-h354-o-q75-p5/schule-lernen.jpg",
+    "https://p5.focus.de/img/fotos/origs2589632/6655443606-w630-h354-o-q75-p5/schule-lehrer.jpg",
+    "https://p5.focus.de/img/fotos/origs1094264/3255449779-w630-h354-o-q75-p5/schule-lernen.jpg",
     "https://www.km.bayern.de/bilder/km_absatz/foto/6667_0710_bibliotheken_partner_der_schule_455.jpg",
     "https://www.pointer.de/bilder/teaser_top/2374lernen_bibliothek_studium.jpg",
   );
@@ -33,20 +33,18 @@
     <?php endif; ?>
 
     <hr>
-    <?php $img = eportfoliopluginController::getImg($cid);
-      $img = json_decode($img);
-      $imgcount = 0;
-     ?>
 
     <div class="row">
 
       <?php $imageNumber = 0; ?>
       <?php foreach ($cardInfo as $key): ?>
 
+        <?php if(EportfolioFreigabe::hasAccess($userid, $cid, $key[id])): ?>
         <?php
-          $link = URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $cid, 'selected' => $key[id]));
-          //$link = '/studip/plugins.php/courseware/courseware?cid='.$cid.'&selected='.$key[id];
-          $linkAdmin = $link.'#author';
+         
+            $link = URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $cid, 'selected' => $key[id]));
+            //$link = '/studip/plugins.php/courseware/courseware?cid='.$cid.'&selected='.$key[id];
+            $linkAdmin = $link.'#author';
         ?>
 
         <div data-blockid="<?php echo $key[id]; ?>" class="col-md-4 card-wrapper">
@@ -96,7 +94,7 @@
           <?php endif; ?>
         </div>
       </div>
-
+        <?php endif; ?>
       <?php endforeach; ?>
     </div>
   </div>
@@ -148,7 +146,7 @@
   }
 
   function saveTitle(){
-    var text = $('#title_changer input').val();
+    var text = $('#title_changer input').val().replace(/<\/?[^>]+(>|$)/g, "");;
 
     $.ajax({
       type: 'post',

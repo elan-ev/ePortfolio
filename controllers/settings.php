@@ -5,16 +5,12 @@ class settingsController extends StudipController {
   public function __construct($dispatcher)
   {
       parent::__construct($dispatcher);
-      $this->plugin = $dispatcher->plugin;
+      $this->plugin = $dispatcher->current_plugin;
 
       $portfolioid = $_GET['portfolioid'];
 
       $cid = $_GET['cid'];
 
-      if ($_GET['action'] == 'addZugriff') {
-        $this->addZugriff($_GET['id']);
-        exit();
-      }
 
       if ($_POST['action'] == 'deleteUserAccess') {
         $this->deleteUserAccess($_POST['userId'], $_POST['seminar_id']);
@@ -38,12 +34,12 @@ class settingsController extends StudipController {
     parent::before_filter($action, $args);
   }
 
-  public function index_action()
+  public function index_action($cid = NULL)
   {
 
     // set vars
     $userid = $GLOBALS["user"]->id;
-    $cid = $_GET["cid"];
+    $cid = $_GET["cid"]?  $_GET["cid"] : $cid;
     $db = DBManager::get();
     $this->cid = $cid;
 
@@ -76,37 +72,6 @@ class settingsController extends StudipController {
     $statement = $db->prepare($query);
     $statement->execute(array(':cid'=> $cid));
     $getS = $statement->fetchAll()[0][name];
-
-    // set a new viewer
-
-    if ($_POST["setAccess"]){
-      $setAcess_block_id = $_POST["block_id"];
-      $setAcess_viewer_id = $_POST["viewer_id"];
-
-      //debug
-      echo $setAcess_block_id . "++" . $setAcess_viewer_id;
-
-      $access = $this->getEportfolioAccess($setAcess_viewer_id, $cid);
-
-      //debug
-      print_r($access);
-
-      if ($access[$setAcess_block_id] == 1) {
-        $access[$setAcess_block_id] = 0;
-      } elseif ($access[$setAcess_block_id] == 0) {
-        $access[$setAcess_block_id] = 1;
-      }
-
-      //debug
-      echo $setAcess_block_id . ": " . $access[$setAcess_block_id];
-
-      $this->saveEportfolioAccess($setAcess_viewer_id, $access, $cid);
-      die();
-
-    }
-
-    ///////////////////////
-    ///////////////////////
 
 
     //viewer controll //
@@ -152,13 +117,7 @@ class settingsController extends StudipController {
     }
 
     //get supervisor_id
-    $query = "SELECT supervisor_id FROM eportfolio WHERE Seminar_id = :cid";
-    $statement = $db->prepare($query);
-    $statement->execute(array(':cid'=> $cid));
-    $getSupervisorquery = $statement->fetchAll();
-    $supervisor_id = $getSupervisorquery[0][supervisor_id];
-    //echo $supervisor_id;
-
+    $supervisor_id = $this->getSupervisorGroupOfPortfolio($cid);
     //get Portfolio Information//
     ////////////////////////////
 
@@ -220,7 +179,7 @@ class settingsController extends StudipController {
 
     //////////////////
     //////////////////
-
+    //Änderung von Name und Beschreibung des Portfolios
     if($_POST["saveChanges"]){
       $this->saveChanges();
     }
@@ -237,7 +196,15 @@ class settingsController extends StudipController {
     $this->access = $access;
 
   }
+  
+  public function setAccess_action($user_id, $seminar_id, $chapter_id, $status)
+  {
+      $freigabe= new EportfolioFreigabe();
+      $freigabe::setAccess($user_id, $seminar_id, $chapter_id, $status);
+      $this->render_nothing();
+  }
 
+  //name und beschreibung speichern
   public function saveChanges(){
     $db = DBManager::get();
     $cid = $_GET["cid"];
@@ -269,6 +236,7 @@ class settingsController extends StudipController {
     return $statement->fetchAll()[0][eportfolio_id];
   }
 
+  //TODO user
   public function getEportfolioAccess($id, $sid){
     $db = DBManager::get();
     $query = "SELECT eportfolio_access FROM eportfolio_user WHERE user_id = :id AND Seminar_id = :sid";
@@ -277,6 +245,7 @@ class settingsController extends StudipController {
     return unserialize($statement->fetchAll()[0][eportfolio_access]);
   }
 
+    //TODO user
   public function saveEportfolioAccess($id, $data, $sid){
     $pushArray = serialize($data);
     echo $pushArray; //TODO raus damit?
@@ -287,13 +256,16 @@ class settingsController extends StudipController {
   }
 
   public function getSupervisorGroupOfPortfolio($id){
-    $db = DBManager::get();
-    $query = "SELECT supervisor_id FROM eportfolio WHERE seminar_id = :id";
-    $statement = $db->prepare($query);
-    $statement->execute(array(':id'=> $id));
-    return $statement->fetchAll()[0][0];
+    $portfolio = Eportfoliomodel::findBySQL('seminar_id = :id', array(':id'=> $id));
+     if ($portfolio[0]->group_id){
+        $portfoliogroup = EportfolioGroup::findbySQL('seminar_id = :id', array(':id'=> $portfolio[0]->group_id));
+     } if ($portfoliogroup[0]->supervisor_group_id){
+     
+            return $portfoliogroup[0]->supervisor_group_id;
+        } else return false;   
   }
 
+  //todo
   public function getPortfolioFreigaben($id){
     $db = DBManager::get();
     $query = "SELECT freigaben_kapitel FROM eportfolio WHERE Seminar_id = :id";
@@ -303,7 +275,8 @@ class settingsController extends StudipController {
     return $query;
   }
 
-  public function addZugriff($id){
+  //addUserAccess
+  public function addZugriff_action($id){
     $mp             = MultiPersonSearch::load('eindeutige_id');
     $seminar        = new Seminar($id);
     $eportfolio_id  = $this->getEportfolioId($id);
@@ -322,6 +295,7 @@ class settingsController extends StudipController {
       $statement->execute(array(':id'=> $id, ':userId'=> $userId, ':eportfolio_id' => $eportfolio_id));
     }
 
+    $this->redirect($this->url_for('settings/index/'. $id));
     # Seminar speichern
     //$seminar->store();
 
@@ -399,5 +373,23 @@ class settingsController extends StudipController {
       return false;
     }
   }
+  
+  
+  function url_for($to = '')
+    {
+        $args = func_get_args();
+
+        # find params
+        $params = array();
+        if (is_array(end($args))) {
+            $params = array_pop($args);
+        }
+
+        # urlencode all but the first argument
+        $args = array_map('urlencode', $args);
+        $args[0] = $to;
+
+        return PluginEngine::getURL($this->dispatcher->current_plugin, $params, join('/', $args));
+    } 
 
 }

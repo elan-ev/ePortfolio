@@ -2,15 +2,15 @@
 
 require __DIR__.'/../vendor/autoload.php';
 
-class AddSemClass extends Migration
+class AddMoreSemClasses extends Migration
 {
     public function description () {
-        return 'add SemClass and SemTypes whose courses have this plugin in their overview slot';
+        return 'add SemClass and SemTypes for Supervisionsgruppen and ePortfolio-Vorlagen';
     }
 
 
     public function up () {
-        $id = $this->insertSemClass();
+        $this->insertPortfolioVorlageSemClass();
     }
 
 
@@ -22,30 +22,26 @@ class AddSemClass extends Migration
 
         $db = DBManager::get();
 
+       
         //remove entry in sem_classes
-        $name = "ePortfolio";
+        $name = "ePortfolio-Vorlage";
         $statement = $db->prepare("DELETE FROM sem_classes WHERE name = ?");
         $statement->execute(array($name));
 
         //remove entry in sem_types
-        $nameType = "ePortfolio";
+        $nameType = "ePortfolio-Vorlage";
         $statement = $db->prepare("DELETE FROM sem_types WHERE name = ?");
         $statement->execute(array($nameType));
     }
-
-    /**********************************************************************/
-    /* PRIVATE METHODS                                                    */
-    /**********************************************************************/
-
-
-    private function insertSemClass()
+  
+    private function insertPortfolioVorlageSemClass()
     {
         $db = DBManager::get();
-        $name = "ePortfolio";
-        $nameType = "ePortfolio";
+        $name = "ePortfolio-Vorlage";
+        $nameType = "Portfolio-Vorlage";
         $id = -2;
 
-        //Fügt Spalte an true or false ePortfolio
+        //FÃ¼gt Spalte an true or false ePortfolio
         // $nameType = "eportfolioStatus";
         // $statement = $db->prepare("ALTER TABLE seminare ADD ? BOOLEAN");
         // $statement->execute(array($nameType));
@@ -83,21 +79,14 @@ class AddSemClass extends Migration
         $current_modules['Courseware']['activated'] = '1';   // set values
         $current_modules['Courseware']['sticky'] = '1'; // sticky = 1 -> can't be chosen in "more"-field of course
         $current_modules['CoreParticipants']['activated'] = '0';
-        $current_modules['CoreParticipants']['sticky'] = '1'; 
+        $current_modules['CoreParticipants']['sticky'] = '0'; 
         $current_modules['CoreDocuments']['activated'] = '1';
         $current_modules['CoreDocuments']['sticky'] = '1'; 
         $current_modules['CoreOverview']['activated'] = '0';
         $current_modules['CoreOverview']['sticky'] = '1'; 
         $current_modules['CoreAdmin']['activated'] = '0';
-        $current_modules['CoreAdmin']['sticky'] = '1'; 
-        $current_modules['CoreSchedule']['activated'] = '0';
-        $current_modules['CoreSchedule']['sticky'] = '1'; 
-        $current_modules['CoreWiki']['activated'] = '0';
-        $current_modules['CoreWiki']['sticky'] = '1'; 
-        $current_modules['CoreElearningInterface']['activated'] = '0';
-        $current_modules['CoreElearningInterface']['sticky'] = '1'; 
-        
-        
+        $current_modules['CoreAdmin']['sticky'] = '1';
+
         $sem_class->set('overview', 'EportfolioPlugin');
         $sem_class->setModules($current_modules); // set modules
 
@@ -105,6 +94,7 @@ class AddSemClass extends Migration
 
         return $id;
     }
+    
 
     private function validateUniqueness($name)
     {

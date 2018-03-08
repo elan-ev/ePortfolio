@@ -5,7 +5,7 @@ class EportfoliopluginController extends StudipController {
   public function __construct($dispatcher)
   {
       parent::__construct($dispatcher);
-      $this->plugin = $dispatcher->plugin;
+      $this->plugin = $dispatcher->current_plugin;
 
       if ($_POST['titleChanger']) {
         $this->changeTitle();
@@ -20,11 +20,11 @@ class EportfoliopluginController extends StudipController {
       $cid = $_GET['cid'];
 
       $sidebar = Sidebar::Get();
-      Sidebar::Get()->setTitle('ï¿½bersicht');
+      Sidebar::Get()->setTitle('Übersicht');
 
       $navOverview = new LinksWidget();
-      $navOverview->setTitle('ï¿½bersicht');
-      $navOverview->addLink('ï¿½bersicht', URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('portfolioid' => $portfolioid)), null , array('class' => 'active-link'));
+      $navOverview->setTitle('Übersicht');
+      $navOverview->addLink('Übersicht', URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('portfolioid' => $portfolioid)), null , array('class' => 'active-link'));
       $sidebar->addWidget($navOverview);
 
       $nav = new LinksWidget();
@@ -32,7 +32,7 @@ class EportfoliopluginController extends StudipController {
       $nav->addLink($name, "");
 
       foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
-        if ($sem_type['name'] == 'Portfolio - Vorlage') {
+        if ($sem_type['name'] == 'ePortfolio-Vorlage') {
           $sem_type_id = $id;
         }
       }
@@ -46,12 +46,9 @@ class EportfoliopluginController extends StudipController {
 
       $getCoursewareChapters = $this->getCardInfos($cid);
       foreach ($getCoursewareChapters as $key => $value) {
-        $isOwner = $eportfolio->isOwner($GLOBALS["user"]->id);
-        if ($this->checkPersmissionOfChapter($value[id], $GLOBALS["user"]->id, $cid) == true && $isOwner == NULL) {
+        if (EportfolioFreigabe::hasAccess($GLOBALS["user"]->id, $cid, $value[id])){    
           $nav->addLink($value[title], URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $cid, 'selected' => $value[id])));
-        } else {
-          $nav->addLink($value[title], URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $cid, 'selected' => $value[id])));
-        }
+        } 
       }
 
       $sidebar->addWidget($nav);
@@ -107,7 +104,7 @@ class EportfoliopluginController extends StudipController {
 
     //get cardinfos for overview
     $return_arr = array();
-    $query = "SELECT id, title FROM mooc_blocks WHERE seminar_id = :cid AND type = 'Chapter'";
+    $query = "SELECT id, title FROM mooc_blocks WHERE seminar_id = :cid AND type = 'Chapter' ORDER BY position ASC";
     $statement = $db->prepare($query);
     $statement->execute(array(':cid'=> $cid));
  
@@ -201,16 +198,13 @@ class EportfoliopluginController extends StudipController {
 
     return $return_arr;
   }
-
-  public function getImg($cid){
-    //$q = DBManager::get()->query("SELECT * FROM eportfolio WHERE Seminar_id = '$cid'")->fetchAll();
-    //$tempid = $q[0][7];
-    //$img = DBManager::get()->query("SELECT * FROM eportfolio_templates WHERE id = '$tempid'")->fetchAll();
-    //return $img[0]["img"];
-  }
-
+  
+  
+  //TODO umschreiben
   public function getChapterViewer($nummer, $chapter){
-    $db = DBManager::get();
+    
+      
+      $db = DBManager::get();
     $query = "SELECT eportfolio_access, user_id FROM eportfolio_user WHERE Seminar_id = :nummer AND owner = '0'";
     $statement = $db->prepare($query);
     $statement->execute(array(':nummer'=> $nummer));
@@ -298,19 +292,6 @@ class EportfoliopluginController extends StudipController {
 
     print_r(json_encode($infoboxArray));
 
-  }
-
-  public function checkPersmissionOfChapter($chapter, $userId, $cid){
-    $db = DBManager::get();
-    $query = "SELECT eportfolio_access FROM eportfolio_user WHERE user_id = :user_id AND seminar_id = :cid";
-    $statement = $db->prepare($query);
-    $statement->execute(array(':user_id'=> $userId, ':cid'=> $cid));
-    $data = unserialize($statement->fetchAll()[0][0]);
-    if ($data[$chapter] == 1) {
-      return true;
-    } else {
-      return false;
-    }
   }
 
 }

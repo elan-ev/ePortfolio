@@ -1,5 +1,6 @@
 <?php
 
+include_once __DIR__.'/../models/EportfolioFreigabe.class.php';
 //print_r($GLOBALS);
 
 //print('modifier.php active');
@@ -9,9 +10,9 @@ $cid = $_GET["cid"];
 $userId = $GLOBALS["user"]->id;
 $selected = $_GET["selected"];
 
-$workingArray = $this->getAccess($cid, $userId);
-$workingArray = unserialize($workingArray);
-$workingArray = json_encode($workingArray);
+$workingArray = EportfolioFreigabe::hasAccess($userId, $cid, $selected);
+//$workingArray = unserialize($workingArray);
+//$workingArray = json_encode($workingArray);
 
 ?>
 
@@ -134,15 +135,14 @@ $workingArray = json_encode($workingArray);
 <script type="text/javascript" src="<?php echo $GLOBALS['ABSOLUTE_URI_STUDIP'] . 'plugins_packages/uos/EportfolioPlugin/assets/js/mustache.min.js'; ?>"></script>
 <script type="text/javascript">
   $(document).ready(function(){
-    console.log("modifier.php loaded");
-    var workingArray = <?php echo $workingArray ?>;
-    console.log(workingArray);
-    $.each(workingArray, function(key, value){
-      console.log(key +": "+value);
-      if(value == 0){
-        $('*[data-blockid='+ key +']').remove();
-      }
-    });
+    //console.log("modifier.php loaded");
+
+    //$.each(workingArray, function(key, value){
+    //  console.log(key +": "+value);
+    //  if(value == 0){
+    //    $('*[data-blockid='+ key +']').remove();
+    //  }
+    //});
   });
 
   $('#nav_course_files, #nav_course_mooc_progress').css('display', 'none');
@@ -171,7 +171,7 @@ $workingArray = json_encode($workingArray);
 
         <div style="display: inline; font-size: 24px; position: relative; top: -3px;margin-left:2px;">
           <a href="<?php echo URLHelper::getLink('plugins.php/eportfolioplugin/settings?cid='.$cid); ?>">
-            <i class="fa fa-cog" aria-hidden="true"></i>
+            <?=Icon::create('admin', 'clickable', ['title' => sprintf(_('Zugriffsrechte bearbeiten'))])?>
           </a>
         </div>
 
@@ -218,31 +218,6 @@ $workingArray = json_encode($workingArray);
     });
   }
 
-  function freigeben(selected, cid){
-    console.log(selected + " " + cid);
-    var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin');
-    $('td[id="chapter'+selected+'"]').empty().prepend('<i style="color: #24437c;" class="fa fa-circle-o-notch fa-spin fa-fw"></i>');
-    $.ajax({
-      url: url,
-      type: 'POST',
-      data: {
-        type: "freigeben",
-        selected: selected,
-        cid: cid
-      },
-      success: function(data){
-        console.log(data);
-        if (data == true) {
-          $('td[id="chapter'+selected+'"]').empty().prepend('<?php echo  Icon::create('accept', 'clickable'); ?>');
-        } else {
-          $('td[id="chapter'+selected+'"]').empty().prepend('<?php echo  Icon::create('decline', 'clickable'); ?>');
-        }
-
-      }
-
-    });
-  }
-
   function infobox(){
 
     var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/coursewareinfoblock');
@@ -261,6 +236,7 @@ $workingArray = json_encode($workingArray);
       },
       success: function(data){
 
+        console.log(data);
         data = JSON.parse(data);
         console.log(data);
 
@@ -272,6 +248,9 @@ $workingArray = json_encode($workingArray);
           $('#courseware').prepend(Mustache.render(template, data));
         }
 
+      },
+      error: function(data){
+          console.log(data);
       }
     });
 

@@ -29,13 +29,8 @@
 <tbody>
 
 <?php
-  //supervisor Zeile
-  //Supervisor Informationen
-  $supervisorId = SettingsController::getSupervisorGroupOfPortfolio($cid);
-  //$supervisor = UserModel::getUser($supervisorId);
-  //$supervisorName = $supervisor[Vorname].' '.$supervisor[Nachname];
-
-  //Freigaben für Portfolio
+  
+  //Freigaben fï¿½r Portfolio
   $SupervisorFreigaben = SettingsController::getPortfolioFreigaben($cid);
 
   # Prüfen ob eigenes Portfolio
@@ -46,16 +41,22 @@
   <tr style="background-color: lightblue;">
     <td>
       <img style="border-radius: 30px; width: 15px;" src="<?php echo $GLOBALS[DYNAMIC_CONTENT_URL];?>/user/<?php echo $supervisorId; ?>_small.png" onError="defaultImg(this);">
-      Supervisoren
+      Gruppen-Supervisoren
     </td>
 
     <?php foreach ($chapterList as $chapter):?>
-      <?php if($SupervisorFreigaben[$chapter[id]] == 1): ?>
-        <td id="chapter<?php echo $chapter[id]?>" onclick="freigebenSupervisorGroup('<?php echo $chapter[id]; ?>', '<?php echo $cid; ?>');"><?php echo  Icon::create('accept', 'clickable'); ?></td>
-      <?php else: ?>
-        <td id="chapter<?php echo $chapter[id]?>" onclick="freigebenSupervisorGroup('<?php echo $chapter[id]; ?>', '<?php echo $cid; ?>');"><?php echo  Icon::create('decline', 'clickable'); ?></td>
-      <?php endif; ?>
-    <?php endforeach; ?>
+      <?php $hasAccess = EportfolioFreigabe::hasAccess($supervisorId, $cid, $chapter[id]); ?>
+      <td onClick="setAccess('<?= $chapter[id]?>', '<?= $supervisorId ?>', this, '<?= $cid ?>');" class="righttable-inner">
+
+        <?php if($hasAccess):?>
+          <span id="icon-<?php echo $supervisorId.'-'.$chapter[id]; ?>" class="glyphicon glyphicon-ok"><?= Icon::create('accept', 'clickable'); ?></span>
+        <?php else :?>
+          <span id="icon-<?php echo $supervisorId.'-'.$chapter[id]; ?>" class="glyphicon glyphicon-remove"><?= Icon::create('decline', 'clickable'); ?></span>
+        <?php endif;?>
+
+      </td>
+
+      <?php endforeach; ?>
   </tr>
 <?php endif; ?>
 
@@ -63,22 +64,31 @@
  <?php foreach ($viewerList as $viewer):?>
    <tr>
      <td>
-       <img style="border-radius: 30px; width: 15px;" src="<?php echo $GLOBALS[DYNAMIC_CONTENT_URL];?>/user/<?php echo $viewer[viewer_id]; ?>_small.png" onError="defaultImg(this);">
-       <?php echo $viewer[Vorname].' '.$viewer[Nachname]; ?>
+       
+       <?php $userInfo = UserModel::getUser($viewer[viewer_id]);?>
+         <a href="<?= URLHelper::getLink('dispatch.php/profile?username=' . $userInfo['username']) ?>" >
+                        <?= Avatar::getAvatar($viewer[viewer_id], $userInfo['username'])->getImageTag(Avatar::SMALL,
+                                array('style' => 'margin-right: 5px;border-radius: 30px; width: 25px; border: 1px solid #28497c;', 'title' => htmlReady($userInfo['Vorname']." ".$userInfo['Nachname']))); ?>
+                        <?= htmlReady($userInfo['Vorname']." ".$userInfo['Nachname']) ?>         
+                    </a>
+       
+       
+       
+       
        <a onclick="deleteUserAccess('<?php echo $viewer[viewer_id] ?>', '<?php echo $cid ?>', this);">
           <?php echo Icon::create('trash', 'clickable') ?>
        </a>
      </td>
-     <?php $access = settingsController::getEportfolioAccess($viewer[viewer_id], $cid);?>
      <?php foreach ($chapterList as $chapter):?>
 
       <?php $viewer_id = $viewer[viewer_id]; ?>
-      <td onClick="setAccess(<?php echo $chapter[id]?>, '<?php echo $viewer_id ?>', this); checkIcon('<?php echo $viewer[viewer_id]?>', <?php echo $chapter[id]; ?>);" class="righttable-inner">
+      <?php $hasAccess = EportfolioFreigabe::hasAccess($viewer_id, $cid, $chapter[id]); ?>
+      <td onClick="setAccess('<?= $chapter[id]?>', '<?= $viewer_id ?>', this, '<?= $cid ?>');" class="righttable-inner">
 
-        <?php if($access[$chapter[id]] == 1):?>
-          <span id="icon-<?php echo $viewer[viewer_id].'-'.$chapter[id]; ?>" class="glyphicon glyphicon-ok" aria-hidden="true"></span>
-        <?php elseif($access[$chapter[id]] == 0):?>
-          <span id="icon-<?php echo $viewer[viewer_id].'-'.$chapter[id]; ?>" class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+        <?php if($hasAccess):?>
+          <span id="icon-<?php echo $viewer[viewer_id].'-'.$chapter[id]; ?>" class="glyphicon glyphicon-ok"><?= Icon::create('accept', 'clickable'); ?></span>
+        <?php else :?>
+          <span id="icon-<?php echo $viewer[viewer_id].'-'.$chapter[id]; ?>" class="glyphicon glyphicon-remove"><?= Icon::create('decline', 'clickable'); ?></span>
         <?php endif;?>
 
       </td>
@@ -93,10 +103,10 @@
 
 <?php
 $mp = MultiPersonSearch::get('eindeutige_id')
-  ->setLinkText(_('Personen hinzufügen'))
+  ->setLinkText(_('Personen hinzufï¿½gen'))
   ->setTitle(_('Personen zur Gruppe hinzuf&uuml;gen'))
   ->setSearchObject(new StandardSearch('user_id'))
-  ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/settings', array('id' => $cid, 'action' => 'addZugriff')))
+  ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/settings/addZugriff/'.$cid))
   ->render();
 
 $tempURL = URLHelper::getLink('dispatch.php/multipersonsearch/js_form/eindeutige_id');
@@ -163,29 +173,6 @@ $('div[data-color="'+color+'"] i').css('opacity', '1').attr('data-status', 'acti
   </div>
 </div>
 
-<!-- Modal Suche Viewer -->
-<div class="modal fade" id="addViewerModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Neue Zugriffsrechte vergeben</h4>
-      </div>
-      <div class="modal-body" id="modalDeleteBody">
-
-          <p>
-            <div class="input-group" style="margin-bottom:20px;">
-              <div class="input-group-addon"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></div>
-              <input type="text" class="form-control" id="inputSearchViewer" placeholder="Name der Person">
-            </div>
-
-            <div id="searchResultViewer"></div>
-
-          </p>
-      </div>
-    </div>
-  </div>
-</div>
 
 <script type="text/javascript" src="<?php echo $GLOBALS['ABSOLUTE_URI_STUDIP'] . 'plugins_packages/uos/EportfolioPlugin/assets/js/eportfolio.js'; ?>"></script>
 <script type="text/javascript">
@@ -199,7 +186,7 @@ $('div[data-color="'+color+'"] i').css('opacity', '1').attr('data-status', 'acti
       $('#deleteModal').focus()
     })
 
-    // Portfolio Informationen ändern
+    // Portfolio Informationen ï¿½ndern
     $('#portfolio-info-trigger').click( function() {
       $(this).toggleClass('show-info-not');
       $('#portfolio-info-saver').toggleClass('show-info');
@@ -332,29 +319,22 @@ $('div[data-color="'+color+'"] i').css('opacity', '1').attr('data-status', 'acti
     });
   }
 
-  function freigebenSupervisorGroup(selected, cid){
-    console.log(selected + " " + cid);
-    var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin');
-    $('td[id="chapter'+selected+'"]').empty().prepend('<i style="color: #24437c;" class="fa fa-circle-o-notch fa-spin fa-fw"></i>');
-    $.ajax({
-      url: url,
-      type: 'POST',
-      data: {
-        type: "freigeben",
-        selected: selected,
-        cid: cid
-      },
-      success: function(data){
-        console.log(data);
-        if (data == true) {
-          $('td[id="chapter'+selected+'"]').empty().prepend('<?php echo  Icon::create('accept', 'clickable'); ?>');
-        } else {
-          $('td[id="chapter'+selected+'"]').empty().prepend('<?php echo  Icon::create('decline', 'clickable'); ?>');
-        }
-
+  
+  function setAccess(id, viewerId, obj, cid){
+  var status = $(obj).children('span').hasClass('glyphicon-ok');
+  var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/settings/setAccess/'+viewerId+ '/' +cid+ '/' +id +'/' +!status);
+  $.ajax({
+    type: "POST",
+    url: url,
+    success: function(data) {
+     if (status === false) {
+        $(obj).empty().append('<span class="glyphicon glyphicon-ok"><?php echo  Icon::create('accept', 'clickable'); ?></span>');
+      } else {
+        $(obj).empty().append('<span class="glyphicon glyphicon-remove"><?php echo  Icon::create('decline', 'clickable'); ?></span>');
       }
 
-    });
-  }
+    }
+  });
+}
 
 </script>

@@ -1,18 +1,18 @@
   <?php
 
 class ShowController extends StudipController {
-
+    
     public function __construct($dispatcher)
     {
         parent::__construct($dispatcher);
-        $this->plugin = $dispatcher->plugin;
-
+        $this->plugin = $dispatcher->current_plugin;
+ 
         $this->userId = $GLOBALS["user"]->id;
         $perm = get_global_perm($GLOBALS["user"]->id);
         $this->perm = $perm;
         if($perm == "dozent"){
           $this->linkId = $output;
-          $output = Group::getFirstGroupOfUser($GLOBALS["user"]->id);
+          $output = EportfolioGroup::getFirstGroupOfUser($GLOBALS["user"]->id);
           if(!$output == '') {
             $this->linkId = $output;
           } else {
@@ -27,16 +27,15 @@ class ShowController extends StudipController {
 
         $navcreate = new LinksWidget();
         $navcreate->setTitle('Navigation');
-        $attr = array('onclick' => 'newPortfolioModal()');
-        $navcreate->addLink("Eigenes ePortfolio erstellen", "#", null, $attr);
+        $navcreate->addLink("Eigenes ePortfolio erstellen", PluginEngine::getLink($this->plugin, array(), 'show/createportfolio') , "", array('data-dialog'=>"size=auto;reload-on-close"));
         if ($perm == "dozent") {
-          $output = Group::getFirstGroupOfUser($GLOBALS["user"]->id);
+          $output = EportfolioGroup::getFirstGroupOfUser($GLOBALS["user"]->id);
           if(!$output == '') {
             $linkIdMenu = $output;
           } else {
             $linkIdMenu = '';
           }
-          $navcreate->addLink("Supervisionsansicht", "showsupervisor?id=".$linkIdMenu);
+          $navcreate->addLink("Supervisionsansicht", "showsupervisor?cid=".$linkIdMenu);
         }
         $sidebar->addWidget($navcreate);
 
@@ -45,7 +44,7 @@ class ShowController extends StudipController {
     public function before_filter(&$action, &$args)
     {
         parent::before_filter($action, $args);
-        $this->set_layout($GLOBALS['template_factory']->open('layouts/base.php'));
+        //$this->set_layout($GLOBALS['template_factory']->open('layouts/base.php'));
         PageLayout::setTitle('ePortfolio');
     }
 
@@ -92,29 +91,6 @@ class ShowController extends StudipController {
       return $accessPortfolios;
     }
 
-    public function getTemplates(){
-
-      $semId;
-      $seminare = array();
-
-      foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
-        if ($sem_type['name'] == 'Portfolio - Vorlage') {
-          $semId = $id;
-        }
-      }
-
-      $db = DBManager::get();
-      $query = "SELECT Seminar_id FROM seminare WHERE status = :semId";
-      $statement = $db->prepare($query);
-      $statement->execute(array(':semId'=> $semId));
-      foreach ($statement->fetchAll() as $key) {
-        array_push($seminare, $key[Seminar_id]);
-      }
-
-      return $seminare;
-
-    }
-
     public function getCourseBeschreibung($cid){
 
       $db = DBManager::get();
@@ -150,12 +126,21 @@ class ShowController extends StudipController {
 
     }
 
+    public function createvorlage_action(){
+        
+    }
+    
+    public function createportfolio_action(){
+        
+    }
+    
     public function newvorlage_action(){
 
       foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
-        if ($sem_type['name'] == 'Portfolio - Vorlage') {
+        if ($sem_type['name'] == 'ePortfolio-Vorlage') {
           $sem_type_id = $id;
         }
+         $sem_type_id = '106';
       }
 
       $userid           = $GLOBALS["user"]->id; //get userid
@@ -188,6 +173,9 @@ class ShowController extends StudipController {
       $statement = $db->prepare($query);
       $statement->execute(array(':Seminar_id'=> $sem_id, ':eportfolio_id'=> $eportfolio_id, ':userid'=> $userid)); //table eportfollio_user
 
+      //$this->redirect("show");
+      $this->response->add_header('X-Dialog-Close', '1');
+      $this->render_nothing();
     }
 
 }

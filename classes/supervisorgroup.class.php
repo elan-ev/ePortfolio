@@ -1,6 +1,6 @@
 <?php
 
-class Supervisorgroup{
+class Supervisorgroup_orig{
 
   var $supervisorgroupId = null;
   var $supervisorgroupName = "DEFAULT_NAME";
@@ -48,6 +48,9 @@ class Supervisorgroup{
     $query = "INSERT INTO supervisor_group_user (supervisor_group_id, user_id) VALUES (:id, :userId)";
     $statement = $db->prepare($query);
     $statement->execute(array(':id'=> $this->supervisorgroupId, ':userId' => $userId));
+    
+    //zu dieser supervisorgruppe gehört eine veranstaltung in welcher der neue Nutzer auch eingetragen werden muss
+    //ausserdem muss entschieden werden, ob er auch alle Vorlagfen des bisherigen owners sehen darf und dort dann auch als Dozent eingetragen werden
   }
 
   public static function isUserInGroup($userId){
