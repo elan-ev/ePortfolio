@@ -15,74 +15,12 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     public function __construct() {
         parent::__construct();
 
-        global $perm;
-        
-        if($_POST["type"] == "freigeben"){
-          $this->freigeben($_POST["selected"], $_POST["cid"]);
-          exit;
-        }
-
-        if($_POST["action"] == "getsettingsColor"){
-          $this->getsettingsColor($_GET['cid']);
-          exit;
-        }
-        $eportfolio = new eportfolio($_GET['cid']);
-
-
-
         $navigation = new AutoNavigation(_('ePortfolio'));
         $navigation->setImage(Assets::image_path('lightblue/edit'));
         $navigation->setURL(PluginEngine::GetURL($this, array(), "show"));
         Navigation::addItem('/eportfolioplugin', $navigation);
         //Navigation::activateItem("/eportfolioplugin");
         
-        if ($this->isPortfolio() ){
-            /** changes of navigation in portfolios (Examples)
-             * Umbenennen uoder URL ändern:
-                Navigation::getItem('/browse')->setURL("/plugins.php/");
-                Navigation::getItem('/browse')->setTitle("Mein Kurs");
-             Items löschen:
-			if (Navigation::hasItem('/start')) {
-					Navigation::removeItem('/start');
-        		}
-			**/
-        }
-
-        //set Menu Point for Supervisor
-        $thisperm = get_global_perm($GLOBALS["user"]->id);
-        if ($thisperm == "autor"){
-
-        }
-
-      $serverinfo = $_SERVER['PATH_INFO'];
-
-      // if ($serverinfo == "/courseware/courseware" || $serverinfo == "/eportfolioplugin/eportfolioplugin" || $serverinfo == "/eportfolioplugin/settings"){
-      //   include 'coursewareController/modifier.php';
-      // }
-
-      if ($serverinfo == "/courseware/courseware" || $serverinfo == "/eportfolioplugin/settings" || $serverinfo == "/eportfolioplugin/eportfolioplugin" || $serverinfo == "/course/management"){
-        if($_GET["cid"]){
-          $id = $_GET["cid"];
-
-          if ($eportfolio->isEportfolio() == true) {
-            //TODO ggf ersetzen
-            //include 'coursewareController/modifier.php';
-
-            # modifier for the menubar
-            if (!$id == NULL) {
-              $seminar = new Seminar($id);
-              $seminarMembers = $seminar->getMembers("dozent");
-              foreach ($seminarMembers as $key => $value) {
-                if ($userId != $key) {
-                  include 'assets/modify/modifyMenu.php';
-                }
-              }
-            }
-
-          }
-        }
-      }
-
     }
 
     public function getCardInfos($cid){
@@ -175,6 +113,42 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     public function perform($unconsumed_path)
     {
       $this->setupAutoload();
+      
+       global $perm;
+        
+        if($_POST["type"] == "freigeben"){
+          $this->freigeben($_POST["selected"], $_POST["cid"]);
+          exit;
+        }
+
+        if($_POST["action"] == "getsettingsColor"){
+          $this->getsettingsColor($_GET['cid']);
+          exit;
+        }
+        $eportfolio = new eportfolio($_GET['cid']);
+        
+        if ($this->isPortfolio() ){
+            //var_dump(Navigation::getItem('/course'));
+            /** changes of navigation in portfolios (Examples)
+             * Umbenennen uoder URL ändern:
+                Navigation::getItem('/browse')->setURL("/plugins.php/");
+                Navigation::getItem('/browse')->setTitle("Mein Kurs");
+             Items löschen:
+			if (Navigation::hasItem('/start')) {
+					Navigation::removeItem('/start');
+        		}
+			**/
+        }
+
+        //set Menu Point for Supervisor
+        $thisperm = get_global_perm($GLOBALS["user"]->id);
+        if ($thisperm == "autor"){
+
+        }
+
+      $serverinfo = $_SERVER['PATH_INFO'];
+
+      
       parent::perform($unconsumed_path);
 
     }
@@ -220,7 +194,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         return Request::option('cid');
     }
 
-    private function isPortfolio($semID)
+    private function isPortfolio()
     {
         $seminar = Seminar::getInstance($this->getSeminarId());
         $status = $seminar->getStatus();

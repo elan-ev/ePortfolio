@@ -1,5 +1,6 @@
 <?php
 
+include_once __DIR__.'/EportfolioGroup.class.php';
 
 /**
  * @author  <asudau@uos.de>
