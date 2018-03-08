@@ -1,12 +1,12 @@
   <?php
 
 class ShowController extends StudipController {
-    
+
     public function __construct($dispatcher)
     {
         parent::__construct($dispatcher);
         $this->plugin = $dispatcher->current_plugin;
- 
+
         $this->userId = $GLOBALS["user"]->id;
         $perm = get_global_perm($GLOBALS["user"]->id);
         $this->perm = $perm;
@@ -101,7 +101,10 @@ class ShowController extends StudipController {
       foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
         if ($sem_type['name'] == 'ePortfolio-Vorlage') {
           $semId = $id;
-        }   
+        } else {
+          $semId = '143';
+        }
+
       }
 
       $db = DBManager::get();
@@ -154,20 +157,20 @@ class ShowController extends StudipController {
     }
 
     public function createvorlage_action(){
-        
+
     }
-    
+
     public function createportfolio_action(){
-        
+
     }
-    
+
     public function newvorlage_action(){
 
       foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
         if ($sem_type['name'] == 'ePortfolio-Vorlage') {
           $sem_type_id = $id;
         }
-         $sem_type_id = '106';
+         $sem_type_id = '143';
       }
 
       $userid           = $GLOBALS["user"]->id; //get userid

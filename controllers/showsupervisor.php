@@ -21,7 +21,7 @@ class ShowsupervisorController extends StudipController {
 
         $this->groupTemplates = Group::getTemplates($id);
         $this->templistid = $this->groupTemplates;
-        
+
         $group = EportfolioGroup::findbySQL('seminar_id = :id', array(':id'=> $this->groupid));
         $this->supervisorGroupId = $group[0]->supervisor_group_id;
 
@@ -79,7 +79,7 @@ class ShowsupervisorController extends StudipController {
         $navcreate->setTitle('Navigation');
 
         $navcreate->addLink("Neue Gruppe anlegen", PluginEngine::getLink($this->plugin, array(), 'showsupervisor/creategroup') , "", array('data-dialog'=>"size=auto;reload-on-close"));
- 
+
         $navcreate->addLink("Meine Portfolios", "show");
 
         $navSupervisorGroup = new LinksWidget();
@@ -127,7 +127,7 @@ class ShowsupervisorController extends StudipController {
         $course = new Seminar($id);
         $this->courseName = $course->getName();
       } else $this->courseName = '';
-  
+
     }
 
     public function countViewer($cid) {
@@ -176,7 +176,7 @@ class ShowsupervisorController extends StudipController {
       return $seminare;
 
     }
-    
+
         public function addTempToDB(){
       $groupid = $_POST["groupid"];
       $tempid = $_POST["tempid"];
@@ -278,17 +278,17 @@ class ShowsupervisorController extends StudipController {
     }
 
     public function creategroup_action($master = NULL, $groupid = NULL){
-       
+
         $this->ownerid = $GLOBALS["user"]->id;
         if($_POST["create"]){
           $group_id = EportfolioGroup::newGroup($this->ownerid, studip_utf8decode(strip_tags($_POST["name"])), studip_utf8decode(strip_tags($_POST["beschreibung"])));
           $this->response->add_header('X-Dialog-Close', '1');
           $this->render_nothing();
         }
-        
+
     }
-    
-    
+
+
     public function createportfolio_action($master = NULL, $groupid = NULL){
 
       $this->semList = array();
@@ -372,7 +372,7 @@ class ShowsupervisorController extends StudipController {
             $query = "DELETE FROM mooc_blocks WHERE seminar_id = :sem_id AND type NOT LIKE 'Courseware'";
             $statement = $db->prepare($query);
             $statement->execute(array(':sem_id'=> $sem_id));
-            
+
             create_folder(_('Allgemeiner Dateiordner'),
                           _('Ablage für allgemeine Ordner und Dokumente der Veranstaltung'),
                           $sem->Seminar_id,
@@ -380,21 +380,21 @@ class ShowsupervisorController extends StudipController {
                           $sem->Seminar_id);
         }
 
-      } 
-      
-      
+      }
+
+
       $this->masterid = $masterid;
       $this->groupid = $groupid;
       //$this->response->add_header('X-Dialog-Close', '1');
-      
+
     }
-    
+
     public function distributeportfolios_action($groupid, $master){
         //speichern, welche Volagen bereits verteilt wurden
         if($groupid && $master){
             $this->storeTemplateForGroup($groupid, $master);
         }
-      
+
         $this->response->add_header('X-Dialog-Close', '1');
         $this->render_nothing();
     }
@@ -604,58 +604,58 @@ class ShowsupervisorController extends StudipController {
     public function delete_action($id){
 
       # check permission if root
-      $perm = get_global_perm($GLOBALS["user"]->id);
-
-      if(!$perm == "root"){
-          throw new Exception("Not Allowed");
-      }
+      // $perm = get_global_perm($GLOBALS["user"]->id);
+      //
+      // if(!$perm == "root"){
+      //     throw new Exception("Not Allowed");
+      // }
 
       # get eportfolio id's
-      $db = DBManager::get();
-      $query = "SELECT eportfolio_id, Seminar_id FROM eportfolio WHERE group_id = :id";
-      $statement = $db->prepare($query);
-      $statement->execute(array(':id'=> $id));
-      $eportfolio = $statement->fetchAll();
+      // $db = DBManager::get();
+      // $query = "SELECT eportfolio_id, Seminar_id FROM eportfolio WHERE group_id = :id";
+      // $statement = $db->prepare($query);
+      // $statement->execute(array(':id'=> $id));
+      // $eportfolio = $statement->fetchAll();
 
       # eportfolio_groups
-      $query = "DELETE FROM eportfolio_groups WHERE seminar_id = :id";
-      $statement = $db->prepare($query);
-      $statement->execute(array(':id'=> $id));
+      // $query = "DELETE FROM eportfolio_groups WHERE seminar_id = :id";
+      // $statement = $db->prepare($query);
+      // $statement->execute(array(':id'=> $id));
 
       # eportfolio_groups_user
-      $query = "DELETE FROM eportfolio_groups_user WHERE seminar_id = :id";
-      $statement = $db->prepare($query);
-      $statement->execute(array(':id'=> $id));
+      // $query = "DELETE FROM eportfolio_groups_user WHERE seminar_id = :id";
+      // $statement = $db->prepare($query);
+      // $statement->execute(array(':id'=> $id));
 
 
-      foreach ($eportfolio as $key) {
-        $eportfolio_id = $key['eportfolio_id'];
-        $Seminar_id = $key['Seminar_id'];
-
-        # eportfolio_user
-        $query = "DELETE FROM eportfolio_user WHERE eportfolio_id = :eportfolio_id";
-        $statement = $db->prepare($query);
-        $statement->execute(array(':eportfolio_id'=> $eportfolio_id));
-
-        $sem = new Seminar($Seminar_id);
-        $sem->delete();
-
-      }
+      // foreach ($eportfolio as $key) {
+      //   $eportfolio_id = $key['eportfolio_id'];
+      //   $Seminar_id = $key['Seminar_id'];
+      //
+      //   # eportfolio_user
+      //   $query = "DELETE FROM eportfolio_user WHERE eportfolio_id = :eportfolio_id";
+      //   $statement = $db->prepare($query);
+      //   $statement->execute(array(':eportfolio_id'=> $eportfolio_id));
+      //
+      //   $sem = new Seminar($Seminar_id);
+      //   $sem->delete();
+      //
+      // }
 
       # eportfolio
-      $query = "DELETE FROM eportfolio WHERE group_id = :id";
-      $statement = $db->prepare($query);
-      $statement->execute(array(':id'=> $id));
+      // $query = "DELETE FROM eportfolio WHERE group_id = :id";
+      // $statement = $db->prepare($query);
+      // $statement->execute(array(':id'=> $id));
 
     }
-    
+
     public function deleteUserFromGroup_action($id, $group_id){
         Group::deleteUser($id, $group_id);
         $this->redirect('showsupervisor?id=' . $group_id);
     }
 
     public function supervisorgroup_action($group_Id){
-      
+
       $groupId = $group_Id ? $group_Id : $_GET['cid'];
       $sem = new Seminar($groupId);
       $this->groupName = $sem->getName();
@@ -669,15 +669,15 @@ class ShowsupervisorController extends StudipController {
 
       $search_obj = new SQLSearch("SELECT auth_user_md5.user_id, CONCAT(auth_user_md5.nachname, ', ', auth_user_md5.vorname, ' (' , auth_user_md5.email, ')' ) as fullname, username, perms "
                             . "FROM auth_user_md5 "
-                            . "WHERE (CONCAT(auth_user_md5.Vorname, \" \", auth_user_md5.Nachname) LIKE :input " 
-                            . "OR CONCAT(auth_user_md5.Nachname, \" \", auth_user_md5.Vorname) LIKE :input " 
+                            . "WHERE (CONCAT(auth_user_md5.Vorname, \" \", auth_user_md5.Nachname) LIKE :input "
+                            . "OR CONCAT(auth_user_md5.Nachname, \" \", auth_user_md5.Vorname) LIKE :input "
                             . "OR auth_user_md5.username LIKE :input)"
                             . "AND auth_user_md5.perms LIKE 'dozent'"
                             . "AND auth_user_md5.user_id NOT IN "
                             . "(SELECT supervisor_group_user.user_id FROM supervisor_group_user WHERE supervisor_group_user.supervisor_group_id = '". $supervisorgroupid ."')  "
                             . "ORDER BY Vorname, Nachname ",
                 _("Teilnehmer suchen"), "username");
-      
+
       $this->mp = MultiPersonSearch::get('supervisorgroupSelectUsers')
         ->setLinkText(_('Supervisoren hinzufügen'))
         ->setTitle(_('Personen zur Supervisorgruppe hinzufügen'))
@@ -704,7 +704,7 @@ class ShowsupervisorController extends StudipController {
         $args[0] = $to;
 
         return PluginEngine::getURL($this->dispatcher->current_plugin, $params, join('/', $args));
-    } 
-    
-    
+    }
+
+
 }
