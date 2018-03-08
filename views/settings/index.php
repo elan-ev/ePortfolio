@@ -40,8 +40,10 @@
 <?php if ($eigenesPortfolio == false): ?>
   <tr style="background-color: lightblue;">
     <td>
-      <img style="border-radius: 30px; width: 15px;" src="<?php echo $GLOBALS[DYNAMIC_CONTENT_URL];?>/user/<?php echo $supervisorId; ?>_small.png" onError="defaultImg(this);">
-      Gruppen-Supervisoren
+    <?= Avatar::getNobody()->getImageTag(Avatar::SMALL,
+                                array('style' => 'margin-right: 5px;border-radius: 30px; width: 25px; border: 1px solid #28497c;', 'title' => 'Gruppen-Supervisoren')); ?>
+                        Gruppen-Supervisoren         
+                    </a>
     </td>
 
     <?php foreach ($chapterList as $chapter):?>
