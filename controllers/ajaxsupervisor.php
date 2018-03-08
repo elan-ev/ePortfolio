@@ -5,7 +5,7 @@ class ajaxsupervisorController extends StudipController {
     public function __construct($dispatcher)
     {
         parent::__construct($dispatcher);
-        $this->plugin = $dispatcher->plugin;
+        $this->plugin = $dispatcher->current_plugin;
 
         //check status and trigger query
         $perm = get_global_perm($GLOBALS["user"]->id);
@@ -33,15 +33,20 @@ class ajaxsupervisorController extends StudipController {
     public function getCourseBeschreibung($cid){
 
       $db = DBManager::get();
-      $query = $db->query("SELECT Beschreibung FROM seminare WHERE Seminar_id = '$cid'")->fetchAll();
-      return $query[0][Beschreibung];
+      $query = "SELECT Beschreibung FROM seminare WHERE Seminar_id = :cid";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':cid'=> $cid));
+      return $statement->fetchAll()[0][Beschreibung];
 
     }
 
     public function countViewer($cid) {
 
-      $query = DBManager::get()->query("SELECT  COUNT(Seminar_id) FROM eportfolio_user WHERE Seminar_id = '$cid' AND owner = 0")->fetchAll();
-      echo $query[0][0];
+      $db = DBManager::get();
+      $query = "SELECT COUNT(Seminar_id) FROM eportfolio_user WHERE Seminar_id = :cid AND owner = 0";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':cid'=> $cid));
+      echo $statement->fetchAll()[0][0];
 
     }
 
@@ -52,7 +57,11 @@ class ajaxsupervisorController extends StudipController {
 
       $portfolios = array();
 
-      $querygetcid = $db->query("SELECT Seminar_id FROM eportfolio WHERE owner_id = '$userid'")->fetchAll();
+      $query = "SELECT Seminar_id FROM eportfolio WHERE owner_id = :userid";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':userid'=> $userid));
+      $querygetcid = $statement->fetchAll();
+      
       foreach ($querygetcid as $key) {
         array_push($portfolios, $key[Seminar_id]);
       }

@@ -5,7 +5,7 @@ class livesearchController extends StudipController {
     public function __construct($dispatcher)
     {
         parent::__construct($dispatcher);
-        $this->plugin = $dispatcher->plugin;
+        $this->plugin = $dispatcher->current_plugin;
 
     }
 
@@ -38,17 +38,25 @@ class livesearchController extends StudipController {
 
       //query
       if ($_POST["searchViewer"]){
-        $search_query = $db->query("SELECT Vorname, Nachname, user_id FROM auth_user_md5 WHERE Vorname LIKE '%$val[0]%' OR Nachname LIKE '%$val[0]%'")->fetchAll();
+        $query = "SELECT Vorname, Nachname, user_id FROM auth_user_md5 WHERE Vorname LIKE '%:vorname%' OR Nachname LIKE '%:nachname%'";
+        $statement = $db->prepare($query);
+        $statement->execute(array(':vorname'=> $val[0], ':nachname'=> $val[0]));
+        $search_query = $statement->fetchAll();
       } elseif ($_POST["searchSupervisor"]) {
-        $search_query = $db->query("SELECT Vorname, Nachname, user_id FROM auth_user_md5 WHERE Vorname LIKE '%$val%' OR Nachname LIKE '%$val%' OR Vorname LIKE '%$val[1]%' OR Nachname LIKE '%$val[1]%' AND perms = '$user_status'")->fetchAll();
+        $query = "SELECT Vorname, Nachname, user_id FROM auth_user_md5 WHERE Vorname LIKE '%:string_1%' OR Nachname LIKE '%:string_1%' OR Vorname LIKE '%:string_2%' OR Nachname LIKE '%string_2%' AND perms = :user_status";
+        $statement = $db->prepare($query);
+        $statement->execute(array(':string_1'=> $val, ':string_2'=> $val[1], ':user_status' => $user_status));
+        $search_query = $statement->fetchAll();
       }
 
       foreach ($search_query as $key) {
 
         $user_id_viewer = $key[user_id];
-        $checkUser = $db->query("SELECT * FROM seminar_user WHERE Seminar_id = '$cid' AND user_id = '$user_id_viewer'")->fetchAll();
+        $query = "SELECT * FROM seminar_user WHERE Seminar_id = :cid AND user_id = :user_id_viewer";
+        $statement = $db->prepare($query);
+        $statement->execute(array(':cid'=> $cid, ':user_id_viewer'=> $user_id_viewer));
 
-        if (empty($checkUser)) {
+        if (empty($statement->fetchAll())) {
 
           $arrayOne = array();
           $arrayOne["Vorname"] =  $key[Vorname];

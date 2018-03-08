@@ -1,66 +1,4 @@
-<!-- HEAD START -->
-
-<head>
-  <meta charset="utf-8"/><meta charset="utf-8"/>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-
-  <style media="screen">
-
-    .widget-list, .widget-links li {
-      position: relative;
-    }
-
-    .active-link {
-      background-color: #a9b6cb;
-      box-shadow: inset 0 0 0 1px #7e92b0;
-      color: #fff!important;
-    }
-
-    .active-link::before {
-      border: 10px solid rgba(126,146,176,0);
-      content: "";
-      height: 0;
-      width: 0;
-      position: absolute;
-      border-left-color: #7e92b0;
-      left: 100%;
-      top:50%;
-      margin-top: -10px;
-    }
-
-
-    .portfolio-info-wrapper-current .wrapper-name {
-      margin-bottom: 10px;
-    }
-
-    .portfolio-info-wrapper-current .wrapper-beschreibung {
-      margin-bottom: 10px;
-    }
-
-    .portfolio-info-trigger {
-      font-size: 10px;
-      text-align: center;
-      border: 1px solid #dddddd;
-      padding: 3px 5px;
-    }
-
-    .glyphicon-ok {
-      color: green;
-    }
-
-    .glyphicon-remove {
-      color: red;
-    }
-
-  </style>
-</head>
-
-<!-- HEAD END -->
-
-<!-- <h3>Supervisor</h3>
-
-<?php if(!$supervisorId == NULL):?>
+<!-- <?php if(!$supervisorId == NULL):?>
 
   <?php $supervisor = UserModel::getUser($supervisorId);
       echo $supervisor[Vorname].' '.$supervisor[Nachname].'<br/>';
@@ -91,16 +29,11 @@
 <tbody>
 
 <?php
-  //supervisor Zeile
-  //Supervisor Informationen
-  $supervisorId = SettingsController::getSupervisorOfPortfolio($cid);
-  $supervisor = UserModel::getUser($supervisorId);
-  $supervisorName = $supervisor[Vorname].' '.$supervisor[Nachname];
-
-  //Freigaben für Portfolio
+  
+  //Freigaben f�r Portfolio
   $SupervisorFreigaben = SettingsController::getPortfolioFreigaben($cid);
 
-  # Prüfen ob eigenes Portfolio
+  # Pr�fen ob eigenes Portfolio
   $eigenesPortfolio = SettingsController::eigenesPortfolio($cid);
  ?>
 
@@ -108,16 +41,22 @@
   <tr style="background-color: lightblue;">
     <td>
       <img style="border-radius: 30px; width: 15px;" src="<?php echo $GLOBALS[DYNAMIC_CONTENT_URL];?>/user/<?php echo $supervisorId; ?>_small.png" onError="defaultImg(this);">
-      <?php echo $supervisorName; ?> (Supervisor)
+      Gruppen-Supervisoren
     </td>
 
     <?php foreach ($chapterList as $chapter):?>
-      <?php if($SupervisorFreigaben[$chapter[id]] == 1): ?>
-        <td id="chapter<?php echo $chapter[id]?>" onclick="freigeben('<?php echo $chapter[id]; ?>', '<?php echo $cid; ?>');"><?php echo  Icon::create('accept', 'clickable'); ?></td>
-      <?php else: ?>
-        <td id="chapter<?php echo $chapter[id]?>" onclick="freigeben('<?php echo $chapter[id]; ?>', '<?php echo $cid; ?>');"><?php echo  Icon::create('decline', 'clickable'); ?></td>
-      <?php endif; ?>
-    <?php endforeach; ?>
+      <?php $hasAccess = EportfolioFreigabe::hasAccess($supervisorId, $cid, $chapter[id]); ?>
+      <td onClick="setAccess('<?= $chapter[id]?>', '<?= $supervisorId ?>', this, '<?= $cid ?>');" class="righttable-inner">
+
+        <?php if($hasAccess):?>
+          <span id="icon-<?php echo $supervisorId.'-'.$chapter[id]; ?>" class="glyphicon glyphicon-ok"><?= Icon::create('accept', 'clickable'); ?></span>
+        <?php else :?>
+          <span id="icon-<?php echo $supervisorId.'-'.$chapter[id]; ?>" class="glyphicon glyphicon-remove"><?= Icon::create('decline', 'clickable'); ?></span>
+        <?php endif;?>
+
+      </td>
+
+      <?php endforeach; ?>
   </tr>
 <?php endif; ?>
 
@@ -125,22 +64,31 @@
  <?php foreach ($viewerList as $viewer):?>
    <tr>
      <td>
-       <img style="border-radius: 30px; width: 15px;" src="<?php echo $GLOBALS[DYNAMIC_CONTENT_URL];?>/user/<?php echo $viewer[viewer_id]; ?>_small.png" onError="defaultImg(this);">
-       <?php echo $viewer[Vorname].' '.$viewer[Nachname]; ?>
+       
+       <?php $userInfo = UserModel::getUser($viewer[viewer_id]);?>
+         <a href="<?= URLHelper::getLink('dispatch.php/profile?username=' . $userInfo['username']) ?>" >
+                        <?= Avatar::getAvatar($viewer[viewer_id], $userInfo['username'])->getImageTag(Avatar::SMALL,
+                                array('style' => 'margin-right: 5px;border-radius: 30px; width: 25px; border: 1px solid #28497c;', 'title' => htmlReady($userInfo['Vorname']." ".$userInfo['Nachname']))); ?>
+                        <?= htmlReady($userInfo['Vorname']." ".$userInfo['Nachname']) ?>         
+                    </a>
+       
+       
+       
+       
        <a onclick="deleteUserAccess('<?php echo $viewer[viewer_id] ?>', '<?php echo $cid ?>', this);">
           <?php echo Icon::create('trash', 'clickable') ?>
        </a>
      </td>
-     <?php $access = settingsController::getEportfolioAccess($viewer[viewer_id], $cid);?>
      <?php foreach ($chapterList as $chapter):?>
 
       <?php $viewer_id = $viewer[viewer_id]; ?>
-      <td onClick="setAccess(<?php echo $chapter[id]?>, '<?php echo $viewer_id ?>', this); checkIcon('<?php echo $viewer[viewer_id]?>', <?php echo $chapter[id]; ?>);" class="righttable-inner">
+      <?php $hasAccess = EportfolioFreigabe::hasAccess($viewer_id, $cid, $chapter[id]); ?>
+      <td onClick="setAccess('<?= $chapter[id]?>', '<?= $viewer_id ?>', this, '<?= $cid ?>');" class="righttable-inner">
 
-        <?php if($access[$chapter[id]] == 1):?>
-          <span id="icon-<?php echo $viewer[viewer_id].'-'.$chapter[id]; ?>" class="glyphicon glyphicon-ok" aria-hidden="true"></span>
-        <?php elseif($access[$chapter[id]] == 0):?>
-          <span id="icon-<?php echo $viewer[viewer_id].'-'.$chapter[id]; ?>" class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+        <?php if($hasAccess):?>
+          <span id="icon-<?php echo $viewer[viewer_id].'-'.$chapter[id]; ?>" class="glyphicon glyphicon-ok"><?= Icon::create('accept', 'clickable'); ?></span>
+        <?php else :?>
+          <span id="icon-<?php echo $viewer[viewer_id].'-'.$chapter[id]; ?>" class="glyphicon glyphicon-remove"><?= Icon::create('decline', 'clickable'); ?></span>
         <?php endif;?>
 
       </td>
@@ -155,10 +103,10 @@
 
 <?php
 $mp = MultiPersonSearch::get('eindeutige_id')
-  ->setLinkText(_('Personen hinzufügen'))
+  ->setLinkText(_('Personen hinzuf�gen'))
   ->setTitle(_('Personen zur Gruppe hinzuf&uuml;gen'))
   ->setSearchObject(new StandardSearch('user_id'))
-  ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/settings', array('id' => $cid, 'action' => 'addZugriff')))
+  ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/settings/addZugriff/'.$cid))
   ->render();
 
 $tempURL = URLHelper::getLink('dispatch.php/multipersonsearch/js_form/eindeutige_id');
@@ -205,7 +153,7 @@ $('div[data-color="'+color+'"] i').css('opacity', '1').attr('data-status', 'acti
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Supervisor hinzuf�gen</h4>
+        <h4 class="modal-title">Supervisor hinzuf�gen</h4>
       </div>
       <div class="modal-body" id="modalDeleteBody">
 
@@ -225,29 +173,6 @@ $('div[data-color="'+color+'"] i').css('opacity', '1').attr('data-status', 'acti
   </div>
 </div>
 
-<!-- Modal Suche Viewer -->
-<div class="modal fade" id="addViewerModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Neue Zugriffsrechte vergeben</h4>
-      </div>
-      <div class="modal-body" id="modalDeleteBody">
-
-          <p>
-            <div class="input-group" style="margin-bottom:20px;">
-              <div class="input-group-addon"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></div>
-              <input type="text" class="form-control" id="inputSearchViewer" placeholder="Name der Person">
-            </div>
-
-            <div id="searchResultViewer"></div>
-
-          </p>
-      </div>
-    </div>
-  </div>
-</div>
 
 <script type="text/javascript" src="<?php echo $GLOBALS['ABSOLUTE_URI_STUDIP'] . 'plugins_packages/uos/EportfolioPlugin/assets/js/eportfolio.js'; ?>"></script>
 <script type="text/javascript">
@@ -261,7 +186,7 @@ $('div[data-color="'+color+'"] i').css('opacity', '1').attr('data-status', 'acti
       $('#deleteModal').focus()
     })
 
-    // Portfolio Informationen ändern
+    // Portfolio Informationen �ndern
     $('#portfolio-info-trigger').click( function() {
       $(this).toggleClass('show-info-not');
       $('#portfolio-info-saver').toggleClass('show-info');
@@ -393,5 +318,23 @@ $('div[data-color="'+color+'"] i').css('opacity', '1').attr('data-status', 'acti
       }
     });
   }
+
+  
+  function setAccess(id, viewerId, obj, cid){
+  var status = $(obj).children('span').hasClass('glyphicon-ok');
+  var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/settings/setAccess/'+viewerId+ '/' +cid+ '/' +id +'/' +!status);
+  $.ajax({
+    type: "POST",
+    url: url,
+    success: function(data) {
+     if (status === false) {
+        $(obj).empty().append('<span class="glyphicon glyphicon-ok"><?php echo  Icon::create('accept', 'clickable'); ?></span>');
+      } else {
+        $(obj).empty().append('<span class="glyphicon glyphicon-remove"><?php echo  Icon::create('decline', 'clickable'); ?></span>');
+      }
+
+    }
+  });
+}
 
 </script>

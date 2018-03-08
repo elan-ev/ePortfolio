@@ -5,7 +5,7 @@ class dozentviewController extends StudipController {
     public function __construct($dispatcher)
     {
         parent::__construct($dispatcher);
-        $this->plugin = $dispatcher->plugin;
+        $this->plugin = $dispatcher->current_plugin;
 
         $user = get_username();
 
@@ -33,7 +33,7 @@ class dozentviewController extends StudipController {
     }
 
     // customized #url_for for plugins
-    function url_for($to)
+    function url_for($to = '')
     {
         $args = func_get_args();
 
@@ -47,7 +47,7 @@ class dozentviewController extends StudipController {
         $args = array_map('urlencode', $args);
         $args[0] = $to;
 
-        return PluginEngine::getURL($this->dispatcher->plugin, $params, join('/', $args));
+        return PluginEngine::getURL($this->dispatcher->current_plugin, $params, join('/', $args));
     }
 
 

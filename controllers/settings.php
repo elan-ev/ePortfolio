@@ -5,16 +5,12 @@ class settingsController extends StudipController {
   public function __construct($dispatcher)
   {
       parent::__construct($dispatcher);
-      $this->plugin = $dispatcher->plugin;
+      $this->plugin = $dispatcher->current_plugin;
 
       $portfolioid = $_GET['portfolioid'];
 
       $cid = $_GET['cid'];
 
-      if ($_GET['action'] == 'addZugriff') {
-        $this->addZugriff($_GET['id']);
-        exit();
-      }
 
       if ($_POST['action'] == 'deleteUserAccess') {
         $this->deleteUserAccess($_POST['userId'], $_POST['seminar_id']);
@@ -31,20 +27,6 @@ class settingsController extends StudipController {
         exit();
       }
 
-      # Aktuelle Seite
-      $seminar = new Seminar($_GET["cid"]);
-      PageLayout::setTitle('ePortfolio - Zugriffsrechte: '.$seminar->getName());
-
-      //autonavigation
-      Navigation::activateItem("course/settings");
-
-      $sidebar = Sidebar::Get();
-      $sidebar->setTitle('Navigation');
-
-      $views = new ViewsWidget();
-      $views->setTitle('Rechte');
-      $views->addLink(_('Rechteverwaltung'), '#')->setActive(true);
-      Sidebar::get()->addWidget($views);
   }
 
   public function before_filter(&$action, &$args)
@@ -52,16 +34,31 @@ class settingsController extends StudipController {
     parent::before_filter($action, $args);
   }
 
-  public function index_action()
+  public function index_action($cid = NULL)
   {
 
     // set vars
     $userid = $GLOBALS["user"]->id;
-    $cid = $_GET["cid"];
+    $cid = $_GET["cid"]?  $_GET["cid"] : $cid;
     $db = DBManager::get();
     $this->cid = $cid;
 
-    # ÃœberprÃ¼ft ob Besitzer der Veranstaltung
+    # Aktuelle Seite
+    $seminar = new Seminar($_GET["cid"]);
+    PageLayout::setTitle('ePortfolio - Zugriffsrechte: '.$seminar->getName());
+
+    //autonavigation
+    Navigation::activateItem("course/settings");
+
+    $sidebar = Sidebar::Get();
+    $sidebar->setTitle('Navigation');
+
+    $views = new ViewsWidget();
+    $views->setTitle('Rechte');
+    $views->addLink(_('Rechteverwaltung'), '#')->setActive(true);
+    Sidebar::get()->addWidget($views);
+
+    # Überprüft ob Besitzer der Veranstaltung
     // if (!$this->checkIfOwner($userId, $cid) == true) {
     //   exit("Sie haben keine Berechtigung!");
     // }
@@ -71,39 +68,10 @@ class settingsController extends StudipController {
     ////////////////////////s
 
     //get seninar infos
-    $getSeminarInfo = $db->query("SELECT name FROM seminare WHERE Seminar_id = '$cid'")->fetchAll();
-    $getS = $getSeminarInfo[0][name];
-
-    // set a new viewer
-
-    if ($_POST["setAccess"]){
-      $setAcess_block_id = $_POST["block_id"];
-      $setAcess_viewer_id = $_POST["viewer_id"];
-
-      //debug
-      echo $setAcess_block_id . "++" . $setAcess_viewer_id;
-
-      $access = $this->getEportfolioAccess($setAcess_viewer_id, $cid);
-
-      //debug
-      print_r($access);
-
-      if ($access[$setAcess_block_id] == 1) {
-        $access[$setAcess_block_id] = 0;
-      } elseif ($access[$setAcess_block_id] == 0) {
-        $access[$setAcess_block_id] = 1;
-      }
-
-      //debug
-      echo $setAcess_block_id . ": " . $access[$setAcess_block_id];
-
-      $this->saveEportfolioAccess($setAcess_viewer_id, $access, $cid);
-      die();
-
-    }
-
-    ///////////////////////
-    ///////////////////////
+    $query = "SELECT name FROM seminare WHERE Seminar_id = :cid";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':cid'=> $cid));
+    $getS = $statement->fetchAll()[0][name];
 
 
     //viewer controll //
@@ -113,43 +81,50 @@ class settingsController extends StudipController {
     $countChapter = 0;
 
     //get list chapters
-    $chapterList = $db->query("SELECT * FROM mooc_blocks WHERE type = 'Chapter' AND seminar_id = '$cid'")->fetchAll();
-    foreach ($chapterList as $key) {
+    $query = "SELECT * FROM mooc_blocks WHERE type = 'Chapter' AND seminar_id = :cid";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':cid'=> $cid));
+    foreach ($statement->fetchAll() as $key) {
       array_push($arrayList, array('title' => $key[title], 'id' => $key[id]));
       $countChapter++;
     }
 
     //get viewer information
-    $getPortfolioViewer = $db->query("SELECT * FROM seminar_user WHERE Seminar_id = '$cid' AND status != 'dozent'")->fetchAll();
-    foreach ($getPortfolioViewer as $key) {
+    $query = "SELECT * FROM seminar_user WHERE Seminar_id = :cid AND status != 'dozent'";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':cid'=> $cid));
+    foreach ($statement->fetchAll() as $key) {
 
       $viewer_id =  $key[user_id];
-      $viewerInfo = $db->query("SELECT Vorname, Nachname FROM auth_user_md5 WHERE user_id = '$viewer_id'")->fetchAll();
+      $query = "SELECT Vorname, Nachname FROM auth_user_md5 WHERE user_id = :viewer_id";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':viewer_id'=> $viewer_id));
+      $viewerInfo = $statement->fetchAll();
       $viewerVorname = $viewerInfo[0][Vorname];
       $viewerNachname = $viewerInfo[0][Nachname];
 
-      $viewerAccess = $db->query("SELECT eportfolio_access FROM seminar_user WHERE user_id = '$viewer_id' AND Seminar_id = '$cid'")->fetchAll();
-      $dataAccess = unserialize($viewerAccess[0][eportfolio_access]);
+      //$viewerAccess = $db->query("SELECT eportfolio_access FROM seminar_user WHERE user_id = '$viewer_id' AND Seminar_id = '$cid'")->fetchAll();
+      //$dataAccess = unserialize($viewerAccess[0][eportfolio_access]);
 
       $arrayOne = array();
       $arrayOne['Vorname'] = $viewerVorname;
       $arrayOne['Nachname'] = $viewerNachname;
       $arrayOne['viewer_id'] = $viewer_id;
-      $arrayOne['Chapter'] = $dataAccess[chapter];
+      //$arrayOne['Chapter'] = $dataAccess[chapter];
 
       array_push($return_arr, $arrayOne);
 
     }
 
     //get supervisor_id
-    $getSupervisorquery = $db->query("SELECT supervisor_id FROM eportfolio WHERE Seminar_id = '$cid'")->fetchAll();
-    $supervisor_id = $getSupervisorquery[0][supervisor_id];
-    //echo $supervisor_id;
-
+    $supervisor_id = $this->getSupervisorGroupOfPortfolio($cid);
     //get Portfolio Information//
     ////////////////////////////
 
-    $queryPortfolioInfo = $db->query("SELECT Name, Beschreibung FROM seminare WHERE Seminar_id = '$cid'")->fetchAll();
+    $query = "SELECT Name, Beschreibung FROM seminare WHERE Seminar_id = :cid";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':cid'=> $cid));
+    $queryPortfolioInfo = $statement->fetchAll();
     $portfolioInfo = array('Name' => $queryPortfolioInfo[0][Name], 'Beschreibung' => $queryPortfolioInfo[0][Beschreibung]);
 
     ////////////////////////////
@@ -164,8 +139,12 @@ class settingsController extends StudipController {
       $access_array_serialize = serialize($access_array);
 
       //set supervisor_id in eportfolio
-      $db->query("UPDATE eportfolio SET supervisor_id = '$supervisorId' WHERE Seminar_id = '$cid'");
-      $db->query("INSERT INTO seminar_user (seminar_id, user_id, status, visible, eportfolio_access) VALUES ('$cid', '$supervisorId', 'dozent', 1, '$access_array_serialize')");
+      $query = "UPDATE eportfolio SET supervisor_id = :supervisorId WHERE Seminar_id = :cid";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':supervisorId'=> $supervisorId, ':cid'=> $cid));
+      $query = "INSERT INTO seminar_user (seminar_id, user_id, status, visible, eportfolio_access) VALUES (:cid, :supervisorId, 'dozent', 1, :access_array_serialize)";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':supervisorId'=> $supervisorId, ':cid'=> $cid, ':access_array_serialize'=> $access_array_serialize));
     }
 
     //////////////////
@@ -189,13 +168,18 @@ class settingsController extends StudipController {
 
       $eportfolio_id = $this->getEportfolioId($cid);
 
-      $db->query("INSERT INTO seminar_user (seminar_id, user_id, status, visible) VALUES ('$cid', '$viewerId', 'autor', 1)");
-      $db->query("INSERT INTO eportfolio_user (user_id, Seminar_id, eportfolio_id, status, eportfolio_access, owner) VALUES ('$viewerId', '$cid', '$eportfolio_id', 'autor', '$json', 0)");
+      $query = "INSERT INTO seminar_user (seminar_id, user_id, status, visible) VALUES (:cid, :viewerId, 'autor', 1)";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':viewerId'=> $viewerId, ':cid'=> $cid));
+
+      $query = "INSERT INTO eportfolio_user (user_id, Seminar_id, eportfolio_id, status, eportfolio_access, owner) VALUES (:viewerId, :cid, :eportfolio_id, 'autor', :json, 0)";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':viewerId'=> $viewerId, ':cid'=> $cid, ':eportfolio_id'=> $eportfolio_id, ':json'=> $json));
     }
 
     //////////////////
     //////////////////
-
+    //Änderung von Name und Beschreibung des Portfolios
     if($_POST["saveChanges"]){
       $this->saveChanges();
     }
@@ -212,20 +196,32 @@ class settingsController extends StudipController {
     $this->access = $access;
 
   }
+  
+  public function setAccess_action($user_id, $seminar_id, $chapter_id, $status)
+  {
+      $freigabe= new EportfolioFreigabe();
+      $freigabe::setAccess($user_id, $seminar_id, $chapter_id, $status);
+      $this->render_nothing();
+  }
 
+  //name und beschreibung speichern
   public function saveChanges(){
     $db = DBManager::get();
     $cid = $_GET["cid"];
     $change_name = $_POST['Name'];
     $change_beschreibung = $_POST['Beschreibung'];
-    $db->query("UPDATE seminare SET Name = '$change_name', Beschreibung = '$change_beschreibung' WHERE Seminar_id = '$cid'");
+    $query = "UPDATE seminare SET Name = :change_name, Beschreibung = :change_beschreibung WHERE Seminar_id = :cid";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':change_name'=> $change_name, ':cid'=> $cid, ':change_beschreibung' => $change_beschreibung));
   }
 
   public function getCurrentChapter($id){
     $db = DBManager::get();
     $arrayChapter = array();
-    $queryChapter = $db->query("SELECT id FROM mooc_blocks WHERE seminar_id = '$id' AND type = 'Chapter'")->fetchAll();
-    foreach($queryChapter as $key){
+    $query = "SELECT id FROM mooc_blocks WHERE seminar_id = :id AND type = 'Chapter'";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':id'=> $id));
+    foreach($statement->fetchAll() as $key){
       array_push($arrayChapter, $key[id]);
     }
 
@@ -234,57 +230,72 @@ class settingsController extends StudipController {
 
   public function getEportfolioId($id){
     $db = DBManager::get();
-    $queryReturn = $db->query("SELECT eportfolio_id FROM eportfolio WHERE Seminar_id = '$id'")->fetchAll();
-    return $queryReturn[0][eportfolio_id];
+    $query = "SELECT eportfolio_id FROM eportfolio WHERE Seminar_id = :id";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':id'=> $id));
+    return $statement->fetchAll()[0][eportfolio_id];
   }
 
+  //TODO user
   public function getEportfolioAccess($id, $sid){
     $db = DBManager::get();
-    $queryReturn = $db->query("SELECT eportfolio_access FROM eportfolio_user WHERE user_id = '$id' AND Seminar_id = '$sid'")->fetchAll();
-    return unserialize($queryReturn[0][eportfolio_access]);
+    $query = "SELECT eportfolio_access FROM eportfolio_user WHERE user_id = :id AND Seminar_id = :sid";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':id'=> $id, ':sid'=> $sid));
+    return unserialize($statement->fetchAll()[0][eportfolio_access]);
   }
 
+    //TODO user
   public function saveEportfolioAccess($id, $data, $sid){
     $pushArray = serialize($data);
-    echo $pushArray;
-    DBManager::get()->query("UPDATE eportfolio_user SET eportfolio_access = '$pushArray' WHERE user_id = '$id' AND Seminar_id = '$sid'");
-  }
-
-  public function isOwner($cid, $userId){
+    echo $pushArray; //TODO raus damit?
     $db = DBManager::get();
-    $query = $db->query("SELECT owner_id FROM eportfolio WHERE Seminar_id = '$cid'")->fetchAll();
-    if ($query[0][0] == $userId) {
-      return true;
-    }
+    $query = "UPDATE eportfolio_user SET eportfolio_access = :pushArray WHERE user_id = :id AND Seminar_id = :sid";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':id'=> $id, ':sid'=> $sid, ':pushArray' => $pushArray));
   }
 
-  public function getSupervisorOfPortfolio($id){
-    $query = DBManager::get()->query("SELECT supervisor_id FROM eportfolio WHERE seminar_id = '$id'")->fetchAll();
-    return $query[0][0];
+  public function getSupervisorGroupOfPortfolio($id){
+    $portfolio = Eportfoliomodel::findBySQL('seminar_id = :id', array(':id'=> $id));
+     if ($portfolio[0]->group_id){
+        $portfoliogroup = EportfolioGroup::findbySQL('seminar_id = :id', array(':id'=> $portfolio[0]->group_id));
+     } if ($portfoliogroup[0]->supervisor_group_id){
+     
+            return $portfoliogroup[0]->supervisor_group_id;
+        } else return false;   
   }
 
+  //todo
   public function getPortfolioFreigaben($id){
-    $query = DBManager::get()->query("SELECT freigaben_kapitel FROM eportfolio WHERE Seminar_id = '$id'")->fetchAll();
-    $query = json_decode($query[0][0], true);
+    $db = DBManager::get();
+    $query = "SELECT freigaben_kapitel FROM eportfolio WHERE Seminar_id = :id";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':id'=> $id));
+    $query = json_decode($statement->fetchAll()[0][0], true);
     return $query;
   }
 
-  public function addZugriff($id){
+  //addUserAccess
+  public function addZugriff_action($id){
     $mp             = MultiPersonSearch::load('eindeutige_id');
     $seminar        = new Seminar($id);
     $eportfolio_id  = $this->getEportfolioId($id);
     $userRole       = 'autor';
 
-    # User der Gruppe hinzufÃ¼gen
+    # User der Gruppe hinzufügen
     foreach ($mp->getAddedUsers() as $userId) {
 
       #Seminar Add Member
       $seminar->addMember($userId, $userRole);
 
-      # User der Tabelle eportfolio_user hinzufÃ¼gen
-      DBManager::get()->query("INSERT INTO eportfolio_user (user_id, Seminar_id, eportfolio_id, status, owner) VALUES ('$userId', '$id', '$eportfolio_id', 'autor', 0)");
+      # User der Tabelle eportfolio_user hinzufügen
+      $db = DBManager::get();
+      $query = "INSERT INTO eportfolio_user (user_id, Seminar_id, eportfolio_id, status, owner) VALUES (:userId, :id, :eportfolio_id, 'autor', 0)";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':id'=> $id, ':userId'=> $userId, ':eportfolio_id' => $eportfolio_id));
     }
 
+    $this->redirect($this->url_for('settings/index/'. $id));
     # Seminar speichern
     //$seminar->store();
 
@@ -298,16 +309,24 @@ class settingsController extends StudipController {
     $seminar->deleteMember($userId);
 
     # User aus eportfolio_user entfernen
-    DBManager::get()->query("DELETE FROM eportfolio_user WHERE user_id = '$userId' AND seminar_id = '$cid' AND eportfolio_id = '$eportfolio_id'");
+    $db = DBManager::get();
+    $query = "DELETE FROM eportfolio_user WHERE user_id = :userId AND seminar_id = :cid AND eportfolio_id = :eportfolio_id";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':cid'=> $cid, ':userId'=> $userId, ':eportfolio_id' => $eportfolio_id));
   }
 
   public function deletePortfolio($cid){
     $seminar = new Seminar($cid);
     $seminar->delete();
 
-    # Seminar aus eportfolio-tabllen lÃ¶schen
-    DBManager::get()->query("DELETE FROM eportfolio WHERE seminar_id = '$cid'");
-    DBManager::get()->query("DELETE FROM eportfolio_user WHERE seminar_id = '$cid'");
+    # Seminar aus eportfolio-tabllen löschen
+    $db = DBManager::get();
+    $query = "DELETE FROM eportfolio WHERE seminar_id = :cid";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':cid'=> $cid));
+    $query = "DELETE FROM eportfolio_user WHERE seminar_id = :cid";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':cid'=> $cid));
   }
 
   public function setsettingsColor($cid, $color){
@@ -315,19 +334,28 @@ class settingsController extends StudipController {
     //$setting = DBManager::get()->query("SELECT settings FROM eportfolio WHERE semniar_id = $cid;")->fetchAll();
     $newArray['color'] = $color;
     $newArray = json_encode($newArray);
-    DBManager::get()->query("UPDATE eportfolio SET settings = '$newArray' WHERE seminar_id = '$cid'");
+    $db = DBManager::get();
+    $query = "UPDATE eportfolio SET settings = :newArray WHERE seminar_id = :cid";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':cid'=> $cid, ':newArray'=> $newArray));
   }
 
   public function getsettingsColor(){
     $cid = $_GET['cid'];
-    $color = DBManager::get()->query("SELECT settings FROM eportfolio WHERE seminar_id = '$cid'")->fetchAll();
-    $color = json_decode($color[0][0]);
+    $db = DBManager::get();
+    $query = "SELECT settings FROM eportfolio WHERE seminar_id = :cid";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':cid'=> $cid));
+    $color = json_decode($statement->fetchAll()[0][0]);
     return $color->color;
   }
 
   public function eigenesPortfolio($cid){
-    $query = DBManager::get()->query("SELECT template_id FROM eportfolio WHERE seminar_id = '$cid'")->fetchAll();
-    if (empty($query[0][0])) {
+    $db = DBManager::get();
+    $query = "SELECT template_id FROM eportfolio WHERE seminar_id = :cid";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':cid'=> $cid));
+    if (empty($statement->fetchAll()[0][0])) {
       return true;
     } else {
       return false;
@@ -335,12 +363,33 @@ class settingsController extends StudipController {
   }
 
   public function checkIfOwner($userId, $cid){
-    $query = DBManager::get()->query("SELECT status FROM seminar_user WHERE user_id = '$userId' AND seminar_id = '$cid'")->fetchAll();
-    if ($query[0][0] == "dozent") {
+    $db = DBManager::get();
+    $query = "SELECT status FROM seminar_user WHERE user_id = :userId AND seminar_id = :cid";
+    $statement = $db->prepare($query);
+    $statement->execute(array(':cid'=> $cid, ':userId'=> $userId));
+    if ($statement->fetchAll()[0][0] == "dozent") {
       return true;
     } else {
       return false;
     }
   }
+  
+  
+  function url_for($to = '')
+    {
+        $args = func_get_args();
+
+        # find params
+        $params = array();
+        if (is_array(end($args))) {
+            $params = array_pop($args);
+        }
+
+        # urlencode all but the first argument
+        $args = array_map('urlencode', $args);
+        $args[0] = $to;
+
+        return PluginEngine::getURL($this->dispatcher->current_plugin, $params, join('/', $args));
+    } 
 
 }

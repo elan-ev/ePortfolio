@@ -1,5 +1,8 @@
 <?php
 require 'bootstrap.php';
+require 'classes/group.class.php';
+require 'classes/eportfolio.class.php';
+
 
 /**
  * EportfolioPlugin.class.php
@@ -12,98 +15,31 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     public function __construct() {
         parent::__construct();
 
-        if($_POST["type"] == "freigeben"){
-          $this->freigeben($_POST["selected"], $_POST["cid"]);
-          exit;
-        }
-
-        if($_POST["action"] == "getsettingsColor"){
-          $this->getsettingsColor($_GET['cid']);
-          exit;
-        }
-
-        function checkPermission(){
-          $userId = $GLOBALS["user"]->id;
-          $perm = get_global_perm($userId);
-
-          // $havePerm = array("root", "dozent", "admin");
-          $havePerm = array();
-          if (in_array($perm, $havePerm)){
-            $GLOBALS["permission"] = 1;
-          }
-
-        }
-
-        $GLOBALS["permission"] = 0;
-        $renderView = "show";
-        checkPermission();
-
-        if ($GLOBALS["permission"] == 1){
-          $renderView = "dozentview";
-        }
-
         $navigation = new AutoNavigation(_('ePortfolio'));
         $navigation->setImage(Assets::image_path('lightblue/edit'));
-        $navigation->setURL(PluginEngine::GetURL($this, array(), $renderView));
+        $navigation->setURL(PluginEngine::GetURL($this, array(), "show"));
         Navigation::addItem('/eportfolioplugin', $navigation);
         //Navigation::activateItem("/eportfolioplugin");
-
-        //set Menu Point for Supervisor
-        $thisperm = get_global_perm($GLOBALS["user"]->id);
-        if ($thisperm == "autor"){
-
-        }
-
-      $serverinfo = $_SERVER['PATH_INFO'];
-
-      // if ($serverinfo == "/courseware/courseware" || $serverinfo == "/eportfolioplugin/eportfolioplugin" || $serverinfo == "/eportfolioplugin/settings"){
-      //   include 'coursewareController/modifier.php';
-      // }
-
-      if ($serverinfo == "/courseware/courseware" || $serverinfo == "/eportfolioplugin/settings" || $serverinfo == "/eportfolioplugin/eportfolioplugin"){
-        if($_GET["cid"]){
-          $id = $_GET["cid"];
-
-          if ($this->checkEportfolio($id) == true) {
-            include 'coursewareController/modifier.php';
-
-            # modifier for the menubar
-            if (!$id == NULL) {
-              $seminar = new Seminar($id);
-              $seminarMembers = $seminar->getMembers("dozent");
-              foreach ($seminarMembers as $key => $value) {
-                if ($userId != $key) {
-                  include 'assets/modify/modifyMenu.php';
-                }
-              }
-            }
-
-          }
-        }
-      }
-
-    }
-
-    public function checkEportfolio($id){
-      $db = DBManager::get();
-      $query = $db->query("SELECT * FROM eportfolio WHERE Seminar_id = '$id'")->fetchAll();
-      if (!empty($query)) {
-        return true;
-      }
+        
     }
 
     public function getCardInfos($cid){
       $db = DBManager::get();
       $return_arr = array();
-      $getCardInfos = $db->query("SELECT id, title FROM mooc_blocks WHERE seminar_id = '$cid' AND type = 'Chapter' ORDER BY id ASC")->fetchAll();
+      $query = "SELECT id, title FROM mooc_blocks WHERE seminar_id = :id AND type = 'Chapter' ORDER BY id ASC";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':id'=> $cid));
+      $getCardInfos = $statement->fetchAll();
       foreach ($getCardInfos as $value) {
         $arrayOne = array();
         $arrayOne['id'] = $value[id];
         $arrayOne['title'] = $value[title];
 
         // get sections of chapter
-        $queryMenuPoints = $db->query("SELECT id, title FROM mooc_blocks WHERE parent_id = '$value[id]'")->fetchAll();
-        $arrayOne['section'] = $queryMenuPoints;
+        $query = "SELECT id, title FROM mooc_blocks WHERE parent_id = :id";
+        $statement = $db->prepare($query);
+        $statement->execute(array(':id'=> $value[id]));
+        $arrayOne['section'] = $statement->fetchAll();
 
         array_push($return_arr, $arrayOne);
       }
@@ -112,10 +48,13 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     }
 
     public function initialize () {
+      //PageLayout::addStylesheet($this->getPluginURL().'/assets/bootstrap.css');
       PageLayout::addStylesheet($this->getPluginURL().'/assets/style.css');
-      PageLayout::addStylesheet('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css');
+
+      // PageLayout::addStylesheet('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css');
       // script row-link
-      PageLayout::addScript($this->getPluginURL().'/assets/js/jasny-bootstrap.min.js');
+      //PageLayout::addScript($this->getPluginURL().'/assets/js/bootstrap.min.js');
+      //PageLayout::addScript($this->getPluginURL().'/assets/js/jasny-bootstrap.min.js');
       PageLayout::addScript($this->getPluginURL().'/assets/js/mustache.min.js');
     }
 
@@ -159,18 +98,6 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
 
     }
 
-    public function isOwner($cid, $userId){
-      $db = DBManager::get();
-      $query = $db->query("SELECT owner_id FROM eportfolio WHERE Seminar_id = '$cid'")->fetchAll();
-      return $query;
-    }
-
-    public function getAccess($cid,$userId){
-      $db = DBManager::get();
-      $query = $db->query("SELECT eportfolio_access FROM eportfolio_user WHERE Seminar_id = '$cid' AND user_id = '$userId' ")->fetchAll();
-      return $query[0][0];
-    }
-
     public function getNotificationObjects($course_id, $since, $user_id) {
         return array();
     }
@@ -186,26 +113,49 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     public function perform($unconsumed_path)
     {
       $this->setupAutoload();
-      $dispatcher = new Trails_Dispatcher(
-          $this->getPluginPath(),
-          rtrim(PluginEngine::getLink($this, array(), null), '/'),
-          'show'
-      );
+      
+       global $perm;
+        
+        if($_POST["type"] == "freigeben"){
+          $this->freigeben($_POST["selected"], $_POST["cid"]);
+          exit;
+        }
 
-      $dispatcher->plugin = $this;
-      $dispatcher->dispatch($unconsumed_path);
+        if($_POST["action"] == "getsettingsColor"){
+          $this->getsettingsColor($_GET['cid']);
+          exit;
+        }
+        $eportfolio = new eportfolio($_GET['cid']);
+        
+        if ($this->isPortfolio() ){
+            //var_dump(Navigation::getItem('/course'));
+            /** changes of navigation in portfolios (Examples)
+             * Umbenennen uoder URL ändern:
+                Navigation::getItem('/browse')->setURL("/plugins.php/");
+                Navigation::getItem('/browse')->setTitle("Mein Kurs");
+             Items löschen:
+			if (Navigation::hasItem('/start')) {
+					Navigation::removeItem('/start');
+        		}
+			**/
+        }
+
+        //set Menu Point for Supervisor
+        $thisperm = get_global_perm($GLOBALS["user"]->id);
+        if ($thisperm == "autor"){
+
+        }
+
+      $serverinfo = $_SERVER['PATH_INFO'];
+
+      
+      parent::perform($unconsumed_path);
 
     }
 
     private function setupAutoload()
     {
-        if (class_exists('StudipAutoloader')) {
-            StudipAutoloader::addAutoloadPath(__DIR__ . '/models');
-        } else {
-            spl_autoload_register(function ($class) {
-                include_once __DIR__ . $class . '.php';
-            });
-        }
+        StudipAutoloader::addAutoloadPath(__DIR__ . '/models');
     }
 
     private function getSemClass()
@@ -223,34 +173,35 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         return $this->getSemClass()->isSlotModule(get_class($this));
     }
 
-    public function freigeben($selected, $cid){
-      $db = DBManager::get();
-      $query = $db->query("SELECT freigaben_kapitel FROM eportfolio WHERE Seminar_id = '$cid'")->fetchAll();
-      # debug print_r($query[0][0]);
-      if(empty($query[0][0])){
-        $array = array($selected => '1');
-        $array = json_encode($array);
-        $db->query("UPDATE eportfolio SET freigaben_kapitel = '$array' WHERE Seminar_id = '$cid'");
-        echo true;
-      } else {
-        $array = $query[0][0];
-        $array = json_decode($array);
-        if ($array->$selected == "1") {
-          $array->$selected = "0";
-          echo false;
-        } else {
-          $array->$selected = "1";
-          echo true;
-        }
-        $array = json_encode($array);
-        $db->query("UPDATE eportfolio SET freigaben_kapitel = '$array' WHERE Seminar_id = '$cid'");
-      }
-    }
-
     public function getsettingsColor($cid){
-      $color = DBManager::get()->query("SELECT settings FROM eportfolio WHERE seminar_id = '$cid'")->fetchAll();
-      $color = json_decode($color[0][0]);
+      $query = "SELECT settings FROM eportfolio WHERE seminar_id = :cid";
+      $statement = DBManager::get()->prepare($query);
+      $statement->execute(array(':cid'=> $cid));
+      $color = json_decode($statement->fetchAll()[0][0]);
       echo $color->color;
     }
 
+    //aktuelle cid/seminarid
+    static function getSeminarId()
+    {
+        if (!Request::option('cid')) {
+            if ($GLOBALS['SessionSeminar']) {
+                URLHelper::bindLinkParam('cid', $GLOBALS['SessionSeminar']);
+                return $GLOBALS['SessionSeminar'];
+            }
+            return false;
+        }
+        return Request::option('cid');
+    }
+
+    private function isPortfolio()
+    {
+        $seminar = Seminar::getInstance($this->getSeminarId());
+        $status = $seminar->getStatus();
+        if ($status == Config::get()->getValue('SEM_CLASS_PORTFOLIO')){
+            return true;
+        }
+        else return false;
+    }
+    
 }

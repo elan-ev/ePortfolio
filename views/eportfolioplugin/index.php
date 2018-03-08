@@ -1,51 +1,12 @@
-<!-- HEAD START -->
-
-<head>
-  <meta charset="utf-8"/><meta charset="utf-8"/>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-
-  <style media="screen">
-
-    .widget-list, .widget-links li {
-      position: relative;
-    }
-
-    .active-link {
-      background-color: #a9b6cb;
-      box-shadow: inset 0 0 0 1px #7e92b0;
-      color: #fff!important;
-    }
-
-    .active-link::before {
-      border: 10px solid rgba(126,146,176,0);
-      content: "";
-      height: 0;
-      width: 0;
-      position: absolute;
-      border-left-color: #7e92b0;
-      left: 100%;
-      top:50%;
-      margin-top: -10px;
-    }
-
-    span img {
-      margin-bottom: 5px;
-      cursor: pointer;
-    }
-
-  </style>
-</head>
-
 <?php
 
   $images = array(
-    "http://www.arbeitstipps.de/wp-content/uploads/2010/06/leere-blatt-syndrom-mangelnde-kreativitaet-tipps.jpg",
-    "http://www.ahs-institut.de/wp-content/uploads/2015/03/2015-ahs-kollegial.jpg",
-    "http://www.maz-online.de/var/storage/images/maz/lokales/teltow-flaeming/sorge-um-unterrichtsausfall-trotz-neuer-lehrer/262589062-1-ger-DE/Sorge-um-Unterrichtsausfall-trotz-neuer-Lehrer_pdaArticleWide.jpg",
+    "https://www.arbeitstipps.de/wp-content/uploads/2010/06/leere-blatt-syndrom-mangelnde-kreativitaet-tipps.jpg",
+    "https://www.pointer.de/bilder/teaser_top/2374lernen_bibliothek_studium.jpg",
+    "https://www.maz-online.de/var/storage/images/maz/lokales/teltow-flaeming/sorge-um-unterrichtsausfall-trotz-neuer-lehrer/262589062-1-ger-DE/Sorge-um-Unterrichtsausfall-trotz-neuer-Lehrer_pdaArticleWide.jpg",
     "https://www.daad.de/medien/ausland/symbole/fittosize_558_314_3de6fbc25ed35bc4e67ac128c2c40130_abschlussfeier_by_thomas_koelsch_pixelio.jpg",
-    "http://p5.focus.de/img/fotos/origs2589632/6655443606-w630-h354-o-q75-p5/schule-lehrer.jpg",
-    "http://p5.focus.de/img/fotos/origs1094264/3255449779-w630-h354-o-q75-p5/schule-lernen.jpg",
+    "https://p5.focus.de/img/fotos/origs2589632/6655443606-w630-h354-o-q75-p5/schule-lehrer.jpg",
+    "https://p5.focus.de/img/fotos/origs1094264/3255449779-w630-h354-o-q75-p5/schule-lernen.jpg",
     "https://www.km.bayern.de/bilder/km_absatz/foto/6667_0710_bibliotheken_partner_der_schule_455.jpg",
     "https://www.pointer.de/bilder/teaser_top/2374lernen_bibliothek_studium.jpg",
   );
@@ -61,31 +22,29 @@
     <div id="title">
       <h3 style="border:none!important;">
         <?php  echo $seminarTitle; ?>
-        <?php if($isOwner == true):?><span style="margin-left: 10px;"><?php echo Icon::create('edit', 'inactive', array('onclick' => 'toggleChangeInput()'));?></span><?php endif; ?>
+        <?php if($isOwner == true || $canEdit == true):?><span style="margin-left: 10px;"><?php echo Icon::create('edit', 'inactive', array('onclick' => 'toggleChangeInput()'));?></span><?php endif; ?>
       </h3>
     </div>
 
-    <?php if($isOwner == true):?>
+    <?php if($isOwner == true || $canEdit == true):?>
       <div id="title_changer" style="display: none;">
         <h3 style="border:none!important;"><input name="name" value="<?php echo $seminarTitle; ?>"><span style="margin-left: 10px;"><?php echo Icon::create('accept', 'clickable', array('onclick' => 'saveTitle()')) ?></span></h3>
       </div>
     <?php endif; ?>
 
     <hr>
-    <?php $img = eportfoliopluginController::getImg($cid);
-      $img = json_decode($img);
-      $imgcount = 0;
-     ?>
 
     <div class="row">
 
       <?php $imageNumber = 0; ?>
       <?php foreach ($cardInfo as $key): ?>
 
+        <?php if(EportfolioFreigabe::hasAccess($userid, $cid, $key[id])): ?>
         <?php
-          $link = URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $cid, 'selected' => $key[id]));
-          //$link = '/studip/plugins.php/courseware/courseware?cid='.$cid.'&selected='.$key[id];
-          $linkAdmin = $link.'#author';
+         
+            $link = URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $cid, 'selected' => $key[id]));
+            //$link = '/studip/plugins.php/courseware/courseware?cid='.$cid.'&selected='.$key[id];
+            $linkAdmin = $link.'#author';
         ?>
 
         <div data-blockid="<?php echo $key[id]; ?>" class="col-md-4 card-wrapper">
@@ -135,7 +94,7 @@
           <?php endif; ?>
         </div>
       </div>
-
+        <?php endif; ?>
       <?php endforeach; ?>
     </div>
   </div>
@@ -143,31 +102,31 @@
 
 <?php if($isOwner == true):?>
   <?php if (empty(EportfoliopluginController::checkIfTemplate($cid))):?>
-    <?= \Studip\Button::create('Portfolio lï¿½schen', 'klickMichButton', array('onclick' => 'modalDeletePortfolio()', 'type' => 'button')); ?>
+    <?= \Studip\Button::create('Portfolio löschen', 'klickMichButton', array('onclick' => 'modalDeletePortfolio()', 'type' => 'button')); ?>
   <?php endif; ?>
 
-  <!-- Modal LÃ¶schen -->
+  <!-- Modal Löschen -->
   <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title">Portfolio lï¿½schen</h4>
+          <h4 class="modal-title">Portfolio löschen</h4>
         </div>
         <div class="modal-body" id="modalDeleteBody">
 
           <p id="deleteText" style="margin-bottom:30px;">
-            Sind Sie sich sicher, dass Sie das Portfolio <b><?php echo $title; ?></b> lï¿½schen wollen?</br>
-            Alle Daten werden hierdurch <b>unwiderruflich</b> gelï¿½ï¿½scht und koennen nicht wiederhergestellt werden.
+            Sind Sie sich sicher, dass Sie das Portfolio <b><?php echo $title; ?></b> löschen wollen?</br>
+            Alle Daten werden hierdurch <b>unwiderruflich</b> gelöscht und können nicht wiederhergestellt werden.
           </p>
 
           <div class="deleteSuccess">
             <div><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></div>
             <p>
-              Portfolio <b><?php echo $title; ?></b> gelï¿½scht
+              Portfolio <b><?php echo $title; ?></b> gelöscht
             </p>
           </div>
-            <?= \Studip\Button::create('Portfolio lï¿½schen', 'klickMichButton', array('id' => 'deletebtn', 'onClick' => 'deletePortfolio()', 'type' => 'button')); ?>
+            <?= \Studip\Button::create('Portfolio löschen', 'klickMichButton', array('id' => 'deletebtn', 'onClick' => 'deletePortfolio()', 'type' => 'button')); ?>
         </div>
       </div>
     </div>
@@ -187,7 +146,7 @@
   }
 
   function saveTitle(){
-    var text = $('#title_changer input').val();
+    var text = $('#title_changer input').val().replace(/<\/?[^>]+(>|$)/g, "");;
 
     $.ajax({
       type: 'post',
@@ -213,7 +172,7 @@
   function modalDeletePortfolio(){
     var template = $('#modal-template-delete').html();
     Mustache.parse(template);   // optional, speeds up future uses
-    var rendered = Mustache.render(template, {titel: 'Portfolio lÃ¶schen'});
+    var rendered = Mustache.render(template, {titel: 'Portfolio löschen'});
     $('.modal-area').html(rendered);
   }
 
