@@ -528,23 +528,30 @@ class ShowsupervisorController extends StudipController {
     }
 
     public function checkSupervisorNotiz($id){
+      //prüft für ein Kapitel ($id) ob es in darunterliegenden Blöcken Notizen für Supervisor gibt
       $db = DBManager::get();
       $query = "SELECT id FROM mooc_blocks WHERE parent_id = :id";
       $statement = $db->prepare($query);
       $statement->execute(array(':id'=> $id));
-      $supervisorNotiz = $statement->fetchAll();
-      foreach ($supervisorNotiz[0] as $key => $value) {
+      $subchapters = $statement->fetchAll(PDO::FETCH_ASSOC);
+      foreach ($subchapters as $subchapter) {
         $query = "SELECT id FROM mooc_blocks WHERE parent_id = :value";
         $statement = $db->prepare($query);
-        $statement->execute(array(':value'=> $value));
-        $supervisorNotizSubchapter = $statement->fetchAll();
-        foreach ($supervisorNotizSubchapter[0] as $keySub => $valueSub) {
+        $statement->execute(array(':value'=> $subchapter['id']));
+        $sections = $statement->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($sections as $section) {
           $query = "SELECT id FROM mooc_blocks WHERE parent_id = :valueSub AND type ='PortfolioBlockSupervisor' ";
           $statement = $db->prepare($query);
-          $statement->execute(array(':valueSub'=> $valueSub));
-          $supervisorNotizSubchapterBlock = $statement->fetchAll();
-          if (!empty($supervisorNotizSubchapterBlock)) {
-            return true;
+          $statement->execute(array(':valueSub'=> $section['id']));
+          $supervisorNotizBloecke = $statement->fetchAll(PDO::FETCH_ASSOC);
+          foreach ($supervisorNotizBloecke as $block) {
+            $query = "SELECT json_data FROM mooc_fields WHERE block_id = :block_id AND name = 'content'";
+            $statement = $db->prepare($query);
+            $statement->execute(array(':block_id'=> $block['id']));
+            $supervisorFeedback = $statement->fetchAll();
+            if (!empty($supervisorFeedback[0][json_data])) {
+              return true;
+            }
           }
         }
       }
@@ -555,21 +562,21 @@ class ShowsupervisorController extends StudipController {
       $query = "SELECT id FROM mooc_blocks WHERE parent_id = :id";
       $statement = $db->prepare($query);
       $statement->execute(array(':id'=> $id));
-      $supervisorNotiz = $statement->fetchAll();
-      foreach ($supervisorNotiz[0] as $key => $value) {
+      $subchapters = $statement->fetchAll(PDO::FETCH_ASSOC);
+      foreach ($subchapters as $subchapter) {
         $query = "SELECT id FROM mooc_blocks WHERE parent_id = :value";
         $statement = $db->prepare($query);
-        $statement->execute(array(':value'=> $value));
-        $supervisorNotizSubchapter = $statement->fetchAll();
-        foreach ($supervisorNotizSubchapter[0] as $keySub => $valueSub) {
+        $statement->execute(array(':value'=> $subchapter['id']));
+        $sections = $statement->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($sections as $section) {
           $query = "SELECT id FROM mooc_blocks WHERE parent_id = :valueSub AND type ='PortfolioBlockSupervisor' ";
           $statement = $db->prepare($query);
-          $statement->execute(array(':valueSub'=> $valueSub));
-          $supervisorNotizSubchapterBlock = $statement->fetchAll();
-          foreach ($supervisorNotizSubchapterBlock as $keyBlock => $valueBlock) {
+          $statement->execute(array(':valueSub'=> $section['id']));
+          $supervisorNotizBloecke = $statement->fetchAll(PDO::FETCH_ASSOC);
+          foreach ($supervisorNotizBloecke as $block) {
             $query = "SELECT json_data FROM mooc_fields WHERE block_id = :block_id AND name = 'supervisorcontent'";
             $statement = $db->prepare($query);
-            $statement->execute(array(':block_id'=> $valueBlock[id]));
+            $statement->execute(array(':block_id'=> $block['id']));
             $supervisorFeedback = $statement->fetchAll();
             if (!empty($supervisorFeedback[0][json_data])) {
               return true;
