@@ -50,7 +50,7 @@
       </thead>
 
       <tbody>
-        <?php $temps = ShowController::getTemplates();
+        <?php $temps = Eportfoliomodel::getPortfolioVorlagen();
 
           foreach ($temps as $key):?>
 

@@ -154,28 +154,6 @@ class ShowsupervisorController extends StudipController {
 
     }
 
-    public function getTemplates(){
-
-      $semId;
-      $seminare = array();
-
-      foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
-        if ($sem_type['name'] == 'ePortfolio-Vorlage') {
-          $semId = $id;
-        }
-      }
-
-      $db = DBManager::get();
-      $query = "SELECT Seminar_id FROM seminare WHERE status = :semId";
-      $statement = $db->prepare($query);
-      $statement->execute(array(':semId'=> $semId));
-      foreach ($statement->fetchAll() as $key) {
-        array_push($seminare, $key[Seminar_id]);
-      }
-
-      return $seminare;
-
-    }
 
         public function addTempToDB(){
       $groupid = $_POST["groupid"];

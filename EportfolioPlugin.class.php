@@ -15,79 +15,12 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     public function __construct() {
         parent::__construct();
 
-        if($_POST["type"] == "freigeben"){
-          $this->freigeben($_POST["selected"], $_POST["cid"]);
-          exit;
-        }
-
-        if($_POST["action"] == "getsettingsColor"){
-          $this->getsettingsColor($_GET['cid']);
-          exit;
-        }
-
-        function checkPermission(){
-          $userId = $GLOBALS["user"]->id;
-          $perm = get_global_perm($userId);
-
-          // $havePerm = array("root", "dozent", "admin");
-          $havePerm = array();
-          if (in_array($perm, $havePerm)){
-            $GLOBALS["permission"] = 1;
-          }
-
-        }
-
-        $eportfolio = new eportfolio($_GET['cid']);
-
-        $GLOBALS["permission"] = 0;
-        $renderView = "show";
-        checkPermission();
-
-        if ($GLOBALS["permission"] == 1){
-          $renderView = "dozentview";
-        }
-
         $navigation = new AutoNavigation(_('ePortfolio'));
         $navigation->setImage(Assets::image_path('lightblue/edit'));
-        $navigation->setURL(PluginEngine::GetURL($this, array(), $renderView));
+        $navigation->setURL(PluginEngine::GetURL($this, array(), "show"));
         Navigation::addItem('/eportfolioplugin', $navigation);
         //Navigation::activateItem("/eportfolioplugin");
-
-        //set Menu Point for Supervisor
-        $thisperm = get_global_perm($GLOBALS["user"]->id);
-        if ($thisperm == "autor"){
-
-        }
-
-      $serverinfo = $_SERVER['PATH_INFO'];
-
-      // if ($serverinfo == "/courseware/courseware" || $serverinfo == "/eportfolioplugin/eportfolioplugin" || $serverinfo == "/eportfolioplugin/settings"){
-      //   include 'coursewareController/modifier.php';
-      // }
-
-      if ($serverinfo == "/courseware/courseware" || $serverinfo == "/eportfolioplugin/settings" || $serverinfo == "/eportfolioplugin/eportfolioplugin" || $serverinfo == "/course/management"){
-        if($_GET["cid"]){
-          $id = $_GET["cid"];
-
-          if ($eportfolio->isEportfolio() == true) {
-            //TODO ggf ersetzen
-            //include 'coursewareController/modifier.php';
-
-            # modifier for the menubar
-            if (!$id == NULL) {
-              $seminar = new Seminar($id);
-              $seminarMembers = $seminar->getMembers("dozent");
-              foreach ($seminarMembers as $key => $value) {
-                if ($userId != $key) {
-                  include 'assets/modify/modifyMenu.php';
-                }
-              }
-            }
-
-          }
-        }
-      }
-
+        
     }
 
     public function getCardInfos($cid){
@@ -180,6 +113,42 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     public function perform($unconsumed_path)
     {
       $this->setupAutoload();
+      
+       global $perm;
+        
+        if($_POST["type"] == "freigeben"){
+          $this->freigeben($_POST["selected"], $_POST["cid"]);
+          exit;
+        }
+
+        if($_POST["action"] == "getsettingsColor"){
+          $this->getsettingsColor($_GET['cid']);
+          exit;
+        }
+        $eportfolio = new eportfolio($_GET['cid']);
+        
+        if ($this->isPortfolio() ){
+            //var_dump(Navigation::getItem('/course'));
+            /** changes of navigation in portfolios (Examples)
+             * Umbenennen uoder URL ändern:
+                Navigation::getItem('/browse')->setURL("/plugins.php/");
+                Navigation::getItem('/browse')->setTitle("Mein Kurs");
+             Items löschen:
+			if (Navigation::hasItem('/start')) {
+					Navigation::removeItem('/start');
+        		}
+			**/
+        }
+
+        //set Menu Point for Supervisor
+        $thisperm = get_global_perm($GLOBALS["user"]->id);
+        if ($thisperm == "autor"){
+
+        }
+
+      $serverinfo = $_SERVER['PATH_INFO'];
+
+      
       parent::perform($unconsumed_path);
 
     }
@@ -212,4 +181,27 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
       echo $color->color;
     }
 
+    //aktuelle cid/seminarid
+    static function getSeminarId()
+    {
+        if (!Request::option('cid')) {
+            if ($GLOBALS['SessionSeminar']) {
+                URLHelper::bindLinkParam('cid', $GLOBALS['SessionSeminar']);
+                return $GLOBALS['SessionSeminar'];
+            }
+            return false;
+        }
+        return Request::option('cid');
+    }
+
+    private function isPortfolio()
+    {
+        $seminar = Seminar::getInstance($this->getSeminarId());
+        $status = $seminar->getStatus();
+        if ($status == Config::get()->getValue('SEM_CLASS_PORTFOLIO')){
+            return true;
+        }
+        else return false;
+    }
+    
 }

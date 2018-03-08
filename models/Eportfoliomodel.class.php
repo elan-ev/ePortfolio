@@ -1,14 +1,19 @@
 <?php
 
+include_once __DIR__.'/EportfolioGroup.class.php';
 
 /**
  * @author  <asudau@uos.de>
  *
- * @property int     $id
- * @property string  $type
- * @property int     $related_contact
- * @property string  $content
- * @property int     $mkdate
+ * @property varchar     $Seminar_id
+ * @property varchar     $eportfolio_id
+ * @property varchar     $group_id
+ * @property string      $templateStatus
+ * @property varchar     $owner_id
+ * @property varchar     $supervisor_id
+ * @property json        $freigaben_kapitel //deprecated
+ * @property varchar     $template_id
+ * @property json        $settings //deprecated?
  */
 class Eportfoliomodel extends SimpleORMap
 {
@@ -36,5 +41,31 @@ class Eportfoliomodel extends SimpleORMap
             array_push($supervisoren, EportfolioGroup::getAllSupervisors($portfolio[0]->group_id));
         }
         return $supervisoren[0];
+    }
+    
+    public function getPortfolioVorlagen(){
+
+      global $perm;
+      $semId;
+      $seminare = array();
+
+      foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
+        if ($sem_type['name'] == 'ePortfolio-Vorlage') {
+          $semId = $id;
+        }   
+      }
+
+      $db = DBManager::get();
+      $query = "SELECT Seminar_id FROM seminare WHERE status = :semId";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':semId'=> $semId));
+      foreach ($statement->fetchAll() as $key) {
+        if($perm->have_studip_perm('autor', $key[Seminar_id])){
+            array_push($seminare, $key[Seminar_id]);
+        }
+      }
+
+      return $seminare;
+
     }
 }

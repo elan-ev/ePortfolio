@@ -11,7 +11,7 @@ class SupervisorgroupController extends StudipController {
     $this->createSidebar();
     $this->checkGetId();
   }
-  
+
   public function before_filter(&$action, &$args)
     {
         parent::before_filter($action, $args);
@@ -75,7 +75,7 @@ class SupervisorgroupController extends StudipController {
       $group->addUser($key);
     }
     //$this->render_nothing();
-    $this->redirect($this->url_for('showsupervisor/supervisorgroup/'. $group->eportfolio_group), array('cid' => $group->eportfolio_group ));
+    $this->redirect($this->url_for('showsupervisor/supervisorgroup/'. $group->eportfolio_group->seminar_id), array('cid' => $group->eportfolio_group->seminar_id ));
   }
 
   public function deleteUser_action(){
@@ -111,6 +111,6 @@ class SupervisorgroupController extends StudipController {
         $args[0] = $to;
 
         return PluginEngine::getURL($this->dispatcher->current_plugin, $params, join('/', $args));
-    } 
+    }
 
 }

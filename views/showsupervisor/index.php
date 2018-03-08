@@ -2,12 +2,11 @@
 
 <h1>Supervisionsgruppe "<?php echo $courseName; ?>"</h1>
 
-<?php showsupervisorcontroller::getTemplates($id); ?>
 
 <div>
 
       <!-- <select class="" id="tempselector" name="template">
-        <?php  $templates = showsupervisorcontroller::getTemplates($id); ?>
+        <?php  $templates = Eportfoliomodel::getPortfolioVorlagen(); ?>
         <?php foreach ($templates as $key => $value):?>
           <option value="<?php echo $value[id] ?>"><?php echo $value[temp_name] ?></option>
         <?php endforeach; ?>
@@ -33,7 +32,7 @@
           </thead>
 
           <tbody>
-            <?php $temps = ShowsupervisorController::getTemplates();
+            <?php $temps = Eportfoliomodel::getPortfolioVorlagen();
               foreach ($temps as $key):?>
               <?php $thisPortfolio = new Seminar($key); ?>
               <?php $eportfolio = new eportfolio($key); ?>
@@ -44,12 +43,13 @@
                   <td style="text-align: center;">
                       
                       <a href="<?php echo URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $key)); ?>"><?php echo Icon::create('edit', 'clickable', ['title' => sprintf(_('Portfolio-Vorlage bearbeiten.'))]) ?></a>
-                       <a data-dialog="reload-on-close" href="<?= PluginEngine::getLink($this->plugin, array(), 'showsupervisor/createportfolio/' . $key . '/' . $id) ?>">
+                      <?php if($groupList): ?> 
+                      <a data-dialog="reload-on-close" href="<?= PluginEngine::getLink($this->plugin, array(), 'showsupervisor/createportfolio/' . $key . '/' . $id) ?>">
                         <? $params = tooltip2(_("Portfolio-Vorlage an Gruppenmitglieder verteilen.")); ?>
                         <? $params['style'] = 'cursor: pointer'; ?>
                         <?= Icon::create('add', 'clickable')->asImg(20, $params) ?>
                        </a>
-               
+                       <?php endif ?> 
                   </td>
                 </tr>
               <?php endif; ?>
@@ -65,7 +65,7 @@
 
     <h4>Gruppenmitglieder</h4>
 
-    <?php if (ShowsupervisorController::isThereAnyUser() == false):?>
+    <?php if (!$groupList):?>
         <?php echo MessageBox::info('Es sind noch keine Nutzer in der der Gruppe eingetragen'); ?>
     <?php else: ?>
 
