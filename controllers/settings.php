@@ -81,7 +81,7 @@ class settingsController extends StudipController {
     $countChapter = 0;
 
     //get list chapters
-    $query = "SELECT * FROM mooc_blocks WHERE type = 'Chapter' AND seminar_id = :cid";
+    $query = "SELECT * FROM mooc_blocks WHERE type = 'Chapter' AND seminar_id = :cid ORDER BY position ASC";
     $statement = $db->prepare($query);
     $statement->execute(array(':cid'=> $cid));
     foreach ($statement->fetchAll() as $key) {

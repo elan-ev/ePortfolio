@@ -114,7 +114,7 @@ class EportfoliopluginController extends StudipController {
       $arrayOne['title'] = $value[title];
 
       // get sections of chapter
-      $query = "SELECT id, title FROM mooc_blocks WHERE parent_id = :id";
+      $query = "SELECT id, title FROM mooc_blocks WHERE parent_id = :id ORDER BY position ASC";
       $statement = $db->prepare($query);
       $statement->execute(array(':id'=> $value[id]));
       $arrayOne['section'] = $statement->fetchAll();
@@ -124,7 +124,7 @@ class EportfoliopluginController extends StudipController {
 
     //get list chapters
     $chapterListArray = array();
-    $query = "SELECT * FROM mooc_blocks WHERE type = 'Chapter' AND seminar_id = :cid";
+    $query = "SELECT * FROM mooc_blocks WHERE type = 'Chapter' AND seminar_id = :cid ORDER BY position ASC";
     $statement = $db->prepare($query);
     $statement->execute(array(':cid'=> $cid));
     foreach ($statement->fetchAll() as $key) {
@@ -173,7 +173,7 @@ class EportfoliopluginController extends StudipController {
   public function getCardInfos($cid){
     $db = DBManager::get();
     $return_arr = array();
-    $query = "SELECT id, title FROM mooc_blocks WHERE seminar_id = :cid AND type = 'Chapter' ORDER BY id ASC";
+    $query = "SELECT id, title FROM mooc_blocks WHERE seminar_id = :cid AND type = 'Chapter' ORDER BY position ASC";
     $statement = $db->prepare($query);
     $statement->execute(array(':cid'=> $cid));
     foreach ($statement->fetchAll() as $value) {
@@ -182,7 +182,7 @@ class EportfoliopluginController extends StudipController {
       $arrayOne['title'] = $value[title];
 
       // get sections of chapter
-      $query = "SELECT id, title FROM mooc_blocks WHERE parent_id = :id";
+      $query = "SELECT id, title FROM mooc_blocks WHERE parent_id = :id ORDER BY position ASC";
       $statement = $db->prepare($query);
       $statement->execute(array(':id'=> $value[id]));
       $arrayOne['section'] = $statement->fetchAll();

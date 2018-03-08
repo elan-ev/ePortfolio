@@ -26,7 +26,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     public function getCardInfos($cid){
       $db = DBManager::get();
       $return_arr = array();
-      $query = "SELECT id, title FROM mooc_blocks WHERE seminar_id = :id AND type = 'Chapter' ORDER BY id ASC";
+      $query = "SELECT id, title FROM mooc_blocks WHERE seminar_id = :id AND type = 'Chapter' ORDER BY position ASC";
       $statement = $db->prepare($query);
       $statement->execute(array(':id'=> $cid));
       $getCardInfos = $statement->fetchAll();
