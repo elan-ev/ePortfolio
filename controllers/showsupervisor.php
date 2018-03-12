@@ -579,52 +579,9 @@ class ShowsupervisorController extends StudipController {
       }
     }
 
-    public function delete_action($id){
-
-      # check permission if root
-      // $perm = get_global_perm($GLOBALS["user"]->id);
-      //
-      // if(!$perm == "root"){
-      //     throw new Exception("Not Allowed");
-      // }
-
-      # get eportfolio id's
-      // $db = DBManager::get();
-      // $query = "SELECT eportfolio_id, Seminar_id FROM eportfolio WHERE group_id = :id";
-      // $statement = $db->prepare($query);
-      // $statement->execute(array(':id'=> $id));
-      // $eportfolio = $statement->fetchAll();
-
-      # eportfolio_groups
-      // $query = "DELETE FROM eportfolio_groups WHERE seminar_id = :id";
-      // $statement = $db->prepare($query);
-      // $statement->execute(array(':id'=> $id));
-
-      # eportfolio_groups_user
-      // $query = "DELETE FROM eportfolio_groups_user WHERE seminar_id = :id";
-      // $statement = $db->prepare($query);
-      // $statement->execute(array(':id'=> $id));
-
-
-      // foreach ($eportfolio as $key) {
-      //   $eportfolio_id = $key['eportfolio_id'];
-      //   $Seminar_id = $key['Seminar_id'];
-      //
-      //   # eportfolio_user
-      //   $query = "DELETE FROM eportfolio_user WHERE eportfolio_id = :eportfolio_id";
-      //   $statement = $db->prepare($query);
-      //   $statement->execute(array(':eportfolio_id'=> $eportfolio_id));
-      //
-      //   $sem = new Seminar($Seminar_id);
-      //   $sem->delete();
-      //
-      // }
-
-      # eportfolio
-      // $query = "DELETE FROM eportfolio WHERE group_id = :id";
-      // $statement = $db->prepare($query);
-      // $statement->execute(array(':id'=> $id));
-
+    public function delete_action($cid){
+      $cid = $_GET['cid'];
+      EportfolioGroup::deleteGroup($cid);
     }
 
     public function deleteUserFromGroup_action($id, $group_id){

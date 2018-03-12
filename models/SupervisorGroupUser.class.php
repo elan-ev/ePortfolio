@@ -20,12 +20,14 @@ class SupervisorGroupUser extends SimpleORMap
             'class_name' => 'SupervisorGroup',
             'assoc_foreign_key' => 'supervisor_group_id',
             'assoc_func' => 'findById',
+            'on_delete' => 'delete',
+            'on_store' => 'store',
         );
 
         parent::configure($config);
     }
-    
-    
+
+
     /**
      * Give primary key of record as param to fetch
      * corresponding record from db if available, if not preset primary key
@@ -37,12 +39,12 @@ class SupervisorGroupUser extends SimpleORMap
 
         parent::__construct($id);
     }
-    
+
     public static function findBySupervisorGroupId($id)
     {
         return static::findBySQL('supervisor_group_id = ?', array($id));
     }
-    
+
     public static function getSupervisorGroups($user_id){
         $array = array();
         $groupUser = SupervisorGroupUser::findBySQL('user_id = ?', array($user_id));
@@ -52,5 +54,13 @@ class SupervisorGroupUser extends SimpleORMap
         }
       return $array;
     }
-    
+
+    public static function deleteUserFromGroup($id){
+        $groupUser = SupervisorGroupUser::findbySQL('supervisor_group_id = ?', array($id));
+        foreach ($groupUser as $user) {
+            $currentUser = new SupervisorGroupUser($user);
+            $currentUser->delete();
+        }
+    }
+
 }
