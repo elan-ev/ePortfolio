@@ -46,9 +46,9 @@ class EportfolioGroup extends SimpleORMap
 
         parent::__construct($id);
     }
-    
-    
-  
+
+
+
   public static function getGroupMember($id) {
     $group = new EportfolioGroup($id);
     $array = array();
@@ -57,7 +57,7 @@ class EportfolioGroup extends SimpleORMap
     }
     return $array;
   }
-  
+
   public static function getAllSupervisors($id) {
     $group = new EportfolioGroup($id);
     $supervisorGroup = new SupervisorGroup($group->supervisor_group_id);
@@ -74,7 +74,7 @@ class EportfolioGroup extends SimpleORMap
     $id = $course->getId();
     $course->name = $title;
     $course->store();
-    
+
     $db = DBManager::get();
     $query = "UPDATE seminare SET Name = :title, Beschreibung = :text, status = :sem_class WHERE Seminar_id = :id ";
     $statement = $db->prepare($query);
@@ -90,12 +90,13 @@ class EportfolioGroup extends SimpleORMap
     $supervisorgroup = new SupervisorGroup();
     $supervisorgroup->name = $title;
     $supervisorgroup->store();
-    
+
+    var_dump($id);
     $group = new EportfolioGroup($id);
     $group->supervisor_group_id = $supervisorgroup->id;
     $group->owner_id = $owner;
     $group->store();
-    
+
     $supervisorgroup->eportfolio_group = $group;
     $supervisorgroup->store();
     $supervisorgroup->addUser($owner);
@@ -107,7 +108,7 @@ class EportfolioGroup extends SimpleORMap
     $user = EportfolioGroupUser::findBySQL('user_id = :user_id AND seminar_id = :seminar_id',
                 array(':user_id' => $user_id, ':seminar_id' => $seminar_id));
         $user->delete();
-        
+
         $seminar = new Seminar($this->eportfolio_group);
         $seminar->deleteMember($user_id);
         $sem->store();
@@ -130,12 +131,12 @@ class EportfolioGroup extends SimpleORMap
     $statement->execute(array(':user_id'=> $userId));
     return $statement->fetchAll();
   }
-  
+
   //brauchen wir auf jeden Fall
   public static function getAllGroupsOfSupervisor($userId){
       $ownGroups = EportfolioGroup::findBySQL('owner_id = :id', array(':id'=> $userId));
       $addedGroups = SupervisorGroupUser::getSupervisorGroups($userId);
-      
+
       $array = array();
       foreach ($ownGroups as $group) {
         array_push($array, $group->seminar_id);
@@ -145,7 +146,7 @@ class EportfolioGroup extends SimpleORMap
             array_push($array, $group->eportfolio_group->seminar_id);
         }
       }
-      
+
       return array_unique($array);
   }
 
@@ -156,12 +157,12 @@ class EportfolioGroup extends SimpleORMap
   public static function getSupervisorGroupId($id){
     return self::findById($id)->supervisor_group_id;
   }
-    
+
   public function getRelatedStudentPortfolios(){
       $member = $this->user;
       $portfolios = array();
       if (count($this->templates) >= 1) {
-          
+
         foreach ($member as $key) {
           $portfolio = Eportfoliomodel::findBySQL('group_id = :groupid AND owner_id = :value', array(':groupid'=> $this->seminar_id, ':value'=> $key->user_id));
           array_push($portfolios, $portfolio[0]->Seminar_id);
@@ -169,5 +170,40 @@ class EportfolioGroup extends SimpleORMap
         return $portfolios;
       } else return NULL;
   }
-  
+
+  public static function deleteGroup($cid){
+
+    #supervisorgroup holen
+    $query = "SELECT supervisor_group_id FROM eportfolio_groups WHERE seminar_id = :seminar_id";
+    $statement = DBManager::get()->prepare($query);
+    $statement->execute(array(':seminar_id'=> $cid));
+    $supervisor_group_id = $statement->fetchAll()[0][0];
+
+    // #eportfolio_groups löschen
+    $group = new EportfolioGroup($cid);
+    $group->delete();
+
+    // #eportfolio_groups_user löschen
+    $query = "DELETE FROM eportfolio_groups_user WHERE seminar_id = :seminar_id";
+    $statement = DBManager::get()->prepare($query);
+    $statement->execute(array(':seminar_id'=> $cid));
+
+    // #seminar mit id löschen
+    $course = new Seminar($cid);
+    $course->delete();
+
+    #supervisor_group löschen
+    SupervisorGroup::deleteGroup($supervisor_group_id);
+
+    #supervisor_group_user löschen
+    // $query = "DELETE FROM supervisor_group_user WHERE supervisor_group_id = :id";
+    // $statement = DBManager::get()->prepare($query);
+    // $statement->execute(array(':id'=> $supervisor_group_id));
+    //SupervisorGroupUser::deleteAllUserFromGroup($supervisor_group_id);
+
+    #eportfolio mit group_id löschen
+    #eportfolio_user
+
+  }
+
 }

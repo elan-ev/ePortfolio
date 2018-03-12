@@ -41,15 +41,15 @@
                   <td><?php echo $thisPortfolio->getName(); ?></td>
                   <td><?php echo $eportfolio->getBeschreibung(); ?></td>
                   <td style="text-align: center;">
-                      
+
                       <a href="<?php echo URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $key)); ?>"><?php echo Icon::create('edit', 'clickable', ['title' => sprintf(_('Portfolio-Vorlage bearbeiten.'))]) ?></a>
-                      <?php if($groupList): ?> 
+                      <?php if($groupList): ?>
                       <a data-dialog="reload-on-close" href="<?= PluginEngine::getLink($this->plugin, array(), 'showsupervisor/createportfolio/' . $key . '/' . $id) ?>">
                         <? $params = tooltip2(_("Portfolio-Vorlage an Gruppenmitglieder verteilen.")); ?>
                         <? $params['style'] = 'cursor: pointer'; ?>
                         <?= Icon::create('add', 'clickable')->asImg(20, $params) ?>
                        </a>
-                       <?php endif ?> 
+                       <?php endif ?>
                   </td>
                 </tr>
               <?php endif; ?>
@@ -116,7 +116,7 @@
             <tr>
               <th style="width: 200px;border-bottom: 1px solid;">Name</th>
               <?php
-                // hole die Kapitel der verteilten Vorlagen 
+                // hole die Kapitel der verteilten Vorlagen
                 $q = ShowsupervisorController::getChapters($value);
                 foreach ($q as $key): ?>
                   <th style="width: 100px; border-bottom: 1px solid;"><?php print_r($key['title']); ?></th>
@@ -157,10 +157,10 @@
                 foreach ($q as $value): ?>
 
                     <td>
-                        <?php 
+                        <?php
                         $idNew = $value[id];
                         $hasAccess = EportfolioFreigabe::hasAccess($supervisorGroupId, $getsemid, $idNew); ?>
-                        
+
                         <?php if($hasAccess):?>
                             <?php $link = URLHelper::getLink("plugins.php/courseware/courseware", array('cid' => $getsemid , 'selected' => $idNew));?>
                             <a class='freigabe-link' href="<?php echo $link; ?>">
@@ -178,7 +178,7 @@
                               <?= Icon::create('forum', 'clickable'); ?>
                             </a
                             <?php endif; ?>
-                            
+
                         <?php endif; ?>
 
                     </td>
@@ -229,6 +229,10 @@
    </a>
 <?php endif; ?>
 
+<a href="<?php echo URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/delete', array('id' => $cid)); ?>">
+  <?= \Studip\Button::create('Gruppe löschen', 'klickMichButton', array('data-dialogname' => 'eindeutige_id', 'data-js-form' => URLHelper::getLink('dispatch.php/multipersonsearch/js_form/eindeutige_id'))); ?>
+</a>
+
 <!-- Legende -->
 <div class="legend">
   <ul>
@@ -246,7 +250,7 @@
 $( function() {
     $( "#vorlagen-tabs" ).tabs();
 } );
-    
+
 $('#myModal').on('shown.bs.modal', function () {
 $('#myInput').focus()
 })
@@ -417,4 +421,3 @@ function closeModal(){
 
 
 </script>
-
