@@ -17,10 +17,6 @@ class settingsController extends StudipController {
         exit();
       }
 
-      if ($_POST['action'] == 'deletePortfolio') {
-        $this->deletePortfolio($_POST['cid']);
-        exit();
-      }
 
       if ($_POST['action'] == 'setsettingsColor') {
         $this->setsettingsColor($_POST['cid'], $_POST['color']);
@@ -315,19 +311,6 @@ class settingsController extends StudipController {
     $statement->execute(array(':cid'=> $cid, ':userId'=> $userId, ':eportfolio_id' => $eportfolio_id));
   }
 
-  public function deletePortfolio($cid){
-    $seminar = new Seminar($cid);
-    $seminar->delete();
-
-    # Seminar aus eportfolio-tabllen löschen
-    $db = DBManager::get();
-    $query = "DELETE FROM eportfolio WHERE seminar_id = :cid";
-    $statement = $db->prepare($query);
-    $statement->execute(array(':cid'=> $cid));
-    $query = "DELETE FROM eportfolio_user WHERE seminar_id = :cid";
-    $statement = $db->prepare($query);
-    $statement->execute(array(':cid'=> $cid));
-  }
 
   public function setsettingsColor($cid, $color){
     $newArray = array();

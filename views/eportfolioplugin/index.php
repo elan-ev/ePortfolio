@@ -100,41 +100,8 @@
   </div>
 </div>
 
-<?php if($isOwner == true):?>
-  <?php if (empty(EportfoliopluginController::checkIfTemplate($cid))):?>
-    <?= \Studip\Button::create('Portfolio löschen', 'klickMichButton', array('onclick' => 'modalDeletePortfolio()', 'type' => 'button')); ?>
-  <?php endif; ?>
 
-  <!-- Modal Löschen -->
-  <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title">Portfolio löschen</h4>
-        </div>
-        <div class="modal-body" id="modalDeleteBody">
 
-          <p id="deleteText" style="margin-bottom:30px;">
-            Sind Sie sich sicher, dass Sie das Portfolio <b><?php echo $title; ?></b> löschen wollen?</br>
-            Alle Daten werden hierdurch <b>unwiderruflich</b> gelöscht und können nicht wiederhergestellt werden.
-          </p>
-
-          <div class="deleteSuccess">
-            <div><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></div>
-            <p>
-              Portfolio <b><?php echo $title; ?></b> gelöscht
-            </p>
-          </div>
-            <?= \Studip\Button::create('Portfolio löschen', 'klickMichButton', array('id' => 'deletebtn', 'onClick' => 'deletePortfolio()', 'type' => 'button')); ?>
-        </div>
-      </div>
-    </div>
-  </div>
-
-<?php endif; ?>
-
-<div class="modal-area"></div>
 
 <script type="text/javascript" src="<?php echo $GLOBALS['ABSOLUTE_URI_STUDIP'] . 'plugins_packages/uos/EportfolioPlugin/assets/js/eportfolio.js'; ?>"></script>
 <script>
@@ -164,59 +131,8 @@
     });
 
   }
-
-  function closeModal(){
-    $('.modal-area').empty();
-  }
-
-  function modalDeletePortfolio(){
-    var template = $('#modal-template-delete').html();
-    Mustache.parse(template);   // optional, speeds up future uses
-    var rendered = Mustache.render(template, {titel: 'Portfolio löschen'});
-    $('.modal-area').html(rendered);
-  }
-
-  function deletePortfolio(cid) {
-    var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/settings');
-
-    $('.content').empty().append('<i style="color: #24437c;" class="fa fa-circle-o-notch fa-3x fa-spin fa-fw"></i>').css({'text-align': 'center', 'background': 'none', 'padding': '20px 0'});
-    $.ajax({
-      type: "POST",
-      url: url,
-      data: {
-        'action':'deletePortfolio',
-        'cid': cid,
-      },
-      success: function(data) {
-        window.document.location.href=STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/show');
-      }
-    });
-  }
+ 
 
 </script>
 
-<script id="modal-template-delete" type="x-tmpl-mustache">
-   <div class="modaloverlay">
-      <div class="create-question-dialog ui-widget-content ui-dialog studip-confirmation">
-          <div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">
-              <span>{{titel}}</span>
-              <a onclick="closeModal();" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only ui-dialog-titlebar-close">
-                  <span class="ui-button-icon-primary ui-icon ui-icon-closethick"></span>
-                  <span class="ui-button-text">Schliessen</span>
-              </a>
-          </div>
-          <div class="content ui-widget-content ui-dialog-content studip-confirmation">
-              <div class="formatted-content">
-                Sind Sind Sie sich sicher, dass Sie das Portfolio l&ouml;schen wollen?
-                Alle Daten werden hierdurch unwiderruflich gel&ouml;scht und k&ouml;nnen nicht wiederhergestellt werden.
-              </div>
-          </div>
-          <div class="buttons ui-widget-content ui-dialog-buttonpane">
-              <div class="ui-dialog-buttonset">
-                <a class="accept button" onclick="deletePortfolio('<?php echo $cid; ?>')">Ja</a>
-                <a class="cancel button" onclick="closeModal();">Nein</a>
-              </div>
-          </div>
-      </div>
-  </div>
-</script>
+

@@ -18,6 +18,9 @@ class EportfoliopluginController extends StudipController {
       }
 
       $cid = $_GET['cid'];
+      global $perm;
+      $eportfolio = new Eportfoliomodel($cid);
+      $isOwner = $eportfolio->owner_id == $perm->userid;
 
       $sidebar = Sidebar::Get();
       Sidebar::Get()->setTitle('Übersicht');
@@ -26,6 +29,16 @@ class EportfoliopluginController extends StudipController {
       $navOverview->setTitle('Übersicht');
       $navOverview->addLink('Übersicht', URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('portfolioid' => $portfolioid)), null , array('class' => 'active-link'));
       $sidebar->addWidget($navOverview);
+      
+       //Kontextaktionen
+      if($isOwner){
+        $actions = new ActionsWidget();
+        $actions->setTitle(_('Aktionen'));
+        $actions->addLink('Portfolio löschen',
+        URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin/deletePortfolio/'. $portfolioid), null, array('onclick'=> "return confirm('Sind Sie sich sicher, dass Sie das Portfolio löschen wollen? Alle Daten werden hierdurch unwiderruflich gelöscht und können nicht wiederhergestellt werden.')")); 
+        Sidebar::get()->addWidget($actions);
+      }
+      
 
       $nav = new LinksWidget();
       $nav->setTitle(_('Courseware'));
@@ -237,6 +250,14 @@ class EportfoliopluginController extends StudipController {
     $sem        = new Seminar($cid);
     $sem->name  = $title;
     $sem->store();
+  }
+  
+  public function deletePortfolio_action($id){
+    
+      
+       PageLayout::postMessage(MessageBox::success(_('Das Portfolio wurde gelöscht.')));
+        
+       $this->redirect($this->url_for('/index'));
   }
 
   public function infobox($cid, $owner_id, $selected){
