@@ -18,9 +18,8 @@ class EportfoliopluginController extends StudipController {
       }
 
       $cid = $_GET['cid'];
-      global $perm;
-      $eportfolio = new Eportfoliomodel($cid);
-      $isOwner = $eportfolio->owner_id == $perm->userid;
+      global $user;
+      $eportfolio = Eportfoliomodel::findBySeminar_Id($cid);
 
       $sidebar = Sidebar::Get();
       Sidebar::Get()->setTitle('Übersicht');
@@ -29,9 +28,9 @@ class EportfoliopluginController extends StudipController {
       $navOverview->setTitle('Übersicht');
       $navOverview->addLink('Übersicht', URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('portfolioid' => $portfolioid)), null , array('class' => 'active-link'));
       $sidebar->addWidget($navOverview);
-      
+
        //Kontextaktionen
-      if($isOwner){
+      if($eportfolio->owner_id == $user->id){
         $actions = new ActionsWidget();
         $actions->setTitle(_('Aktionen'));
         $actions->addLink('Portfolio löschen',
