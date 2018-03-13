@@ -80,8 +80,8 @@ class AddMoreSemClasses extends Migration
         $current_modules['Courseware']['sticky'] = '1'; // sticky = 1 -> can't be chosen in "more"-field of course
         $current_modules['CoreParticipants']['activated'] = '0';
         $current_modules['CoreParticipants']['sticky'] = '0'; 
-        $current_modules['CoreDocuments']['activated'] = '1';
-        $current_modules['CoreDocuments']['sticky'] = '1'; 
+        $current_modules['CoreDocuments']['activated'] = '0';
+        $current_modules['CoreDocuments']['sticky'] = '0'; 
         $current_modules['CoreOverview']['activated'] = '0';
         $current_modules['CoreOverview']['sticky'] = '1'; 
         $current_modules['CoreAdmin']['activated'] = '0';
