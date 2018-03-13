@@ -20,6 +20,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         $navigation->setURL(PluginEngine::GetURL($this, array(), "show"));
         Navigation::addItem('/eportfolioplugin', $navigation);
         //Navigation::activateItem("/eportfolioplugin");
+        NotificationCenter::addObserver($this, "setup_navigation", "PageWillRender");
         
     }
 
@@ -50,12 +51,13 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     public function initialize () {
       //PageLayout::addStylesheet($this->getPluginURL().'/assets/bootstrap.css');
       PageLayout::addStylesheet($this->getPluginURL().'/assets/style.css');
+      // var_dump(Navigation::getItem('/course/files'));
 
       // PageLayout::addStylesheet('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css');
       // script row-link
       //PageLayout::addScript($this->getPluginURL().'/assets/js/bootstrap.min.js');
       //PageLayout::addScript($this->getPluginURL().'/assets/js/jasny-bootstrap.min.js');
-      PageLayout::addScript($this->getPluginURL().'/assets/js/mustache.min.js');
+      //PageLayout::addScript($this->getPluginURL().'/assets/js/mustache.min.js');
     }
 
     public function getTabNavigation($course_id) {
@@ -69,7 +71,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
       $navigation->setActiveImage('icons/16/black/group4.png');
 
       # settings navigation
-      $id             = $_GET["cid"];
+      $id = $_GET["cid"];
 
       if (!$id == NULL) {
 
@@ -127,19 +129,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         }
         $eportfolio = new eportfolio($_GET['cid']);
         
-        if ($this->isPortfolio() ){
-            //var_dump(Navigation::getItem('/course'));
-            /** changes of navigation in portfolios (Examples)
-             * Umbenennen uoder URL ändern:
-                Navigation::getItem('/browse')->setURL("/plugins.php/");
-                Navigation::getItem('/browse')->setTitle("Mein Kurs");
-             Items löschen:
-			if (Navigation::hasItem('/start')) {
-					Navigation::removeItem('/start');
-        		}
-			**/
-        }
-
+        
         //set Menu Point for Supervisor
         $thisperm = get_global_perm($GLOBALS["user"]->id);
         if ($thisperm == "autor"){
@@ -204,4 +194,23 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         else return false;
     }
     
+    private function isVorlage()
+    {
+        $seminar = Seminar::getInstance($this->getSeminarId());
+        $status = $seminar->getStatus();
+        if ($status == Config::get()->getValue('SEM_CLASS_PORTFOLIO_VORLAGE')){
+            return true;
+        }
+        else return false;
+    }
+    
+    public function setup_navigation($username) {
+        //var_dump(Navigation::getItem('/course/mooc_courseware'));
+        if (($this->isPortfolio() || $this->isVorlage() ) && Navigation::hasItem('/course/mooc_courseware')){
+            //$settings = Navigation::getItem('/course/settings');
+            //Navigation::removeItem('/course/settings');
+            //Navigation::insertItem('/course/settings', $settings, '/course/files');
+            Navigation::getItem('/course/mooc_courseware')->setTitle(ePortfolio);
+        }
+    }
 }
