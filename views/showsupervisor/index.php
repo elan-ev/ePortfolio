@@ -101,27 +101,28 @@
     <!-- Nav tabs -->
     <div id="vorlagen-tabs">
     <ul>
-      <?php foreach ($templistid as $key => $value): ?>
-        <?php $template = new Seminar($value);?>
-        <li><a href="#tabs-<?= $value; ?>"><?= $template->getName(); ?></a></li>
-      <?php endforeach; ?>
+        <li>Studenten-Portfolios</li>
     </ul>
     <!-- Tab panes -->
 
     <!-- für alle verteilten Vorlagen: -->
-      <?php foreach ($templistid as $key => $value): ?>
-        <?php $tempid = $value ?>
-        <div id="tabs-<?= $value; ?>">
-          <table class="default">
-            <tr>
-              <th style="width: 200px;border-bottom: 1px solid;">Name</th>
-              <?php
+      
+    <div id="tabs">
+      <table class="default">
+        <tr>
+          <th style="width: 200px;border-bottom: 1px solid;">Name</th>
+
+          <?php foreach ($templistid as $key => $value): ?>
+            <?php $tempid = $value ?>
+            <?php
                 // hole die Kapitel der verteilten Vorlagen
                 $q = ShowsupervisorController::getChapters($value);
                 foreach ($q as $key): ?>
-                  <th style="width: 100px; border-bottom: 1px solid;"><?php print_r($key['title']); ?></th>
-              <?php endforeach; ?>
-            </tr>
+                  <th style="border-bottom: 1px solid;"><?php print_r($key['title']); ?></th>
+                <?php endforeach; ?>
+          <?php endforeach; ?>
+        </tr>
+           
             <!-- für alle Gruppenteilnehmer: -->
             <?php foreach ($groupList as $key):?>
               <tr>
@@ -134,9 +135,9 @@
                 </td>
                 <?php
                 // hole das zugehörige Portfolio des Teilnehmers
-                $query = "SELECT Seminar_id FROM eportfolio WHERE owner_id = :key AND template_id = :tempid AND group_id = :groupid";
+                $query = "SELECT Seminar_id FROM eportfolio WHERE owner_id = :key AND group_id = :groupid";
                 $statement = DBManager::get()->prepare($query);
-                $statement->execute(array(':key'=> $key, ':tempid'=> $tempid, ':groupid'=> $groupid));
+                $statement->execute(array(':key'=> $key, ':groupid'=> $groupid));
                 $getsemid = $statement->fetchAll()[0][0];
                 ?>
 
@@ -194,7 +195,7 @@
           <!--<?= \Studip\Button::create('Vorlage für diese Gruppe löschen', 'button', array('type' => 'button', 'onclick' => 'deletetemplate('.$tempid.')')); ?>-->
 
         </div>
-      <?php endforeach; ?>
+     
     </div>
   <?php endif; ?>
 
