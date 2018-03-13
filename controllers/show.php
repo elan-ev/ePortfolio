@@ -137,12 +137,7 @@ class ShowController extends StudipController {
     
     public function newvorlage_action(){
 
-      foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
-        if ($sem_type['name'] == 'ePortfolio-Vorlage') {
-          $sem_type_id = $id;
-        }
-         $sem_type_id = '106';
-      }
+      $sem_type_id = Config::get()->getValue('SEM_CLASS_PORTFOLIO_VORLAGE');
 
       $userid           = $GLOBALS["user"]->id; //get userid
       $sem_name         = $_POST['name'];

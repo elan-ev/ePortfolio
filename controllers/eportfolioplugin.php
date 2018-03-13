@@ -43,11 +43,7 @@ class EportfoliopluginController extends StudipController {
       $nav->setTitle(_('Courseware'));
       $nav->addLink($name, "");
 
-      foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
-        if ($sem_type['name'] == 'ePortfolio-Vorlage') {
-          $sem_type_id = $id;
-        }
-      }
+      $sem_type_id = Config::get()->getValue('SEM_CLASS_PORTFOLIO_VORLAGE');
 
       $seminar = new Seminar($cid);
       $eportfolio = new eportfolio($cid);
