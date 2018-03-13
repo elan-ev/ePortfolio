@@ -8,14 +8,9 @@
     <div class="jumbotron" style="border-radius: 10px;">
       <div class="container" style="padding: 0 50px;">
 
-        <script type="text/javascript">
-        function defaultImg(img) { //setzt default Profilbild falls keins vorhanden
-          img.src = "<?php echo $GLOBALS[DYNAMIC_CONTENT_URL]; ?>/user/nobody_medium@2x.png";
-        }
-        </script>
-
         <h2>
-          <img style="margin-bottom: 5px;border-radius: 50px; width: 36px; border: 1px solid #28497c;" src="<?php echo $GLOBALS[DYNAMIC_CONTENT_URL];?>/user/<?php echo $userId; ?>_medium@2x.png" onError="defaultImg(this);">
+          <?= Avatar::getAvatar($user->id, $userInfo['username'])->getImageTag(Avatar::MEDIUM,
+                                array('style' => 'margin-right: 5px;border-radius: 35px; height:36px; width:36px; border: 1px solid #28497c;', 'title' => htmlReady($userInfo['Vorname']." ".$userInfo['Nachname'])));  ?>
           <span id="headline_uebersicht"></span>
         </h2>
 

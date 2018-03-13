@@ -51,7 +51,8 @@ class ShowController extends StudipController {
 
     public function index_action()
     {
-
+        global $user;
+        $this->user = $user;
 
     }
 
