@@ -75,6 +75,7 @@ class AddSemClass extends Migration
         $sem_class = SemClass::getDefaultSemClass();
         $sem_class->set('name', $name);
         $sem_class->set('id', $id);
+        $sem_class->set('studygroup_mode', '1');
 
         // Setting Mooc-courses default datafields: mooc should not to be disabled, courseware and mooc should be active
         $current_modules = $sem_class->getModules(); // get modules
@@ -84,7 +85,7 @@ class AddSemClass extends Migration
         $current_modules['Courseware']['sticky'] = '1'; // sticky = 1 -> can't be chosen in "more"-field of course
         $current_modules['CoreParticipants']['activated'] = '0';
         $current_modules['CoreParticipants']['sticky'] = '1'; 
-        $current_modules['CoreDocuments']['activated'] = '1';
+        $current_modules['CoreDocuments']['activated'] = '0';
         $current_modules['CoreDocuments']['sticky'] = '1'; 
         $current_modules['CoreOverview']['activated'] = '0';
         $current_modules['CoreOverview']['sticky'] = '1'; 
