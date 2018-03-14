@@ -77,7 +77,7 @@
        
        
        
-       <a onclick="deleteUserAccess('<?php echo $viewer[viewer_id] ?>', '<?php echo $cid ?>', this);">
+       <a title='Nutzer Zugriff vollständig entziehen (Nutzer wird komplett aus Zugriffs-Liste entfernt)' onclick="deleteUserAccess('<?php echo $viewer[viewer_id] ?>', '<?php echo $cid ?>', this);">
           <?php echo Icon::create('trash', 'clickable') ?>
        </a>
      </td>
@@ -104,12 +104,7 @@
 </table>
 
 <?php
-$mp = MultiPersonSearch::get('eindeutige_id')
-  ->setLinkText(_('Personen hinzufï¿½gen'))
-  ->setTitle(_('Personen zur Gruppe hinzuf&uuml;gen'))
-  ->setSearchObject(new StandardSearch('user_id'))
-  ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/settings/addZugriff/'.$cid))
-  ->render();
+
 
 $tempURL = URLHelper::getLink('dispatch.php/multipersonsearch/js_form/eindeutige_id');
  ?>
@@ -149,31 +144,6 @@ console.log(color);
 $('div[data-color="'+color+'"] i').css('opacity', '1').attr('data-status', 'active');
 </script>
 
-<!-- Modal Suche Supervisor -->
-<div class="modal fade" id="addSupervisorModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Supervisor hinzufügen</h4>
-      </div>
-      <div class="modal-body" id="modalDeleteBody">
-
-          <p>
-            <div class="input-group" style="margin-bottom:20px;">
-              <div class="input-group-addon"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></div>
-              <input type="text" class="form-control" id="inputSearchSupervisor" placeholder="Name des Supervisors">
-            </div>
-
-            <div id="searchResult"></div>
-
-          </p>
-
-
-      </div>
-    </div>
-  </div>
-</div>
 
 
 <script type="text/javascript" src="<?php echo $GLOBALS['ABSOLUTE_URI_STUDIP'] . 'plugins_packages/uos/EportfolioPlugin/assets/js/eportfolio.js'; ?>"></script>
