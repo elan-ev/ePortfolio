@@ -9,11 +9,11 @@ include_once __DIR__.'/SupervisorGroupUser.class.php';
 /**
  * @author  <asudau@uos.de>
  *
- * @property int     $id
- * @property string  $type
- * @property int     $related_contact
- * @property string  $content
- * @property int     $mkdate
+ * @property string     $Seminar_id
+ * @property string     $block_id
+ * @property string     $user_id
+ * @property int        $mkdate
+ * @property int        $chdate
  */
 class EportfolioFreigabe extends SimpleORMap
 {
@@ -78,6 +78,6 @@ class EportfolioFreigabe extends SimpleORMap
     }
     
     public static function getUserWithAccess($seminar_id, $chapter_id){
-        
+        return self::findBySQL('Seminar_id = :seminar_id AND block_id = :chapter_id', array(':seminar_id' => $seminar_id, ':chapter_id' => $chapter_id));
     }
 }

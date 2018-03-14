@@ -66,12 +66,13 @@
 
             <?php //if($isOwner == true):?>
             <div class="avatar-wrapper">
-              <?php $checkViewer = eportfoliopluginController::getChapterViewer($cid, $key[id]);?>
+              <?php $viewers = EportfolioFreigabe::getUserWithAccess($cid, $key[id]);?>
               <?php
               $counter = 0;
-              foreach($checkViewer as $viewer => $viewerValue):?>
+              foreach($viewers as $viewer):?>
+                <?php $viewer = new StudipUser($viewer->user_id); ?>
                 <?php if($isOwner == true):?>
-                  <div class="avatar-container"><?= Avatar::getAvatar($viewerValue)->getImageTag(Avatar::SMALL) ?></div>
+                  <div class="avatar-container"><?= Avatar::getAvatar($viewer->userid)->getImageTag(Avatar::SMALL, array('title' => $viewer->givenname . ' ' . $viewer->surname)) ?></div>
                   <?php $counter++; ?>
                 <?php endif; ?>
               <?php endforeach; ?>

@@ -139,17 +139,6 @@ class EportfoliopluginController extends StudipController {
       $chapterListArray[$key[0]] = array("number" => 0, "user" => array());
     }
 
-    //get views of chapter
-    //$querygetviewer = $db->query("SELECT eportfolio_access, user_id FROM seminar_user WHERE Seminar_id = '$cid'")->fetchAll();
-    //foreach ($querygetviewer as $key) {
-    //  $getviewerList = unserialize($key[0]);
-    //  foreach ($getviewerList[chapter] as $val => $value) {
-    //    if($value == '1'){
-    //      $chapterListArray[$val][number]++;
-    //      array_push($chapterListArray[$val][user], $key[user_id]);
-    //    }
-    //  }
-    //}
 
     //get viewer
     $viewerList = array();
@@ -205,29 +194,6 @@ class EportfoliopluginController extends StudipController {
     //array_push($return_arr, $img);
 
     return $return_arr;
-  }
-  
-  
-  //TODO umschreiben
-  public function getChapterViewer($nummer, $chapter){
-    
-      
-      $db = DBManager::get();
-    $query = "SELECT eportfolio_access, user_id FROM eportfolio_user WHERE Seminar_id = :nummer AND owner = '0'";
-    $statement = $db->prepare($query);
-    $statement->execute(array(':nummer'=> $nummer));
-    $viewer = array();
-
-    foreach ($statement->fetchAll() as $key) {
-      $array = unserialize($key[eportfolio_access]);
-      if( $array[$chapter] > 0 ){
-        array_push($viewer, $key[user_id]);
-      }
-      $counter++;
-    }
-
-    return $viewer;
-
   }
 
   public function checkIfTemplate($id){
