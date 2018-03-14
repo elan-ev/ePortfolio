@@ -51,9 +51,9 @@
       <td onClick="setAccess('<?= $chapter[id]?>', '<?= $supervisorId ?>', this, '<?= $cid ?>');" class="righttable-inner">
 
         <?php if($hasAccess):?>
-          <span id="icon-<?php echo $supervisorId.'-'.$chapter[id]; ?>" class="glyphicon glyphicon-ok"><?= Icon::create('accept', 'clickable'); ?></span>
+          <span id="icon-<?php echo $supervisorId.'-'.$chapter[id]; ?>" class="glyphicon glyphicon-ok" title='Zugriff sperren'><?= Icon::create('accept', 'clickable'); ?></span>
         <?php else :?>
-          <span id="icon-<?php echo $supervisorId.'-'.$chapter[id]; ?>" class="glyphicon glyphicon-remove"><?= Icon::create('decline', 'clickable'); ?></span>
+          <span id="icon-<?php echo $supervisorId.'-'.$chapter[id]; ?>" class="glyphicon glyphicon-remove" title='Zugriff erlauben'><?= Icon::create('decline', 'clickable'); ?></span>
         <?php endif;?>
 
       </td>
@@ -88,9 +88,9 @@
       <td onClick="setAccess('<?= $chapter[id]?>', '<?= $viewer_id ?>', this, '<?= $cid ?>');" class="righttable-inner">
 
         <?php if($hasAccess):?>
-          <span id="icon-<?php echo $viewer[viewer_id].'-'.$chapter[id]; ?>" class="glyphicon glyphicon-ok"><?= Icon::create('accept', 'clickable'); ?></span>
+          <span id="icon-<?php echo $viewer[viewer_id].'-'.$chapter[id]; ?>" class="glyphicon glyphicon-ok" title='Zugriff sperren'><?= Icon::create('accept', 'clickable'); ?></span>
         <?php else :?>
-          <span id="icon-<?php echo $viewer[viewer_id].'-'.$chapter[id]; ?>" class="glyphicon glyphicon-remove"><?= Icon::create('decline', 'clickable'); ?></span>
+          <span id="icon-<?php echo $viewer[viewer_id].'-'.$chapter[id]; ?>" class="glyphicon glyphicon-remove" title='Zugriff erlauben'><?= Icon::create('decline', 'clickable'); ?></span>
         <?php endif;?>
 
       </td>
@@ -114,7 +114,7 @@ $mp = MultiPersonSearch::get('eindeutige_id')
 $tempURL = URLHelper::getLink('dispatch.php/multipersonsearch/js_form/eindeutige_id');
  ?>
 
- <a href="<?php echo $tempURL ?>" class="multi_person_search_link" data-dialog="width=720;height=460;id=mp-search" data-dialogname="eindeutige_id" title="Personen zur Gruppe hinzuf&amp;uuml;gen" data-js-form="<?php echo $tempURL ?>">
+ <a href="<?php echo $tempURL ?>" class="multi_person_search_link" data-dialog="width=720;height=460;id=mp-search" data-dialogname="eindeutige_id" title="Personen zur Gruppe hinzufügen" data-js-form="<?php echo $tempURL ?>">
    <?= \Studip\Button::create('Zugriffsrechte vergeben', 'klickMichButton', array('data-dialogname' => 'eindeutige_id', 'data-js-form' => $tempURL)); ?>
  </a>
 
