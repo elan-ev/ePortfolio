@@ -19,9 +19,7 @@ class SupervisorGroupUser extends SimpleORMap
         $config['has_one']['supervisor_group'] = array(
             'class_name' => 'SupervisorGroup',
             'assoc_foreign_key' => 'supervisor_group_id',
-            'assoc_func' => 'findById',
-            'on_delete' => 'delete',
-            'on_store' => 'store',
+            'assoc_func' => 'findById'
         );
 
         parent::configure($config);
