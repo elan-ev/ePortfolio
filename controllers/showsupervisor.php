@@ -364,18 +364,14 @@ class ShowsupervisorController extends StudipController {
       $this->masterid = $masterid;
       $this->groupid = $groupid;
       //$this->response->add_header('X-Dialog-Close', '1');
+      
+      VorlagenCopy::copyCourseware(new Seminar($masterid), $this->semList);
+      $this->storeTemplateForGroup($groupid, $masterid);
+      
+      $this->redirect('showsupervisor?cid=' . $groupid);
 
     }
-
-    public function distributeportfolios_action($groupid, $master){
-        //speichern, welche Volagen bereits verteilt wurden
-        if($groupid && $master){
-            $this->storeTemplateForGroup($groupid, $master);
-        }
-
-        $this->response->add_header('X-Dialog-Close', '1');
-        $this->render_nothing();
-    }
+    
 
     public function getPortfolioSemId(){
       foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
