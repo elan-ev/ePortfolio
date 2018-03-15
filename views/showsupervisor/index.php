@@ -1,7 +1,17 @@
 <? use Studip\LinkButton; ?>
 
-<h1>Supervisionsgruppe "<?php echo $courseName; ?>"</h1>
 
+<div class="row">
+  <div class="col-md-12">
+    <div class="jumbotron" style="border-radius: 10px;">
+      <div class="container" style="padding: 0 50px;">
+
+        <h1>Supervisionsgruppe "<?php echo $courseName; ?>"</h1>
+
+      </div>
+    </div>
+  </div>
+</div>
 
 <div>
 
@@ -245,7 +255,6 @@
 </div>
 
 
-
 <script type="text/javascript">
 
 $( function() {
@@ -408,15 +417,6 @@ var uniqID = function() {
 
     return filtered.join('');
 
-}
-
-function defaultImg(img) { //setzt default Profilbild falls keins vorhanden
-  img.src = "<?php echo $GLOBALS[DYNAMIC_CONTENT_URL]; ?>/user/nobody_small.png";
-}
-
-
-function closeModal(){
-  $('.modal-area').empty();
 }
 
 

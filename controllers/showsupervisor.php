@@ -14,17 +14,21 @@ class ShowsupervisorController extends StudipController {
         parent::__construct($dispatcher);
         $this->plugin = $dispatcher->current_plugin;
         $user = get_username();
+        
         $id = $_GET["cid"];
-        $this->groupid = $id;
-        $this->userid = $GLOBALS["user"]->id;
-        $this->ownerid = $GLOBALS["user"]->id;
+        $this->sem = Course::findById($id);
+        
+        if($this->sem){
+            $this->groupid = $id;
+            $this->userid = $GLOBALS["user"]->id;
+            $this->ownerid = $GLOBALS["user"]->id;
 
-        $this->groupTemplates = Group::getTemplates($id);
-        $this->templistid = $this->groupTemplates;
+            $this->groupTemplates = Group::getTemplates($id);
+            $this->templistid = $this->groupTemplates;
 
-        $group = EportfolioGroup::findbySQL('seminar_id = :id', array(':id'=> $this->groupid));
-        $this->supervisorGroupId = $group[0]->supervisor_group_id;
-
+            $group = EportfolioGroup::findbySQL('seminar_id = :id', array(':id'=> $this->groupid));
+            $this->supervisorGroupId = $group[0]->supervisor_group_id;
+        }
         //userData for Modal
 
         if($_POST["type"] == 'addTemp'){
@@ -83,19 +87,18 @@ class ShowsupervisorController extends StudipController {
         }
 
         $navcreate = new LinksWidget();
-        $navcreate->setTitle('Aktionen');
+        $navcreate->setTitle('Gruppen-Aktionen');
 
+        if($this->groupid){
+            //$navcreate->addLink("Nutzer eintragen", '', 'icons/16/blue/add/community.svg', NULL);
+            $navcreate->addLink("Supervisoren verwalten", URLHelper::getLink("plugins.php/eportfolioplugin/showsupervisor/supervisorgroup/". $id, array('cid' => $id)), 'icons/16/blue/edit.png', NULL);
+
+            $navcreate->addLink("Diese Gruppe löschen", URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/delete/' . $id), 'icons/16/blue/trash.png', array('onclick' => "return confirm('Gruppe wirklich löschen?'"));
+        }
+        
         $navcreate->addLink("Neue Gruppe anlegen", PluginEngine::getLink($this->plugin, array(), 'showsupervisor/creategroup') , 'icons/16/blue/add.png', array('data-dialog'=>"size=auto;reload-on-close"));
 
-        $navcreate->addLink("Diese Gruppe löschen", URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/delete/' . $id), 'icons/16/blue/trash.png', array('onclick' => "return confirm('Gruppe wirklich löschen?'"));
-
-        $navSupervisorGroup = new LinksWidget();
-        $navSupervisorGroup->setTitle("Supervisorengruppen");
-        $navSupervisorGroupURL = URLHelper::getLink("plugins.php/eportfolioplugin/showsupervisor/supervisorgroup/". $id, array('cid' => $id));
-        $navSupervisorGroup->addLink("Verwalten", $navSupervisorGroupURL);
-
         $sidebar->addWidget($navcreate);
-        $sidebar->addWidget($navSupervisorGroup);
         $sidebar->addWidget($nav);
 
     }
@@ -107,9 +110,9 @@ class ShowsupervisorController extends StudipController {
 
     public function index_action()
     {
-      $id = $_GET["cid"];
-      $this->id = $id;
-
+        $id = $_GET["cid"];
+        $this->sem = Course::findById($id);
+        
       if(!$id == ''){
         $query = "SELECT owner_id FROM eportfolio_groups WHERE seminar_id = :id";
         $statement = DBManager::get()->prepare($query);
@@ -119,21 +122,16 @@ class ShowsupervisorController extends StudipController {
         //check permission
         if(!$check[0][0] == $GLOBALS["user"]->id){
           throw new AccessDeniedException(_("Sie haben keine Berechtigung"));
-        } else {
-          $this->groupList = EportfolioGroup::getGroupMember($id);
-
-        }
-      } else {
-
-      }
-
+        } 
+      } 
+     
       $this->userid = $GLOBALS["user"]->id;
 
       $this->url = $_SERVER['REQUEST_URI'];
-      if($id){
-        $course = new Seminar($id);
-        $this->courseName = $course->getName();
-      } else $this->courseName = '';
+      if($this->sem){
+        //$course = new Seminar($id);
+        //$this->courseName = $course->getName();
+      }  $this->render_action('index_nogroup');
 
     }
 
@@ -592,6 +590,8 @@ class ShowsupervisorController extends StudipController {
     public function delete_action($cid){
       $cid = $_GET['cid'];
       EportfolioGroup::deleteGroup($cid);
+      PageLayout::postMessage(MessageBox::success(_('Die Gruppe wurde gelöscht.')));
+      $this->redirect(URLHelper::getLink("plugins.php/eportfolioplugin/showsupervisor", array('cid' => '')));
     }
 
     public function deleteUserFromGroup_action($id, $group_id){

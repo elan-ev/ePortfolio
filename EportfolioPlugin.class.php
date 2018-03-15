@@ -73,7 +73,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
       # settings navigation
       $id = $_GET["cid"];
 
-      if (!$id == NULL) {
+      if (Course::findById($id)) {
 
         $seminar        = new Seminar($id);
         $seminarMembers = $seminar->getMembers("dozent");
@@ -186,21 +186,26 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
 
     private function isPortfolio()
     {
-        $seminar = Seminar::getInstance($this->getSeminarId());
-        $status = $seminar->getStatus();
-        if ($status == Config::get()->getValue('SEM_CLASS_PORTFOLIO')){
-            return true;
-        }
-        else return false;
+        if(Course::findById($this->getSeminarId())){
+            $seminar = Seminar::getInstance($this->getSeminarId());
+            $status = $seminar->getStatus();
+            if ($status == Config::get()->getValue('SEM_CLASS_PORTFOLIO')){
+                return true;
+            }
+            else return false;
+        } else return false;
     }
     
     private function isVorlage()
     {
-        $seminar = Seminar::getInstance($this->getSeminarId());
-        $status = $seminar->getStatus();
-        if ($status == Config::get()->getValue('SEM_CLASS_PORTFOLIO_VORLAGE')){
-            return true;
-        }
+        if(Course::findById($this->getSeminarId())){
+            $seminar = Seminar::getInstance($this->getSeminarId());
+            $status = $seminar->getStatus();
+            if ($status == Config::get()->getValue('SEM_CLASS_PORTFOLIO_VORLAGE')){
+                return true;
+            }
+            else return false;
+        }  
         else return false;
     }
     

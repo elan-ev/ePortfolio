@@ -29,13 +29,7 @@ class ShowController extends StudipController {
         $navcreate->setTitle('Navigation');
         $navcreate->addLink("Übersicht", PluginEngine::getLink($this->plugin, array(), 'show') , '', array('class' => 'active-link'));
         if ($perm == "dozent") {
-          $output = EportfolioGroup::getFirstGroupOfUser($GLOBALS["user"]->id);
-          if(!$output == '') {
-            $linkIdMenu = $output;
-          } else {
-            $linkIdMenu = '';
-          }
-          $navcreate->addLink("Supervisionsansicht", "showsupervisor?cid=".$linkIdMenu);
+          $navcreate->addLink("Supervisionsansicht", "showsupervisor");
         }
         $sidebar->addWidget($navcreate);
         
