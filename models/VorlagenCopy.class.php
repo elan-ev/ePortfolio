@@ -43,7 +43,7 @@ class VorlagenCopy{
         fputs($file, $xml);
         fclose($file);
 
-        foreach($this->semList as $user_id => $cid){
+        foreach($semList as $user_id => $cid){
             //import in new course
             $containerImport =  new Courseware\Container(NULL);
             $containerImport["cid"] = $cid; //new course cid
