@@ -59,6 +59,13 @@ class ShowsupervisorController extends StudipController {
         $sidebar = Sidebar::Get();
         Sidebar::Get()->setTitle('Supervisionsansicht');
 
+        $navcreate = new LinksWidget();
+        $navcreate->setTitle('Navigation');
+        $navcreate->addLink("Übersicht", PluginEngine::getLink($this->plugin, array(), 'show') , '', NULL);
+        $navcreate->addLink("Supervisionsansicht", 'showsupervisor', '', array('class' => 'active-link'));
+        
+        $sidebar->addWidget($navcreate);
+        
         $nav = new LinksWidget();
         $nav->setTitle(_('Supervisionsgrupppen'));
         $groups = EportfolioGroup::getAllGroupsOfSupervisor($GLOBALS["user"]->id);
@@ -76,20 +83,20 @@ class ShowsupervisorController extends StudipController {
         }
 
         $navcreate = new LinksWidget();
-        $navcreate->setTitle('Navigation');
+        $navcreate->setTitle('Aktionen');
 
-        $navcreate->addLink("Neue Gruppe anlegen", PluginEngine::getLink($this->plugin, array(), 'showsupervisor/creategroup') , "", array('data-dialog'=>"size=auto;reload-on-close"));
+        $navcreate->addLink("Neue Gruppe anlegen", PluginEngine::getLink($this->plugin, array(), 'showsupervisor/creategroup') , 'icons/16/blue/add.png', array('data-dialog'=>"size=auto;reload-on-close"));
 
-        $navcreate->addLink("Meine Portfolios", "show");
+        $navcreate->addLink("Diese Gruppe löschen", URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/delete/' . $id), 'icons/16/blue/trash.png', array('onclick' => "return confirm('Gruppe wirklich löschen?'"));
 
         $navSupervisorGroup = new LinksWidget();
         $navSupervisorGroup->setTitle("Supervisorengruppen");
         $navSupervisorGroupURL = URLHelper::getLink("plugins.php/eportfolioplugin/showsupervisor/supervisorgroup/". $id, array('cid' => $id));
         $navSupervisorGroup->addLink("Verwalten", $navSupervisorGroupURL);
 
-        $sidebar->addWidget($nav);
         $sidebar->addWidget($navcreate);
         $sidebar->addWidget($navSupervisorGroup);
+        $sidebar->addWidget($nav);
 
     }
 
