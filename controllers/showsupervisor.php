@@ -129,9 +129,9 @@ class ShowsupervisorController extends StudipController {
 
       $this->url = $_SERVER['REQUEST_URI'];
       if($this->sem){
-        //$course = new Seminar($id);
-        //$this->courseName = $course->getName();
-      }  $this->render_action('index_nogroup');
+        $course = new Seminar($id);
+        $this->courseName = $course->getName();
+      } else $this->render_action('index_nogroup');
 
     }
 
