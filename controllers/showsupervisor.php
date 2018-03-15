@@ -92,8 +92,7 @@ class ShowsupervisorController extends StudipController {
         if($this->groupid){
             //$navcreate->addLink("Nutzer eintragen", '', 'icons/16/blue/add/community.svg', NULL);
             $navcreate->addLink("Supervisoren verwalten", URLHelper::getLink("plugins.php/eportfolioplugin/showsupervisor/supervisorgroup/". $id, array('cid' => $id)), 'icons/16/blue/edit.png', NULL);
-
-            $navcreate->addLink("Diese Gruppe löschen", URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/delete/' . $id), 'icons/16/blue/trash.png', array('onclick' => "return confirm('Gruppe wirklich löschen?'"));
+            $navcreate->addLink("Diese Gruppe löschen", URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/delete/' . $id), 'icons/16/blue/trash.png', array('onclick' => "return confirm('Gruppe wirklich löschen?')"));
         }
         
         $navcreate->addLink("Neue Gruppe anlegen", PluginEngine::getLink($this->plugin, array(), 'showsupervisor/creategroup') , 'icons/16/blue/add.png', array('data-dialog'=>"size=auto;reload-on-close"));
