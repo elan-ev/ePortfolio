@@ -211,18 +211,6 @@
 
 </div>
 
-<?php if(!$id): ?>
-
-  <div class="panel panel-primary">
-  <div class="panel-heading">
-    Gruppen erstellen
-  </div>
-
-  <?php echo MessageBox::info('Aktuell haben Sie noch keine Gruppen erstellt. Bitte erstellen Sie zunächst ein Gruppe um mit der Verwaltung fortzufahren.'); ?>
-
-</div>
-
-<?php endif; ?>
 
 <?php
   $mp = MultiPersonSearch::get('eindeutige_id')
