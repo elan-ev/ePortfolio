@@ -64,4 +64,12 @@ class Eportfoliomodel extends SimpleORMap
       return $seminare;
 
     }
+    
+    public static function getChapters($id){
+        $db = DBManager::get();
+        $query = "SELECT title, id FROM mooc_blocks WHERE seminar_id = :id AND type = 'Chapter' ORDER BY position ASC";
+        $statement = $db->prepare($query);
+        $statement->execute(array(':id'=> $id));
+        return $statement->fetchAll();
+    }
 }

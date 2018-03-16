@@ -36,11 +36,11 @@ class settingsController extends StudipController {
     // set vars
     $userid = $GLOBALS["user"]->id;
     $cid = $_GET["cid"]?  $_GET["cid"] : $cid;
-    $db = DBManager::get();
     $this->cid = $cid;
 
     # Aktuelle Seite
-    $seminar = new Seminar($_GET["cid"]);
+    $seminar = new Seminar($this->cid);
+    
     PageLayout::setTitle('ePortfolio - Zugriffsrechte: '.$seminar->getName());
 
     //autonavigation
@@ -54,22 +54,6 @@ class settingsController extends StudipController {
     $views->addLink(_('Rechteverwaltung'), '#')->setActive(true);
     Sidebar::get()->addWidget($views);
 
-    # Überprüft ob Besitzer der Veranstaltung
-    // if (!$this->checkIfOwner($userId, $cid) == true) {
-    //   exit("Sie haben keine Berechtigung!");
-    // }
-
-    //set AutoNavigation////
-    //Navigation::activateItem("course/settings");
-    ////////////////////////s
-
-    //get seninar infos
-    $query = "SELECT name FROM seminare WHERE Seminar_id = :cid";
-    $statement = $db->prepare($query);
-    $statement->execute(array(':cid'=> $cid));
-    $getS = $statement->fetchAll()[0][name];
-
-
     //viewer controll //
     ///////////////////
     $return_arr = array();
@@ -77,55 +61,14 @@ class settingsController extends StudipController {
     $countChapter = 0;
 
     //get list chapters
-    $query = "SELECT * FROM mooc_blocks WHERE type = 'Chapter' AND seminar_id = :cid ORDER BY position ASC";
-    $statement = $db->prepare($query);
-    $statement->execute(array(':cid'=> $cid));
-    foreach ($statement->fetchAll() as $key) {
-      array_push($arrayList, array('title' => $key[title], 'id' => $key[id]));
-      $countChapter++;
-    }
+    $chapters = Eportfoliomodel::getChapters($cid);
 
     //get viewer information
-    $query = "SELECT * FROM seminar_user WHERE Seminar_id = :cid AND status != 'dozent'";
-    $statement = $db->prepare($query);
-    $statement->execute(array(':cid'=> $cid));
-    foreach ($statement->fetchAll() as $key) {
-
-      $viewer_id =  $key[user_id];
-      $query = "SELECT Vorname, Nachname FROM auth_user_md5 WHERE user_id = :viewer_id";
-      $statement = $db->prepare($query);
-      $statement->execute(array(':viewer_id'=> $viewer_id));
-      $viewerInfo = $statement->fetchAll();
-      $viewerVorname = $viewerInfo[0][Vorname];
-      $viewerNachname = $viewerInfo[0][Nachname];
-
-      //$viewerAccess = $db->query("SELECT eportfolio_access FROM seminar_user WHERE user_id = '$viewer_id' AND Seminar_id = '$cid'")->fetchAll();
-      //$dataAccess = unserialize($viewerAccess[0][eportfolio_access]);
-
-      $arrayOne = array();
-      $arrayOne['Vorname'] = $viewerVorname;
-      $arrayOne['Nachname'] = $viewerNachname;
-      $arrayOne['viewer_id'] = $viewer_id;
-      //$arrayOne['Chapter'] = $dataAccess[chapter];
-
-      array_push($return_arr, $arrayOne);
-
-    }
+    $viewers = $seminar->getMembers('autor');
 
     //get supervisor_id
     $supervisor_id = $this->getSupervisorGroupOfPortfolio($cid);
-    //get Portfolio Information//
-    ////////////////////////////
-
-    $query = "SELECT Name, Beschreibung FROM seminare WHERE Seminar_id = :cid";
-    $statement = $db->prepare($query);
-    $statement->execute(array(':cid'=> $cid));
-    $queryPortfolioInfo = $statement->fetchAll();
-    $portfolioInfo = array('Name' => $queryPortfolioInfo[0][Name], 'Beschreibung' => $queryPortfolioInfo[0][Beschreibung]);
-
-    ////////////////////////////
-    ////////////////////////////
-
+    
     //set Supervisor//
     //////////////////
 
@@ -183,12 +126,11 @@ class settingsController extends StudipController {
     //push to template
     $this->cid = $cid;
     $this->userid = $userid;
-    $this->title = $getS;
-    $this->chapterList = $arrayList;
-    $this->viewerList = $return_arr;
-    $this->numberChapter = $countChapter;
+    $this->title = $seminar->name;
+    $this->chapterList = $chapters; //$arrayList;
+    $this->viewerList = $viewers; //$return_arr;
+    $this->numberChapter = count($chapters);
     $this->supervisorId = $supervisor_id;
-    $this->portfolioInfo = $portfolioInfo;
     $this->access = $access;
 
   }

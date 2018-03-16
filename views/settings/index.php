@@ -67,11 +67,11 @@
    <tr>
      <td>
        
-       <?php $userInfo = UserModel::getUser($viewer[viewer_id]);?>
+       <?php $userInfo = UserModel::getUser($viewer[user_id]);?>
          <a href="<?= URLHelper::getLink('dispatch.php/profile?username=' . $userInfo['username']) ?>" >
-                        <?= Avatar::getAvatar($viewer[viewer_id], $userInfo['username'])->getImageTag(Avatar::SMALL,
-                                array('style' => 'margin-right: 5px;border-radius: 30px; width: 25px; border: 1px solid #28497c;', 'title' => htmlReady($userInfo['Vorname']." ".$userInfo['Nachname']))); ?>
-                        <?= htmlReady($userInfo['Vorname']." ".$userInfo['Nachname']) ?>         
+                        <?= Avatar::getAvatar($viewer[user_id])->getImageTag(Avatar::SMALL,
+                                array('style' => 'margin-right: 5px;border-radius: 30px; width: 25px; border: 1px solid #28497c;', 'title' => htmlReady($viewer['Vorname']." ".$viewer['Nachname']))); ?>
+                        <?= htmlReady($viewer['Vorname']." ".$viewer['Nachname']) ?>         
                     </a>
        
        
@@ -83,7 +83,7 @@
      </td>
      <?php foreach ($chapterList as $chapter):?>
 
-      <?php $viewer_id = $viewer[viewer_id]; ?>
+      <?php $viewer_id = $viewer[user_id]; ?>
       <?php $hasAccess = EportfolioFreigabe::hasAccess($viewer_id, $cid, $chapter[id]); ?>
       <td onClick="setAccess('<?= $chapter[id]?>', '<?= $viewer_id ?>', this, '<?= $cid ?>');" class="righttable-inner">
 
