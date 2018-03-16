@@ -21,7 +21,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         Navigation::addItem('/eportfolioplugin', $navigation);
         //Navigation::activateItem("/eportfolioplugin");
         NotificationCenter::addObserver($this, "setup_navigation", "PageWillRender");
-        
+
     }
 
     public function getCardInfos($cid){
@@ -51,13 +51,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     public function initialize () {
       //PageLayout::addStylesheet($this->getPluginURL().'/assets/bootstrap.css');
       PageLayout::addStylesheet($this->getPluginURL().'/assets/style.css');
-      // var_dump(Navigation::getItem('/course/files'));
-
-      // PageLayout::addStylesheet('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css');
-      // script row-link
-      //PageLayout::addScript($this->getPluginURL().'/assets/js/bootstrap.min.js');
-      //PageLayout::addScript($this->getPluginURL().'/assets/js/jasny-bootstrap.min.js');
-      //PageLayout::addScript($this->getPluginURL().'/assets/js/mustache.min.js');
+      
     }
 
     public function getTabNavigation($course_id) {
@@ -131,7 +125,6 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
 
       $serverinfo = $_SERVER['PATH_INFO'];
 
-      
       parent::perform($unconsumed_path);
 
     }
@@ -209,6 +202,35 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
             //Navigation::removeItem('/course/settings');
             //Navigation::insertItem('/course/settings', $settings, '/course/files');
             Navigation::getItem('/course/mooc_courseware')->setTitle(ePortfolio);
-        }
+        
+            //default Courseware-Hilfe ersetzen
+            $widgets = Helpbar::get()->getWidgets();
+            foreach($widgets as $index=>$widget){
+                $elements = $widget->getElements();
+                Helpbar::get()->removeWidget($index);
+            }
+            
+            if ($this->isPortfolio()){
+                $description  = _('Unter **Zugriffsrechte** können Sie einzelne Kapitel für Komilitonen oder Ihre Supervisoren freigeben.') . ' ';
+                $description .= _('') . '';
+                $tip = _('Unter **ePortfolio** können Sie Ihr Portfolio bearbeiten. ');
+                $tip .= _('');
+                $bearbeiten = _('Um Inhalte oder Kapitel hinzuzufügen, klicken Sie im Reiter **ePortfolio** oben rechts auf den Doktorandenhut');
+                Helpbar::get()->addPlainText(_(''), $description, '');
+                Helpbar::get()->addPlainText(_(''), $tip, '');
+                Helpbar::get()->addPlainText(_('Tip zum Bearbeiten'), $bearbeiten, 'icons/white/doctoral_cap.svg');
+            }
+            if ($this->isVorlage()){
+                $description  = _('Unter **Zugriffsrechte** können Sie festlegen, wer Zuriff auf diese Vorlage hat. ') . ' ';
+                $description .= _('Ausserdem können Sie Inhalte der Vorlage für die spätere Bearbeitung durch Studierende sperren.') . '';
+                $tip = _('Unter **ePortfolio** können Sie die Vorlage bearbeiten. ');
+                $tip .= _('');
+                $bearbeiten = _('Um Inhalte oder Kapitel hinzuzufügen, klicken Sie im Reiter **ePortfolio** oben rechts auf den Doktorandenhut');
+                Helpbar::get()->addPlainText(_(''), $description, '');
+                Helpbar::get()->addPlainText(_(''), $tip, '');
+                Helpbar::get()->addPlainText(_('Tip zum Bearbeiten'), $bearbeiten, 'icons/white/doctoral_cap.svg');
+            }
+            
+         }
     }
 }
