@@ -221,7 +221,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
                 Helpbar::get()->addPlainText(_('Tip zum Bearbeiten'), $bearbeiten, 'icons/white/doctoral_cap.svg');
             }
             if ($this->isVorlage()){
-                $description  = _('Unter **Zugriffsrechte** können Sie festlegen, wer Zuriff auf diese Vorlage hat. ') . ' ';
+                $description  = _('Unter **Zugriffsrechte** können Sie festlegen, wer Zugriff auf diese Vorlage hat. ') . ' ';
                 $description .= _('Ausserdem können Sie Inhalte der Vorlage für die spätere Bearbeitung durch Studierende sperren.') . '';
                 $tip = _('Unter **ePortfolio** können Sie die Vorlage bearbeiten. ');
                 $tip .= _('');
