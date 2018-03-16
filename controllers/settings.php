@@ -38,6 +38,7 @@ class settingsController extends StudipController {
     $cid = $_GET["cid"]?  $_GET["cid"] : $cid;
     $this->cid = $cid;
     $this->isVorlage = Eportfoliomodel::isVorlage($this->cid);
+    $eportfolio = Eportfoliomodel::findBySQL('seminar_id = :id', array(':id'=> $this->cid));
 
     $seminar = new Seminar($this->cid);
     
@@ -103,15 +104,13 @@ class settingsController extends StudipController {
 
       $json = serialize($eportfolio_access);
 
-      $eportfolio_id = $this->getEportfolioId($cid);
-
       $query = "INSERT INTO seminar_user (seminar_id, user_id, status, visible) VALUES (:cid, :viewerId, 'autor', 1)";
       $statement = $db->prepare($query);
       $statement->execute(array(':viewerId'=> $viewerId, ':cid'=> $cid));
 
       $query = "INSERT INTO eportfolio_user (user_id, Seminar_id, eportfolio_id, status, eportfolio_access, owner) VALUES (:viewerId, :cid, :eportfolio_id, 'autor', :json, 0)";
       $statement = $db->prepare($query);
-      $statement->execute(array(':viewerId'=> $viewerId, ':cid'=> $cid, ':eportfolio_id'=> $eportfolio_id, ':json'=> $json));
+      $statement->execute(array(':viewerId'=> $viewerId, ':cid'=> $cid, ':eportfolio_id'=> $eportfolio[0]->eportfolio_id, ':json'=> $json));
     }
 
     //////////////////
@@ -164,35 +163,9 @@ class settingsController extends StudipController {
     return $arrayChapter;
   }
 
-  public function getEportfolioId($id){
-    $db = DBManager::get();
-    $query = "SELECT eportfolio_id FROM eportfolio WHERE Seminar_id = :id";
-    $statement = $db->prepare($query);
-    $statement->execute(array(':id'=> $id));
-    return $statement->fetchAll()[0][eportfolio_id];
-  }
-
-  //TODO user
-  public function getEportfolioAccess($id, $sid){
-    $db = DBManager::get();
-    $query = "SELECT eportfolio_access FROM eportfolio_user WHERE user_id = :id AND Seminar_id = :sid";
-    $statement = $db->prepare($query);
-    $statement->execute(array(':id'=> $id, ':sid'=> $sid));
-    return unserialize($statement->fetchAll()[0][eportfolio_access]);
-  }
-
-    //TODO user
-  public function saveEportfolioAccess($id, $data, $sid){
-    $pushArray = serialize($data);
-    echo $pushArray; //TODO raus damit?
-    $db = DBManager::get();
-    $query = "UPDATE eportfolio_user SET eportfolio_access = :pushArray WHERE user_id = :id AND Seminar_id = :sid";
-    $statement = $db->prepare($query);
-    $statement->execute(array(':id'=> $id, ':sid'=> $sid, ':pushArray' => $pushArray));
-  }
 
   public function getSupervisorGroupOfPortfolio($id){
-    $portfolio = Eportfoliomodel::findBySQL('seminar_id = :id', array(':id'=> $id));
+    $portfolio = Eportfoliomodel::findBySQL('Seminar_id = :id', array(':id'=> $id));
      if ($portfolio[0]->group_id){
         $portfoliogroup = EportfolioGroup::findbySQL('seminar_id = :id', array(':id'=> $portfolio[0]->group_id));
      } if ($portfoliogroup[0]->supervisor_group_id){
@@ -201,21 +174,13 @@ class settingsController extends StudipController {
         } else return false;   
   }
 
-  //todo
-  public function getPortfolioFreigaben($id){
-    $db = DBManager::get();
-    $query = "SELECT freigaben_kapitel FROM eportfolio WHERE Seminar_id = :id";
-    $statement = $db->prepare($query);
-    $statement->execute(array(':id'=> $id));
-    $query = json_decode($statement->fetchAll()[0][0], true);
-    return $query;
-  }
 
   //addUserAccess
   public function addZugriff_action($id){
     $mp             = MultiPersonSearch::load('eindeutige_id');
     $seminar        = new Seminar($id);
-    $eportfolio_id  = $this->getEportfolioId($id);
+    $eportfolio = Eportfoliomodel::findBySQL('Seminar_id = :id', array(':id'=> $id));
+    $eportfolio_id  = $eportfolio[0]->eportfolio_id;
     $userRole       = 'autor';
 
     # User der Gruppe hinzufügen
@@ -239,7 +204,8 @@ class settingsController extends StudipController {
 
   public function deleteUserAccess($userId, $cid){
     $seminar        = new Seminar($cid);
-    $eportfolio_id  = $this->getEportfolioId($cid);
+    $eportfolio = Eportfoliomodel::findBySQL('Seminar_id = :id', array(':id'=> $cid));
+    $eportfolio_id  = $eportfolio[0]->eportfolio_id;
 
     # User aus Seminar entfernen
     $seminar->deleteMember($userId);

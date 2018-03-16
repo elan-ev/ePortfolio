@@ -29,11 +29,8 @@
 <tbody>
 
 <?php
-  
-  //Freigaben fï¿½r Portfolio
-  $SupervisorFreigaben = SettingsController::getPortfolioFreigaben($cid);
 
-  # Prüfen ob eigenes Portfolio
+  # Prï¿½fen ob eigenes Portfolio
   $eigenesPortfolio = SettingsController::eigenesPortfolio($cid);
  ?>
 
@@ -105,6 +102,12 @@
 
 <?php
 
+$mp = MultiPersonSearch::get('eindeutige_id')
+  ->setLinkText(_('Personen hinzufügen'))
+  ->setTitle(_('Personen zur Gruppe hinzuf&uuml;gen'))
+  ->setSearchObject(new StandardSearch('user_id'))
+  ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/settings/addZugriff/'.$cid))
+  ->render();
 
 $tempURL = URLHelper::getLink('dispatch.php/multipersonsearch/js_form/eindeutige_id');
  ?>
