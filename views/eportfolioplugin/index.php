@@ -70,9 +70,9 @@
               <?php
               $counter = 0;
               foreach($viewers as $viewer):?>
-                <?php $viewer = new StudipUser($viewer->user_id); ?>
+                <?php $viewer = new User($viewer->user_id); ?>
                 <?php if($isOwner == true):?>
-                  <div class="avatar-container"><?= Avatar::getAvatar($viewer->userid)->getImageTag(Avatar::SMALL, array('title' => $viewer->givenname . ' ' . $viewer->surname)) ?></div>
+                  <div class="avatar-container"><?= Avatar::getAvatar($viewer->user_id)->getImageTag(Avatar::SMALL, array('title' => $viewer->vorname . ' ' . $viewer->nachname)) ?></div>
                   <?php $counter++; ?>
                 <?php endif; ?>
               <?php endforeach; ?>
