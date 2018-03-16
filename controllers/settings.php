@@ -37,11 +37,15 @@ class settingsController extends StudipController {
     $userid = $GLOBALS["user"]->id;
     $cid = $_GET["cid"]?  $_GET["cid"] : $cid;
     $this->cid = $cid;
+    $this->isVorlage = Eportfoliomodel::isVorlage($this->cid);
 
-    # Aktuelle Seite
     $seminar = new Seminar($this->cid);
     
+    # Aktuelle Seite
     PageLayout::setTitle('ePortfolio - Zugriffsrechte: '.$seminar->getName());
+    if($this->isVorlage){
+        PageLayout::setTitle('ePortfolio-Vorlage - Zugriffsrechte: '.$seminar->getName());
+    }
 
     //autonavigation
     Navigation::activateItem("course/settings");
@@ -53,12 +57,6 @@ class settingsController extends StudipController {
     $views->setTitle('Rechte');
     $views->addLink(_('Rechteverwaltung'), '#')->setActive(true);
     Sidebar::get()->addWidget($views);
-
-    //viewer controll //
-    ///////////////////
-    $return_arr = array();
-    $arrayList = array();
-    $countChapter = 0;
 
     //get list chapters
     $chapters = Eportfoliomodel::getChapters($cid);

@@ -10,7 +10,7 @@
 
         <h1>Keine Gruppe ausgewählt</h1>
 
-        <p>Wählen Sie links in der Navigatin eine Ihrer Gruppen aus oder legen Sie eine neue Gruppe an.</p>
+        <p>Wählen Sie links in der Navigation eine Ihrer Gruppen aus oder legen Sie eine neue Gruppe an.</p>
         <!-- <p><?= \Studip\Button::create('Mehr Informationen'); ?></p> -->
       </div>
     </div>

@@ -39,7 +39,7 @@
       <?php $imageNumber = 0; ?>
       <?php foreach ($cardInfo as $key): ?>
 
-        <?php if(EportfolioFreigabe::hasAccess($userid, $cid, $key[id])): ?>
+        <?php if(EportfolioFreigabe::hasAccess($userid, $cid, $key[id]) || $isVorlage): ?>
         <?php
          
             $link = URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $cid, 'selected' => $key[id]));

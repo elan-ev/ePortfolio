@@ -8,18 +8,9 @@ class ShowController extends StudipController {
         $this->plugin = $dispatcher->current_plugin;
  
         $this->userId = $GLOBALS["user"]->id;
-        $perm = get_global_perm($GLOBALS["user"]->id);
-        $this->perm = $perm;
-        if($perm == "dozent"){
-          $this->linkId = $output;
-          $output = EportfolioGroup::getFirstGroupOfUser($GLOBALS["user"]->id);
-          if(!$output == '') {
-            $this->linkId = $output;
-          } else {
-            $this->linkId = '';
-          }
-        }
-
+        global $perm;
+        $this->isDozent = $perm->have_perm('dozent');
+        
         $user = get_username();
 
         $sidebar = Sidebar::Get();
@@ -28,14 +19,14 @@ class ShowController extends StudipController {
         $navcreate = new LinksWidget();
         $navcreate->setTitle('Navigation');
         $navcreate->addLink("Übersicht", PluginEngine::getLink($this->plugin, array(), 'show') , '', array('class' => 'active-link'));
-        if ($perm == "dozent") {
+        if ($this->isDozent) {
           $navcreate->addLink("Supervisionsansicht", "showsupervisor");
         }
         $sidebar->addWidget($navcreate);
         
         $actions = new ActionsWidget();
         $actions->setTitle('Aktionen');
-        if ($perm == "dozent") {
+        if ($this->isDozent) {
         $actions->addLink("Vorlage erstellen", PluginEngine::getLink($this->plugin, array(), 'show/createvorlage') , 'icons/16/blue/add.png', array('data-dialog'=>"size=auto;reload-on-close"));
         }
         $actions->addLink("ePortfolio erstellen", PluginEngine::getLink($this->plugin, array(), 'show/createportfolio') , 'icons/16/blue/add.png', array('data-dialog'=>"size=auto;reload-on-close"));
@@ -48,7 +39,7 @@ class ShowController extends StudipController {
     {
         parent::before_filter($action, $args);
         //$this->set_layout($GLOBALS['template_factory']->open('layouts/base.php'));
-        PageLayout::setTitle('ePortfolio');
+        PageLayout::setTitle('ePortfolio - Übersicht');
     }
 
 

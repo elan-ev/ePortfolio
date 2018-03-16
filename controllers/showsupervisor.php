@@ -626,7 +626,6 @@ class ShowsupervisorController extends StudipController {
         ->setLinkText(_('Supervisoren hinzufügen'))
         ->setTitle(_('Personen zur Supervisorgruppe hinzufügen'))
         ->setSearchObject($search_obj)
-        ->setJSFunctionOnSubmit()
         ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/supervisorgroup/addUser/'. $group->id, array('id' => $group_id, 'redirect' => $this->url_for('showsupervisor/supervisorgroup/'. $this->linkId))))
         ->render();
 

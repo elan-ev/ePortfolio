@@ -20,6 +20,7 @@ class EportfoliopluginController extends StudipController {
       $cid = $_GET['cid'];
       global $user;
       $eportfolio = Eportfoliomodel::findOneBySeminar_Id($cid);
+      $isVorlage = Eportfoliomodel::isVorlage($cid);
 
       $sidebar = Sidebar::Get();
       Sidebar::Get()->setTitle('Übersicht');
@@ -54,7 +55,7 @@ class EportfoliopluginController extends StudipController {
 
       $getCoursewareChapters = $this->getCardInfos($cid);
       foreach ($getCoursewareChapters as $key => $value) {
-        if (EportfolioFreigabe::hasAccess($GLOBALS["user"]->id, $cid, $value[id])){    
+        if (EportfolioFreigabe::hasAccess($GLOBALS["user"]->id, $cid, $value[id]) || $isVorlage){    
           $nav->addLink($value[title], URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $cid, 'selected' => $value[id])));
         } 
       }
@@ -87,83 +88,28 @@ class EportfoliopluginController extends StudipController {
     $this->cid = $cid;
     $this->userId = $userid;
     $i = 0;
-    $eportfolio = new eportfolio($cid);
+    $eportfolio = new eportfolio($this->cid);
     $isOwner = $eportfolio->isOwner($userid);
+    $this->isVorlage = Eportfoliomodel::isVorlage($this->cid);
+    $seminar = new Seminar($this->cid);
+    
+     # Aktuelle Seite
+    PageLayout::setTitle('ePortfolio - Übersicht: '. $seminar->getName());
+    if($this->isVorlage){
+        PageLayout::setTitle('ePortfolio-Vorlage - Übersicht: '. $seminar->getName());
+    }
 
     $db = DBManager::get();
-    $this->plugin = $dispatcher->plugin;
-
-    // get template Status
-    //$templateStatus = $db->query("SELECT templateStatus FROM eportfolio WHERE Seminar_id = '$cid' ")->fetchAll();
-    //$t = $templateStatus[0][templateStatus];
-    //echo $t;
-
-    // get courseware parentId
-    $query = "SELECT id FROM mooc_blocks WHERE type = 'Courseware' AND seminar_id = :cid";
-    $statement = $db->prepare($query);
-    $statement->execute(array(':cid'=> $cid));
-    $getC = $statement->fetchAll()[0][id];
-
-    //get seninar infos
-    $query = "SELECT name FROM seminare WHERE Seminar_id = :cid";
-    $statement = $db->prepare($query);
-    $statement->execute(array(':cid'=> $cid));
-    $getS = $statement->fetchAll()[0][name];
-
-    //get cardinfos for overview
-    $return_arr = array();
-    $query = "SELECT id, title FROM mooc_blocks WHERE seminar_id = :cid AND type = 'Chapter' ORDER BY position ASC";
-    $statement = $db->prepare($query);
-    $statement->execute(array(':cid'=> $cid));
- 
-    foreach ($statement->fetchAll() as $value) {
-      $arrayOne = array();
-      $arrayOne['id'] = $value[id];
-      $arrayOne['title'] = $value[title];
-
-      // get sections of chapter
-      $query = "SELECT id, title FROM mooc_blocks WHERE parent_id = :id ORDER BY position ASC";
-      $statement = $db->prepare($query);
-      $statement->execute(array(':id'=> $value[id]));
-      $arrayOne['section'] = $statement->fetchAll();
-
-      array_push($return_arr, $arrayOne);
-    }
 
     //get list chapters
-    $chapterListArray = array();
-    $query = "SELECT * FROM mooc_blocks WHERE type = 'Chapter' AND seminar_id = :cid ORDER BY position ASC";
-    $statement = $db->prepare($query);
-    $statement->execute(array(':cid'=> $cid));
-    foreach ($statement->fetchAll() as $key) {
-      $chapterListArray[$key[0]] = array("number" => 0, "user" => array());
-    }
-
-
-    //get viewer
-    $viewerList = array();
-    $viewerCounter = 0;
-    
-    $query = "SELECT user_id FROM seminar_user WHERE Seminar_id = :cid";
-    $statement = $db->prepare($query);
-    $statement->execute(array(':cid'=> $cid));
-    foreach ($statement->fetchAll() as $key){
-      array_push($viewerList, $key[user_id]);
-      $viewerCounter++;
-    }
+    $chapters = Eportfoliomodel::getChapters($cid);
 
     //push to template
-    $this->cardInfo = $return_arr;
-    $this->seminarTitle = $getS;
+    $this->cardInfo = $chapters; //$return_arr;
+    $this->seminarTitle = $seminar->getName();
     $this->isOwner = $isOwner;
     $this->cid = $cid;
-    $this->viewerList = $viewerList;
-    $this->viewerCounter = $viewerCounter;
-    $this->numChapterViewer = $chapterListArray;
     $this->userid = $userid;
-
-    # Aktuelle Seite
-    PageLayout::setTitle('ePortfolio - Übersicht: '.$getS);
 
   }
 

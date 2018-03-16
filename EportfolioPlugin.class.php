@@ -128,13 +128,6 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
           exit;
         }
         $eportfolio = new eportfolio($_GET['cid']);
-        
-        
-        //set Menu Point for Supervisor
-        $thisperm = get_global_perm($GLOBALS["user"]->id);
-        if ($thisperm == "autor"){
-
-        }
 
       $serverinfo = $_SERVER['PATH_INFO'];
 

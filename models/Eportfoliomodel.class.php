@@ -72,4 +72,17 @@ class Eportfoliomodel extends SimpleORMap
         $statement->execute(array(':id'=> $id));
         return $statement->fetchAll();
     }
+    
+    public static function isVorlage($id)
+    {
+        if(Course::findById($id)){
+            $seminar = Seminar::getInstance($id);
+            $status = $seminar->getStatus();
+            if ($status == Config::get()->getValue('SEM_CLASS_PORTFOLIO_VORLAGE')){
+                return true;
+            }
+            else return false;
+        }  
+        else return false;
+    }
 }

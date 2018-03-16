@@ -25,7 +25,7 @@
 
 
 
-<?php if ($perm == "dozent"):?>
+<?php if ($isDozent):?>
 <div class="row">
   <div class="col-md-12">
     <table class="default">
