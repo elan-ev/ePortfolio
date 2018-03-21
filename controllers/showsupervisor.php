@@ -126,6 +126,7 @@ class ShowsupervisorController extends StudipController {
       $this->url = $_SERVER['REQUEST_URI'];
       if($this->sem){
         $course = new Seminar($id);
+        $this->group = EportfolioGroup::find($id);
         $this->courseName = $course->getName();
         $this->member = EportfolioGroup::getGroupMember($id);
         
@@ -143,7 +144,7 @@ class ShowsupervisorController extends StudipController {
         ->setLinkText(_('Personen hinzufügen'))
         ->setTitle(_('Studierende zur Gruppe hinzufügen'))
         ->setSearchObject($search_obj)
-        ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/addUsersToGroup/'. $id, array('id' => $id, 'redirect' => $this->url_for('showsupervisor/'))))
+        ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/addUsersToGroup/'. $id))
         ->render();
         
         
