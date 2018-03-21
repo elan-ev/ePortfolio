@@ -25,7 +25,7 @@ class AddSemClassConfigEntry extends Migration
             'type'        => 'integer',
             'range'       => 'global',
             'section'     => 'global',
-            'description' => 'ID der Veranstaltungsklasse für Portfolio-Supervisionsgruppen'
+            'description' => 'ID der Veranstaltungsklasse für Portfolio-Vorlagen'
             ));
     }
 
