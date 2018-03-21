@@ -21,8 +21,8 @@ class EportfolioGroup extends SimpleORMap
     {
         $config['db_table'] = 'eportfolio_groups';
 
-        $config['belongs_to']['owner'] = array(
-            'class_name' => 'StudipUser',
+        $config['belongs_to']['group_owner'] = array(
+            'class_name' => 'User',
             'foreign_key' => 'owner_id', );
 
         $config['has_many']['user'] = array(
