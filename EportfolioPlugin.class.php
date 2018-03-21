@@ -79,10 +79,14 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
           }
         }
 
-        if ($isDozent == true) {
+        if ($isDozent == true && $this->isPortfolio()) {
           $navigationSettings = new Navigation('Zugriffsrechte', PluginEngine::getURL($this, compact('cid'), 'settings', true));
           $navigationSettings->setImage('icons/16/white/admin.png');
           $navigationSettings->setActiveImage('icons/16/black/admin.png');
+        } else if ($isDozent == true && $this->isVorlage()) {
+          $navigationSettings = new Navigation('Einstellungen', PluginEngine::getURL($this, compact('cid'), 'blocksettings', true));
+          $navigationSettings->setImage('icons/16/white/admin.png');
+          $navigationSettings->setActiveImage('icons/16/black/admin.png');  
         }
       }
 
@@ -195,7 +199,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         else return false;
     }
     
-    public function setup_navigation($username) {
+    public function setup_navigation() {
         //var_dump(Navigation::getItem('/course/mooc_courseware'));
         if (($this->isPortfolio() || $this->isVorlage() ) && Navigation::hasItem('/course/mooc_courseware')){
             //$settings = Navigation::getItem('/course/settings');

@@ -36,12 +36,20 @@ class LockedBlock extends SimpleORMap
     public static function isLocked($block_id){
         $entry = self::findById($block_id);
         if($entry){
-            $seminar = new Seminar($entry->Seminar_id);
-            $status = $seminar->getStatus();
-            if ($status == Config::get()->getValue('SEM_CLASS_PORTFOLIO')){
-                return true;
-            }
+            return true;
+        } else return false;
+    }
+    
+    public static function lockBlock($Seminar_id, $block_id, $lock){
+        if (($lock == 'true') && !self::findById($block_id)){
+            $lockedBlock = new self($block_id);
+            $lockedBlock->Seminar_id = $Seminar_id;
+            $lockedBlock->mkdate = time();
+            $lockedBlock->chdate = time();
+            $lockedBlock->store();
+        } else if (($lock == 'false') && self::findById($block_id)){
+            self::deleteBySQL('block_id = :block_id',
+                array(':block_id' => $block_id));
         }
-        return false;
     }
 }

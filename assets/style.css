@@ -426,3 +426,13 @@ td, th {
 .widget-custom-content {
   padding: 1ex;
 }
+
+#blocksettings tr.Subchapter > td > h4 {
+    padding-left: 10px;
+} 
+#blocksettings tr.Section > td > h4 {
+    padding-left: 20px;
+} 
+#blocksettings tr.Block > td > h4 {
+    padding-left: 30px;
+} 

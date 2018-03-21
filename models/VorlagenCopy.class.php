@@ -1,5 +1,7 @@
 <?php
 
+include_once __DIR__.'/LockedBlock.class.php';
+include_once __DIR__.'/Eportfoliomodel.class.php';
 /* 
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -53,6 +55,9 @@ class VorlagenCopy{
         }
         //delete xml-data file
         self::deleteRecursively($tempDir);
+        
+        self::lockBlocks($master, $semList);
+        
     }
 
 
@@ -81,6 +86,27 @@ class VorlagenCopy{
         } else if (is_file($path) || is_link($path)) {
             unlink($path);
         }
+    }
+    
+    private function lockBlocks(Seminar $master, array $semList)
+    {
+        $masterBlocks = Eportfoliomodel::getAllBlocksInOrder($master->id);
+        $lockedBlocksIndizes = array();
+        
+        for($i = 0; $i< count($masterBlocks); $i++){
+            if (LockedBlock::isLocked($masterBlocks[$i])){
+                array_push($lockedBlocksIndizes, $i);
+            }
+        }
+        
+        foreach($semList as $user_id => $cid){
+            $seminarBlocks = Eportfoliomodel::getAllBlocksInOrder($cid);
+            $newBlocks = array_slice($seminarBlocks, -count($masterBlocks));
+            foreach($lockedBlocksIndizes as $index){
+                LockedBlock::lockBlock($cid, $newBlocks[$index], true);
+            }
+        }
+        
     }
     
     
