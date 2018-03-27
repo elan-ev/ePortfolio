@@ -74,6 +74,7 @@ class EportfolioGroup extends SimpleORMap
     $id = $course->getId();
     $course->name = $title;
     $course->store();
+    $sem_class = Config::get()->getValue('SEM_CLASS_PORTFOLIO_Supervisionsgruppe');
 
     $db = DBManager::get();
     $query = "UPDATE seminare SET Name = :title, Beschreibung = :text, status = :sem_class WHERE Seminar_id = :id ";
@@ -85,8 +86,7 @@ class EportfolioGroup extends SimpleORMap
     $edit->visible = 0;
     $edit->name = $title;
     $edit->store();
-    $sem_class = Config::get()->getValue('SEM_CLASS_PORTFOLIO_Supervisionsgruppe');
-
+    
     $supervisorgroup = new SupervisorGroup();
     $supervisorgroup->name = $title;
     $supervisorgroup->store();
