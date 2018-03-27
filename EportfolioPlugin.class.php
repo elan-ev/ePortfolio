@@ -59,10 +59,16 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
       $cid = $course_id;
       $tabs = array();
 
-      //uebersicht navigation point
-      $navigation = new Navigation('Übersicht', PluginEngine::getURL($this, compact('cid'), 'eportfolioplugin', true));
-      $navigation->setImage('icons/16/white/group4.png');
-      $navigation->setActiveImage('icons/16/black/group4.png');
+      if ($this->isSupervisionsgruppe()) {
+          $navigation = new Navigation('Übersicht', PluginEngine::getURL($this, compact('cid'), 'showsupervisor', true));
+          $navigation->setImage('icons/16/white/group4.png');
+          $navigation->setActiveImage('icons/16/black/group4.png');
+      } else {
+          //uebersicht navigation point
+          $navigation = new Navigation('Übersicht', PluginEngine::getURL($this, compact('cid'), 'eportfolioplugin', true));
+          $navigation->setImage('icons/16/white/group4.png');
+          $navigation->setActiveImage('icons/16/black/group4.png');
+       }
 
       # settings navigation
       $id = $_GET["cid"];
@@ -83,17 +89,16 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
           $navigationSettings = new Navigation('Zugriffsrechte', PluginEngine::getURL($this, compact('cid'), 'settings', true));
           $navigationSettings->setImage('icons/16/white/admin.png');
           $navigationSettings->setActiveImage('icons/16/black/admin.png');
+          $tabs['settings'] = $navigationSettings;
         } else if ($isDozent == true && $this->isVorlage()) {
           $navigationSettings = new Navigation('Einstellungen', PluginEngine::getURL($this, compact('cid'), 'blocksettings', true));
           $navigationSettings->setImage('icons/16/white/admin.png');
           $navigationSettings->setActiveImage('icons/16/black/admin.png');  
+          $tabs['settings'] = $navigationSettings;
         }
-      }
+      } 
 
-
-      //generate navigation
       $tabs['eportfolioplugin'] = $navigation;
-      $tabs['settings'] = $navigationSettings;
       return $tabs;
 
     }
@@ -192,6 +197,19 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
             $seminar = Seminar::getInstance($this->getSeminarId());
             $status = $seminar->getStatus();
             if ($status == Config::get()->getValue('SEM_CLASS_PORTFOLIO_VORLAGE')){
+                return true;
+            }
+            else return false;
+        }  
+        else return false;
+    }
+    
+     private function isSupervisionsgruppe()
+    {
+        if(Course::findById($this->getSeminarId())){
+            $seminar = Seminar::getInstance($this->getSeminarId());
+            $status = $seminar->getStatus();
+            if ($status == Config::get()->getValue('SEM_CLASS_PORTFOLIO_Supervisionsgruppe')){
                 return true;
             }
             else return false;
