@@ -50,26 +50,6 @@ class ShowController extends StudipController {
 
     }
 
-    public function getMyPortfolios(){
-
-      $db = DBManager::get();
-      $userid = $GLOBALS["user"]->id;
-
-      $myportfolios = array();
-      $countPortfolios = 0;
-
-      $query = "SELECT Seminar_id FROM eportfolio WHERE owner_id = :userid";
-      $statement = $db->prepare($query);
-      $statement->execute(array(':userid'=> $userid));
-      foreach ($statement->fetchAll() as $key) {
-        array_push($myportfolios, $key[Seminar_id]);
-        $countPortfolios++;
-      }
-
-      return $myportfolios;
-
-    }
-
     public function getAccessPortfolio() {
 
       $db = DBManager::get();

@@ -46,7 +46,6 @@ class Eportfoliomodel extends SimpleORMap
     public function getPortfolioVorlagen(){
 
       global $perm;
-      $semId;
       $seminare = array();
 
       $semId = Config::get()->getValue('SEM_CLASS_PORTFOLIO_VORLAGE');
@@ -64,6 +63,26 @@ class Eportfoliomodel extends SimpleORMap
       return $seminare;
 
     }
+    
+    public static function getMyPortfolios(){
+
+      $userid = $GLOBALS["user"]->id;
+      $myportfolios = array();
+
+      $semClass = Config::get()->getValue('SEM_CLASS_PORTFOLIO');
+      $db = DBManager::get();
+      $query = "SELECT Seminar_id FROM eportfolio WHERE owner_id = :userid";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':userid'=> $userid));
+      
+      foreach ($statement->fetchAll() as $key) {
+        if(Course::find($key[Seminar_id])->status == $semClass){
+            array_push($myportfolios, $key[Seminar_id]);
+        }
+      }
+      return $myportfolios;
+    }
+    
     
     public static function getChapters($id){
         $db = DBManager::get();

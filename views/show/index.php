@@ -105,7 +105,7 @@
       </thead>
       <tbody>
         <?php $countPortfolios = 0; ?>
-        <?php $myportfolios = ShowController::getMyPortfolios(); ?>
+        <?php $myportfolios = Eportfoliomodel::getMyPortfolios(); ?>
         <?php foreach ($myportfolios as $portfolio): ?>
           <?php $thisPortfolio = new Seminar($portfolio);
                 $countPortfolios++; ?>
