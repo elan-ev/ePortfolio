@@ -14,7 +14,7 @@ class AddSemClassConfigEntry extends Migration
         $sem_type_id;
         
         foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
-            if ($sem_type['name'] == 'ePortfolio-Vorlage') {
+            if ($sem_type['name'] == 'Portfolio-Vorlage') {
                 $sem_type_id = $id;
             }
         }
@@ -26,6 +26,21 @@ class AddSemClassConfigEntry extends Migration
             'range'       => 'global',
             'section'     => 'global',
             'description' => 'ID der Veranstaltungsklasse für Portfolio-Vorlagen'
+            ));
+        
+        foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
+            if ($sem_type['name'] == 'ePortfolio') {
+                $sem_type_id = $id;
+            }
+        }
+
+        Config::get()->create('SEM_CLASS_PORTFOLIO', array(
+            'value'       => $sem_type_id,
+            'is_default'  => 0,
+            'type'        => 'integer',
+            'range'       => 'global',
+            'section'     => 'global',
+            'description' => 'ID der Veranstaltungsklasse für Portfolios'
             ));
     }
 
