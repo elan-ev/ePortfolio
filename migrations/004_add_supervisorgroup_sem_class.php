@@ -70,7 +70,7 @@ class AddSupervisorgroupSemClass extends Migration
         $current_modules = $sem_class->getModules(); // get modules
         $current_modules['EportfolioPlugin']['activated'] = '1';
         $current_modules['EportfolioPlugin']['sticky'] = '1'; 
-        $current_modules['Courseware']['activated'] = '1';   // set values
+        $current_modules['Courseware']['activated'] = '0';   // set values
         $current_modules['Courseware']['sticky'] = '1'; // sticky = 1 -> can't be chosen in "more"-field of course
         $current_modules['CoreParticipants']['activated'] = '0';
         $current_modules['CoreParticipants']['sticky'] = '0'; 
