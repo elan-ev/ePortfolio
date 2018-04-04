@@ -181,40 +181,35 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
 
     private function isPortfolio()
     {
-        if(Course::findById($this->getSeminarId())){
-            $seminar = Seminar::getInstance($this->getSeminarId());
-            $status = $seminar->getStatus();
+        $course = Course::findCurrent();
+        if($course){
+            $status = $course->getStatus();
             if ($status == Config::get()->getValue('SEM_CLASS_PORTFOLIO')){
                 return true;
             }
-            else return false;
-        } else return false;
+        } return false; 
     }
     
     private function isVorlage()
     {
-        if(Course::findById($this->getSeminarId())){
-            $seminar = Seminar::getInstance($this->getSeminarId());
-            $status = $seminar->getStatus();
+        $course = Course::findCurrent();
+        if($course){
+            $status = $course->getStatus();
             if ($status == Config::get()->getValue('SEM_CLASS_PORTFOLIO_VORLAGE')){
                 return true;
             }
-            else return false;
-        }  
-        else return false;
+        } return false;
     }
     
      private function isSupervisionsgruppe()
     {
-        if(Course::findById($this->getSeminarId())){
-            $seminar = Seminar::getInstance($this->getSeminarId());
-            $status = $seminar->getStatus();
+        $course = Course::findCurrent();
+        if($course){
+            $status = $course->getStatus();
             if ($status == Config::get()->getValue('SEM_CLASS_PORTFOLIO_Supervisionsgruppe')){
                 return true;
             }
-            else return false;
-        }  
-        else return false;
+        } return false;
     }
     
     public function setup_navigation() {
