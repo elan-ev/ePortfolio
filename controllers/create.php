@@ -17,11 +17,7 @@ class CreateController extends StudipController {
     public function index_action()
     {
 
-        foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
-          if ($sem_type['name'] == 'ePortfolio') {
-            $sem_type_id = $id;
-          }
-        }
+        $sem_type_id = Config::get()->getValue('SEM_CLASS_PORTFOLIO');
 
         $userid           = $GLOBALS["user"]->id; //get userid
         $sem_name         = studip_utf8decode(strip_tags($_POST['name']));
