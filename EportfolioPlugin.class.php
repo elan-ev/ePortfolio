@@ -2,6 +2,7 @@
 require 'bootstrap.php';
 require 'classes/group.class.php';
 require 'classes/eportfolio.class.php';
+require 'models/Eportfoliomodel.class.php';
 
 
 /**
@@ -75,17 +76,11 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
 
       if (Course::findById($id)) {
 
-        $seminar        = new Seminar($id);
-        $seminarMembers = $seminar->getMembers("dozent");
-        $isDozent       = false;
+        global $perm, $user;
+        $isDozent = $perm->have_studip_perm('dozent', $id);
+        $owner = Eportfoliomodel::findBySQL('seminar_id = :id AND owner_id = :user_id' , array(':id'=> $id, ':user_id' => $user->id));
 
-        foreach ($seminarMembers as $key => $value) {
-          if ($GLOBALS["user"]->id == $key) {
-            $isDozent = true;
-          }
-        }
-
-        if ($isDozent == true && $this->isPortfolio()) {
+        if ($this->isPortfolio() && $owner) {
           $navigationSettings = new Navigation('Zugriffsrechte', PluginEngine::getURL($this, compact('cid'), 'settings', true));
           $navigationSettings->setImage('icons/16/white/admin.png');
           $navigationSettings->setActiveImage('icons/16/black/admin.png');
@@ -183,7 +178,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     {
         $course = Course::findCurrent();
         if($course){
-            $status = $course->getStatus();
+            $status = $course->status;
             if ($status == Config::get()->getValue('SEM_CLASS_PORTFOLIO')){
                 return true;
             }
@@ -194,7 +189,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     {
         $course = Course::findCurrent();
         if($course){
-            $status = $course->getStatus();
+            $status = $course->status;
             if ($status == Config::get()->getValue('SEM_CLASS_PORTFOLIO_VORLAGE')){
                 return true;
             }
@@ -205,7 +200,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     {
         $course = Course::findCurrent();
         if($course){
-            $status = $course->getStatus();
+            $status = $course->status;
             if ($status == Config::get()->getValue('SEM_CLASS_PORTFOLIO_Supervisionsgruppe')){
                 return true;
             }
