@@ -28,6 +28,8 @@ class ShowsupervisorController extends StudipController {
 
             $group = EportfolioGroup::findbySQL('seminar_id = :id', array(':id'=> $this->groupid));
             $this->supervisorGroupId = $group[0]->supervisor_group_id;
+            
+            //object_set_visit($this->groupid, "portfolio-group");
         }
         //userData for Modal
 
@@ -283,6 +285,10 @@ class ShowsupervisorController extends StudipController {
         $this->ownerid = $GLOBALS["user"]->id;
         if($_POST["create"]){
           $group_id = EportfolioGroup::newGroup($this->ownerid, studip_utf8decode(strip_tags($_POST["name"])), studip_utf8decode(strip_tags($_POST["beschreibung"])));
+          $avatar = CourseAvatar::getAvatar($group_id);
+          $filename = sprintf('%s/%s',$this->plugin->getpluginPath(),'assets/images/avatare/supervisorgruppe.png');
+          $avatar->createFrom($filename);
+          
           $this->response->add_header('X-Dialog-Close', '1');
           $this->render_nothing();
         }
@@ -344,7 +350,7 @@ class ShowsupervisorController extends StudipController {
 
             $sem_id = $sem->Seminar_id;
 
-            $sem->addMember($userid, 'dozent'); // add target to seminar
+            $sem->addMember($userid, 'dozent'); // add user to his to seminar
             $member = Group::getGroupMember($groupid);
 
             if (!in_array($groupowner, $member)) {

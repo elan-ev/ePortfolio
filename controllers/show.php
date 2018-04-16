@@ -134,6 +134,10 @@ class ShowController extends StudipController {
 
       $sem->addMember($userid, 'dozent');
       $sem->store();
+      
+      $avatar = CourseAvatar::getAvatar($sem_id);
+      $filename = sprintf('%s/%s',$this->plugin->getpluginPath(),'assets/images/avatare/vorlage.png');
+      $avatar->createFrom($filename);
 
       $eportfolio = new Seminar();
       $eportfolio_id = $eportfolio->createId();
@@ -160,7 +164,7 @@ class ShowController extends StudipController {
         $userid           = $GLOBALS["user"]->id; //get userid
         $sem_name         = studip_utf8decode(strip_tags($_POST['name']));
         $sem_description  = studip_utf8decode(strip_tags($_POST['beschreibung']));
-
+      
         $sem              = new Seminar();
         $sem->Seminar_id  = $sem->createId();
         $sem->name        = $sem_name;
@@ -177,6 +181,10 @@ class ShowController extends StudipController {
 
         $sem->addMember($userid, 'dozent');
         $sem->store();
+        
+        $avatar = CourseAvatar::getAvatar($sem_id);
+        $filename = sprintf('%s/%s',$this->plugin->getpluginPath(),'assets/images/avatare/eportfolio.png');
+        $avatar->createFrom($filename);
 
         $eportfolio = new Seminar();
         $eportfolio_id = $eportfolio->createId();
