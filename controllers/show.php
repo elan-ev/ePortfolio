@@ -112,23 +112,25 @@ class ShowController extends StudipController {
     public function newvorlage_action(){
 
       $sem_type_id = Config::get()->getValue('SEM_CLASS_PORTFOLIO_VORLAGE');
+      $current_semester = Semester::findCurrent();
 
       $userid           = $GLOBALS["user"]->id; //get userid
       $sem_name         = $_POST['name'];
       $sem_description  = $_POST['beschreibung'];
 
       $sem              = new Seminar();
-      $sem->Seminar_id  = $sem->createId();
+      //$sem->Seminar_id  = $sem->id;
       $sem->name        = $sem_name;
       $sem->description = $sem_description;
       $sem->status      = $sem_type_id;
       $sem->read_level  = 1;
       $sem->write_level = 1;
+      $sem->setEndSemester(-1);
+      $sem->setStartSemester($current_semester->beginn);
       $sem->institut_id = Config::Get()->STUDYGROUP_DEFAULT_INST;
-      $sem->visible     = 1;
+      $sem->visible     = 0;
 
       $sem_id = $sem->Seminar_id;
-      echo $sem_id;
 
       $sem->addMember($userid, 'dozent');
       $sem->store();
