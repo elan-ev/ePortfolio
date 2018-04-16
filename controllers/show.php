@@ -155,6 +155,7 @@ class ShowController extends StudipController {
     {
 
         $sem_type_id = Config::get()->getValue('SEM_CLASS_PORTFOLIO');
+        $current_semester = Semester::findCurrent();
 
         $userid           = $GLOBALS["user"]->id; //get userid
         $sem_name         = studip_utf8decode(strip_tags($_POST['name']));
@@ -167,8 +168,10 @@ class ShowController extends StudipController {
         $sem->status      = $sem_type_id;
         $sem->read_level  = 1;
         $sem->write_level = 1;
+        $sem->setEndSemester(-1);
+        $sem->setStartSemester($current_semester->beginn);
         $sem->institut_id = Config::Get()->STUDYGROUP_DEFAULT_INST;
-        $sem->visible     = 1;
+        $sem->visible     = 0;
 
         $sem_id = $sem->Seminar_id;
 
