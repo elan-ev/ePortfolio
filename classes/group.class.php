@@ -28,40 +28,6 @@ class Group{
     return $array;
   }
 
-  public static function create($owner, $title, $text){
-    $course = new Seminar();
-    $id = $course->getId();
-    $course->name = $title;
-    $course->store();
-    $course->addMember($owner, 'dozent', true);
-
-    //was machen die folgenden vier Zeilen?
-    $edit = new Course($id);
-    $edit->visible = 0;
-    $edit->name = $title;
-    $edit->store();
-    $sem_class = Config::get()->getValue('SEM_CLASS_PORTFOLIO_Supervisionsgruppe');
-
-    $supervisorgroup = new Supervisorgroup();
-    $supervisorgroup->name = $title;
-    $supervisorgroup->eportfolio_group = $id;
-    $supervisorgroup->store();
-    $supervisorgroup->addUser($owner);
-
-    $supervisorgroupId = $supervisorgroup->getId();
-
-    //TODO anpassen
-    $db = DBManager::get();
-    $query = "UPDATE seminare SET Name = :title, Beschreibung = :text, status = :sem_class WHERE Seminar_id = :id ";
-    $statement = $db->prepare($query);
-    $statement->execute(array(':title'=> $title, ':text'=> $text, ':id'=> $id, ':sem_class' => $sem_class));
- 
-    $query = "INSERT INTO eportfolio_groups (seminar_id, owner_id, supervisor_group_id) VALUES (:id, :owner, :supervisorgroupid)";
-    $statement = $db->prepare($query);
-    $statement->execute(array(':id'=> $id, ':owner'=> $owner, ':supervisorgroupid' => $supervisorgroupId));
-
-    return $id;
-  }
 
   public static function deleteUser($userId, $seminar_id){
     $query = "DELETE FROM eportfolio_groups_user WHERE user_id = :user_id AND seminar_id = :sem_id";
