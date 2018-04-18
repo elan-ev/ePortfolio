@@ -5,7 +5,7 @@ require __DIR__.'/../vendor/autoload.php';
 class LockedBlocksTable extends Migration
 {
     public function description () {
-        return 'add tables for portfolio freigaben';
+        return 'add tables for blocks that cant be edited after distribution';
     }
 
 
@@ -27,7 +27,7 @@ class LockedBlocksTable extends Migration
         
 
         $db = DBManager::get();
-        $db->exec("DROP TABLE locked_blocks");    
+        $db->exec("DROP TABLE eportfolio_locked_blocks");    
         SimpleORMap::expireTableScheme();
 
     }
