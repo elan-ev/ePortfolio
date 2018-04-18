@@ -64,6 +64,7 @@
 
           <div class="">
 
+            <?php if($isOwner == true):?>
             <?php //if($isOwner == true):?>
             <div class="avatar-wrapper">
               <?php $viewers = EportfolioFreigabe::getUserWithAccess($cid, $key[id]);?>
@@ -71,13 +72,17 @@
               $counter = 0;
               foreach($viewers as $viewer):?>
                 <?php $viewer = new User($viewer->user_id); ?>
-                <?php if($isOwner == true):?>
-                  <div class="avatar-container"><?= Avatar::getAvatar($viewer->user_id)->getImageTag(Avatar::SMALL, array('title' => $viewer->vorname . ' ' . $viewer->nachname)) ?></div>
+                  <?php if(!$viewer->vorname):?>
+                    <div class="avatar-container"><?= Avatar::getAvatar('nobody')->getImageTag(Avatar::SMALL, array('title' => 'Gruppensupervisoren')) ?></div>
+                  <?php else: ?>
+                    <div class="avatar-container"><?= Avatar::getAvatar($viewer->user_id)->getImageTag(Avatar::SMALL, array('title' => $viewer->vorname . ' ' . $viewer->nachname)) ?></div>
+                  <?php endif; ?>
                   <?php $counter++; ?>
-                <?php endif; ?>
+                
               <?php endforeach; ?>
 
             </div>
+              <?php endif; ?>
           <?php //endif; ?>
 
             <br>
