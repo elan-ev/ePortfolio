@@ -46,23 +46,24 @@
               foreach ($temps as $key):?>
               <?php $thisPortfolio = new Seminar($key); ?>
               <?php $eportfolio = new eportfolio($key); ?>
-              <?php if (ShowsupervisorController::checkTemplate($id, $key) == false): ?>
                 <tr>
                   <td><?php echo $thisPortfolio->getName(); ?></td>
                   <td><?php echo $eportfolio->getBeschreibung(); ?></td>
                   <td style="text-align: center;">
 
                       <a href="<?php echo URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $key)); ?>"><?php echo Icon::create('edit', 'clickable', ['title' => sprintf(_('Portfolio-Vorlage bearbeiten.'))]) ?></a>
-                      <?php if($member): ?>
+                      <?php if($member && (ShowsupervisorController::checkTemplate($id, $key) == false)): ?>
                       <a onclick="return confirm('Vorlage an Teilnehmende verteilen') " href="<?= PluginEngine::getLink($this->plugin, array(), 'showsupervisor/createportfolio/' . $key . '/' . $id) ?>">
                         <? $params = tooltip2(_("Portfolio-Vorlage an Gruppenmitglieder verteilen.")); ?>
                         <? $params['style'] = 'cursor: pointer'; ?>
                         <?= Icon::create('add', 'clickable')->asImg(20, $params) ?>
                        </a>
+                      <?php else: ?>
+                        <? $params = tooltip2(_("Vorlage wurde in dieser Gruppe bereits verteilt.")); ?>
+                        <?= Icon::create('check-circle', 'clickable')->asImg(20, $params) ?>
                        <?php endif ?>
                   </td>
                 </tr>
-              <?php endif; ?>
 
             <?php endforeach; ?>
           </tbody>
