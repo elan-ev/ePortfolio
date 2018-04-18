@@ -222,8 +222,9 @@
 </div>
 
 
-<?php
-  echo $mp;
+<?php if (empty($groupTemplates)){
+     echo $mp;
+    }
  ?>
 
 
