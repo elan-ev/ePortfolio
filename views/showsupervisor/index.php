@@ -92,8 +92,12 @@
         <?php foreach ($member as $user):?>
           <tr>
             <td>
-              <img style="border-radius: 30px; width: 21px; border: 1px solid #28497c;" src="<?php echo $GLOBALS[DYNAMIC_CONTENT_URL];?>/user/<?php echo $user; ?>_small.png" onError="defaultImg(this);">
-              <?php $userInfo = UserModel::getUser($user);?><?php echo $userInfo['Vorname']." ".$userInfo['Nachname']; ?>
+              <?php $userInfo = UserModel::getUser($user);?>
+               <a href="<?= URLHelper::getLink('dispatch.php/profile?username=' . $userInfo['username']) ?>" >
+                          <?= Avatar::getAvatar($user, $userInfo['username'])->getImageTag(Avatar::SMALL,
+                                array('style' => 'margin-right: 5px; border-radius: 25px; width: 25px; border: 1px solid #28497c;', 'title' => htmlReady($userInfo['Vorname']." ".$userInfo['Nachname']))); ?>       
+                        <?= htmlReady($userInfo['Vorname']." ".$userInfo['Nachname']) ?>      
+                   </a>
             </td>
             <td></td>
             <td style="text-align:center;">
@@ -134,25 +138,22 @@
         </tr>
            
             <!-- für alle Gruppenteilnehmer: -->
-            <?php foreach ($member as $key):?>
+            <?php foreach ($member as $user_id):?>
               <tr>
                 <td style="text-align: left;">
-                  <?php $supervisor = UserModel::getUser($key);?>
+                  <?php $supervisor = UserModel::getUser($user_id);?>
                    <a href="<?= URLHelper::getLink('dispatch.php/profile?username=' . $supervisor['username']) ?>" >
-                        <?= Avatar::getAvatar($key)->getImageTag(Avatar::SMALL,
+                          <?= Avatar::getAvatar($user_id, $supervisor['username'])->getImageTag(Avatar::SMALL,
                                 array('style' => 'margin-right: 5px; border-radius: 25px; width: 25px; border: 1px solid #28497c;', 'title' => htmlReady($supervisor['Vorname']." ".$supervisor['Nachname']))); ?>       
                         <?= htmlReady($supervisor['Vorname']." ".$supervisor['Nachname']) ?>      
                    </a>
-                <?php  
-                    $userid = $key;
-                    
-                ?>
+
                 </td>
                 <?php
                 // hole das zugehörige Portfolio des Teilnehmers
                 $query = "SELECT Seminar_id FROM eportfolio WHERE owner_id = :key AND group_id = :groupid";
                 $statement = DBManager::get()->prepare($query);
-                $statement->execute(array(':key'=> $key, ':groupid'=> $groupid));
+                $statement->execute(array(':key'=> $user_id, ':groupid'=> $groupid));
                 $getsemid = $statement->fetchAll()[0][0];
                 ?>
 
@@ -175,12 +176,15 @@
                     <td>
                         <?php
                         $idNew = $value[id];
-                        $hasAccess = EportfolioFreigabe::hasAccess($supervisorGroupId, $getsemid, $idNew); ?>
+                        $hasAccess = EportfolioFreigabe::hasAccess($supervisorGroupId, $getsemid, $idNew); 
+                        $chapter_has_changed = LastVisited::chapter_changed_since_last_visit($idNew, $current_user);
+                        $current_user = $GLOBALS['user']->id; ?>
 
                         <?php if($hasAccess):?>
+                            <?php $new_freigabe = LastVisited::chapter_last_visited($idNew, $current_user) < EportfolioFreigabe::hasAccessSince($supervisorGroupId, $idNew);?>
                             <?php $link = URLHelper::getLink("plugins.php/courseware/courseware", array('cid' => $getsemid , 'selected' => $idNew));?>
                             <a class='freigabe-link' href="<?php echo $link; ?>">
-                              <?= Icon::create('accept', 'clickable'); ?>
+                              <?= $new_freigabe ? Icon::create('accept+new', 'clickable') : Icon::create('accept', 'clickable'); ?>
                             </a>
 
                             <?php if (ShowsupervisorController::checkSupervisorNotiz($idNew) == true): ?>
