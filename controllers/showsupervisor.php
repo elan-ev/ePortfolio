@@ -336,7 +336,8 @@ class ShowsupervisorController extends StudipController {
 
             $userid           = $value; //get userid
             $sem_name         = $master->getName()." (".$groupname->getName().")";
-            $sem_description  = "Beschreibung";
+            $sem_description  = "Dieses Portfolio wurde Ihnen von einem Supervisor zugeteilt";
+            $current_semester = Semester::findCurrent();
 
             $sem              = new Seminar();
             $sem->Seminar_id  = $sem->createId();
@@ -345,11 +346,17 @@ class ShowsupervisorController extends StudipController {
             $sem->status      = $sem_type_id;
             $sem->read_level  = 1;
             $sem->write_level = 1;
+            $sem->setEndSemester(-1);
+            $sem->setStartSemester($current_semester->beginn);
             $sem->institut_id = Config::Get()->STUDYGROUP_DEFAULT_INST;
-            $sem->visible     = 1;
+            $sem->visible     = 0;
 
             $sem_id = $sem->Seminar_id;
 
+            $avatar = CourseAvatar::getAvatar($sem_id);
+            $filename = sprintf('%s/%s',$this->plugin->getpluginPath(),'assets/images/avatare/eportfolio.png');
+            $avatar->createFrom($filename);
+            
             $sem->addMember($userid, 'dozent'); // add user to his to seminar
             $member = Group::getGroupMember($groupid);
 
