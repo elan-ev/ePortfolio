@@ -22,6 +22,7 @@
     <div id="title">
       <h3 style="border:none!important;">
         <?php  echo $seminarTitle; ?>
+        <?php  echo ' - Dieses Portfolio gehört ' . $owner['Vorname'] . ' ' . $owner['Nachname']; ?>
         <?php if($isOwner == true || $canEdit == true):?><span title='Titel ändern' style="margin-left: 10px;"><?php echo Icon::create('edit', 'inactive', array('onclick' => 'toggleChangeInput()'));?></span><?php endif; ?>
       </h3>
     </div>
@@ -73,7 +74,7 @@
               foreach($viewers as $viewer):?>
                 <?php $viewer = new User($viewer->user_id); ?>
                   <?php if(!$viewer->vorname):?>
-                    <div class="avatar-container"><?= Avatar::getAvatar('nobody')->getImageTag(Avatar::SMALL, array('title' => 'Gruppensupervisoren')) ?></div>
+                    <div class="avatar-container"><?= Avatar::getAvatar('nobody')->getImageTag(Avatar::SMALL, array('title' => 'Gruppen-Supervisoren')) ?></div>
                   <?php else: ?>
                     <div class="avatar-container"><?= Avatar::getAvatar($viewer->user_id)->getImageTag(Avatar::SMALL, array('title' => $viewer->vorname . ' ' . $viewer->nachname)) ?></div>
                   <?php endif; ?>

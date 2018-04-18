@@ -90,11 +90,12 @@ class EportfoliopluginController extends StudipController {
     $i = 0;
     $eportfolio = new eportfolio($this->cid);
     $isOwner = $eportfolio->isOwner($userid);
+    $owner = UserModel::getUser(Eportfoliomodel::getOwner($this->cid));
     $this->isVorlage = Eportfoliomodel::isVorlage($this->cid);
     $seminar = new Seminar($this->cid);
     
      # Aktuelle Seite
-    PageLayout::setTitle('ePortfolio - Übersicht: '. $seminar->getName());
+    PageLayout::setTitle('ePortfolio von ' . $owner['Vorname'] . ' ' . $owner['Nachname']. ' - Übersicht: '. $seminar->getName());
     if($this->isVorlage){
         PageLayout::setTitle('ePortfolio-Vorlage - Übersicht: '. $seminar->getName());
     }
@@ -110,6 +111,7 @@ class EportfoliopluginController extends StudipController {
     $this->isOwner = $isOwner;
     $this->cid = $cid;
     $this->userid = $userid;
+    $this->owner = $owner;
 
   }
 
