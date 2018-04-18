@@ -80,4 +80,10 @@ class EportfolioFreigabe extends SimpleORMap
     public static function getUserWithAccess($seminar_id, $chapter_id){
         return self::findBySQL('Seminar_id = :seminar_id AND block_id = :chapter_id', array(':seminar_id' => $seminar_id, ':chapter_id' => $chapter_id));
     }
+    
+    public static function hasAccessSince($user_id, $chapter_id){
+        $hasAccessSince = EportfolioFreigabe::findOneBySQL('block_id = :block_id AND user_id = :user_id',
+                array(':block_id' => $chapter_id, ':user_id' => $user_id)); 
+        return $hasAccessSince->mkdate;
+    }
 }
