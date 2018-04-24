@@ -11,7 +11,7 @@ class SupervisorgroupController extends StudipController {
     $this->createSidebar();
     $this->checkGetId();
   }
-
+  
   public function before_filter(&$action, &$args)
     {
         parent::before_filter($action, $args);
@@ -111,6 +111,6 @@ class SupervisorgroupController extends StudipController {
         $args[0] = $to;
 
         return PluginEngine::getURL($this->dispatcher->current_plugin, $params, join('/', $args));
-    }
+    } 
 
 }

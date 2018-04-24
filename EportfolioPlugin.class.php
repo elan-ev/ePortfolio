@@ -2,6 +2,7 @@
 require 'bootstrap.php';
 require 'classes/group.class.php';
 require 'classes/eportfolio.class.php';
+require 'models/Eportfoliomodel.class.php';
 
 
 /**
@@ -20,13 +21,14 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         $navigation->setURL(PluginEngine::GetURL($this, array(), "show"));
         Navigation::addItem('/eportfolioplugin', $navigation);
         //Navigation::activateItem("/eportfolioplugin");
-        
+        NotificationCenter::addObserver($this, "setup_navigation", "PageWillRender");
+
     }
 
     public function getCardInfos($cid){
       $db = DBManager::get();
       $return_arr = array();
-      $query = "SELECT id, title FROM mooc_blocks WHERE seminar_id = :id AND type = 'Chapter' ORDER BY id ASC";
+      $query = "SELECT id, title FROM mooc_blocks WHERE seminar_id = :id AND type = 'Chapter' ORDER BY position ASC";
       $statement = $db->prepare($query);
       $statement->execute(array(':id'=> $cid));
       $getCardInfos = $statement->fetchAll();
@@ -50,12 +52,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     public function initialize () {
       //PageLayout::addStylesheet($this->getPluginURL().'/assets/bootstrap.css');
       PageLayout::addStylesheet($this->getPluginURL().'/assets/style.css');
-
-      // PageLayout::addStylesheet('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css');
-      // script row-link
-      //PageLayout::addScript($this->getPluginURL().'/assets/js/bootstrap.min.js');
-      //PageLayout::addScript($this->getPluginURL().'/assets/js/jasny-bootstrap.min.js');
-      PageLayout::addScript($this->getPluginURL().'/assets/js/mustache.min.js');
+      
     }
 
     public function getTabNavigation($course_id) {
@@ -63,37 +60,40 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
       $cid = $course_id;
       $tabs = array();
 
-      //uebersicht navigation point
-      $navigation = new Navigation('Übersicht', PluginEngine::getURL($this, compact('cid'), 'eportfolioplugin', true));
-      $navigation->setImage('icons/16/white/group4.png');
-      $navigation->setActiveImage('icons/16/black/group4.png');
+      if ($this->isSupervisionsgruppe()) {
+          $navigation = new Navigation('Übersicht', PluginEngine::getURL($this, compact('cid'), 'showsupervisor', true));
+          $navigation->setImage('icons/16/white/group4.png');
+          $navigation->setActiveImage('icons/16/black/group4.png');
+      } else {
+          //uebersicht navigation point
+          $navigation = new Navigation('Übersicht', PluginEngine::getURL($this, compact('cid'), 'eportfolioplugin', true));
+          $navigation->setImage('icons/16/white/group4.png');
+          $navigation->setActiveImage('icons/16/black/group4.png');
+       }
 
       # settings navigation
-      $id             = $_GET["cid"];
+      $id = $_GET["cid"];
 
-      if (!$id == NULL) {
+      if (Course::findById($id)) {
 
-        $seminar        = new Seminar($id);
-        $seminarMembers = $seminar->getMembers("dozent");
-        $isDozent       = false;
+        global $perm, $user;
+        $isDozent = $perm->have_studip_perm('dozent', $id);
+        $owner = Eportfoliomodel::findBySQL('seminar_id = :id AND owner_id = :user_id' , array(':id'=> $id, ':user_id' => $user->id));
 
-        foreach ($seminarMembers as $key => $value) {
-          if ($GLOBALS["user"]->id == $key) {
-            $isDozent = true;
-          }
-        }
-
-        if ($isDozent == true) {
+        if ($this->isPortfolio() && $owner) {
           $navigationSettings = new Navigation('Zugriffsrechte', PluginEngine::getURL($this, compact('cid'), 'settings', true));
           $navigationSettings->setImage('icons/16/white/admin.png');
           $navigationSettings->setActiveImage('icons/16/black/admin.png');
+          $tabs['settings'] = $navigationSettings;
+        } else if ($isDozent == true && $this->isVorlage()) {
+          $navigationSettings = new Navigation('Einstellungen', PluginEngine::getURL($this, compact('cid'), 'blocksettings', true));
+          $navigationSettings->setImage('icons/16/white/admin.png');
+          $navigationSettings->setActiveImage('icons/16/black/admin.png');  
+          $tabs['settings'] = $navigationSettings;
         }
-      }
+      } 
 
-
-      //generate navigation
       $tabs['eportfolioplugin'] = $navigation;
-      $tabs['settings'] = $navigationSettings;
       return $tabs;
 
     }
@@ -126,29 +126,9 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
           exit;
         }
         $eportfolio = new eportfolio($_GET['cid']);
-        
-        if ($this->isPortfolio() ){
-            //var_dump(Navigation::getItem('/course'));
-            /** changes of navigation in portfolios (Examples)
-             * Umbenennen uoder URL ändern:
-                Navigation::getItem('/browse')->setURL("/plugins.php/");
-                Navigation::getItem('/browse')->setTitle("Mein Kurs");
-             Items löschen:
-			if (Navigation::hasItem('/start')) {
-					Navigation::removeItem('/start');
-        		}
-			**/
-        }
-
-        //set Menu Point for Supervisor
-        $thisperm = get_global_perm($GLOBALS["user"]->id);
-        if ($thisperm == "autor"){
-
-        }
 
       $serverinfo = $_SERVER['PATH_INFO'];
 
-      
       parent::perform($unconsumed_path);
 
     }
@@ -196,12 +176,73 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
 
     private function isPortfolio()
     {
-        $seminar = Seminar::getInstance($this->getSeminarId());
-        $status = $seminar->getStatus();
-        if ($status == Config::get()->getValue('SEM_CLASS_PORTFOLIO')){
-            return true;
-        }
-        else return false;
+        $course = Course::findCurrent();
+        if($course){
+            $status = $course->status;
+            if ($status == Config::get()->getValue('SEM_CLASS_PORTFOLIO')){
+                return true;
+            }
+        } return false; 
     }
     
+    private function isVorlage()
+    {
+        $course = Course::findCurrent();
+        if($course){
+            $status = $course->status;
+            if ($status == Config::get()->getValue('SEM_CLASS_PORTFOLIO_VORLAGE')){
+                return true;
+            }
+        } return false;
+    }
+    
+     private function isSupervisionsgruppe()
+    {
+        $course = Course::findCurrent();
+        if($course){
+            $status = $course->status;
+            if ($status == Config::get()->getValue('SEM_CLASS_PORTFOLIO_Supervisionsgruppe')){
+                return true;
+            }
+        } return false;
+    }
+    
+    public function setup_navigation() {
+        //var_dump(Navigation::getItem('/course/mooc_courseware'));
+        if (($this->isPortfolio() || $this->isVorlage() ) && Navigation::hasItem('/course/mooc_courseware')){
+            //$settings = Navigation::getItem('/course/settings');
+            //Navigation::removeItem('/course/settings');
+            //Navigation::insertItem('/course/settings', $settings, '/course/files');
+            Navigation::getItem('/course/mooc_courseware')->setTitle(ePortfolio);
+        
+            //default Courseware-Hilfe ersetzen
+            $widgets = Helpbar::get()->getWidgets();
+            foreach($widgets as $index=>$widget){
+                $elements = $widget->getElements();
+                Helpbar::get()->removeWidget($index);
+            }
+            
+            if ($this->isPortfolio()){
+                $description  = _('Unter **Zugriffsrechte** können Sie einzelne Kapitel für Komilitonen oder Ihre Supervisoren freigeben.') . ' ';
+                $description .= _('') . '';
+                $tip = _('Unter **ePortfolio** können Sie Ihr Portfolio bearbeiten. ');
+                $tip .= _('');
+                $bearbeiten = _('Um Inhalte oder Kapitel hinzuzufügen, klicken Sie im Reiter **ePortfolio** oben rechts auf den Doktorandenhut');
+                Helpbar::get()->addPlainText(_(''), $description, '');
+                Helpbar::get()->addPlainText(_(''), $tip, '');
+                Helpbar::get()->addPlainText(_('Tip zum Bearbeiten'), $bearbeiten, 'icons/white/doctoral_cap.svg');
+            }
+            if ($this->isVorlage()){
+                $description  = _('Unter **Teilnehmende** können Sie festlegen, wer Zugriff auf diese Vorlage hat. ') . ' ';
+                $description .= _('Ausserdem können Sie unter **Einstellungen** Inhalte der Vorlage für die spätere Bearbeitung durch Studierende sperren.') . '';
+                $tip = _('Unter **ePortfolio** können Sie die Vorlage bearbeiten. ');
+                $tip .= _('');
+                $bearbeiten = _('Um Inhalte oder Kapitel hinzuzufügen, klicken Sie im Reiter **ePortfolio** oben rechts auf den Doktorandenhut');
+                Helpbar::get()->addPlainText(_(''), $description, '');
+                Helpbar::get()->addPlainText(_(''), $tip, '');
+                Helpbar::get()->addPlainText(_('Tip zum Bearbeiten'), $bearbeiten, 'icons/white/doctoral_cap.svg');
+            }
+            
+         }
+    }
 }

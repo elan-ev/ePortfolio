@@ -21,8 +21,8 @@ class EportfolioGroup extends SimpleORMap
     {
         $config['db_table'] = 'eportfolio_groups';
 
-        $config['belongs_to']['owner'] = array(
-            'class_name' => 'StudipUser',
+        $config['belongs_to']['group_owner'] = array(
+            'class_name' => 'User',
             'foreign_key' => 'owner_id', );
 
         $config['has_many']['user'] = array(
@@ -70,28 +70,28 @@ class EportfolioGroup extends SimpleORMap
 
   //TODO anpassen
   public static function newGroup($owner, $title, $text){
-    $course = new Seminar();
-    $id = $course->getId();
-    $course->name = $title;
-    $course->store();
+    $current_semester = Semester::findCurrent();    
+    $seminar = new Seminar();
+    $id = $seminar->getId();
+    $seminar->name = $title;
+    $seminar->setEndSemester(-1);
+    $seminar->setStartSemester($current_semester->beginn);
+    $seminar->store();
+    $seminar->addMember($owner, 'dozent', true);
 
-    $db = DBManager::get();
-    $query = "UPDATE seminare SET Name = :title, Beschreibung = :text, status = :sem_class WHERE Seminar_id = :id ";
-    $statement = $db->prepare($query);
-    $statement->execute(array(':title'=> $title, ':text'=> $text, ':id'=> $id, ':sem_class' => $sem_class));
-
-    //was machen die folgenden vier Zeilen?
-    $edit = new Course($id);
-    $edit->visible = 0;
-    $edit->name = $title;
-    $edit->store();
     $sem_class = Config::get()->getValue('SEM_CLASS_PORTFOLIO_Supervisionsgruppe');
-
+    //Course Objekt vom Seminar erzeugen und visible setzen
+    $course = new Course($id);
+    $course->visible = 0;
+    $course->status = $sem_class;
+    $course->beschreibung = $text;
+    $course->store();
+    
     $supervisorgroup = new SupervisorGroup();
     $supervisorgroup->name = $title;
     $supervisorgroup->store();
 
-    var_dump($id);
+    //var_dump($id);
     $group = new EportfolioGroup($id);
     $group->supervisor_group_id = $supervisorgroup->id;
     $group->owner_id = $owner;

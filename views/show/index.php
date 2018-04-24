@@ -8,14 +8,9 @@
     <div class="jumbotron" style="border-radius: 10px;">
       <div class="container" style="padding: 0 50px;">
 
-        <script type="text/javascript">
-        function defaultImg(img) { //setzt default Profilbild falls keins vorhanden
-          img.src = "<?php echo $GLOBALS[DYNAMIC_CONTENT_URL]; ?>/user/nobody_medium@2x.png";
-        }
-        </script>
-
         <h2>
-          <img style="margin-bottom: 5px;border-radius: 50px; width: 36px; border: 1px solid #28497c;" src="<?php echo $GLOBALS[DYNAMIC_CONTENT_URL];?>/user/<?php echo $userId; ?>_medium@2x.png" onError="defaultImg(this);">
+          <?= Avatar::getAvatar($user->id, $userInfo['username'])->getImageTag(Avatar::MEDIUM,
+                                array('style' => 'margin-right: 5px;border-radius: 35px; height:36px; width:36px; border: 1px solid #28497c;', 'title' => htmlReady($userInfo['Vorname']." ".$userInfo['Nachname'])));  ?>
           <span id="headline_uebersicht"></span>
         </h2>
 
@@ -28,13 +23,19 @@
 
 </div>
 
-<hr>
 
-<?php if ($perm == "dozent"):?>
+
+<?php if ($isDozent):?>
 <div class="row">
   <div class="col-md-12">
     <table class="default">
-      <caption>Portfolio Vorlagen</caption>
+      <caption>Portfolio Vorlagen
+       <span class='actions'> <a data-dialog="size=auto;reload-on-close" href="<?= PluginEngine::getLink($this->plugin, array(), 'show/createvorlage') ?>">      
+            <? $params = tooltip2(_("Neue Vorlage erstellen")); ?>
+                    <? $params['style'] = 'cursor: pointer'; ?>
+                    <?= Icon::create('add', 'clickable')->asImg(20, $params) ?>
+       </span>
+        </a></caption>
       <colgroup>
         <col width="30%">
         <col width="60%">
@@ -42,7 +43,7 @@
       </colgroup>
       <thead>
         <tr class="sortable">
-          <th>Portfolio-Name</th>
+          <th>Name</th>
           <th>Beschreibung</th>
           <th>Aktionen</th>
 
@@ -59,19 +60,14 @@
           <tr>
             <td><?php echo $thisPortfolio->getName(); ?></td>
             <td><?php echo ShowController::getCourseBeschreibung($key); ?></td>
-            <td style="text-align: center;"><a href="<?php echo URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $key)); ?>"><?php echo Icon::create('edit', 'clickable') ?></a></td>
+            <td style="text-align: center;"><a href="<?php echo URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $key)); ?>" title='Portfolio-Vorlage bearbeiten'><?php echo Icon::create('edit', 'clickable') ?></a></td>
           </tr>
 
         <?php endforeach; ?>
       </tbody>
     </table>
-        <a data-dialog="size=auto;reload-on-close" href="<?= PluginEngine::getLink($this->plugin, array(), 'show/createvorlage') ?>">
-                    <? $params = tooltip2(_("Neue Vorlage erstellen")); ?>
-                    <? $params['style'] = 'cursor: pointer'; ?>
-                    <?= Icon::create('add', 'clickable')->asImg(20, $params) ?>
-        </a>
-  
-    <hr>
+       
+
   </div>
 
 
@@ -84,7 +80,15 @@
     <?php ?>
 
     <table class="default">
-      <caption>Meine Portfolios</caption>
+      <caption>Meine Portfolios
+      <span class='actions'> 
+          <a data-dialog="size=auto;reload-on-close" href="<?= PluginEngine::getLink($this->plugin, array(), 'show/createportfolio') ?>">
+                    <? $params = tooltip2(_("Neues Portfolio erstellen")); ?>
+                    <? $params['style'] = 'cursor: pointer'; ?>
+                    <?= Icon::create('add', 'clickable')->asImg(20, $params) ?>
+        </a>
+       </span>
+      </caption>
       <colgroup>
         <col width="30%">
         <col width="50%">
@@ -101,7 +105,7 @@
       </thead>
       <tbody>
         <?php $countPortfolios = 0; ?>
-        <?php $myportfolios = ShowController::getMyPortfolios(); ?>
+        <?php $myportfolios = Eportfoliomodel::getMyPortfolios(); ?>
         <?php foreach ($myportfolios as $portfolio): ?>
           <?php $thisPortfolio = new Seminar($portfolio);
                 $countPortfolios++; ?>
@@ -109,7 +113,7 @@
             <td><a href="<?php echo URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('cid' => $portfolio)); ?>"><?php echo $thisPortfolio->getName(); ?></a></td>
             <td><?php echo ShowController::getCourseBeschreibung($portfolio); ?></td>
             <td style="text-align: center;"><?php echo ShowController::countViewer($portfolio); ?></td>
-            <td style="text-align: center;"><a href="<?php echo URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $portfolio)); ?>"><?php echo Icon::create('edit', 'clickable') ?></a></td>
+            <td style="text-align: center;"><a href="<?php echo URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $portfolio)); ?>" title='Portfolio bearbeiten'><?php echo Icon::create('edit', 'clickable') ?></a></td>
           </tr>
         <?php endforeach; ?>
       </tbody>
@@ -132,15 +136,10 @@
       </script>
 
     </table>
-     <a data-dialog="size=auto;reload-on-close" href="<?= PluginEngine::getLink($this->plugin, array(), 'show/createportfolio') ?>">
-                    <? $params = tooltip2(_("Neues Portfolio erstellen")); ?>
-                    <? $params['style'] = 'cursor: pointer'; ?>
-                    <?= Icon::create('add', 'clickable')->asImg(20, $params) ?>
-        </a>
   </div>
 </div>
 
-<hr>
+
 
 <div class="row">
   <div class="col-md-12">

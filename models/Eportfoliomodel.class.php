@@ -43,17 +43,17 @@ class Eportfoliomodel extends SimpleORMap
         return $supervisoren[0];
     }
     
+     public static function getOwner($cid){
+        $portfolio = Eportfoliomodel::findBySQL('Seminar_id = :cid', array(':cid' => $cid));
+        return $portfolio[0]->owner_id;
+    }
+    
     public function getPortfolioVorlagen(){
 
       global $perm;
-      $semId;
       $seminare = array();
 
-      foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
-        if ($sem_type['name'] == 'ePortfolio-Vorlage') {
-          $semId = $id;
-        }   
-      }
+      $semId = Config::get()->getValue('SEM_CLASS_PORTFOLIO_VORLAGE');
 
       $db = DBManager::get();
       $query = "SELECT Seminar_id FROM seminare WHERE status = :semId";
@@ -68,4 +68,76 @@ class Eportfoliomodel extends SimpleORMap
       return $seminare;
 
     }
+    
+    public static function getMyPortfolios(){
+
+      $userid = $GLOBALS["user"]->id;
+      $myportfolios = array();
+
+      $semClass = Config::get()->getValue('SEM_CLASS_PORTFOLIO');
+      $db = DBManager::get();
+      $query = "SELECT Seminar_id FROM eportfolio WHERE owner_id = :userid";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':userid'=> $userid));
+      
+      foreach ($statement->fetchAll() as $key) {
+        if(Course::find($key[Seminar_id])->status == $semClass){
+            array_push($myportfolios, $key[Seminar_id]);
+        }
+      }
+      return $myportfolios;
+    }
+    
+    
+    public static function getChapters($id){
+        $db = DBManager::get();
+        $query = "SELECT title, id FROM mooc_blocks WHERE seminar_id = :id AND type = 'Chapter' AND parent_id != '0' ORDER BY position ASC";
+        $statement = $db->prepare($query);
+        $statement->execute(array(':id'=> $id));
+        return $statement->fetchAll();
+    }
+    
+    public static function isVorlage($id)
+    {
+        if(Course::findById($id)){
+            $seminar = Seminar::getInstance($id);
+            $status = $seminar->getStatus();
+            if ($status == Config::get()->getValue('SEM_CLASS_PORTFOLIO_VORLAGE')){
+                return true;
+            }
+            else return false;
+        }  
+        else return false;
+    }
+    
+     public static function getAllBlocksInOrder($id){
+        $db = DBManager::get();
+        $blocks = array();
+        $query = "SELECT title, id FROM mooc_blocks WHERE seminar_id = :id AND type = 'Chapter' AND parent_id != '0' ORDER BY position ASC";
+        $statement = $db->prepare($query);
+        $statement->execute(array(':id'=> $id));
+        foreach($statement->fetchAll() as $chapter){
+            array_push($blocks, $chapter[id]);
+            $query = "SELECT title, id FROM mooc_blocks WHERE parent_id = :id ORDER BY position ASC";
+            $statement = $db->prepare($query);
+            $statement->execute(array(':id'=> $chapter[id]));
+            foreach($statement->fetchAll() as $subchapter){
+                array_push($blocks, $subchapter[id]);
+                $query = "SELECT title, id FROM mooc_blocks WHERE parent_id = :id ORDER BY position ASC";
+                $statement = $db->prepare($query);
+                $statement->execute(array(':id'=> $subchapter[id]));
+                foreach($statement->fetchAll() as $section){
+                    array_push($blocks, $section[id]);
+                    $query = "SELECT title, id FROM mooc_blocks WHERE parent_id = :id ORDER BY position ASC";
+                    $statement = $db->prepare($query);
+                    $statement->execute(array(':id'=> $section[id]));
+                    foreach($statement->fetchAll() as $block){
+                        array_push($blocks, $block[id]);
+                    }
+                }
+            }         
+        }
+        return $blocks;
+    }
+    
 }

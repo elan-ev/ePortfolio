@@ -49,6 +49,7 @@ class AddSupervisorgroupSemClass extends Migration
           //Insert sem_type
           $statementSemTypes = $db->prepare("INSERT INTO sem_types SET name = ?, class = $id, mkdate = UNIX_TIMESTAMP(), chdate = UNIX_TIMESTAMP()");
           $statementSemTypes->execute(array($nameType));
+          $st_id = $db->lastInsertId();
     	    } else {
     			// We already got a type with that name, should be a previous installation ...
                 $statement = $db->prepare('SELECT id FROM sem_classes WHERE name = ?');
@@ -69,7 +70,7 @@ class AddSupervisorgroupSemClass extends Migration
         $current_modules = $sem_class->getModules(); // get modules
         $current_modules['EportfolioPlugin']['activated'] = '1';
         $current_modules['EportfolioPlugin']['sticky'] = '1'; 
-        $current_modules['Courseware']['activated'] = '1';   // set values
+        $current_modules['Courseware']['activated'] = '0';   // set values
         $current_modules['Courseware']['sticky'] = '1'; // sticky = 1 -> can't be chosen in "more"-field of course
         $current_modules['CoreParticipants']['activated'] = '0';
         $current_modules['CoreParticipants']['sticky'] = '0'; 
@@ -86,7 +87,7 @@ class AddSupervisorgroupSemClass extends Migration
         $sem_class->store();
         
         Config::get()->create('SEM_CLASS_PORTFOLIO_Supervisionsgruppe', array(
-            'value'       => $sc_id,
+            'value'       => $st_id,
             'is_default'  => 0,
             'type'        => 'integer',
             'range'       => 'global',

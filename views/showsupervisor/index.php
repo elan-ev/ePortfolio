@@ -1,7 +1,17 @@
 <? use Studip\LinkButton; ?>
 
-<h1>Supervisionsgruppe "<?php echo $courseName; ?>"</h1>
 
+<div class="row">
+  <div class="col-md-12">
+    <div class="jumbotron" style="border-radius: 10px;">
+      <div class="container" style="padding: 0 50px;">
+
+        <h1>Supervisionsgruppe "<?php echo $courseName; ?>"</h1>
+
+      </div>
+    </div>
+  </div>
+</div>
 
 <div>
 
@@ -36,23 +46,24 @@
               foreach ($temps as $key):?>
               <?php $thisPortfolio = new Seminar($key); ?>
               <?php $eportfolio = new eportfolio($key); ?>
-              <?php if (ShowsupervisorController::checkTemplate($id, $key) == false): ?>
                 <tr>
                   <td><?php echo $thisPortfolio->getName(); ?></td>
                   <td><?php echo $eportfolio->getBeschreibung(); ?></td>
                   <td style="text-align: center;">
 
                       <a href="<?php echo URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $key)); ?>"><?php echo Icon::create('edit', 'clickable', ['title' => sprintf(_('Portfolio-Vorlage bearbeiten.'))]) ?></a>
-                      <?php if($groupList): ?>
-                      <a data-dialog="reload-on-close" href="<?= PluginEngine::getLink($this->plugin, array(), 'showsupervisor/createportfolio/' . $key . '/' . $id) ?>">
+                      <?php if($member && (ShowsupervisorController::checkTemplate($id, $key) == false)): ?>
+                      <a onclick="return confirm('Vorlage an Teilnehmende verteilen') " href="<?= PluginEngine::getLink($this->plugin, array(), 'showsupervisor/createportfolio/' . $key . '/' . $id) ?>">
                         <? $params = tooltip2(_("Portfolio-Vorlage an Gruppenmitglieder verteilen.")); ?>
                         <? $params['style'] = 'cursor: pointer'; ?>
                         <?= Icon::create('add', 'clickable')->asImg(20, $params) ?>
                        </a>
+                      <?php else: ?>
+                        <? $params = tooltip2(_("Vorlage wurde in dieser Gruppe bereits verteilt.")); ?>
+                        <?= Icon::create('check-circle', 'clickable')->asImg(20, $params) ?>
                        <?php endif ?>
                   </td>
                 </tr>
-              <?php endif; ?>
 
             <?php endforeach; ?>
           </tbody>
@@ -65,7 +76,7 @@
 
     <h4>Gruppenmitglieder</h4>
 
-    <?php if (!$groupList):?>
+    <?php if (!$member):?>
         <?php echo MessageBox::info('Es sind noch keine Nutzer in der der Gruppe eingetragen'); ?>
     <?php else: ?>
 
@@ -79,11 +90,15 @@
           <th></th>
           <th>Aktionen</th>
         </tr>
-        <?php foreach ($groupList as $user):?>
+        <?php foreach ($member as $user):?>
           <tr>
             <td>
-              <img style="border-radius: 30px; width: 21px; border: 1px solid #28497c;" src="<?php echo $GLOBALS[DYNAMIC_CONTENT_URL];?>/user/<?php echo $user; ?>_small.png" onError="defaultImg(this);">
-              <?php $userInfo = UserModel::getUser($user);?><?php echo $userInfo['Vorname']." ".$userInfo['Nachname']; ?>
+              <?php $userInfo = UserModel::getUser($user);?>
+               <a href="<?= URLHelper::getLink('dispatch.php/profile?username=' . $userInfo['username']) ?>" >
+                          <?= Avatar::getAvatar($user, $userInfo['username'])->getImageTag(Avatar::SMALL,
+                                array('style' => 'margin-right: 5px; border-radius: 25px; width: 25px; border: 1px solid #28497c;', 'title' => htmlReady($userInfo['Vorname']." ".$userInfo['Nachname']))); ?>       
+                        <?= htmlReady($userInfo['Vorname']." ".$userInfo['Nachname']) ?>      
+                   </a>
             </td>
             <td></td>
             <td style="text-align:center;">
@@ -101,42 +116,45 @@
     <!-- Nav tabs -->
     <div id="vorlagen-tabs">
     <ul>
-      <?php foreach ($templistid as $key => $value): ?>
-        <?php $template = new Seminar($value);?>
-        <li><a href="#tabs-<?= $value; ?>"><?= $template->getName(); ?></a></li>
-      <?php endforeach; ?>
+        <li>Studenten-Portfolios</li>
     </ul>
     <!-- Tab panes -->
 
     <!-- für alle verteilten Vorlagen: -->
-      <?php foreach ($templistid as $key => $value): ?>
-        <?php $tempid = $value ?>
-        <div id="tabs-<?= $value; ?>">
-          <table class="default">
-            <tr>
-              <th style="width: 200px;border-bottom: 1px solid;">Name</th>
-              <?php
+      
+    <div>
+      <table class="default">
+        <tr>
+          <th style="width: 200px;border-bottom: 1px solid;">Name</th>
+
+          <?php foreach ($templistid as $key => $value): ?>
+            <?php $tempid = $value ?>
+            <?php
                 // hole die Kapitel der verteilten Vorlagen
                 $q = ShowsupervisorController::getChapters($value);
                 foreach ($q as $key): ?>
-                  <th style="width: 100px; border-bottom: 1px solid;"><?php print_r($key['title']); ?></th>
-              <?php endforeach; ?>
-            </tr>
+                  <th style="border-bottom: 1px solid;"><?php print_r($key['title']); ?></th>
+                <?php endforeach; ?>
+          <?php endforeach; ?>
+        </tr>
+           
             <!-- für alle Gruppenteilnehmer: -->
-            <?php foreach ($groupList as $key):?>
+            <?php foreach ($member as $user_id):?>
               <tr>
                 <td style="text-align: left;">
-                  <img style="border-radius: 30px; width: 21px; border: 1px solid #28497c;" src="<?php echo $GLOBALS[DYNAMIC_CONTENT_URL];?>/user/<?php echo $key; ?>_small.png" onError="defaultImg(this);">
-                  <?php $supervisor = UserModel::getUser($key);
-                  $userid = $key;
-                      echo $supervisor[Vorname].' '.$supervisor[Nachname];
-                   ?>
+                  <?php $supervisor = UserModel::getUser($user_id);?>
+                   <a href="<?= URLHelper::getLink('dispatch.php/profile?username=' . $supervisor['username']) ?>" >
+                          <?= Avatar::getAvatar($user_id, $supervisor['username'])->getImageTag(Avatar::SMALL,
+                                array('style' => 'margin-right: 5px; border-radius: 25px; width: 25px; border: 1px solid #28497c;', 'title' => htmlReady($supervisor['Vorname']." ".$supervisor['Nachname']))); ?>       
+                        <?= htmlReady($supervisor['Vorname']." ".$supervisor['Nachname']) ?>      
+                   </a>
+
                 </td>
                 <?php
                 // hole das zugehörige Portfolio des Teilnehmers
-                $query = "SELECT Seminar_id FROM eportfolio WHERE owner_id = :key AND template_id = :tempid AND group_id = :groupid";
+                $query = "SELECT Seminar_id FROM eportfolio WHERE owner_id = :key AND group_id = :groupid";
                 $statement = DBManager::get()->prepare($query);
-                $statement->execute(array(':key'=> $key, ':tempid'=> $tempid, ':groupid'=> $groupid));
+                $statement->execute(array(':key'=> $user_id, ':groupid'=> $groupid));
                 $getsemid = $statement->fetchAll()[0][0];
                 ?>
 
@@ -159,12 +177,15 @@
                     <td>
                         <?php
                         $idNew = $value[id];
-                        $hasAccess = EportfolioFreigabe::hasAccess($supervisorGroupId, $getsemid, $idNew); ?>
+                        $hasAccess = EportfolioFreigabe::hasAccess($supervisorGroupId, $getsemid, $idNew); 
+                        $chapter_has_changed = LastVisited::chapter_changed_since_last_visit($idNew, $current_user);
+                        $current_user = $GLOBALS['user']->id; ?>
 
                         <?php if($hasAccess):?>
+                            <?php $new_freigabe = LastVisited::chapter_last_visited($idNew, $current_user) < EportfolioFreigabe::hasAccessSince($supervisorGroupId, $idNew);?>
                             <?php $link = URLHelper::getLink("plugins.php/courseware/courseware", array('cid' => $getsemid , 'selected' => $idNew));?>
                             <a class='freigabe-link' href="<?php echo $link; ?>">
-                              <?= Icon::create('accept', 'clickable'); ?>
+                              <?= $new_freigabe ? Icon::create('accept+new', 'clickable') : Icon::create('accept', 'clickable'); ?>
                             </a>
 
                             <?php if (ShowsupervisorController::checkSupervisorNotiz($idNew) == true): ?>
@@ -194,44 +215,18 @@
           <!--<?= \Studip\Button::create('Vorlage für diese Gruppe löschen', 'button', array('type' => 'button', 'onclick' => 'deletetemplate('.$tempid.')')); ?>-->
 
         </div>
-      <?php endforeach; ?>
+     
     </div>
   <?php endif; ?>
 
 </div>
 
-<?php if(!$id): ?>
 
-  <div class="panel panel-primary">
-  <div class="panel-heading">
-    Gruppen erstellen
-  </div>
-
-  <?php echo MessageBox::info('Aktuell haben Sie noch keine Gruppen erstellt. Bitte erstellen Sie zunächst ein Gruppe um mit der Verwaltung fortzufahren.'); ?>
-
-</div>
-
-<?php endif; ?>
-
-<?php
-  $mp = MultiPersonSearch::get('eindeutige_id')
-    ->setLinkText(_('Personen hinzufügen'))
-    ->setTitle(_('Personen zur Gruppe hinzufügen'))
-    ->setSearchObject(new StandardSearch('user_id'))
-    ->setJSFunctionOnSubmit('addUserToGroup')
-    ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor', array('cid' => $groupid, 'action' => 'addUsersToGroup')))
-    ->render();
+<?php if (empty($groupTemplates)){
+     echo $mp;
+    }
  ?>
 
-<?php if (empty($groupTemplates)):?>
-   <a href="<?php echo URLHelper::getLink('dispatch.php/multipersonsearch/js_form/eindeutige_id'); ?>" class="multi_person_search_link" data-dialog="width=720;height=460;id=mp-search" data-dialogname="eindeutige_id" title="Personen zur Gruppe hinzufügen" data-js-form="<?php echo URLHelper::getLink('dispatch.php/multipersonsearch/js_form/eindeutige_id'); ?>">
-     <?= \Studip\Button::create('Personen hinzufügen', 'klickMichButton', array('data-dialogname' => 'eindeutige_id', 'data-js-form' => URLHelper::getLink('dispatch.php/multipersonsearch/js_form/eindeutige_id'))); ?>
-   </a>
-<?php endif; ?>
-
-<a href="<?php echo URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/delete', array('id' => $cid)); ?>">
-  <?= \Studip\Button::create('Gruppe löschen', 'klickMichButton', array('data-dialogname' => 'eindeutige_id', 'data-js-form' => URLHelper::getLink('dispatch.php/multipersonsearch/js_form/eindeutige_id'))); ?>
-</a>
 
 <!-- Legende -->
 <div class="legend">
@@ -242,7 +237,6 @@
     <li><?php echo  Icon::create('forum', 'clickable'); ?>  Resonanz gegeben</li>
   </ul>
 </div>
-
 
 
 <script type="text/javascript">
@@ -407,15 +401,6 @@ var uniqID = function() {
 
     return filtered.join('');
 
-}
-
-function defaultImg(img) { //setzt default Profilbild falls keins vorhanden
-  img.src = "<?php echo $GLOBALS[DYNAMIC_CONTENT_URL]; ?>/user/nobody_small.png";
-}
-
-
-function closeModal(){
-  $('.modal-area').empty();
 }
 
 

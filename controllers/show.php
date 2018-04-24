@@ -1,25 +1,16 @@
   <?php
 
 class ShowController extends StudipController {
-
+    
     public function __construct($dispatcher)
     {
         parent::__construct($dispatcher);
         $this->plugin = $dispatcher->current_plugin;
-
+ 
         $this->userId = $GLOBALS["user"]->id;
-        $perm = get_global_perm($GLOBALS["user"]->id);
-        $this->perm = $perm;
-        if($perm == "dozent"){
-          $this->linkId = $output;
-          $output = EportfolioGroup::getFirstGroupOfUser($GLOBALS["user"]->id);
-          if(!$output == '') {
-            $this->linkId = $output;
-          } else {
-            $this->linkId = '';
-          }
-        }
-
+        global $perm;
+        $this->isDozent = $perm->have_perm('dozent');
+        
         $user = get_username();
 
         $sidebar = Sidebar::Get();
@@ -27,17 +18,20 @@ class ShowController extends StudipController {
 
         $navcreate = new LinksWidget();
         $navcreate->setTitle('Navigation');
-        $navcreate->addLink("Eigenes ePortfolio erstellen", PluginEngine::getLink($this->plugin, array(), 'show/createportfolio') , "", array('data-dialog'=>"size=auto;reload-on-close"));
-        if ($perm == "dozent") {
-          $output = EportfolioGroup::getFirstGroupOfUser($GLOBALS["user"]->id);
-          if(!$output == '') {
-            $linkIdMenu = $output;
-          } else {
-            $linkIdMenu = '';
-          }
-          $navcreate->addLink("Supervisionsansicht", "showsupervisor?cid=".$linkIdMenu);
+        $navcreate->addLink("�bersicht", PluginEngine::getLink($this->plugin, array(), 'show') , '', array('class' => 'active-link'));
+        if ($this->isDozent) {
+          $navcreate->addLink("Supervisionsansicht", "showsupervisor");
         }
         $sidebar->addWidget($navcreate);
+        
+        $actions = new ActionsWidget();
+        $actions->setTitle('Aktionen');
+        if ($this->isDozent) {
+        $actions->addLink("Vorlage erstellen", PluginEngine::getLink($this->plugin, array(), 'show/createvorlage') , 'icons/16/blue/add.png', array('data-dialog'=>"size=auto;reload-on-close"));
+        }
+        $actions->addLink("ePortfolio erstellen", PluginEngine::getLink($this->plugin, array(), 'show/createportfolio') , 'icons/16/blue/add.png', array('data-dialog'=>"size=auto;reload-on-close"));
+        
+        $sidebar->addWidget($actions);
 
     }
 
@@ -45,33 +39,14 @@ class ShowController extends StudipController {
     {
         parent::before_filter($action, $args);
         //$this->set_layout($GLOBALS['template_factory']->open('layouts/base.php'));
-        PageLayout::setTitle('ePortfolio');
+        PageLayout::setTitle('ePortfolio - �bersicht');
     }
 
 
     public function index_action()
     {
-
-
-    }
-
-    public function getMyPortfolios(){
-
-      $db = DBManager::get();
-      $userid = $GLOBALS["user"]->id;
-
-      $myportfolios = array();
-      $countPortfolios = 0;
-
-      $query = "SELECT Seminar_id FROM eportfolio WHERE owner_id = :userid";
-      $statement = $db->prepare($query);
-      $statement->execute(array(':userid'=> $userid));
-      foreach ($statement->fetchAll() as $key) {
-        array_push($myportfolios, $key[Seminar_id]);
-        $countPortfolios++;
-      }
-
-      return $myportfolios;
+        global $user;
+        $this->user = $user;
 
     }
 
@@ -116,6 +91,7 @@ class ShowController extends StudipController {
       return $name;
     }
 
+    //TODO refactoring geh�rt zu ePortfoliomodel
     public function countViewer($cid) {
 
       $db = DBManager::get();
@@ -127,41 +103,42 @@ class ShowController extends StudipController {
     }
 
     public function createvorlage_action(){
-
+        
     }
-
+    
     public function createportfolio_action(){
-
+        
     }
-
+    
     public function newvorlage_action(){
 
-      foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
-        if ($sem_type['name'] == 'ePortfolio-Vorlage') {
-          $sem_type_id = $id;
-        }
-         $sem_type_id = '143';
-      }
+      $sem_type_id = Config::get()->getValue('SEM_CLASS_PORTFOLIO_VORLAGE');
+      $current_semester = Semester::findCurrent();
 
       $userid           = $GLOBALS["user"]->id; //get userid
       $sem_name         = $_POST['name'];
       $sem_description  = $_POST['beschreibung'];
 
       $sem              = new Seminar();
-      $sem->Seminar_id  = $sem->createId();
+      //$sem->Seminar_id  = $sem->id;
       $sem->name        = $sem_name;
       $sem->description = $sem_description;
       $sem->status      = $sem_type_id;
       $sem->read_level  = 1;
       $sem->write_level = 1;
+      $sem->setEndSemester(-1);
+      $sem->setStartSemester($current_semester->beginn);
       $sem->institut_id = Config::Get()->STUDYGROUP_DEFAULT_INST;
-      $sem->visible     = 1;
+      $sem->visible     = 0;
 
       $sem_id = $sem->Seminar_id;
-      echo $sem_id;
 
       $sem->addMember($userid, 'dozent');
       $sem->store();
+      
+      $avatar = CourseAvatar::getAvatar($sem_id);
+      $filename = sprintf('%s/%s',$this->plugin->getpluginPath(),'assets/images/avatare/vorlage.png');
+      $avatar->createFrom($filename);
 
       $eportfolio = new Seminar();
       $eportfolio_id = $eportfolio->createId();
@@ -173,9 +150,63 @@ class ShowController extends StudipController {
       $statement = $db->prepare($query);
       $statement->execute(array(':Seminar_id'=> $sem_id, ':eportfolio_id'=> $eportfolio_id, ':userid'=> $userid)); //table eportfollio_user
 
-      //$this->redirect("show");
+      PageLayout::postMessage(MessageBox::success(sprintf(_('Vorlage "%s" wurde angelegt.'), $sem_name)));
+
       $this->response->add_header('X-Dialog-Close', '1');
       $this->render_nothing();
     }
 
+    public function newportfolio_action()
+    {
+
+        $sem_type_id = Config::get()->getValue('SEM_CLASS_PORTFOLIO');
+        $current_semester = Semester::findCurrent();
+
+        $userid           = $GLOBALS["user"]->id; //get userid
+        $sem_name         = studip_utf8decode(strip_tags($_POST['name']));
+        $sem_description  = studip_utf8decode(strip_tags($_POST['beschreibung']));
+      
+        $sem              = new Seminar();
+        $sem->Seminar_id  = $sem->createId();
+        $sem->name        = $sem_name;
+        $sem->description = $sem_description;
+        $sem->status      = $sem_type_id;
+        $sem->read_level  = 1;
+        $sem->write_level = 1;
+        $sem->setEndSemester(-1);
+        $sem->setStartSemester($current_semester->beginn);
+        $sem->institut_id = Config::Get()->STUDYGROUP_DEFAULT_INST;
+        $sem->visible     = 0;
+
+        $sem_id = $sem->Seminar_id;
+
+        $sem->addMember($userid, 'dozent');
+        $sem->store();
+        
+        $avatar = CourseAvatar::getAvatar($sem_id);
+        $filename = sprintf('%s/%s',$this->plugin->getpluginPath(),'assets/images/avatare/eportfolio.png');
+        $avatar->createFrom($filename);
+
+        $eportfolio = new Seminar();
+        $eportfolio_id = $eportfolio->createId();
+        
+        //table eportfolio
+        $values = array('sem_id' => $sem_id, 'eportfolio_id' => $eportfolio_id, 'userid' => $userid);
+        $query = "INSERT INTO eportfolio (Seminar_id, eportfolio_id, owner_id) VALUES (:sem_id, :eportfolio_id, :userid)" ;
+        $statement = DBManager::get()->prepare($query);
+        $statement->execute($values);
+        
+        //table eportfolio_user
+        $values2 = array('userid' => $userid, 'Seminar_id' => $sem_id, 'eportfolio_id' => $eportfolio_id, );
+        $query2 = "INSERT INTO eportfolio_user(user_id, Seminar_id, eportfolio_id, owner) VALUES (:userid, :Seminar_id , :eportfolio_id, 1)" ;
+        $statement2 = DBManager::get()->prepare($query2);
+        $statement2->execute($values2);
+
+        PageLayout::postMessage(MessageBox::success(sprintf(_('Portfolio "%s" wurde angelegt.'), $sem_name)));
+
+        $this->response->add_header('X-Dialog-Close', '1');
+        $this->render_nothing();
+        
+    }
+    
 }
