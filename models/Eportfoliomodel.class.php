@@ -43,6 +43,11 @@ class Eportfoliomodel extends SimpleORMap
         return $supervisoren[0];
     }
     
+     public static function getOwner($cid){
+        $portfolio = Eportfoliomodel::findBySQL('Seminar_id = :cid', array(':cid' => $cid));
+        return $portfolio[0]->owner_id;
+    }
+    
     public function getPortfolioVorlagen(){
 
       global $perm;
@@ -86,7 +91,7 @@ class Eportfoliomodel extends SimpleORMap
     
     public static function getChapters($id){
         $db = DBManager::get();
-        $query = "SELECT title, id FROM mooc_blocks WHERE seminar_id = :id AND type = 'Chapter' ORDER BY position ASC";
+        $query = "SELECT title, id FROM mooc_blocks WHERE seminar_id = :id AND type = 'Chapter' AND parent_id != '0' ORDER BY position ASC";
         $statement = $db->prepare($query);
         $statement->execute(array(':id'=> $id));
         return $statement->fetchAll();
@@ -108,7 +113,7 @@ class Eportfoliomodel extends SimpleORMap
      public static function getAllBlocksInOrder($id){
         $db = DBManager::get();
         $blocks = array();
-        $query = "SELECT title, id FROM mooc_blocks WHERE seminar_id = :id AND type = 'Chapter' ORDER BY position ASC";
+        $query = "SELECT title, id FROM mooc_blocks WHERE seminar_id = :id AND type = 'Chapter' AND parent_id != '0' ORDER BY position ASC";
         $statement = $db->prepare($query);
         $statement->execute(array(':id'=> $id));
         foreach($statement->fetchAll() as $chapter){
