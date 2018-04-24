@@ -10,7 +10,7 @@
   <button data-toggle="modal" data-target="#addSupervisorModal" type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Supervisor hinzufuegen</button>
 <?php endif;?> -->
 
-<?php if (empty($viewerList))
+<?php if (empty($viewerList) && ($supervisorId == null))
   echo MessageBox::info('Es sind derzeit keine Zugriffsrechte in Ihrem Portfolio vergeben.');
 ?>
 
@@ -29,7 +29,7 @@
 <tbody>
 
 <?php
-
+  # das hier wird nicht mehr gebraucht weil fremde nutzer keine Settings-Seite sehen
   # Prï¿½fen ob eigenes Portfolio
   $eigenesPortfolio = SettingsController::eigenesPortfolio($cid);
  ?>
@@ -100,21 +100,8 @@
   </tbody>
 </table>
 
-<?php
 
-$mp = MultiPersonSearch::get('eindeutige_id')
-  ->setLinkText(_('Personen hinzufügen'))
-  ->setTitle(_('Personen zur Gruppe hinzuf&uuml;gen'))
-  ->setSearchObject(new StandardSearch('user_id'))
-  ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/settings/addZugriff/'.$cid))
-  ->render();
-
-$tempURL = URLHelper::getLink('dispatch.php/multipersonsearch/js_form/eindeutige_id');
- ?>
-
- <a href="<?php echo $tempURL ?>" class="multi_person_search_link" data-dialog="width=720;height=460;id=mp-search" data-dialogname="eindeutige_id" title="Personen zur Gruppe hinzufügen" data-js-form="<?php echo $tempURL ?>">
-   <?= \Studip\Button::create('Zugriffsrechte vergeben', 'klickMichButton', array('data-dialogname' => 'eindeutige_id', 'data-js-form' => $tempURL)); ?>
- </a>
+<?php echo $mp ?>
 
 <!-- <hr>
 

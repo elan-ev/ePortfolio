@@ -119,6 +119,23 @@ class settingsController extends StudipController {
     if($_POST["saveChanges"]){
       $this->saveChanges();
     }
+    
+     $search_obj = new SQLSearch("SELECT auth_user_md5.user_id, CONCAT(auth_user_md5.nachname, ', ', auth_user_md5.vorname, ' (' , auth_user_md5.email, ')' ) as fullname, username, perms "
+                            . "FROM auth_user_md5 "
+                            . "WHERE (CONCAT(auth_user_md5.Vorname, \" \", auth_user_md5.Nachname) LIKE :input "
+                            . "OR CONCAT(auth_user_md5.Nachname, \" \", auth_user_md5.Vorname) LIKE :input "
+                            . "OR auth_user_md5.username LIKE :input)"
+                            . "AND auth_user_md5.user_id NOT IN "
+                            . "(SELECT eportfolio_user.user_id FROM eportfolio_user WHERE eportfolio_user.Seminar_id = '". $cid ."')  "
+                            . "ORDER BY Vorname, Nachname ",
+                _("NUtzer suchen"), "username");
+
+      $this->mp = MultiPersonSearch::get('selectFreigabeUser')
+        ->setLinkText(_('Zugriffsrechte vergeben'))
+        ->setTitle(_('NutzerInnen zur Verwaltung von Zugriffsrechten hinzufügen'))
+        ->setSearchObject($search_obj)
+        ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/settings/addZugriff/'. $cid))
+        ->render();
 
     //push to template
     $this->cid = $cid;
@@ -163,7 +180,7 @@ class settingsController extends StudipController {
     return $arrayChapter;
   }
 
-
+  //TOTO refactoring gehört in ePortfoliomodel
   public function getSupervisorGroupOfPortfolio($id){
     $portfolio = Eportfoliomodel::findBySQL('Seminar_id = :id', array(':id'=> $id));
      if ($portfolio[0]->group_id){
@@ -177,7 +194,7 @@ class settingsController extends StudipController {
 
   //addUserAccess
   public function addZugriff_action($id){
-    $mp             = MultiPersonSearch::load('eindeutige_id');
+    $mp             = MultiPersonSearch::load('selectFreigabeUser');
     $seminar        = new Seminar($id);
     $eportfolio = Eportfoliomodel::findBySQL('Seminar_id = :id', array(':id'=> $id));
     $eportfolio_id  = $eportfolio[0]->eportfolio_id;
