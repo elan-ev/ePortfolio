@@ -18,7 +18,7 @@ class ShowController extends StudipController {
 
         $navcreate = new LinksWidget();
         $navcreate->setTitle('Navigation');
-        $navcreate->addLink("Übersicht", PluginEngine::getLink($this->plugin, array(), 'show') , '', array('class' => 'active-link'));
+        $navcreate->addLink("ï¿½bersicht", PluginEngine::getLink($this->plugin, array(), 'show') , '', array('class' => 'active-link'));
         if ($this->isDozent) {
           $navcreate->addLink("Supervisionsansicht", "showsupervisor");
         }
@@ -39,7 +39,7 @@ class ShowController extends StudipController {
     {
         parent::before_filter($action, $args);
         //$this->set_layout($GLOBALS['template_factory']->open('layouts/base.php'));
-        PageLayout::setTitle('ePortfolio - Übersicht');
+        PageLayout::setTitle('ePortfolio - ï¿½bersicht');
     }
 
 
@@ -91,6 +91,7 @@ class ShowController extends StudipController {
       return $name;
     }
 
+    //TODO refactoring gehï¿½rt zu ePortfoliomodel
     public function countViewer($cid) {
 
       $db = DBManager::get();
