@@ -328,14 +328,16 @@ class ShowsupervisorController extends StudipController {
         }
 
       } else {
-        //Falls noch keine Vorlagen verteilt wurden erhï¿½lt jeder Nutzer ein eigenes ePortfolio
+        //Falls noch keine Vorlagen verteilt wurden erhält jeder Nutzer ein eigenes ePortfolio
         $master = new Seminar($masterid);
         $sem_type_id = $this->getPortfolioSemId();
 
         foreach ($member as $key => $value) {
 
+            $owner            = UserModel::getUser($value);
+            $owner_fullname   = $owner['Vorname'] . ' ' . $owner['Nachname'];
             $userid           = $value; //get userid
-            $sem_name         = $master->getName()." (".$groupname->getName().")";
+            $sem_name         = "Gruppenportfolio: ".$groupname->getName() . " (" . $owner_fullname .")";
             $sem_description  = "Dieses Portfolio wurde Ihnen von einem Supervisor zugeteilt";
             $current_semester = Semester::findCurrent();
 
