@@ -16,9 +16,9 @@ class ShowController extends StudipController {
         $sidebar = Sidebar::Get();
         Sidebar::Get()->setTitle('ePortfolios von '.$user );
 
-        $navcreate = new LinksWidget();
+        $navcreate = new ActionsWidget();
         $navcreate->setTitle('Navigation');
-        $navcreate->addLink("Übersicht", PluginEngine::getLink($this->plugin, array(), 'show') , '', array('class' => 'active-link'));
+        $navcreate->addLink("Uebersicht", 'show' );
         if ($this->isDozent) {
           $navcreate->addLink("Supervisionsansicht", "showsupervisor");
         }
@@ -27,9 +27,9 @@ class ShowController extends StudipController {
         $actions = new ActionsWidget();
         $actions->setTitle('Aktionen');
         if ($this->isDozent) {
-        $actions->addLink("Vorlage erstellen", PluginEngine::getLink($this->plugin, array(), 'show/createvorlage') , 'icons/16/blue/add.png', array('data-dialog'=>"size=auto;reload-on-close"));
+        $actions->addLink("Vorlage erstellen", PluginEngine::getLink($this->plugin, array(), 'show/createvorlage') , Icon::create('add', 'clickable'), array('data-dialog'=>"size=auto;reload-on-close"));
         }
-        $actions->addLink("ePortfolio erstellen", PluginEngine::getLink($this->plugin, array(), 'show/createportfolio') , 'icons/16/blue/add.png', array('data-dialog'=>"size=auto;reload-on-close"));
+        $actions->addLink("ePortfolio erstellen", PluginEngine::getLink($this->plugin, array(), 'show/createportfolio') , Icon::create('add', 'clickable'), array('data-dialog'=>"size=auto;reload-on-close"));
         
         $sidebar->addWidget($actions);
 

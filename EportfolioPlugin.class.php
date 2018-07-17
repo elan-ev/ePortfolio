@@ -17,7 +17,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         parent::__construct();
 
         $navigation = new AutoNavigation(_('ePortfolio'));
-        $navigation->setImage(Assets::image_path('lightblue/edit'));
+        $navigation->setImage(Icon::create('edit', 'clickable'));
         $navigation->setURL(PluginEngine::GetURL($this, array(), "show"));
         Navigation::addItem('/eportfolioplugin', $navigation);
         //Navigation::activateItem("/eportfolioplugin");
@@ -62,13 +62,13 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
 
       if ($this->isSupervisionsgruppe()) {
           $navigation = new Navigation('Übersicht', PluginEngine::getURL($this, compact('cid'), 'showsupervisor', true));
-          $navigation->setImage('icons/16/white/group4.png');
-          $navigation->setActiveImage('icons/16/black/group4.png');
+          $navigation->setImage(Icon::create('group4', 'navigation'));
+          $navigation->setActiveImage(Icon::create('group4', 'info'));
       } else {
           //uebersicht navigation point
           $navigation = new Navigation('Übersicht', PluginEngine::getURL($this, compact('cid'), 'eportfolioplugin', true));
-          $navigation->setImage('icons/16/white/group4.png');
-          $navigation->setActiveImage('icons/16/black/group4.png');
+          $navigation->setImage(Icon::create('group4', 'navigation'));
+          $navigation->setActiveImage(Icon::create('group4', 'info'));
        }
 
       # settings navigation
@@ -82,13 +82,13 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
 
         if ($this->isPortfolio() && $owner) {
           $navigationSettings = new Navigation('Zugriffsrechte', PluginEngine::getURL($this, compact('cid'), 'settings', true));
-          $navigationSettings->setImage('icons/16/white/admin.png');
-          $navigationSettings->setActiveImage('icons/16/black/admin.png');
+          $navigationSettings->setImage(Icon::create('admin', 'navigation'));
+          $navigationSettings->setActiveImage(Icon::create('admin', 'info'));
           $tabs['settings'] = $navigationSettings;
         } else if ($isDozent == true && $this->isVorlage()) {
           $navigationSettings = new Navigation('Einstellungen', PluginEngine::getURL($this, compact('cid'), 'blocksettings', true));
-          $navigationSettings->setImage('icons/16/white/admin.png');
-          $navigationSettings->setActiveImage('icons/16/black/admin.png');  
+          $navigationSettings->setImage(Icon::create('admin', 'navigation'));
+          $navigationSettings->setActiveImage(Icon::create('admin', 'info'));  
           $tabs['settings'] = $navigationSettings;
         }
       } 
