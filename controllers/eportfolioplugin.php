@@ -90,7 +90,7 @@ class EportfoliopluginController extends StudipController {
     $i = 0;
     $eportfolio = new eportfolio($this->cid);
     $isOwner = $eportfolio->isOwner($userid);
-    $owner = UserModel::getUser(Eportfoliomodel::getOwner($this->cid));
+    $owner = User::find(Eportfoliomodel::getOwner($this->cid));
     $this->isVorlage = Eportfoliomodel::isVorlage($this->cid);
     $seminar = new Seminar($this->cid);
     
@@ -189,7 +189,7 @@ class EportfoliopluginController extends StudipController {
         $newarray["userid"] = $key["user_id"];
         $newarray["access"] = $key["eportfolio_access"];
 
-        $userinfo = UserModel::getUser($key["user_id"]);
+        $userinfo = User::find($key["user_id"]);
         $newarray['firstname'] = $userinfo[Vorname];
         $newarray['lastname'] = $userinfo[Nachname];
 
@@ -215,7 +215,7 @@ class EportfoliopluginController extends StudipController {
       $statement = $db->prepare($query);
       $statement->execute(array(':cid'=> $cid));
       $userId = $statement->fetchAll()[0][0];
-      $supervisor = UserModel::getUser($userId);
+      $supervisor = User::find($userId);
       $infoboxArray['firstname'] = $supervisor[Vorname];
       $infoboxArray['lastname'] = $supervisor[Nachname];
 

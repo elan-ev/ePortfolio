@@ -58,7 +58,7 @@ class CoursewareinfoblockController extends StudipController {
         $newarray["userid"] = $key["user_id"];
         $newarray["access"] = $key["eportfolio_access"];
 
-        $userinfo = UserModel::getUser($key["user_id"]);
+        $userinfo = User::find($key["user_id"]);
         $newarray['firstname'] = $userinfo[Vorname];
         $newarray['lastname'] = $userinfo[Nachname];
 
@@ -96,7 +96,7 @@ class CoursewareinfoblockController extends StudipController {
         $freigabe = $freigabe->$selected;
 
         if ($freigabe == 1) {
-          $supervisorInfo = UserModel::getUser($supervisorId);
+          $supervisorInfo = User::find($supervisorId);
           $infoboxArray["supervisorId"] = $supervisorId;
           $infoboxArray["supervisorFistname"] = $supervisorInfo[Vorname];
           $infoboxArray["supervisorLastname"] = $supervisorInfo[Nachname];
@@ -112,7 +112,7 @@ class CoursewareinfoblockController extends StudipController {
       $statement = $db->prepare($query);
       $statement->execute(array(':cid'=> $cid));
       $userId = $statement->fetchAll()[0][0];
-      $supervisor = UserModel::getUser($userId);
+      $supervisor = User::find($userId);
       $infoboxArray['firstname']  = $supervisor[Vorname];
       $infoboxArray['lastname']   = $supervisor[Nachname];
       $infoboxArray['userid']     = $userId;

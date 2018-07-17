@@ -14,7 +14,7 @@
     <tr>
       <td>
         <img style="border-radius: 30px; width: 21px; border: 1px solid #28497c;" src="<?php echo $GLOBALS[DYNAMIC_CONTENT_URL];?>/user/<?php echo $user->user_id; ?>_small.png" onError="defaultImg(this);">
-        <?php $userInfo = UserModel::getUser($user->user_id);?><?php echo $userInfo['Vorname']." ".$userInfo['Nachname']; ?>
+        <?php $userInfo = User::find($user->user_id);?><?php echo $userInfo['Vorname']." ".$userInfo['Nachname']; ?>
       </td>
       <td></td>
       <td style="text-align:center;">

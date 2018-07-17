@@ -1,6 +1,6 @@
 <!-- <?php if(!$supervisorId == NULL):?>
 
-  <?php $supervisor = UserModel::getUser($supervisorId);
+  <?php $supervisor = User::find($supervisorId);
       echo $supervisor[Vorname].' '.$supervisor[Nachname].'<br/>';
    ?>
 
@@ -64,7 +64,7 @@
    <tr>
      <td>
        
-       <?php $userInfo = UserModel::getUser($viewer[user_id]);?>
+       <?php $userInfo = User::find($viewer[user_id]);?>
          <a href="<?= URLHelper::getLink('dispatch.php/profile?username=' . $userInfo['username']) ?>" >
                         <?= Avatar::getAvatar($viewer[user_id])->getImageTag(Avatar::SMALL,
                                 array('style' => 'margin-right: 5px;border-radius: 30px; width: 25px; border: 1px solid #28497c;', 'title' => htmlReady($viewer['Vorname']." ".$viewer['Nachname']))); ?>

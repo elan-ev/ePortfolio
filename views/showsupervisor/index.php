@@ -93,7 +93,7 @@
         <?php foreach ($member as $user):?>
           <tr>
             <td>
-              <?php $userInfo = UserModel::getUser($user);?>
+              <?php $userInfo = User::find($user);?>
                <a href="<?= URLHelper::getLink('dispatch.php/profile?username=' . $userInfo['username']) ?>" >
                           <?= Avatar::getAvatar($user, $userInfo['username'])->getImageTag(Avatar::SMALL,
                                 array('style' => 'margin-right: 5px; border-radius: 25px; width: 25px; border: 1px solid #28497c;', 'title' => htmlReady($userInfo['Vorname']." ".$userInfo['Nachname']))); ?>       
@@ -142,7 +142,7 @@
             <?php foreach ($member as $user_id):?>
               <tr>
                 <td style="text-align: left;">
-                  <?php $supervisor = UserModel::getUser($user_id);?>
+                  <?php $supervisor = User::find($user_id);?>
                    <a href="<?= URLHelper::getLink('dispatch.php/profile?username=' . $supervisor['username']) ?>" >
                           <?= Avatar::getAvatar($user_id, $supervisor['username'])->getImageTag(Avatar::SMALL,
                                 array('style' => 'margin-right: 5px; border-radius: 25px; width: 25px; border: 1px solid #28497c;', 'title' => htmlReady($supervisor['Vorname']." ".$supervisor['Nachname']))); ?>       

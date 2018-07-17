@@ -13,7 +13,7 @@
   <?php foreach ($usersOfGroup  as $user):?>
     <tr>
       <td>
-           <?php $userInfo = UserModel::getUser($user[user_id]);?>
+           <?php $userInfo = User::find($user[user_id]);?>
          <a href="<?= URLHelper::getLink('dispatch.php/profile?username=' . $userInfo['username']) ?>" >
                         <?= Avatar::getAvatar($user['user_id'], $userInfo['username'])->getImageTag(Avatar::SMALL,
                                 array('style' => 'margin-right: 5px;border-radius: 30px; width: 25px; border: 1px solid #28497c;', 'title' => htmlReady($userInfo['Vorname']." ".$userInfo['Nachname']))); ?>
