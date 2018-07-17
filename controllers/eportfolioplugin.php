@@ -17,7 +17,7 @@ class EportfoliopluginController extends StudipController {
         exit();
       }
 
-      $cid = $_GET['cid'];
+      $cid = Course::findCurrent()->id;
       global $user;
       $eportfolio = Eportfoliomodel::findOneBySeminar_Id($cid);
       $isVorlage = Eportfoliomodel::isVorlage($cid);
@@ -163,10 +163,11 @@ class EportfoliopluginController extends StudipController {
   
   public function deletePortfolio_action($id){
     
-      
+       $sem = Course::findCurrent();
+       $sem->delete();
        PageLayout::postMessage(MessageBox::success(_('Das Portfolio wurde gelöscht.')));
         
-       $this->redirect($this->url_for('/index'));
+       $this->redirect(PluginEngine::GetURL($this->plugin, array(), "show"));
   }
 
   public function infobox($cid, $owner_id, $selected){

@@ -14,11 +14,11 @@ class ShowController extends StudipController {
         $user = get_username();
 
         $sidebar = Sidebar::Get();
-        Sidebar::Get()->setTitle('ePortfolio von '.$user );
+        Sidebar::Get()->setTitle('ePortfolios von '.$user );
 
-        $navcreate = new LinksWidget();
+        $navcreate = new ActionsWidget();
         $navcreate->setTitle('Navigation');
-        $navcreate->addLink("ï¿½bersicht", PluginEngine::getLink($this->plugin, array(), 'show') , '', array('class' => 'active-link'));
+        $navcreate->addLink("Uebersicht", 'show' );
         if ($this->isDozent) {
           $navcreate->addLink("Supervisionsansicht", "showsupervisor");
         }
@@ -27,9 +27,9 @@ class ShowController extends StudipController {
         $actions = new ActionsWidget();
         $actions->setTitle('Aktionen');
         if ($this->isDozent) {
-        $actions->addLink("Vorlage erstellen", PluginEngine::getLink($this->plugin, array(), 'show/createvorlage') , 'icons/16/blue/add.png', array('data-dialog'=>"size=auto;reload-on-close"));
+        $actions->addLink("Vorlage erstellen", PluginEngine::getLink($this->plugin, array(), 'show/createvorlage') , Icon::create('add', 'clickable'), array('data-dialog'=>"size=auto;reload-on-close"));
         }
-        $actions->addLink("ePortfolio erstellen", PluginEngine::getLink($this->plugin, array(), 'show/createportfolio') , 'icons/16/blue/add.png', array('data-dialog'=>"size=auto;reload-on-close"));
+        $actions->addLink("ePortfolio erstellen", PluginEngine::getLink($this->plugin, array(), 'show/createportfolio') , Icon::create('add', 'clickable'), array('data-dialog'=>"size=auto;reload-on-close"));
         
         $sidebar->addWidget($actions);
 
@@ -39,7 +39,7 @@ class ShowController extends StudipController {
     {
         parent::before_filter($action, $args);
         //$this->set_layout($GLOBALS['template_factory']->open('layouts/base.php'));
-        PageLayout::setTitle('ePortfolio - ï¿½bersicht');
+        PageLayout::setTitle('ePortfolio - Übersicht');
     }
 
 
@@ -91,7 +91,7 @@ class ShowController extends StudipController {
       return $name;
     }
 
-    //TODO refactoring gehï¿½rt zu ePortfoliomodel
+    //TODO refactoring gehrt zu ePortfoliomodel
     public function countViewer($cid) {
 
       $db = DBManager::get();

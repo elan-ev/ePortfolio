@@ -199,7 +199,10 @@
                               <?= Icon::create('forum', 'clickable'); ?>
                             </a
                             <?php endif; ?>
-
+                        <?php else: ?>
+                             <a class='freigabe-link' href="<?php echo URLHelper::getLink("plugins.php/eportfolioplugin/eportfolioplugin", array('cid' => $getsemid)) ?>">
+                              <?= Icon::create('decline', 'clickable'); ?>
+                            </a
                         <?php endif; ?>
 
                     </td>
@@ -231,7 +234,8 @@
 <!-- Legende -->
 <div class="legend">
   <ul>
-    <li><?php echo  Icon::create('accept', 'clickable'); ?>  Kapitel/Implus freigeschaltet</li>
+    <li><?php echo  Icon::create('decline', 'clickable'); ?>  Kapitel/Impuls noch nicht freigeschaltet</li>
+    <li><?php echo  Icon::create('accept', 'clickable'); ?>  Kapitel/Impuls freigeschaltet</li>
     <li><?php echo  Icon::create('accept+new', 'clickable'); ?></i>  Kapitel freigeschaltet und Änderungen seit ich das letzte mal reingeschaut habe</li>
     <li><?php echo  Icon::create('file', 'clickable'); ?>  Supervisionsanliegen freigeschaltet</li>
     <li><?php echo  Icon::create('forum', 'clickable'); ?>  Resonanz gegeben</li>
