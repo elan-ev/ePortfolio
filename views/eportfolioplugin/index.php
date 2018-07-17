@@ -22,8 +22,8 @@
     <div id="title">
       <h3 style="border:none!important;">
         <?php  echo $seminarTitle; ?>
-        <?php  echo ' - Dieses Portfolio gehört ' . $owner['Vorname'] . ' ' . $owner['Nachname']; ?>
-        <?php if($isOwner == true || $canEdit == true):?><span title='Titel ändern' style="margin-left: 10px;"><?php echo Icon::create('edit', 'inactive', array('onclick' => 'toggleChangeInput()'));?></span><?php endif; ?>
+        <?php  echo ' - Dieses Portfolio gehÃ¶rt ' . $owner['Vorname'] . ' ' . $owner['Nachname']; ?>
+        <?php if($isOwner == true || $canEdit == true):?><span title='Titel Ã¤ndern' style="margin-left: 10px;"><?php echo Icon::create('edit', 'inactive', array('onclick' => 'toggleChangeInput()'));?></span><?php endif; ?>
       </h3>
     </div>
 

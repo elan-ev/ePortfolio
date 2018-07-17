@@ -38,7 +38,7 @@ class AddSupervisorgroupSemClass extends Migration
         $name = "Supervisionsgruppe";
         $nameType = "Supervisionsgruppe";
         $id = -2;
-        //F¸t Spalte an true or false ePortfolio
+        //F√ºt Spalte an true or false ePortfolio
         // $nameType = "eportfolioStatus";
         // $statement = $db->prepare("ALTER TABLE seminare ADD ? BOOLEAN");
         // $statement->execute(array($nameType));
@@ -57,7 +57,7 @@ class AddSupervisorgroupSemClass extends Migration
                 $id = $statement->fetchColumn();
     		}
     		if($id === -2) {
-    			$message = sprintf('Ung¸ltige id (id=%d)', $id);
+    			$message = sprintf('Ung√ºltige id (id=%d)', $id);
                 throw new Exception($message);
     		}
             
@@ -92,7 +92,7 @@ class AddSupervisorgroupSemClass extends Migration
             'type'        => 'integer',
             'range'       => 'global',
             'section'     => 'global',
-            'description' => 'ID der Veranstaltungsklasse f¸r Portfolio-Supervisionsgruppen'
+            'description' => 'ID der Veranstaltungsklasse f√ºr Portfolio-Supervisionsgruppen'
             ));
         
         

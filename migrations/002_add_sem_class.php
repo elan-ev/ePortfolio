@@ -45,7 +45,7 @@ class AddSemClass extends Migration
         $nameType = "ePortfolio";
         $id = -2;
 
-        //Fügt Spalte an true or false ePortfolio
+        //FÃ¼gt Spalte an true or false ePortfolio
         // $nameType = "eportfolioStatus";
         // $statement = $db->prepare("ALTER TABLE seminare ADD ? BOOLEAN");
         // $statement->execute(array($nameType));
@@ -67,7 +67,7 @@ class AddSemClass extends Migration
     		}
 
     		if($id === -2) {
-    			$message = sprintf('Ungültige id (id=%d)', $id);
+    			$message = sprintf('UngÃ¼ltige id (id=%d)', $id);
                 throw new Exception($message);
     		}
 

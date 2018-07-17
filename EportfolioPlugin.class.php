@@ -61,12 +61,12 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
       $tabs = array();
 
       if ($this->isSupervisionsgruppe()) {
-          $navigation = new Navigation('Übersicht', PluginEngine::getURL($this, compact('cid'), 'showsupervisor', true));
+          $navigation = new Navigation('Ãœbersicht', PluginEngine::getURL($this, compact('cid'), 'showsupervisor', true));
           $navigation->setImage(Icon::create('group4', 'navigation'));
           $navigation->setActiveImage(Icon::create('group4', 'info'));
       } else {
           //uebersicht navigation point
-          $navigation = new Navigation('Übersicht', PluginEngine::getURL($this, compact('cid'), 'eportfolioplugin', true));
+          $navigation = new Navigation('Ãœbersicht', PluginEngine::getURL($this, compact('cid'), 'eportfolioplugin', true));
           $navigation->setImage(Icon::create('group4', 'navigation'));
           $navigation->setActiveImage(Icon::create('group4', 'info'));
        }
@@ -223,21 +223,21 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
             }
             
             if ($this->isPortfolio()){
-                $description  = _('Unter **Zugriffsrechte** können Sie einzelne Kapitel für Komilitonen oder Ihre Supervisoren freigeben.') . ' ';
+                $description  = _('Unter **Zugriffsrechte** kÃ¶nnen Sie einzelne Kapitel fÃ¼r Komilitonen oder Ihre Supervisoren freigeben.') . ' ';
                 $description .= _('') . '';
-                $tip = _('Unter **ePortfolio** können Sie Ihr Portfolio bearbeiten. ');
+                $tip = _('Unter **ePortfolio** kÃ¶nnen Sie Ihr Portfolio bearbeiten. ');
                 $tip .= _('');
-                $bearbeiten = _('Um Inhalte oder Kapitel hinzuzufügen, klicken Sie im Reiter **ePortfolio** oben rechts auf den Doktorandenhut');
+                $bearbeiten = _('Um Inhalte oder Kapitel hinzuzufÃ¼gen, klicken Sie im Reiter **ePortfolio** oben rechts auf den Doktorandenhut');
                 Helpbar::get()->addPlainText(_(''), $description, '');
                 Helpbar::get()->addPlainText(_(''), $tip, '');
                 Helpbar::get()->addPlainText(_('Tip zum Bearbeiten'), $bearbeiten, 'icons/white/doctoral_cap.svg');
             }
             if ($this->isVorlage()){
-                $description  = _('Unter **Teilnehmende** können Sie festlegen, wer Zugriff auf diese Vorlage hat. ') . ' ';
-                $description .= _('Ausserdem können Sie unter **Einstellungen** Inhalte der Vorlage für die spätere Bearbeitung durch Studierende sperren.') . '';
-                $tip = _('Unter **ePortfolio** können Sie die Vorlage bearbeiten. ');
+                $description  = _('Unter **Teilnehmende** kÃ¶nnen Sie festlegen, wer Zugriff auf diese Vorlage hat. ') . ' ';
+                $description .= _('Ausserdem kÃ¶nnen Sie unter **Einstellungen** Inhalte der Vorlage fÃ¼r die spÃ¤tere Bearbeitung durch Studierende sperren.') . '';
+                $tip = _('Unter **ePortfolio** kÃ¶nnen Sie die Vorlage bearbeiten. ');
                 $tip .= _('');
-                $bearbeiten = _('Um Inhalte oder Kapitel hinzuzufügen, klicken Sie im Reiter **ePortfolio** oben rechts auf den Doktorandenhut');
+                $bearbeiten = _('Um Inhalte oder Kapitel hinzuzufÃ¼gen, klicken Sie im Reiter **ePortfolio** oben rechts auf den Doktorandenhut');
                 Helpbar::get()->addPlainText(_(''), $description, '');
                 Helpbar::get()->addPlainText(_(''), $tip, '');
                 Helpbar::get()->addPlainText(_('Tip zum Bearbeiten'), $bearbeiten, 'icons/white/doctoral_cap.svg');

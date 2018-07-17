@@ -8,9 +8,9 @@
     <div class="jumbotron" style="border-radius: 10px;">
       <div class="container" style="padding: 0 50px;">
 
-        <h1>Keine Gruppe ausgewählt</h1>
+        <h1>Keine Gruppe ausgewÃ¤hlt</h1>
 
-        <p>Wählen Sie links in der Navigation eine Ihrer Gruppen aus oder legen Sie eine neue Gruppe an.</p>
+        <p>WÃ¤hlen Sie links in der Navigation eine Ihrer Gruppen aus oder legen Sie eine neue Gruppe an.</p>
         <!-- <p><?= \Studip\Button::create('Mehr Informationen'); ?></p> -->
       </div>
     </div>

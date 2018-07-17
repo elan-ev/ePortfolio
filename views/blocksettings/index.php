@@ -2,7 +2,7 @@
 
 <table class="default" id='blocksettings'>
 
-  <caption>Blöcke für die weitere Bearbeitung durch Studierende sperren</caption>
+  <caption>BlÃ¶cke fÃ¼r die weitere Bearbeitung durch Studierende sperren</caption>
   <tr class="sortable">
     <th>Element</th>
     <th>Bearbeiten erlaubt</th>

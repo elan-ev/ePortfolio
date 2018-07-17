@@ -25,7 +25,7 @@ class AddSemClassConfigEntry extends Migration
             'type'        => 'integer',
             'range'       => 'global',
             'section'     => 'global',
-            'description' => 'ID der Veranstaltungsklasse für Portfolio-Vorlagen'
+            'description' => 'ID der Veranstaltungsklasse fÃ¼r Portfolio-Vorlagen'
             ));
         
         foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
@@ -40,7 +40,7 @@ class AddSemClassConfigEntry extends Migration
             'type'        => 'integer',
             'range'       => 'global',
             'section'     => 'global',
-            'description' => 'ID der Veranstaltungsklasse für Portfolios'
+            'description' => 'ID der Veranstaltungsklasse fÃ¼r Portfolios'
             ));
     }
 

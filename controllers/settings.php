@@ -115,7 +115,7 @@ class settingsController extends StudipController {
 
     //////////////////
     //////////////////
-    //Änderung von Name und Beschreibung des Portfolios
+    //Ã„nderung von Name und Beschreibung des Portfolios
     if($_POST["saveChanges"]){
       $this->saveChanges();
     }
@@ -132,7 +132,7 @@ class settingsController extends StudipController {
 
       $this->mp = MultiPersonSearch::get('selectFreigabeUser')
         ->setLinkText(_('Zugriffsrechte vergeben'))
-        ->setTitle(_('NutzerInnen zur Verwaltung von Zugriffsrechten hinzufügen'))
+        ->setTitle(_('NutzerInnen zur Verwaltung von Zugriffsrechten hinzufÃ¼gen'))
         ->setSearchObject($search_obj)
         ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/settings/addZugriff/'. $cid))
         ->render();
@@ -180,7 +180,7 @@ class settingsController extends StudipController {
     return $arrayChapter;
   }
 
-  //TOTO refactoring gehört in ePortfoliomodel
+  //TOTO refactoring gehÃ¶rt in ePortfoliomodel
   public function getSupervisorGroupOfPortfolio($id){
     $portfolio = Eportfoliomodel::findBySQL('Seminar_id = :id', array(':id'=> $id));
      if ($portfolio[0]->group_id){
@@ -200,13 +200,13 @@ class settingsController extends StudipController {
     $eportfolio_id  = $eportfolio[0]->eportfolio_id;
     $userRole       = 'autor';
 
-    # User der Gruppe hinzufügen
+    # User der Gruppe hinzufÃ¼gen
     foreach ($mp->getAddedUsers() as $userId) {
 
       #Seminar Add Member
       $seminar->addMember($userId, $userRole);
 
-      # User der Tabelle eportfolio_user hinzufügen
+      # User der Tabelle eportfolio_user hinzufÃ¼gen
       $db = DBManager::get();
       $query = "INSERT INTO eportfolio_user (user_id, Seminar_id, eportfolio_id, status, owner) VALUES (:userId, :id, :eportfolio_id, 'autor', 0)";
       $statement = $db->prepare($query);

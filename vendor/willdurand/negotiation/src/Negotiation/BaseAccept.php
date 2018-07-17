@@ -93,7 +93,7 @@ abstract class BaseAccept
      * @param string $key
      * @param mixed  $default
      *
-     * @return string|null
+     *Â @return string|null
      */
     public function getParameter($key, $default = null)
     {

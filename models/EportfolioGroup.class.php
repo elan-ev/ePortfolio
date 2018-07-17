@@ -176,23 +176,23 @@ class EportfolioGroup extends SimpleORMap
     #supervisorgroup holen
     $supervisor_group_id = self::findById($cid)->supervisor_group_id;
 
-    // #eportfolio_groups löschen
+    // #eportfolio_groups lÃ¶schen
     $group = new EportfolioGroup($cid);
     $group->delete();
 
-    // #eportfolio_groups_user löschen
+    // #eportfolio_groups_user lÃ¶schen
     $query = "DELETE FROM eportfolio_groups_user WHERE seminar_id = :seminar_id";
     $statement = DBManager::get()->prepare($query);
     $statement->execute(array(':seminar_id'=> $cid));
 
-    // #seminar mit id löschen
+    // #seminar mit id lÃ¶schen
     $course = new Seminar($cid);
     $course->delete();
 
-    #supervisor_group löschen
+    #supervisor_group lÃ¶schen
     SupervisorGroup::deleteGroup($supervisor_group_id);
 
-    #eportfolio mit group_id löschen
+    #eportfolio mit group_id lÃ¶schen
     $eportfolio = new Eportfoliomodel($cid);
     $eportfolio->delete();
 

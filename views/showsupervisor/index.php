@@ -21,10 +21,10 @@
           <option value="<?php echo $value[id] ?>"><?php echo $value[temp_name] ?></option>
         <?php endforeach; ?>
       </select>
-      <?= \Studip\Button::create('Hinzufügen', 'button', array('type' => 'button', 'onclick' => 'addTemp()')); ?> -->
+      <?= \Studip\Button::create('HinzufÃ¼gen', 'button', array('type' => 'button', 'onclick' => 'addTemp()')); ?> -->
 
       <div id="wrapper_table_tamplates" style="margin-top: 30px;">
-        <h4>Portfoliovorlage hinzufügen</h4>
+        <h4>Portfoliovorlage hinzufÃ¼gen</h4>
 
         <table id="table_templates" class="default">
           <colgroup>
@@ -120,7 +120,7 @@
     </ul>
     <!-- Tab panes -->
 
-    <!-- für alle verteilten Vorlagen: -->
+    <!-- fÃ¼r alle verteilten Vorlagen: -->
       
     <div>
       <table class="default">
@@ -138,7 +138,7 @@
           <?php endforeach; ?>
         </tr>
            
-            <!-- für alle Gruppenteilnehmer: -->
+            <!-- fÃ¼r alle Gruppenteilnehmer: -->
             <?php foreach ($member as $user_id):?>
               <tr>
                 <td style="text-align: left;">
@@ -151,7 +151,7 @@
 
                 </td>
                 <?php
-                // hole das zugehörige Portfolio des Teilnehmers
+                // hole das zugehÃ¶rige Portfolio des Teilnehmers
                 $query = "SELECT Seminar_id FROM eportfolio WHERE owner_id = :key AND group_id = :groupid";
                 $statement = DBManager::get()->prepare($query);
                 $statement->execute(array(':key'=> $user_id, ':groupid'=> $groupid));
@@ -168,7 +168,7 @@
                 // hole alle Kapitel des Portfolios des Teilnemers
                 $q = ShowsupervisorController::getChapters($getsemid);
 
-              //Übergangslösung Kapitel 1 & Kapitel 2 müssen noch entfernt werden
+              //ÃœbergangslÃ¶sung Kapitel 1 & Kapitel 2 mÃ¼ssen noch entfernt werden
               //nset($q[0]);
               //unset($q[1]);
 
@@ -215,7 +215,7 @@
           </table>
 
           <!-- <button type="button" name="button" onclick="deletetemplate(<?php echo $tempid; ?>)">Vorlage fr diese Gruppe lschen</button> -->
-          <!--<?= \Studip\Button::create('Vorlage für diese Gruppe löschen', 'button', array('type' => 'button', 'onclick' => 'deletetemplate('.$tempid.')')); ?>-->
+          <!--<?= \Studip\Button::create('Vorlage fÃ¼r diese Gruppe lÃ¶schen', 'button', array('type' => 'button', 'onclick' => 'deletetemplate('.$tempid.')')); ?>-->
 
         </div>
      
@@ -236,7 +236,7 @@
   <ul>
     <li><?php echo  Icon::create('decline', 'clickable'); ?>  Kapitel/Impuls noch nicht freigeschaltet</li>
     <li><?php echo  Icon::create('accept', 'clickable'); ?>  Kapitel/Impuls freigeschaltet</li>
-    <li><?php echo  Icon::create('accept+new', 'clickable'); ?></i>  Kapitel freigeschaltet und Änderungen seit ich das letzte mal reingeschaut habe</li>
+    <li><?php echo  Icon::create('accept+new', 'clickable'); ?></i>  Kapitel freigeschaltet und Ã„nderungen seit ich das letzte mal reingeschaut habe</li>
     <li><?php echo  Icon::create('file', 'clickable'); ?>  Supervisionsanliegen freigeschaltet</li>
     <li><?php echo  Icon::create('forum', 'clickable'); ?>  Resonanz gegeben</li>
   </ul>
@@ -328,7 +328,7 @@ function deleteUserFromGroup(userid, obj) {
 }
 
 function deletetemplate(tempid){
-  var c = confirm("Es werden alle bestehenden ePortfolios dieses Templates gelöscht! Möchten Sie fortfahren?");
+  var c = confirm("Es werden alle bestehenden ePortfolios dieses Templates gelÃ¶scht! MÃ¶chten Sie fortfahren?");
   if (c == true){
 
     var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/showsupervisor');

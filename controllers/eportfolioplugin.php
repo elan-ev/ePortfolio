@@ -23,19 +23,19 @@ class EportfoliopluginController extends StudipController {
       $isVorlage = Eportfoliomodel::isVorlage($cid);
 
       $sidebar = Sidebar::Get();
-      Sidebar::Get()->setTitle('Übersicht');
+      Sidebar::Get()->setTitle('Ãœbersicht');
 
       $navOverview = new LinksWidget();
-      $navOverview->setTitle('Übersicht');
-      $navOverview->addLink('Übersicht', URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('portfolioid' => $portfolioid)), null , array('class' => 'active-link'));
+      $navOverview->setTitle('Ãœbersicht');
+      $navOverview->addLink('Ãœbersicht', URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('portfolioid' => $portfolioid)), null , array('class' => 'active-link'));
       $sidebar->addWidget($navOverview);
       
        //Kontextaktionen
       if($eportfolio->owner_id == $user->id){
         $actions = new ActionsWidget();
         $actions->setTitle(_('Aktionen'));
-        $actions->addLink('Portfolio löschen',
-        URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin/deletePortfolio/'. $portfolioid), null, array('onclick'=> "return confirm('Sind Sie sich sicher, dass Sie das Portfolio löschen wollen? Alle Daten werden hierdurch unwiderruflich gelöscht und können nicht wiederhergestellt werden.')")); 
+        $actions->addLink('Portfolio lÃ¶schen',
+        URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin/deletePortfolio/'. $portfolioid), null, array('onclick'=> "return confirm('Sind Sie sich sicher, dass Sie das Portfolio lÃ¶schen wollen? Alle Daten werden hierdurch unwiderruflich gelÃ¶scht und kÃ¶nnen nicht wiederhergestellt werden.')")); 
         Sidebar::get()->addWidget($actions);
       }
       
@@ -95,9 +95,9 @@ class EportfoliopluginController extends StudipController {
     $seminar = new Seminar($this->cid);
     
      # Aktuelle Seite
-    PageLayout::setTitle('ePortfolio von ' . $owner['Vorname'] . ' ' . $owner['Nachname']. ' - Übersicht: '. $seminar->getName());
+    PageLayout::setTitle('ePortfolio von ' . $owner['Vorname'] . ' ' . $owner['Nachname']. ' - Ãœbersicht: '. $seminar->getName());
     if($this->isVorlage){
-        PageLayout::setTitle('ePortfolio-Vorlage - Übersicht: '. $seminar->getName());
+        PageLayout::setTitle('ePortfolio-Vorlage - Ãœbersicht: '. $seminar->getName());
     }
 
     $db = DBManager::get();
@@ -165,7 +165,7 @@ class EportfoliopluginController extends StudipController {
     
        $sem = Course::findCurrent();
        $sem->delete();
-       PageLayout::postMessage(MessageBox::success(_('Das Portfolio wurde gelöscht.')));
+       PageLayout::postMessage(MessageBox::success(_('Das Portfolio wurde gelÃ¶scht.')));
         
        $this->redirect(PluginEngine::GetURL($this->plugin, array(), "show"));
   }

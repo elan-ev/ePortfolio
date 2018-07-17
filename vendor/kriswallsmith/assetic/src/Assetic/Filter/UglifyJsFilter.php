@@ -19,7 +19,7 @@ use Assetic\Util\FilesystemUtils;
  * UglifyJs filter.
  *
  * @link https://github.com/mishoo/UglifyJS
- * @author André Roaldseth <andre@roaldseth.net>
+ * @author AndrÃ© Roaldseth <andre@roaldseth.net>
  */
 class UglifyJsFilter extends BaseNodeFilter
 {

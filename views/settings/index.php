@@ -30,7 +30,7 @@
 
 <?php
   # das hier wird nicht mehr gebraucht weil fremde nutzer keine Settings-Seite sehen
-  # Pr�fen ob eigenes Portfolio
+  # Prï¿½fen ob eigenes Portfolio
   $eigenesPortfolio = SettingsController::eigenesPortfolio($cid);
  ?>
 
@@ -74,7 +74,7 @@
        
        
        
-       <a title='Nutzer Zugriff vollst�ndig entziehen (Nutzer wird komplett aus Zugriffs-Liste entfernt)' onclick="deleteUserAccess('<?php echo $viewer[viewer_id] ?>', '<?php echo $cid ?>', this);">
+       <a title='Nutzer Zugriff vollständig entziehen (Nutzer wird komplett aus Zugriffs-Liste entfernt)' onclick="deleteUserAccess('<?php echo $viewer[viewer_id] ?>', '<?php echo $cid ?>', this);">
           <?php echo Icon::create('trash', 'clickable') ?>
        </a>
      </td>
@@ -148,7 +148,7 @@ $('div[data-color="'+color+'"] i').css('opacity', '1').attr('data-status', 'acti
       $('#deleteModal').focus()
     })
 
-    // Portfolio Informationen �ndern
+    // Portfolio Informationen ï¿½ndern
     $('#portfolio-info-trigger').click( function() {
       $(this).toggleClass('show-info-not');
       $('#portfolio-info-saver').toggleClass('show-info');

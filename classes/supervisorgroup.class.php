@@ -49,7 +49,7 @@ class Supervisorgroup_orig{
     $statement = $db->prepare($query);
     $statement->execute(array(':id'=> $this->supervisorgroupId, ':userId' => $userId));
     
-    //zu dieser supervisorgruppe gehört eine veranstaltung in welcher der neue Nutzer auch eingetragen werden muss
+    //zu dieser supervisorgruppe gehÃ¶rt eine veranstaltung in welcher der neue Nutzer auch eingetragen werden muss
     //ausserdem muss entschieden werden, ob er auch alle Vorlagfen des bisherigen owners sehen darf und dort dann auch als Dozent eingetragen werden
   }
 
