@@ -57,27 +57,22 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
 
     public function getTabNavigation($course_id) {
 
-      $cid = $course_id;
       $tabs = array();
+      global $perm, $user;
+      $isDozent = $perm->have_studip_perm('dozent', $course_id);
 
-      if ($this->isSupervisionsgruppe()) {
-          $navigation = new Navigation('Übersicht', PluginEngine::getURL($this, compact('cid'), 'showsupervisor', true));
+      if ($isDozent && !$this->isPortfolio() && !$this->isVorlage()) {
+          $navigation = new Navigation('Supervision', PluginEngine::getURL($this, compact('cid'), 'showsupervisor', true));
           $navigation->setImage(Icon::create('group4', 'navigation'));
           $navigation->setActiveImage(Icon::create('group4', 'info'));
-      } else {
+      } else if ($this->isPortfolio() || $this->isVorlage() ){
           //uebersicht navigation point
           $navigation = new Navigation('Übersicht', PluginEngine::getURL($this, compact('cid'), 'eportfolioplugin', true));
           $navigation->setImage(Icon::create('group4', 'navigation'));
           $navigation->setActiveImage(Icon::create('group4', 'info'));
        }
 
-      # settings navigation
-      $id = $_GET["cid"];
-
-      if (Course::findById($id)) {
-
-        global $perm, $user;
-        $isDozent = $perm->have_studip_perm('dozent', $id);
+     
         $owner = Eportfoliomodel::findBySQL('seminar_id = :id AND owner_id = :user_id' , array(':id'=> $id, ':user_id' => $user->id));
 
         if ($this->isPortfolio() && $owner) {
@@ -91,7 +86,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
           $navigationSettings->setActiveImage(Icon::create('admin', 'info'));  
           $tabs['settings'] = $navigationSettings;
         }
-      } 
+      
 
       $tabs['eportfolioplugin'] = $navigation;
       return $tabs;
