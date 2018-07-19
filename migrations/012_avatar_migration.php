@@ -1,5 +1,5 @@
 <?php
-
+require __DIR__.'/../models/Eportfoliomodel.class.php';
 require __DIR__.'/../vendor/autoload.php';
 
 class AvatarMigration extends Migration
