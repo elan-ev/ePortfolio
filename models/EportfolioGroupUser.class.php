@@ -58,5 +58,9 @@ class EportfolioGroupUser extends SimpleORMap
       return 5;
     }
 
+    public static function getAnzahlAnNeuerungen($userid, $groupid){
+      return 3; 
+    }
+
 
 }

@@ -126,7 +126,9 @@
                 <a class="member-link" data-dialog="size=1000px;" href="/public/plugins.php/eportfolioplugin/showsupervisor/memberdetail">
                 <div class="member-item">
 
-                  <div class="member-notification">5</div>
+                  <div class="member-notification">
+                    <?php echo EportfolioGroupUser::getAnzahlAnNeuerungen($member, $id);  ?>
+                  </div>
 
                   <div class="row">
                     <div class="col-sm-4">
