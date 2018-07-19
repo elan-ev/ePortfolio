@@ -19,12 +19,12 @@ class EportfolioGroupUser extends SimpleORMap
         $config['belongs_to']['eportfolio_group'] = array(
             'class_name' => 'EportfolioGroup',
             'foreign_key' => 'seminar_id', );
-        
-        
+
+
          parent::configure($config);
     }
-    
-    
+
+
     /**
      * Give primary key of record as param to fetch
      * corresponding record from db if available, if not preset primary key
@@ -36,10 +36,27 @@ class EportfolioGroupUser extends SimpleORMap
 
         parent::__construct($id);
     }
-    
+
      public static function findByGroupId($id)
     {
         return static::findBySQL('seminar_id = ?', array($id));
     }
-    
+
+    public static function getAnzahlFreigegebenerKapitel($userid, $groupid){
+      return 12;
+    }
+
+    public static function getAnzahlAllerKapitel($userid, $groupid){
+      return 24;
+    }
+
+    public static function getGesamtfortschrittInProzent($userid, $groupid){
+      return 68;
+    }
+
+    public static function getAnzahlNotizen($userid, $groupid){
+      return 5;
+    }
+
+
 }
