@@ -63,7 +63,7 @@ class ShowsupervisorController extends StudipController {
 
         $navcreate = new LinksWidget();
         $navcreate->setTitle('Navigation');
-        $navcreate->addLink("�bersicht", PluginEngine::getLink($this->plugin, array(), 'show'));
+        $navcreate->addLink("Übersicht", PluginEngine::getLink($this->plugin, array(), 'show'));
         $navcreate->addLink("Supervisionsansicht", 'showsupervisor', null, array('class' => 'active'));
         
         $sidebar->addWidget($navcreate);
@@ -90,7 +90,7 @@ class ShowsupervisorController extends StudipController {
         if($this->groupid){
             //$navcreate->addLink("Nutzer eintragen", '', 'icons/16/blue/add/community.svg', NULL);
             $navcreate->addLink("Supervisoren verwalten", URLHelper::getLink("plugins.php/eportfolioplugin/showsupervisor/supervisorgroup/". $id, array('cid' => $id)), Icon::create('edit', 'clickable'), NULL);
-            $navcreate->addLink("Diese Gruppe l�schen", URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/delete/' . $id), Icon::create('trash', 'clickable'), array('onclick' => "return confirm('Gruppe wirklich l�schen?')"));
+            $navcreate->addLink("Diese Gruppe löschen", URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/delete/' . $id), Icon::create('trash', 'clickable'), array('onclick' => "return confirm('Gruppe wirklich löschen?')"));
         }
         
         $navcreate->addLink("Neue Gruppe anlegen", PluginEngine::getLink($this->plugin, array(), 'showsupervisor/creategroup') , Icon::create('add', 'clickable'), array('data-dialog'=>"size=auto;reload-on-close"));
@@ -147,8 +147,8 @@ class ShowsupervisorController extends StudipController {
                 _("Teilnehmer suchen"), "username");
 
       $this->mp = MultiPersonSearch::get('supervisorgroupSelectStudents')
-        ->setLinkText(_('Personen hinzuf�gen'))
-        ->setTitle(_('Studierende zur Gruppe hinzuf�gen'))
+        ->setLinkText(_('Personen hinzufügen'))
+        ->setTitle(_('Studierende zur Gruppe hinzufügen'))
         ->setSearchObject($search_obj)
         ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/addUsersToGroup/'. $id))
         ->render();
@@ -395,7 +395,7 @@ class ShowsupervisorController extends StudipController {
 
             /**
             create_folder(_('Allgemeiner Dateiordner'),
-                          _('Ablage f�r allgemeine Ordner und Dokumente der Veranstaltung'),
+                          _('Ablage für allgemeine Ordner und Dokumente der Veranstaltung'),
                           $sem->Seminar_id,
                           7,
                           $sem->Seminar_id);
@@ -594,7 +594,7 @@ class ShowsupervisorController extends StudipController {
     public function delete_action($cid){
       $cid = $_GET['cid'];
       EportfolioGroup::deleteGroup($cid);
-      PageLayout::postMessage(MessageBox::success(_('Die Gruppe wurde gel�scht.')));
+      PageLayout::postMessage(MessageBox::success(_('Die Gruppe wurde gelöscht.')));
       $this->redirect(URLHelper::getLink("plugins.php/eportfolioplugin/showsupervisor", array('cid' => '')));
     }
 
@@ -628,8 +628,8 @@ class ShowsupervisorController extends StudipController {
                 _("Teilnehmer suchen"), "username");
 
       $this->mp = MultiPersonSearch::get('supervisorgroupSelectUsers')
-        ->setLinkText(_('Supervisoren hinzuf�gen'))
-        ->setTitle(_('Personen zur Supervisorgruppe hinzuf�gen'))
+        ->setLinkText(_('Supervisoren hinzufügen'))
+        ->setTitle(_('Personen zur Supervisorgruppe hinzufügen'))
         ->setSearchObject($search_obj)
         ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/supervisorgroup/addUser/'. $group->id, array('id' => $group_id, 'redirect' => $this->url_for('showsupervisor/supervisorgroup/'. $this->linkId))))
         ->render();
