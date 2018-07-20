@@ -51,13 +51,23 @@ class AddSemClass extends Migration
         // $statement->execute(array($nameType));
 
         if($this->validateUniqueness($name)) {
-    			$statement = $db->prepare("INSERT INTO sem_classes SET name = ?, mkdate = UNIX_TIMESTAMP(), chdate = UNIX_TIMESTAMP()");
-    			$statement->execute(array($name));
-    			$id = $db->lastInsertId();
+            $statement = $db->prepare("INSERT INTO sem_classes SET name = ?, mkdate = UNIX_TIMESTAMP(), chdate = UNIX_TIMESTAMP()");
+            $statement->execute(array($name));
+            $id = $db->lastInsertId();
 
-          //Insert sem_type
-          $statementSemTypes = $db->prepare("INSERT INTO sem_types SET name = ?, class = $id, mkdate = UNIX_TIMESTAMP(), chdate = UNIX_TIMESTAMP()");
-          $statementSemTypes->execute(array($nameType));
+            //Insert sem_type
+            $statementSemTypes = $db->prepare("INSERT INTO sem_types SET name = ?, class = $id, mkdate = UNIX_TIMESTAMP(), chdate = UNIX_TIMESTAMP()");
+            $statementSemTypes->execute(array($nameType));
+            $type_id = $db->lastInsertId();
+
+            Config::get()->create('SEM_CLASS_PORTFOLIO', array(
+            'value'       => $type_id,
+            'is_default'  => 0,
+            'type'        => 'integer',
+            'range'       => 'global',
+            'section'     => 'global',
+            'description' => 'ID der Veranstaltungsklasse für Portfolios'
+            ));
 
     	    } else {
     			// We already got a type with that name, should be a previous installation ...
