@@ -263,15 +263,16 @@ class EportfolioGroup extends SimpleORMap
   **/
   public static function getAnzahlAllerKapitel($group_id){
     $anzahl = 0;
-    $favs = EportfolioGroup::getAllMarkedAsFav($group_id);
-    foreach ($favs as $temp) {
+    $ownGroups = EportfolioGroup::findBySQL('seminar_id = :id', array(':id'=> $group_id));
+    $templates = json_decode($ownGroups[0][templates]);
+    foreach ($templates as $temp) {
       $query = "SELECT COUNT(type) FROM mooc_blocks WHERE seminar_id = :id AND type = 'Chapter'";
       $statement = DBManager::get()->prepare($query);
       $statement->execute(array(':id'=> $temp));
       $result = $statement->fetchAll();
       $anzahl += $result[0][0];
     }
-    return $anzahl; 
+    return $anzahl;
   }
 
 }

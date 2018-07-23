@@ -42,8 +42,39 @@ class EportfolioGroupUser extends SimpleORMap
         return static::findBySQL('seminar_id = ?', array($id));
     }
 
-    public static function getAnzahlFreigegebenerKapitel($userid, $groupid){
-      return 12;
+    /**
+    * Gibt ein Array mit den Portfolio ID's eines Users
+    * innerhalb einer Gruppe wieder
+    **/
+    public static function getPortfolioIDsFromUserinGroup($group_id, $user_id){
+      $query = "SELECT * FROM eportfolio WHERE owner_id = :owner_id AND group_id = :group_id";
+      $statement = DBManager::get()->prepare($query);
+      $statement->execute(array(':owner_id'=> $user_id, ':group_id' => $group_id));
+      $result = $statement->fetchAll();
+      $return = array();
+      foreach ($result as $key) {
+        array_push($return, $key[0]);
+      }
+      return $return;
+    }
+
+    /**
+    * Gibt die Anzahl der freigegeben Kapitel zurück
+    **/
+    public static function getAnzahlFreigegebenerKapitel($user_id, $group_id){
+      $anzahl = 0;
+      $templates = static::getPortfolioIDsFromUserinGroup($group_id, $user_id);
+      foreach ($templates as $temp) {
+        $query =  "SELECT COUNT(e1.Seminar_id) FROM eportfolio e1
+                  JOIN eportfolio_freigaben e2 ON e1.Seminar_id = e2.Seminar_id
+                  WHERE e1.Seminar_id = :id";
+
+        $statement = DBManager::get()->prepare($query);
+        $statement->execute(array(':id'=> $temp));
+        $result = $statement->fetchAll();
+        $anzahl += $result[0][0];
+      }
+      return $anzahl;
     }
 
     public static function getGesamtfortschrittInProzent($userid, $groupid){

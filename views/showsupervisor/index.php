@@ -212,7 +212,7 @@
                         <div class="row member-footer-box">
                           <div class="col-sm-4">
                             <div class="member-footer-box-big">
-                              <?php echo EportfolioGroupUser::getAnzahlFreigegebenerKapitel($member, $id); //id soll die gruppenid sein ?>
+                              <?php echo EportfolioGroupUser::getAnzahlFreigegebenerKapitel($user, $id); //id soll die gruppenid sein ?>
                               /
                               <?php echo EportfolioGroup::getAnzahlAllerKapitel($id); ?>
                             </div>
