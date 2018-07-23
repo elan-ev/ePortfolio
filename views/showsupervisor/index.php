@@ -230,7 +230,7 @@
                           </div>
                           <div class="col-sm-4">
                             <div class="member-footer-box-big">
-                              <?php echo EportfolioGroupUser::getAnzahlNotizen($userid, $groupid); ?>
+                              <?php echo EportfolioGroupUser::getAnzahlNotizen($user, $id); ?>
                             </div>
                             <div class="member-footer-box-head">
                               Notizen

@@ -77,14 +77,30 @@ class EportfolioGroupUser extends SimpleORMap
       return $anzahl;
     }
 
+    /**
+    * Gibt die Verhältnis freigeben/gesamt in Prozent wieder
+    **/
     public static function getGesamtfortschrittInProzent($user_id, $group_id){
       $oben = static::getAnzahlFreigegebenerKapitel($user_id, $group_id);
       $unten = EportfolioGroup::getAnzahlAllerKapitel($group_id);
       return $oben / $unten * 100;
     }
 
-    public static function getAnzahlNotizen($userid, $groupid){
-      return 5;
+    /**
+    * Gibt die Anzahl der Notizen für den Supervisor eines users
+    * innerhalb einer Gruppe wieder
+    **/
+    public static function getAnzahlNotizen($user_id, $group_id){
+      $anzahl = 0;
+      $temps = static::getPortfolioIDsFromUserinGroup($group_id, $user_id);
+      foreach ($temps as $temp) {
+        $query = "SELECT COUNT(type) FROM mooc_blocks WHERE Seminar_id = :seminar_id AND type = 'PortfolioBlockSupervisor'";
+        $statement = DBManager::get()->prepare($query);
+        $statement->execute(array(':seminar_id'=> $temp));
+        $result = $statement->fetchAll();
+        $anzahl += $result[0][0];
+      }
+      return $anzahl;
     }
 
     public static function getAnzahlAnNeuerungen($userid, $groupid){
