@@ -214,7 +214,7 @@
                             <div class="member-footer-box-big">
                               <?php echo EportfolioGroupUser::getAnzahlFreigegebenerKapitel($member, $id); //id soll die gruppenid sein ?>
                               /
-                              <?php echo EportfolioGroupUser::getAnzahlAllerKapitel($member, $id); ?>
+                              <?php echo EportfolioGroup::getAnzahlAllerKapitel($id); ?>
                             </div>
                             <div class="member-footer-box-head">
                               freigegeben

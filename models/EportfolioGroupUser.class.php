@@ -46,10 +46,6 @@ class EportfolioGroupUser extends SimpleORMap
       return 12;
     }
 
-    public static function getAnzahlAllerKapitel($userid, $groupid){
-      return 24;
-    }
-
     public static function getGesamtfortschrittInProzent($userid, $groupid){
       return 68;
     }
@@ -59,7 +55,7 @@ class EportfolioGroupUser extends SimpleORMap
     }
 
     public static function getAnzahlAnNeuerungen($userid, $groupid){
-      return 3; 
+      return 3;
     }
 
 
