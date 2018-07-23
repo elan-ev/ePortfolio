@@ -172,25 +172,24 @@
                     </div>
                       <div class="col-sm-12">
 
-                        <?php //$favVorlagen = EportfolioGroup::getGroupFavorites($id); ?>
-                        <?php //foreach($favVorlagen as $vorlage): ?>
-
-                          <?php //$aktuelleVorlage = new Semiar($vorlage);  ?>
-
-                          <div class="member-content">
-                            <div class="row">
-                              <div class="col-sm-4 member-kapitelname"><?php // echo $aktuelleVorlage->title; ?></div>
-                              <div class="col-sm-8">
-                                <div class="row member-icons">
-                                  <div class="col-sm-4"><?php echo  Icon::create('accept', 'clickable'); ?></div>
-                                  <div class="col-sm-4"><?php echo  Icon::create('forum', 'inactive'); ?></div>
-                                  <div class="col-sm-4"><?php echo  Icon::create('file', 'clickable'); ?> </div>
-                                </div>
+                        <?php $favVorlagen = EportfolioGroup::getAllMarkedAsFav($id); ?>
+                            <div class="member-content">
+                              <div class="row">
+                                <?php foreach($favVorlagen as $vorlage): ?>
+                                  <?php foreach (Eportfoliomodel::getChapters($vorlage) as $chapter):?>
+                                    <div class="col-sm-4 member-kapitelname"><?php echo $chapter[title]?></div>
+                                    <div class="col-sm-8">
+                                      <div class="row member-icons">
+                                        <div class="col-sm-4"><?php echo  Icon::create('accept', 'clickable'); ?></div>
+                                        <div class="col-sm-4"><?php echo  Icon::create('forum', 'inactive'); ?></div>
+                                        <div class="col-sm-4"><?php echo  Icon::create('file', 'clickable'); ?> </div>
+                                      </div>
+                                    </div>
+                                  <?php endforeach; ?>
+                                <?php  endforeach;?>
                               </div>
                             </div>
-                          </div>
 
-                        <?php // endforeach;?>
 
                       </div>
                       <div class="col-sm-12">

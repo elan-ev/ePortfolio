@@ -664,4 +664,5 @@ class ShowsupervisorController extends StudipController {
       $this->redirect('showsupervisor?cid=' . $group_id);
     }
 
+
 }

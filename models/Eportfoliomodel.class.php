@@ -89,13 +89,24 @@ class Eportfoliomodel extends SimpleORMap
       return $myportfolios;
     }
 
-
+    /**
+    * Gibt ein Array(title, id) mit alles Oberkapiteln einer Veranstaltung aus
+    **/
     public static function getChapters($id){
         $db = DBManager::get();
         $query = "SELECT title, id FROM mooc_blocks WHERE seminar_id = :id AND type = 'Chapter' AND parent_id != '0' ORDER BY position ASC";
         $statement = $db->prepare($query);
         $statement->execute(array(':id'=> $id));
-        return $statement->fetchAll();
+        $result = $statement->fetchAll();
+        $return = array();
+        foreach ($result as $key) {
+          $tmp = array(
+            'title' => $key[title],
+            'id' => $key[id]
+          );
+          array_push($return, $tmp);
+        }
+        return $return;
     }
 
     public static function isVorlage($id)
