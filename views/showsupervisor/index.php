@@ -222,7 +222,7 @@
                           </div>
                           <div class="col-sm-4">
                             <div class="member-footer-box-big">
-                              <?php echo EportfolioGroupUser::getGesamtfortschrittInProzent($member, $id); ?> %
+                              <?php echo EportfolioGroupUser::getGesamtfortschrittInProzent($user, $id); ?> %
                             </div>
                             <div class="member-footer-box-head">
                               bearbeitet
