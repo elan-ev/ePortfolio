@@ -74,8 +74,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
        }
 
 
-        $owner = Eportfoliomodel::findBySQL('seminar_id = :id AND owner_id = :user_id' , array(':id'=> $id, ':user_id' => $user->id));
-
+        $owner = Eportfoliomodel::findBySQL('seminar_id = :id AND owner_id = :user_id' , array(':id'=> $course_id, ':user_id' => $user->id));
         if ($this->isPortfolio() && $owner) {
           $navigationSettings = new Navigation('Zugriffsrechte', PluginEngine::getURL($this, compact('cid'), 'settings', true));
           $navigationSettings->setImage(Icon::create('admin', 'navigation'));

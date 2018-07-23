@@ -72,8 +72,8 @@
                           <?= Icon::create('favorite', 'clickable')->asImg(20, $params) ?>
                         </a>
                       <?php else: ?>
-                        <a style="background-color: red!important;" href="<?php echo URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/deleteAsFav/'. $id .'/' . $key); ?>">
-                          <?= Icon::create('favorite', 'clickable')->asImg(20, $params) ?>
+                        <a href="<?php echo URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/deleteAsFav/'. $id .'/' . $key); ?>">
+                          <?= Icon::create('favorite', 'attention')->asImg(20, $params) ?>
                         </a>
                       <?php endif; ?>
 
@@ -177,12 +177,28 @@
                               <div class="row">
                                 <?php foreach($favVorlagen as $vorlage): ?>
                                   <?php foreach (Eportfoliomodel::getChapters($vorlage) as $chapter):?>
+                                    <?php $new_freigabe = LastVisited::chapter_last_visited($chapter[id], $user) < EportfolioFreigabe::hasAccessSince($supervisorGroupId, $chapter[id]);?>
                                     <div class="col-sm-4 member-kapitelname"><?php echo $chapter[title]?></div>
                                     <div class="col-sm-8">
                                       <div class="row member-icons">
-                                        <div class="col-sm-4"><?php echo  Icon::create('accept', 'clickable'); ?></div>
-                                        <div class="col-sm-4"><?php echo  Icon::create('forum', 'inactive'); ?></div>
-                                        <div class="col-sm-4"><?php echo  Icon::create('file', 'clickable'); ?> </div>
+                                        <div class="col-sm-4">
+                                          <?php $link = URLHelper::getLink("plugins.php/courseware/courseware", array('cid' => $getsemid , 'selected' => $idNew));?>
+                                          <?= $new_freigabe ? Icon::create('accept+new', 'clickable') : Icon::create('accept', 'clickable'); ?>
+                                        </div>
+                                        <div class="col-sm-4">
+                                          <?php if (ShowsupervisorController::checkSupervisorNotiz($idNew) == true): ?>
+                                            <?= Icon::create('file', 'clickable'); ?>
+                                          <?php else: ?>
+                                            <?= Icon::create('file', 'inactive'); ?>
+                                          <?php endif; ?>
+                                        </div>
+                                        <div class="col-sm-4">
+                                          <?php if (ShowsupervisorController::checkSupervisorFeedback($idNew) == true): ?>
+                                            <?= Icon::create('forum', 'clickable'); ?>
+                                          <?php else: ?>
+                                            <?= Icon::create('forum', 'inactive'); ?>
+                                          <?php endif; ?>
+                                        </div>
                                       </div>
                                     </div>
                                   <?php endforeach; ?>
