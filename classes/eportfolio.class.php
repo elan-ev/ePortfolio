@@ -46,5 +46,4 @@ class eportfolio {
     return $this->eportfolioId;
   }
 
-
 }

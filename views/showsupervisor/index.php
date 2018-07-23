@@ -64,7 +64,21 @@
                        <?php endif ?>
                   </td>
                   <td style="text-align: center;">
-                    <?= Icon::create('favorite', 'clickable')->asImg(20, $params) ?>
+
+                    <?php if($member && (ShowsupervisorController::checkTemplate($id, $key) == true)): ?>
+
+                      <?php if(EportfolioGroup::checkIfMarkedAsFav($id, $key) == 0): ?>
+                        <a href="<?php echo URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/addAsFav/'. $id .'/' . $key); ?>">
+                          <?= Icon::create('favorite', 'clickable')->asImg(20, $params) ?>
+                        </a>
+                      <?php else: ?>
+                        <a style="background-color: red!important;" href="<?php echo URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/deleteAsFav/'. $id .'/' . $key); ?>">
+                          <?= Icon::create('favorite', 'clickable')->asImg(20, $params) ?>
+                        </a>
+                      <?php endif; ?>
+
+                    <?php endif;  ?>
+
                   </td>
                 </tr>
 
@@ -76,6 +90,8 @@
   <?php
     if (empty($groupTemplates[0])):
   ?>
+
+
 
     <h4>Gruppenmitglieder</h4>
 

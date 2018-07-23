@@ -14,10 +14,10 @@ class ShowsupervisorController extends StudipController {
         parent::__construct($dispatcher);
         $this->plugin = $dispatcher->current_plugin;
         $user = get_username();
-        
+
         $id = $_GET["cid"];
         $this->sem = Course::findById($id);
-        
+
         if($this->sem){
             $this->groupid = $id;
             $this->userid = $GLOBALS["user"]->id;
@@ -28,7 +28,7 @@ class ShowsupervisorController extends StudipController {
 
             $group = EportfolioGroup::findbySQL('seminar_id = :id', array(':id'=> $this->groupid));
             $this->supervisorGroupId = $group[0]->supervisor_group_id;
-            
+
             //object_set_visit($this->groupid, "portfolio-group");
         }
         //userData for Modal
@@ -65,9 +65,9 @@ class ShowsupervisorController extends StudipController {
         $navcreate->setTitle('Navigation');
         $navcreate->addLink("�bersicht", PluginEngine::getLink($this->plugin, array(), 'show'));
         $navcreate->addLink("Supervisionsansicht", 'showsupervisor', null, array('class' => 'active'));
-        
+
         $sidebar->addWidget($navcreate);
-        
+
         $nav = new LinksWidget();
         $nav->setTitle(_('Supervisionsgrupppen'));
         $groups = EportfolioGroup::getAllGroupsOfSupervisor($GLOBALS["user"]->id);
@@ -92,7 +92,7 @@ class ShowsupervisorController extends StudipController {
             $navcreate->addLink("Supervisoren verwalten", URLHelper::getLink("plugins.php/eportfolioplugin/showsupervisor/supervisorgroup/". $id, array('cid' => $id)), Icon::create('edit', 'clickable'), NULL);
             $navcreate->addLink("Diese Gruppe l�schen", URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/delete/' . $id), Icon::create('trash', 'clickable'), array('onclick' => "return confirm('Gruppe wirklich l�schen?')"));
         }
-        
+
         $navcreate->addLink("Neue Gruppe anlegen", PluginEngine::getLink($this->plugin, array(), 'showsupervisor/creategroup') , Icon::create('add', 'clickable'), array('data-dialog'=>"size=auto;reload-on-close"));
 
         $sidebar->addWidget($navcreate);
@@ -110,11 +110,11 @@ class ShowsupervisorController extends StudipController {
         if(Course::findCurrent()){
             Navigation::activateItem("course/eportfolioplugin");
         }
-        
+
         $id = $_GET["cid"];
         $this->id = $id;
         $this->sem = Course::findById($id);
-        
+
       if(!$id == ''){
         $query = "SELECT owner_id FROM eportfolio_groups WHERE seminar_id = :id";
         $statement = DBManager::get()->prepare($query);
@@ -124,9 +124,9 @@ class ShowsupervisorController extends StudipController {
         //check permission
         if(!$check[0][0] == $GLOBALS["user"]->id){
           throw new AccessDeniedException(_("Sie haben keine Berechtigung"));
-        } 
-      } 
-     
+        }
+      }
+
       $this->userid = $GLOBALS["user"]->id;
 
       $this->url = $_SERVER['REQUEST_URI'];
@@ -135,7 +135,7 @@ class ShowsupervisorController extends StudipController {
         $this->group = EportfolioGroup::find($id);
         $this->courseName = $course->getName();
         $this->member = EportfolioGroup::getGroupMember($id);
-        
+
         $search_obj = new SQLSearch("SELECT auth_user_md5.user_id, CONCAT(auth_user_md5.nachname, ', ', auth_user_md5.vorname, ' (' , auth_user_md5.email, ')' ) as fullname, username, perms "
                             . "FROM auth_user_md5 "
                             . "WHERE (CONCAT(auth_user_md5.Vorname, \" \", auth_user_md5.Nachname) LIKE :input "
@@ -152,9 +152,9 @@ class ShowsupervisorController extends StudipController {
         ->setSearchObject($search_obj)
         ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/addUsersToGroup/'. $id))
         ->render();
-        
-        
-        
+
+
+
       } else $this->render_action('index_nogroup');
 
     }
@@ -292,7 +292,7 @@ class ShowsupervisorController extends StudipController {
           $avatar = CourseAvatar::getAvatar($group_id);
           $filename = sprintf('%s/%s',$this->plugin->getpluginPath(),'assets/images/avatare/supervisorgruppe.png');
           $avatar->createFrom($filename);
-          
+
           $this->response->add_header('X-Dialog-Close', '1');
           $this->render_nothing();
         }
@@ -362,7 +362,7 @@ class ShowsupervisorController extends StudipController {
             $avatar = CourseAvatar::getAvatar($sem_id);
             $filename = sprintf('%s/%s',$this->plugin->getpluginPath(),'assets/images/avatare/eportfolio.png');
             $avatar->createFrom($filename);
-            
+
             $sem->addMember($userid, 'dozent'); // add user to his to seminar
             $member = Group::getGroupMember($groupid);
 
@@ -408,14 +408,14 @@ class ShowsupervisorController extends StudipController {
       $this->masterid = $masterid;
       $this->groupid = $groupid;
       //$this->response->add_header('X-Dialog-Close', '1');
-      
+
       VorlagenCopy::copyCourseware(new Seminar($masterid), $this->semList);
       $this->storeTemplateForGroup($groupid, $masterid);
-      
+
       $this->redirect('showsupervisor?cid=' . $groupid);
 
     }
-    
+
 
     public function getPortfolioSemId(){
       foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
@@ -513,7 +513,7 @@ class ShowsupervisorController extends StudipController {
         }
 
       }
-      
+
       $this->redirect(URLHelper::getLink("plugins.php/eportfolioplugin/showsupervisor"));
 
     }
@@ -654,5 +654,14 @@ class ShowsupervisorController extends StudipController {
         return PluginEngine::getURL($this->dispatcher->current_plugin, $params, join('/', $args));
     }
 
+    public function addAsFav_action($group_id, $template_id){
+      EportfolioGroup::markTemplateAsFav($group_id, $template_id);
+      $this->redirect('showsupervisor?cid=' . $group_id);
+    }
+
+    public function deleteAsFav_action($group_id, $template_id){
+      EportfolioGroup::deletetemplateAsFav($group_id, $template_id);
+      $this->redirect('showsupervisor?cid=' . $group_id);
+    }
 
 }
