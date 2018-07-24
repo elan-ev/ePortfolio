@@ -14,7 +14,8 @@ include_once __DIR__.'/EportfolioGroup.class.php';
  * @property json        $freigaben_kapitel //deprecated
  * @property varchar     $template_id
  * @property json        $settings //deprecated?
- */
+ * @property int         $favorite
+*/
 class Eportfoliomodel extends SimpleORMap
 {
 
@@ -33,7 +34,7 @@ class Eportfoliomodel extends SimpleORMap
 
         parent::__construct($id);
     }
-    
+
     public static function getAllSupervisors($cid){
         $supervisoren = array();
         $portfolio = Eportfoliomodel::findBySQL('Seminar_id = :cid', array(':cid' => $cid));
@@ -42,12 +43,12 @@ class Eportfoliomodel extends SimpleORMap
         }
         return $supervisoren[0];
     }
-    
+
      public static function getOwner($cid){
         $portfolio = Eportfoliomodel::findBySQL('Seminar_id = :cid', array(':cid' => $cid));
         return $portfolio[0]->owner_id;
     }
-    
+
     public function getPortfolioVorlagen(){
 
       global $perm;
@@ -68,7 +69,7 @@ class Eportfoliomodel extends SimpleORMap
       return $seminare;
 
     }
-    
+
     public static function getMyPortfolios(){
 
       $userid = $GLOBALS["user"]->id;
@@ -79,7 +80,7 @@ class Eportfoliomodel extends SimpleORMap
       $query = "SELECT Seminar_id FROM eportfolio WHERE owner_id = :userid";
       $statement = $db->prepare($query);
       $statement->execute(array(':userid'=> $userid));
-      
+
       foreach ($statement->fetchAll() as $key) {
         if(Course::find($key[Seminar_id])->status == $semClass){
             array_push($myportfolios, $key[Seminar_id]);
@@ -87,16 +88,27 @@ class Eportfoliomodel extends SimpleORMap
       }
       return $myportfolios;
     }
-    
-    
+
+    /**
+    * Gibt ein Array(title, id) mit alles Oberkapiteln einer Veranstaltung aus
+    **/
     public static function getChapters($id){
         $db = DBManager::get();
         $query = "SELECT title, id FROM mooc_blocks WHERE seminar_id = :id AND type = 'Chapter' AND parent_id != '0' ORDER BY position ASC";
         $statement = $db->prepare($query);
         $statement->execute(array(':id'=> $id));
-        return $statement->fetchAll();
+        $result = $statement->fetchAll();
+        $return = array();
+        foreach ($result as $key) {
+          $tmp = array(
+            'title' => $key[title],
+            'id' => $key[id]
+          );
+          array_push($return, $tmp);
+        }
+        return $return;
     }
-    
+
     public static function isVorlage($id)
     {
         if(Course::findById($id)){
@@ -106,10 +118,10 @@ class Eportfoliomodel extends SimpleORMap
                 return true;
             }
             else return false;
-        }  
+        }
         else return false;
     }
-    
+
      public static function getAllBlocksInOrder($id){
         $db = DBManager::get();
         $blocks = array();
@@ -135,9 +147,9 @@ class Eportfoliomodel extends SimpleORMap
                         array_push($blocks, $block[id]);
                     }
                 }
-            }         
+            }
         }
         return $blocks;
     }
-    
+
 }

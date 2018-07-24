@@ -47,30 +47,40 @@ class EportfolioGroup extends SimpleORMap
         parent::__construct($id);
     }
 
+    public static function getFavotitenDerGruppe($id){
+      $templates = EportfolioGroup::findBySQL('Seminar_id = :cid', array(':cid' => $id));
+      $templateList = json_decode($templates[0]->templates);
 
-
-  public static function getGroupMember($id) {
-    $group = new EportfolioGroup($id);
-    $array = array();
-    foreach ($group->user as $user) {
-      array_push($array, $user->user_id);
+      foreach ($templateList as $temp) {
+        $query = "SELECT Seminar_id FROM eportfolio WHERE group_id = :id AND favorite = 1";
+        $statement = DBManager::get()->prepare($query);
+        $statement->execute(array(':id'=> $temp));
+        $check = $statement->fetchAll();
+      }
     }
-    return $array;
-  }
 
-  public static function getAllSupervisors($id) {
-    $group = new EportfolioGroup($id);
-    $supervisorGroup = new SupervisorGroup($group->supervisor_group_id);
-    $array = array();
-    foreach ($supervisorGroup->user as $user) {
-      array_push($array, $user->user_id);
+    public static function getGroupMember($id) {
+      $group = new EportfolioGroup($id);
+      $array = array();
+      foreach ($group->user as $user) {
+        array_push($array, $user->user_id);
+      }
+      return $array;
     }
-    return $array;
-  }
+
+    public static function getAllSupervisors($id) {
+      $group = new EportfolioGroup($id);
+      $supervisorGroup = new SupervisorGroup($group->supervisor_group_id);
+      $array = array();
+      foreach ($supervisorGroup->user as $user) {
+        array_push($array, $user->user_id);
+      }
+      return $array;
+    }
 
   //TODO anpassen
   public static function newGroup($owner, $title, $text){
-    $current_semester = Semester::findCurrent();    
+    $current_semester = Semester::findCurrent();
     $seminar = new Seminar();
     $id = $seminar->getId();
     $seminar->name = $title;
@@ -86,7 +96,7 @@ class EportfolioGroup extends SimpleORMap
     $course->status = $sem_class;
     $course->beschreibung = $text;
     $course->store();
-    
+
     $supervisorgroup = new SupervisorGroup();
     $supervisorgroup->name = $title;
     $supervisorgroup->store();
@@ -198,6 +208,71 @@ class EportfolioGroup extends SimpleORMap
 
     #eportfolio_user
 
+  }
+
+  /**
+  * Makiert ein Template als Favorit
+  **/
+  public static function markTemplateAsFav($group_id, $template_id){
+    $query = "INSERT INTO eportfolio_group_templates VALUES (:group_id , :template_id, 1)";
+    $statement = DBManager::get()->prepare($query);
+    $statement->execute(array(':group_id' => $group_id , ':template_id' => $template_id));
+  }
+
+  /**
+  * Löscht ein Template als Favorit
+  **/
+  public static function deletetemplateAsFav($group_id, $template_id){
+    $query = "DELETE FROM eportfolio_group_templates WHERE group_id = :group_id AND Seminar_id = :template_id";
+    $statement = DBManager::get()->prepare($query);
+    $statement->execute(array(':group_id' => $group_id , ':template_id' => $template_id));
+  }
+
+  /**
+  * Gibt den Wert 1 zurück wenn Template in der Gruppe als Favorit makiert ist
+  **/
+  public static function checkIfMarkedAsFav($group_id, $template_id){
+    $query = "SELECT favorite FROM eportfolio_group_templates WHERE group_id = :group_id AND Seminar_id = :template_id";
+    $statement = DBManager::get()->prepare($query);
+    $statement->execute(array(':group_id'=> $group_id, ':template_id' => $template_id));
+    $result = $statement->fetchAll();
+    if($result[0][0] == 1){
+      return 1;
+    } else {
+      return 0;
+    }
+  }
+
+  /**
+  * Gibt ein Array mit den ID's den als Favorit makierten Templates zurück
+  **/
+  public static function getAllMarkedAsFav($group_id){
+    $query = "SELECT Seminar_id FROM eportfolio_group_templates WHERE group_id = :group_id";
+    $statement = DBManager::get()->prepare($query);
+    $statement->execute(array(':group_id'=> $group_id));
+    $result = $statement->fetchAll();
+    $return = array();
+    foreach ($result as $key) {
+      array_push($return, $key[0]);
+    }
+    return $return;
+  }
+
+  /**
+  * Gibt die Anzahl aller Kapitel (Chapter) in den Templates wieder
+  **/
+  public static function getAnzahlAllerKapitel($group_id){
+    $anzahl = 0;
+    $ownGroups = EportfolioGroup::findBySQL('seminar_id = :id', array(':id'=> $group_id));
+    $templates = json_decode($ownGroups[0][templates]);
+    foreach ($templates as $temp) {
+      $query = "SELECT COUNT(type) FROM mooc_blocks WHERE seminar_id = :id AND type = 'Chapter'";
+      $statement = DBManager::get()->prepare($query);
+      $statement->execute(array(':id'=> $temp));
+      $result = $statement->fetchAll();
+      $anzahl += $result[0][0];
+    }
+    return $anzahl;
   }
 
 }
