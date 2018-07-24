@@ -103,6 +103,18 @@ class EportfolioGroupUser extends SimpleORMap
       return $anzahl;
     }
 
+    /**
+    * Gibt die ID des Portfolios des Nutzers in einer Gruppe zurück
+    **/
+    public static function getPortfolioIdOfUserInGroup($user_id, $group_id){
+      $query = "SELECT Seminar_id FROM eportfolio WHERE owner_id = :owner_id AND group_id = :group_id";
+      $statement = DBManager::get()->prepare($query);
+      $statement->execute( array(':owner_id' => $user_id, ':group_id' => $group_id));
+      $result = $statement->fetchAll();
+      return $result[0][0];
+    }
+
+
     public static function getAnzahlAnNeuerungen($userid, $groupid){
       return 3;
     }

@@ -139,7 +139,7 @@
           <div class="row member-container">
             <?php foreach ($member as $user):?>
               <div class="col-sm-4 member-single-card">
-                <a class="member-link" data-dialog="size=1000px;" href="/public/plugins.php/eportfolioplugin/showsupervisor/memberdetail">
+                <a class="member-link" data-dialog="size=1000px;" href="/public/plugins.php/eportfolioplugin/showsupervisor/memberdetail/<?php echo $id; ?>/<?php echo $user; ?>">
                 <div class="member-item">
 
                   <div class="member-notification">
@@ -177,7 +177,6 @@
                               <div class="row">
                                 <?php foreach($favVorlagen as $vorlage): ?>
                                   <?php foreach (Eportfoliomodel::getChapters($vorlage) as $chapter):?>
-                                    <?php print_r($chapter); ?>
                                     <?php $new_freigabe = LastVisited::chapter_last_visited($chapter[id], $user) < EportfolioFreigabe::hasAccessSince($supervisorGroupId, $chapter[id]);?>
                                     <div class="col-sm-4 member-kapitelname"><?php echo $chapter[title]?></div>
                                     <div class="col-sm-8">
@@ -194,7 +193,7 @@
                                           <?php endif; ?>
                                         </div>
                                         <div class="col-sm-4">
-                                          <?php if (ShowsupervisorController::checkSupervisorFeedback($chapter[id]) == true): ?>
+                                          <?php if (Eportfoliomodel::checkSupervisorResonanz($chapter[id]) == true): ?>
                                             <?= Icon::create('forum', 'clickable');?>
                                           <?php else: ?>
                                             <?= Icon::create('forum', 'inactive'); ?>
