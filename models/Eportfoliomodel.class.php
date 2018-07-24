@@ -94,7 +94,7 @@ class Eportfoliomodel extends SimpleORMap
     **/
     public static function getChapters($id){
         $db = DBManager::get();
-        $query = "SELECT title, id FROM mooc_blocks WHERE seminar_id = :id AND type = 'Chapter' AND parent_id != '0' ORDER BY position ASC";
+        $query = "SELECT * FROM mooc_blocks WHERE seminar_id = :id AND type = 'Chapter' AND parent_id != '0' ORDER BY position ASC";
         $statement = $db->prepare($query);
         $statement->execute(array(':id'=> $id));
         $result = $statement->fetchAll();
@@ -107,6 +107,15 @@ class Eportfoliomodel extends SimpleORMap
           array_push($return, $tmp);
         }
         return $return;
+    }
+
+    /**
+    * Gibt die passende Seminar ID des Users zurück
+    **/
+    public static function getSeminarIdDurchVorlage($group_id, $user_id, $template_id){
+      echo $template_id; 
+      $portfolio = Eportfoliomodel::findBySQL('group_id = :group_id AND owner_id = :owner_id AND template_id = :template_id', array(':group_id' => $group_id, ':owner_id' => $user_id, ':template_id' => $template_id));
+      print_r($portfolio);
     }
 
     public static function isVorlage($id)

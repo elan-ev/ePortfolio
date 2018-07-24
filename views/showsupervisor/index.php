@@ -177,6 +177,7 @@
                               <div class="row">
                                 <?php foreach($favVorlagen as $vorlage): ?>
                                   <?php foreach (Eportfoliomodel::getChapters($vorlage) as $chapter):?>
+                                    <?php print_r($chapter); ?>
                                     <?php $new_freigabe = LastVisited::chapter_last_visited($chapter[id], $user) < EportfolioFreigabe::hasAccessSince($supervisorGroupId, $chapter[id]);?>
                                     <div class="col-sm-4 member-kapitelname"><?php echo $chapter[title]?></div>
                                     <div class="col-sm-8">
@@ -186,15 +187,15 @@
                                           <?= $new_freigabe ? Icon::create('accept+new', 'clickable') : Icon::create('accept', 'clickable'); ?>
                                         </div>
                                         <div class="col-sm-4">
-                                          <?php if (ShowsupervisorController::checkSupervisorNotiz($idNew) == true): ?>
+                                          <?php if (ShowsupervisorController::checkSupervisorNotiz($chapter[id]) == true): ?>
                                             <?= Icon::create('file', 'clickable'); ?>
                                           <?php else: ?>
                                             <?= Icon::create('file', 'inactive'); ?>
                                           <?php endif; ?>
                                         </div>
                                         <div class="col-sm-4">
-                                          <?php if (ShowsupervisorController::checkSupervisorFeedback($idNew) == true): ?>
-                                            <?= Icon::create('forum', 'clickable'); ?>
+                                          <?php if (ShowsupervisorController::checkSupervisorFeedback($chapter[id]) == true): ?>
+                                            <?= Icon::create('forum', 'clickable');?>
                                           <?php else: ?>
                                             <?= Icon::create('forum', 'inactive'); ?>
                                           <?php endif; ?>
