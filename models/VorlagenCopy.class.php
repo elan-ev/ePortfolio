@@ -46,12 +46,24 @@ class VorlagenCopy{
         fclose($file);
 
         foreach($semList as $user_id => $cid){
+            
+            $root_folder = Folder::findTopFolder($cid);
+            $parent_folder = FileManager::getTypedFolder($root_folder->id);
+            // create new folder for import
+            $request = array('name' => 'Courseware-Import '.date("d.m.Y", time()), 'description' => 'folder for imported courseware content');
+            $new_folder = new StandardFolder();
+            $new_folder->setDataFromEditTemplate($request);
+            $new_folder->user_id = User::findCurrent()->id;
+            $courseware_folder = $parent_folder->createSubfolder($new_folder);
+
+            $install_folder = FileManager::getTypedFolder($courseware_folder->id);
+            
             //import in new course
             $containerImport =  new Courseware\Container(NULL);
             $containerImport["cid"] = $cid; //new course cid
             $coursewareImport = $containerImport["current_courseware"];
             $import =  new Mooc\Import\XmlImport($containerImport['block_factory']);
-            $import->import($tempDir, $coursewareImport, NULL);
+            $import->import($tempDir, $coursewareImport, $install_folder);
         }
         //delete xml-data file
         self::deleteRecursively($tempDir);

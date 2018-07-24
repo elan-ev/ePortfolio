@@ -1,5 +1,5 @@
 pluginname=ePortfolio
 pluginclassname=EportfolioPlugin
 origin=uos
-version=0.3
-studipMinVersion=2.4
+version=1.1
+studipMinVersion=4.0
