@@ -21,10 +21,10 @@
           <option value="<?php echo $value[id] ?>"><?php echo $value[temp_name] ?></option>
         <?php endforeach; ?>
       </select>
-      <?= \Studip\Button::create('Hinzuf�gen', 'button', array('type' => 'button', 'onclick' => 'addTemp()')); ?> -->
+      <?= \Studip\Button::create('Hinzufügen', 'button', array('type' => 'button', 'onclick' => 'addTemp()')); ?> -->
 
       <div id="wrapper_table_tamplates" style="margin-top: 30px;">
-        <h4>Portfoliovorlage hinzuf�gen</h4>
+        <h4>Portfoliovorlage hinzufügen</h4>
 
         <table id="table_templates" class="default">
           <colgroup>
@@ -112,7 +112,7 @@
         <?php foreach ($member as $user):?>
           <tr>
             <td>
-              <?php $userInfo = new User($user);?>
+              <?php $userInfo = User::find($user);?>
                <a href="<?= URLHelper::getLink('dispatch.php/profile?username=' . $userInfo['username']) ?>" >
                           <?= Avatar::getAvatar($user, $userInfo['username'])->getImageTag(Avatar::SMALL,
                                 array('style' => 'margin-right: 5px; border-radius: 25px; width: 25px; border: 1px solid #28497c;', 'title' => htmlReady($userInfo['Vorname']." ".$userInfo['Nachname']))); ?>
@@ -280,8 +280,9 @@
 <!-- Legende -->
 <div class="legend">
   <ul>
-    <li><?php echo  Icon::create('accept', 'clickable'); ?>  Kapitel/Implus freigeschaltet</li>
-    <li><?php echo  Icon::create('accept+new', 'clickable'); ?></i>  Kapitel freigeschaltet und �nderungen seit ich das letzte mal reingeschaut habe</li>
+    <li><?php echo  Icon::create('decline', 'clickable'); ?>  Kapitel/Impuls noch nicht freigeschaltet</li>
+    <li><?php echo  Icon::create('accept', 'clickable'); ?>  Kapitel/Impuls freigeschaltet</li>
+    <li><?php echo  Icon::create('accept+new', 'clickable'); ?></i>  Kapitel freigeschaltet und Änderungen seit ich das letzte mal reingeschaut habe</li>
     <li><?php echo  Icon::create('file', 'clickable'); ?>  Supervisionsanliegen freigeschaltet</li>
     <li><?php echo  Icon::create('forum', 'clickable'); ?>  Resonanz gegeben</li>
   </ul>
@@ -373,7 +374,7 @@ function deleteUserFromGroup(userid, obj) {
 }
 
 function deletetemplate(tempid){
-  var c = confirm("Es werden alle bestehenden ePortfolios dieses Templates gel�scht! M�chten Sie fortfahren?");
+  var c = confirm("Es werden alle bestehenden ePortfolios dieses Templates gelöscht! Möchten Sie fortfahren?");
   if (c == true){
 
     var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/showsupervisor');

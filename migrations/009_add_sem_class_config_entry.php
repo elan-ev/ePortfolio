@@ -13,35 +13,43 @@ class AddSemClassConfigEntry extends Migration
         
         $sem_type_id;
         
-        foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
-            if ($sem_type['name'] == 'Portfolio-Vorlage') {
-                $sem_type_id = $id;
-            }
-        }
-
-        Config::get()->create('SEM_CLASS_PORTFOLIO_VORLAGE', array(
-            'value'       => $sem_type_id,
-            'is_default'  => 0,
-            'type'        => 'integer',
-            'range'       => 'global',
-            'section'     => 'global',
-            'description' => 'ID der Veranstaltungsklasse für Portfolio-Vorlagen'
-            ));
+        if(!Config::get()->getValue('SEM_CLASS_PORTFOLIO_VORLAGE')){
         
-        foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
-            if ($sem_type['name'] == 'ePortfolio') {
-                $sem_type_id = $id;
+            foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
+                if ($sem_type['name'] == 'ePortfolio-Vorlage') {
+                    $sem_type_id = $id;
+                }
+            }
+
+            if($sem_type_id){
+                Config::get()->create('SEM_CLASS_PORTFOLIO_VORLAGE', array(
+                    'value'       => $sem_type_id,
+                    'is_default'  => 0,
+                    'type'        => 'integer',
+                    'range'       => 'global',
+                    'section'     => 'global',
+                    'description' => 'ID der Veranstaltungsklasse für Portfolio-Vorlagen'
+                    ));
             }
         }
-
-        Config::get()->create('SEM_CLASS_PORTFOLIO', array(
-            'value'       => $sem_type_id,
-            'is_default'  => 0,
-            'type'        => 'integer',
-            'range'       => 'global',
-            'section'     => 'global',
-            'description' => 'ID der Veranstaltungsklasse für Portfolios'
-            ));
+        
+        if(!Config::get()->getValue('SEM_CLASS_PORTFOLIO')){
+            foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
+                if ($sem_type['name'] == 'ePortfolio') {
+                    $sem_type_id = $id;
+                }
+            }
+            if($sem_type_id){
+                Config::get()->create('SEM_CLASS_PORTFOLIO', array(
+                    'value'       => $sem_type_id,
+                    'is_default'  => 0,
+                    'type'        => 'integer',
+                    'range'       => 'global',
+                    'section'     => 'global',
+                    'description' => 'ID der Veranstaltungsklasse für Portfolios'
+                    ));
+            }
+        }
     }
 
 
