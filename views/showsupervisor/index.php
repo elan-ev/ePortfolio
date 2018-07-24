@@ -168,10 +168,6 @@
                 // hole alle Kapitel des Portfolios des Teilnemers
                 $q = ShowsupervisorController::getChapters($getsemid);
 
-              //Übergangslösung Kapitel 1 & Kapitel 2 müssen noch entfernt werden
-              //nset($q[0]);
-              //unset($q[1]);
-
                 foreach ($q as $value): ?>
 
                     <td>
