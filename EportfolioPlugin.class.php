@@ -63,28 +63,28 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
 
       if ($isDozent && !$this->isPortfolio() && !$this->isVorlage()) {
           $navigation = new Navigation('Supervision', PluginEngine::getURL($this, compact('cid'), 'showsupervisor', true));
-          $navigation->setImage(Icon::create('group4', 'navigation'));
+          $navigation->setImage(Icon::create('group4', 'info_alt'));
           $navigation->setActiveImage(Icon::create('group4', 'info'));
       } else if ($this->isPortfolio() || $this->isVorlage() ){
           //uebersicht navigation point
           $navigation = new Navigation('Übersicht', PluginEngine::getURL($this, compact('cid'), 'eportfolioplugin', true));
-          $navigation->setImage(Icon::create('group4', 'navigation'));
+          $navigation->setImage(Icon::create('group4', 'info_alt'));
           $navigation->setActiveImage(Icon::create('group4', 'info'));
        }
 
      
-        $owner = Eportfoliomodel::findBySQL('seminar_id = :id AND owner_id = :user_id' , array(':id'=> $id, ':user_id' => $user->id));
+        $owner = Eportfoliomodel::findBySQL('seminar_id = :id AND owner_id = :user_id' , array(':id'=> $course_id, ':user_id' => $user->id));
 
         if ($this->isPortfolio() && $owner) {
           $navigationSettings = new Navigation('Zugriffsrechte', PluginEngine::getURL($this, compact('cid'), 'settings', true));
-          $navigationSettings->setImage(Icon::create('admin', 'navigation'));
+          $navigationSettings->setImage(Icon::create('admin', 'info_alt'));
           $navigationSettings->setActiveImage(Icon::create('admin', 'info'));
           $tabs['settings'] = $navigationSettings;
         } else if ($isDozent == true && $this->isVorlage()) {
           $navigationSettings = new Navigation('Einstellungen', PluginEngine::getURL($this, compact('cid'), 'blocksettings', true));
-          $navigationSettings->setImage(Icon::create('admin', 'navigation'));
+          $navigationSettings->setImage(Icon::create('admin', 'info_alt'));
           $navigationSettings->setActiveImage(Icon::create('admin', 'info'));  
-          $tabs['settings'] = $navigationSettings;
+          $tabs['blocksettings'] = $navigationSettings;
         }
       
 
@@ -225,7 +225,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
                 $bearbeiten = _('Um Inhalte oder Kapitel hinzuzufügen, klicken Sie im Reiter **ePortfolio** oben rechts auf den Doktorandenhut');
                 Helpbar::get()->addPlainText(_(''), $description, '');
                 Helpbar::get()->addPlainText(_(''), $tip, '');
-                Helpbar::get()->addPlainText(_('Tip zum Bearbeiten'), $bearbeiten, 'icons/white/doctoral_cap.svg');
+                Helpbar::get()->addPlainText(_('Tip zum Bearbeiten'), $bearbeiten, Icon::create('doctoral-cap', 'info_alt'));
             }
             if ($this->isVorlage()){
                 $description  = _('Unter **Teilnehmende** können Sie festlegen, wer Zugriff auf diese Vorlage hat. ') . ' ';
@@ -235,7 +235,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
                 $bearbeiten = _('Um Inhalte oder Kapitel hinzuzufügen, klicken Sie im Reiter **ePortfolio** oben rechts auf den Doktorandenhut');
                 Helpbar::get()->addPlainText(_(''), $description, '');
                 Helpbar::get()->addPlainText(_(''), $tip, '');
-                Helpbar::get()->addPlainText(_('Tip zum Bearbeiten'), $bearbeiten, 'icons/white/doctoral_cap.svg');
+                Helpbar::get()->addPlainText(_('Tip zum Bearbeiten'), $bearbeiten, Icon::create('doctoral-cap', 'info_alt'));
             }
             
          }
