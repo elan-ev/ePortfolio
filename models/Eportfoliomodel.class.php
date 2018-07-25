@@ -161,7 +161,8 @@ class Eportfoliomodel extends SimpleORMap
           $statement = DBManager::get()->prepare($query);
           $statement->execute(array(':block_id'=> $block['id']));
           $supervisorFeedback = $statement->fetchAll();
-          if($supervisorFeedback[0][json_data] != ""){
+          if($supervisorFeedback[0][json_data] != '""'){
+            echo $supervisorFeedback[0][json_data];
             return true;
           }
         }
@@ -191,6 +192,17 @@ class Eportfoliomodel extends SimpleORMap
       foreach ($subchapters as $subchapter) {
         if(static::checkSupervisorNotizInUnterKapitel($subchapter['id'])) return true;
       }
+    }
+
+    /**
+    * Gibt die passende BlockId des EPortfolios anhand der VorlagenblockID zurück
+    **/
+    public static function getUserPortfilioBlockId($seminar_id, $block_id){
+      $query = "SELECT block_id FROM eportfolio_block_infos WHERE seminar_id = :seminar_id AND vorlagen_block_id = :block_id";
+      $statement = DBManager::get()->prepare($query);
+      $statement->execute(array(':seminar_id' => $seminar_id, ':block_id' => $block_id));
+      $result = $statement->fetchAll();
+      return $result[0][0];
     }
 
     public static function checkSupervisorNotizInUnterKapitel($subchapter_id){

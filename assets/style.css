@@ -498,6 +498,10 @@ td, th {
   color: grey;
 }
 
+.member-subname img {
+  margin-bottom: 0px;
+}
+
 .member-content {
   border-top: 1px solid grey;
   border-bottom: 1px solid grey;

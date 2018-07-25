@@ -7,7 +7,7 @@
         <?php echo $vorname . " " . $nachname; ?>
       </div>
       <div class="member-subname">
-        Status: <span class="member-status-label">.</span> <br>
+        Status: <?php echo Icon::create('span-full', 'status-green'); ?><br>
         Studiengang: Medieninformatik <br>
         Portfoliogruppe: Testgruppe<br>
         Letzte �nnderung am: 23.05.2018
@@ -66,7 +66,12 @@
         <div class="row" style="text-align: center;">
           <div class="col-sm-2">
             <?php if(Eportfoliomodel::checkKapitelFreigabe($kapitel['id'])): ?>
-              <?= Icon::create('accept'); ?>
+              <?php $new_freigabe = LastVisited::chapter_last_visited($kapitel['id'], $user) < EportfolioFreigabe::hasAccessSince($supervisorGroupId, $kapitel['id']);?>
+              <?php if($new_freigabe): ?>
+                <?= Icon::create('accept+new', 'clickable'); ?>
+              <?php else: ?>
+                <?= Icon::create('accept', 'clickable'); ?>
+              <?php endif; ?>
             <?php else: ?>
               <?= Icon::create('accept', 'inactive'); ?>
             <?php endif; ?>
