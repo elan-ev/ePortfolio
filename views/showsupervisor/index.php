@@ -186,7 +186,7 @@
                                           <?= $new_freigabe ? Icon::create('accept+new', 'clickable') : Icon::create('accept', 'clickable'); ?>
                                         </div>
                                         <div class="col-sm-4">
-                                          <?php if (ShowsupervisorController::checkSupervisorNotiz($chapter[id]) == true): ?>
+                                          <?php if (Eportfoliomodel::checkSupervisorNotiz($chapter[id]) == true): ?>
                                             <?= Icon::create('file', 'clickable'); ?>
                                           <?php else: ?>
                                             <?= Icon::create('file', 'inactive'); ?>

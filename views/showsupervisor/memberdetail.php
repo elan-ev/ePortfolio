@@ -63,16 +63,16 @@
     <div class="row member-content-single-line">
       <div class="col-sm-4 member-content-single-line-ober"><?php echo $kapitel['title'] ?></div>
       <div class="col-sm-8">
-        <div class="row">
+        <div class="row" style="text-align: center;">
           <div class="col-sm-2">
             <?php if(Eportfoliomodel::checkKapitelFreigabe($kapitel['id'])): ?>
               <?= Icon::create('accept'); ?>
             <?php else: ?>
-              <?= Icon::create('accept', 'inactive'); ?>  
+              <?= Icon::create('accept', 'inactive'); ?>
             <?php endif; ?>
           </div>
           <div class="col-sm-2">
-            <?php if (ShowsupervisorController::checkSupervisorNotiz($kapitel['id']) == true): ?>
+            <?php if (Eportfoliomodel::checkSupervisorNotiz($kapitel['id']) == true): ?>
               <?= Icon::create('file', 'clickable'); ?>
             <?php else: ?>
               <?= Icon::create('file', 'inactive'); ?>
@@ -97,7 +97,13 @@
         <div class="col-sm-8">
           <div class="row member-content-icons">
             <div class="col-sm-2"></div>
-            <div class="col-sm-2"></div>
+            <div class="col-sm-2">
+              <?php if (Eportfoliomodel::checkSupervisorNotizInUnterKapitel($unterkapitel['id'])):?>
+                <?= Icon::create('file', 'clickable'); ?>
+              <?php else: ?>
+                <?= Icon::create('file', 'inactive'); ?>
+              <?php endif; ?>
+            </div>
             <div class="col-sm-2">
               <?php if(Eportfoliomodel::checkSupervisorResonanzInSubchapter($unterkapitel['id'])):?>
                 <?= Icon::create('forum');  ?>

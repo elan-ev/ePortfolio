@@ -189,23 +189,27 @@ class Eportfoliomodel extends SimpleORMap
       $statement->execute(array(':id'=> $id));
       $subchapters = $statement->fetchAll(PDO::FETCH_ASSOC);
       foreach ($subchapters as $subchapter) {
-        $query = "SELECT id FROM mooc_blocks WHERE parent_id = :value";
-        $statement = $db->prepare($query);
-        $statement->execute(array(':value'=> $subchapter['id']));
-        $sections = $statement->fetchAll(PDO::FETCH_ASSOC);
-        foreach ($sections as $section) {
-          $query = "SELECT id FROM mooc_blocks WHERE parent_id = :valueSub AND type ='PortfolioBlockSupervisor' ";
-          $statement = $db->prepare($query);
-          $statement->execute(array(':valueSub'=> $section['id']));
-          $supervisorNotizBloecke = $statement->fetchAll(PDO::FETCH_ASSOC);
-          foreach ($supervisorNotizBloecke as $block) {
-            $query = "SELECT json_data FROM mooc_fields WHERE block_id = :block_id AND name = 'content'";
-            $statement = $db->prepare($query);
-            $statement->execute(array(':block_id'=> $block['id']));
-            $supervisorFeedback = $statement->fetchAll();
-            if (!empty($supervisorFeedback[0][json_data])) {
-              return true;
-            }
+        if(static::checkSupervisorNotizInUnterKapitel($subchapter['id'])) return true;
+      }
+    }
+
+    public static function checkSupervisorNotizInUnterKapitel($subchapter_id){
+      $query = "SELECT id FROM mooc_blocks WHERE parent_id = :value";
+      $statement = DBManager::get()->prepare($query);
+      $statement->execute(array(':value'=> $subchapter_id));
+      $sections = $statement->fetchAll(PDO::FETCH_ASSOC);
+      foreach ($sections as $section) {
+        $query = "SELECT id FROM mooc_blocks WHERE parent_id = :valueSub AND type ='PortfolioBlockSupervisor' ";
+        $statement = DBManager::get()->prepare($query);
+        $statement->execute(array(':valueSub'=> $section['id']));
+        $supervisorNotizBloecke = $statement->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($supervisorNotizBloecke as $block) {
+          $query = "SELECT json_data FROM mooc_fields WHERE block_id = :block_id AND name = 'content'";
+          $statement = DBManager::get()->prepare($query);
+          $statement->execute(array(':block_id'=> $block['id']));
+          $supervisorFeedback = $statement->fetchAll();
+          if (!empty($supervisorFeedback[0][json_data])) {
+            return true;
           }
         }
       }
