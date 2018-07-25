@@ -9,12 +9,14 @@ include_once __DIR__.'/SupervisorGroupUser.class.php';
 /**
  * @author  <asudau@uos.de>
  *
- * @property string     $Seminar_id
+ * @property string     $Seminar_id (ePortfolio)
  * @property string     $block_id
+ * @property string     $vorlagen_block_id
+ * @property boolean    $blocked
  * @property int        $mkdate
  * @property int        $chdate
  */
-class LockedBlock extends SimpleORMap
+class BlockInfo extends SimpleORMap
 {
 
     public $errors = array();
@@ -28,28 +30,23 @@ class LockedBlock extends SimpleORMap
      */
     public function __construct($id = null) {
 
-        $this->db_table = 'eportfolio_locked_blocks';
+        $this->db_table = 'eportfolio_block_infos';
 
         parent::__construct($id);
     }
     
     public static function isLocked($block_id){
         $entry = self::findById($block_id);
-        if($entry){
+        if($entry->blocked){
             return true;
         } else return false;
     }
     
-    public static function lockBlock($Seminar_id, $block_id, $lock){
-        if (($lock == 'true') && !self::findById($block_id)){
-            $lockedBlock = new self($block_id);
-            $lockedBlock->Seminar_id = $Seminar_id;
-            $lockedBlock->mkdate = time();
-            $lockedBlock->chdate = time();
-            $lockedBlock->store();
-        } else if (($lock == 'false') && self::findById($block_id)){
-            self::deleteBySQL('block_id = :block_id',
-                array(':block_id' => $block_id));
-        }
+    public static function getPortfolioBlockByVorlagenID($block_id, $portfolio_id){
+        $entry = self::findBySQL('block_id = :block_id AND Seminar_id = :portfolio_id', array(':block_id' => $block_id, 'portfolio_id' => $portfolio_id));
+        if($entry && $entry->block_id){
+            return $entry->block_id;
+        } else return false;
     }
+    
 }
