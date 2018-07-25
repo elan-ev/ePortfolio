@@ -319,8 +319,8 @@ class ShowsupervisorController extends StudipController {
       $groups = $statement->fetchAll()[0][0];
       $groupHasTemplates = json_decode($groups);
 
-      EportfolioGroup::markTemplateAsFav($groupid, $master);
-      
+      EportfolioGroup::createTemplateForGroup($groupid, $master);
+
       //wenn bereits Vorlagen an diese Gruppe verteilt wurden, verwende die zugeh�rigen Portfolios um die weiteren Vorlagen hinzuzuf�gen
       if (count($groupHasTemplates) >= 1) {
         foreach ($member as $key => $value) {
