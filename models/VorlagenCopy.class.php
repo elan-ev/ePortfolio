@@ -111,11 +111,18 @@ class VorlagenCopy{
             }
         }
         
+        //hier können potentiell beleibige infos von den Vorlagen Blöcken auf die Block-Kopien übertragen werden
         foreach($semList as $user_id => $cid){
             $seminarBlocks = Eportfoliomodel::getAllBlocksInOrder($cid);
             $newBlocks = array_slice($seminarBlocks, -count($masterBlocks));
+            
+            //das Attribut blocked (von Studenten nicht bearbeitbar)
             foreach($lockedBlocksIndizes as $index){
                 LockedBlock::lockBlock($cid, $newBlocks[$index], true);
+            }
+            //Mapping von neuen Blöcken auf Vorlagen-Blöcke
+            for($i = 0; $i< count($masterBlocks); $i++){
+                BlockInfo::createEntry($cid, $newBlocks[i], $masterBlocks[i]);
             }
         }
         

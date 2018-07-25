@@ -28,7 +28,7 @@ class blocksettingsController extends StudipController {
     PageLayout::setTitle('ePortfolio-Vorlage - Einstellungen: '.$seminar->getName());
 
     //autonavigation
-    Navigation::activateItem("course/settings");
+    Navigation::activateItem("course/blocksettings");
 
     $sidebar = Sidebar::Get();
     $sidebar->setTitle('Navigation');
