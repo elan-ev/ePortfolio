@@ -38,9 +38,9 @@ class BlockInfo extends SimpleORMap
     public static function createEntry($portfolio_id, $block_id, $vorlagen_block_id){
         $entry = new self(block_id);
         $entry->vorlagen_block_id = $vorlagen_block_id;
-        $entry->$Seminar_id = $portfolio_id;
+        $entry->Seminar_id = $portfolio_id;
         $entry->mkdate = time();
-        if($entry->store){
+        if($entry->store()){
             return true;
         } else return false;
     }
