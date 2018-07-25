@@ -1,6 +1,7 @@
 <?php
 
 include_once __DIR__.'/LockedBlock.class.php';
+include_once __DIR__.'/BlockInfo.class.php';
 include_once __DIR__.'/Eportfoliomodel.class.php';
 /* 
  * To change this license header, choose License Headers in Project Properties.
@@ -122,7 +123,7 @@ class VorlagenCopy{
             }
             //Mapping von neuen Blöcken auf Vorlagen-Blöcke
             for($i = 0; $i< count($masterBlocks); $i++){
-                BlockInfo::createEntry($cid, $newBlocks[i], $masterBlocks[i]);
+                BlockInfo::createEntry($cid, $newBlocks[$i], $masterBlocks[$i]);
             }
         }
         
