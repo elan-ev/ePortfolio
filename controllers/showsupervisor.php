@@ -610,6 +610,7 @@ class ShowsupervisorController extends StudipController {
     public function memberdetail_action($group_id, $user_id){
       $this->portfolio_id = EportfolioGroupUser::getPortfolioIdOfUserInGroup($user_id, $group_id);
       $this->chapters = Eportfoliomodel::getChapters($this->portfolio_id);
+      $this->group_id = $group_id;
 
       $user = new User($user_id);
       $this->vorname = $user['Vorname'];

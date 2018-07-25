@@ -204,6 +204,58 @@ class Eportfoliomodel extends SimpleORMap
       return $result[0][0];
     }
 
+    /**
+    * Prüft ob ein Kapitel vom Nutzer selber erstellt wurde
+    **/
+    public static function isEigenesKapitel($seminar_id, $group_id, $chapter_id){
+      $stampGroup = static::getNewestTemplateTimestamp($group_id);
+      $stampChapter = static::getTimestampOfChapter($chapter_id);
+      if ($stampGroup + 5 < $stampChapter) {
+        return true;
+      }
+    }
+
+    /**
+    * Prüft ob ein Unterkapitel vom Nutzer selber erstellt wurde
+    **/
+    public static function isEigenesUnterkapitel($subchapter_id){
+
+    }
+
+    /**
+    * Liefert Timestamp eines Kapitels
+    **/
+    public static function getTimestampOfChapter($block_id){
+      $query = "SELECT mkdate FROM mooc_blocks WHERE id = :block_id";
+      $statement = DBManager::get()->prepare($query);
+      $statement->execute(array(':block_id' => $block_id));
+      $result = $statement->fetchAll();
+      return $result[0][0];
+    }
+
+    /**
+    * Liefert den Timestamp des als letzt hinzugefügtes Templates
+    * in einer Gruppe
+    **/
+    public static function getNewestTemplateTimestamp($group_id){
+      $query = "SELECT mkdate FROM eportfolio_group_templates WHERE group_id = :group_id ORDER BY mkdate DESC";
+      $statement = DBManager::get()->prepare($query);
+      $statement->execute(array(':group_id' => $group_id));
+      $result = $statement->fetchAll();
+      return $result[0][0];
+    }
+
+    /**
+    * Liefert mkdate des Templates
+    **/
+    public static function getTimestampOfTemplate($group_id, $seminar_id){
+      $query = "SELECT mkdate FROM eportfolio_group_templates WHERE group_id = :group_id AND seminar_id = :seminar_id";
+      $statement = DBManager::get()->prepare($query);
+      $statement->execute(array(':group_id' => $group_id, ':seminar_id' => $seminar_id));
+      $result = $statement->fetchAll();
+      return $result[0][0];
+    }
+
     public static function checkSupervisorNotizInUnterKapitel($subchapter_id){
       $query = "SELECT id FROM mooc_blocks WHERE parent_id = :value";
       $statement = DBManager::get()->prepare($query);

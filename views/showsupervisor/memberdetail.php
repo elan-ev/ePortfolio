@@ -61,7 +61,12 @@
     <?php $subchapter = Eportfoliomodel::getSubChapters($kapitel['id']); ?>
 
     <div class="row member-content-single-line">
-      <div class="col-sm-4 member-content-single-line-ober"><?php echo $kapitel['title'] ?></div>
+      <div class="col-sm-4 member-content-single-line-ober">
+        <?php echo $kapitel['title'] ?>
+        <?php if(Eportfoliomodel::isEigenesKapitel($portfolio_id, $group_id, $kapitel['id'])): ?>
+          <span class="label-selber">Eigenes</span>
+        <?php endif; ?>
+      </div>
       <div class="col-sm-8">
         <div class="row" style="text-align: center;">
           <div class="col-sm-2">
@@ -121,7 +126,5 @@
       <?php endforeach; ?>
 
   <?php endforeach; ?>
-
-  <!-- <span class="label-selber">Eigenes</span -->
 
 </div>
