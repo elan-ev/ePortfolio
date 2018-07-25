@@ -90,11 +90,11 @@ class Eportfoliomodel extends SimpleORMap
     }
 
     /**
-    * Gibt ein Array(title, id) mit alles Oberkapiteln einer Veranstaltung aus
+    * Gibt ein Array(title, id) mit allen Oberkapiteln einer Veranstaltung aus
     **/
     public static function getChapters($id){
         $db = DBManager::get();
-        $query = "SELECT title, id FROM mooc_blocks WHERE seminar_id = :id AND type = 'Chapter' AND parent_id != '0' ORDER BY position ASC";
+        $query = "SELECT * FROM mooc_blocks WHERE seminar_id = :id AND type = 'Chapter' AND parent_id != '0' ORDER BY position ASC";
         $statement = $db->prepare($query);
         $statement->execute(array(':id'=> $id));
         $result = $statement->fetchAll();
@@ -107,6 +107,108 @@ class Eportfoliomodel extends SimpleORMap
           array_push($return, $tmp);
         }
         return $return;
+    }
+
+    /**
+    * Gibt ein Array(title, id) mit allen Unterkapiteln eines Oberkapitels aus
+    **/
+    public static function getSubChapters($chapter_id){
+      $query = "SELECT title, id FROM mooc_blocks WHERE parent_id = :parent_id AND type = 'Subchapter' ORDER BY position ASC";
+      $statement = DBManager::get()->prepare($query);
+      $statement->execute(array(':parent_id' => $chapter_id));
+      $result = $statement->fetchAll();
+      $return = array();
+      foreach ($result as $key) {
+        $tmp = array(
+          'title' => $key[title],
+          'id' => $key[id]
+        );
+        array_push($return, $tmp);
+      }
+      return $return;
+    }
+
+    /**
+    * Prüft ob in in einem Kaptiel einer Courseware eine Resonanz auf
+    * eine Supervisorennotiz gegeben wurde
+    **/
+    public static function checkSupervisorResonanz($chapter_id){
+      $query = "SELECT id FROM mooc_blocks WHERE parent_id = :id";
+      $statement = DBManager::get()->prepare($query);
+      $statement->execute(array(':id'=> $chapter_id));
+      $subchapters = $statement->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($subchapters as $subchapter) {
+          if (static::checkSupervisorResonanzInSubchapter($subchapter['id'])) return true;
+        }
+    }
+
+    /**
+    * Prüft ob in in einem Unterkaptiel einer Courseware eine Resonanz auf
+    * eine Supervisorennotiz gegeben wurde
+    **/
+    public static function checkSupervisorResonanzInSubchapter($subchapter_id){
+      $query = "SELECT id FROM mooc_blocks WHERE parent_id = :value";
+      $statement = DBManager::get()->prepare($query);
+      $statement->execute(array(':value'=> $subchapter_id));
+      $sections = $statement->fetchAll(PDO::FETCH_ASSOC);
+      foreach ($sections as $section) {
+        $query = "SELECT id FROM mooc_blocks WHERE parent_id = :valueSub AND type ='PortfolioBlockSupervisor' ";
+        $statement = DBManager::get()->prepare($query);
+        $statement->execute(array(':valueSub'=> $section['id']));
+        $supervisorNotizBloecke = $statement->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($supervisorNotizBloecke as $block) {
+          $query = "SELECT json_data FROM mooc_fields WHERE block_id = :block_id AND name = 'supervisorcontent'";
+          $statement = DBManager::get()->prepare($query);
+          $statement->execute(array(':block_id'=> $block['id']));
+          $supervisorFeedback = $statement->fetchAll();
+          if($supervisorFeedback[0][json_data] != ""){
+            return true;
+          }
+        }
+      }
+    }
+
+    /**
+    * Prüft ob einn Kapitel freigeschaltet wurde
+    **/
+    public static function checkKapitelFreigabe($chapter_id){
+      $query = "SELECT * FROM eportfolio_freigaben WHERE block_id = :block_id";
+      $statement = DBManager::get()->prepare($query);
+      $statement->execute(array(':block_id' => $chapter_id));
+      $result = $statement->fetchAll();
+      if(!empty($result)) return true;
+    }
+
+    /**
+    * Prüft ob es eine SupervisorNotiz in einem Kapitel gibt
+    **/
+    public function checkSupervisorNotiz($id){
+      $db = DBManager::get();
+      $query = "SELECT id FROM mooc_blocks WHERE parent_id = :id";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':id'=> $id));
+      $subchapters = $statement->fetchAll(PDO::FETCH_ASSOC);
+      foreach ($subchapters as $subchapter) {
+        $query = "SELECT id FROM mooc_blocks WHERE parent_id = :value";
+        $statement = $db->prepare($query);
+        $statement->execute(array(':value'=> $subchapter['id']));
+        $sections = $statement->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($sections as $section) {
+          $query = "SELECT id FROM mooc_blocks WHERE parent_id = :valueSub AND type ='PortfolioBlockSupervisor' ";
+          $statement = $db->prepare($query);
+          $statement->execute(array(':valueSub'=> $section['id']));
+          $supervisorNotizBloecke = $statement->fetchAll(PDO::FETCH_ASSOC);
+          foreach ($supervisorNotizBloecke as $block) {
+            $query = "SELECT json_data FROM mooc_fields WHERE block_id = :block_id AND name = 'content'";
+            $statement = $db->prepare($query);
+            $statement->execute(array(':block_id'=> $block['id']));
+            $supervisorFeedback = $statement->fetchAll();
+            if (!empty($supervisorFeedback[0][json_data])) {
+              return true;
+            }
+          }
+        }
+      }
     }
 
     public static function isVorlage($id)

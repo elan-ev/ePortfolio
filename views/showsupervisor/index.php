@@ -139,7 +139,7 @@
           <div class="row member-container">
             <?php foreach ($member as $user):?>
               <div class="col-sm-4 member-single-card">
-                <a class="member-link" data-dialog="size=1000px;" href="/public/plugins.php/eportfolioplugin/showsupervisor/memberdetail">
+                <a class="member-link" data-dialog="size=1000px;" href="/public/plugins.php/eportfolioplugin/showsupervisor/memberdetail/<?php echo $id; ?>/<?php echo $user; ?>">
                 <div class="member-item">
 
                   <div class="member-notification">
@@ -186,15 +186,15 @@
                                           <?= $new_freigabe ? Icon::create('accept+new', 'clickable') : Icon::create('accept', 'clickable'); ?>
                                         </div>
                                         <div class="col-sm-4">
-                                          <?php if (ShowsupervisorController::checkSupervisorNotiz($idNew) == true): ?>
+                                          <?php if (ShowsupervisorController::checkSupervisorNotiz($chapter[id]) == true): ?>
                                             <?= Icon::create('file', 'clickable'); ?>
                                           <?php else: ?>
                                             <?= Icon::create('file', 'inactive'); ?>
                                           <?php endif; ?>
                                         </div>
                                         <div class="col-sm-4">
-                                          <?php if (ShowsupervisorController::checkSupervisorFeedback($idNew) == true): ?>
-                                            <?= Icon::create('forum', 'clickable'); ?>
+                                          <?php if (Eportfoliomodel::checkSupervisorResonanz($chapter[id]) == true): ?>
+                                            <?= Icon::create('forum', 'clickable');?>
                                           <?php else: ?>
                                             <?= Icon::create('forum', 'inactive'); ?>
                                           <?php endif; ?>
