@@ -208,9 +208,11 @@ class Eportfoliomodel extends SimpleORMap
     * Prüft ob ein Kapitel vom Nutzer selber erstellt wurde
     **/
     public static function isEigenesKapitel($seminar_id, $group_id, $chapter_id){
-      $stampGroup = static::getNewestTemplateTimestamp($group_id);
-      $stampChapter = static::getTimestampOfChapter($chapter_id);
-      if ($stampGroup + 5 < $stampChapter) {
+      $query = "SELECT vorlagen_block_id FROM eportfolio_block_infos WHERE block_id = :block_id AND Seminar_id = :seminar_id";
+      $statement = DBManager::get()->prepare($query);
+      $statement->execute(array(':block_id' => $chapter_id, ':seminar_id' => $seminar_id));
+      $result = $statement->fetchAll();
+      if(empty($result)){
         return true;
       }
     }
