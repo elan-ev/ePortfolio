@@ -12,8 +12,8 @@ class BlockInfoTable extends Migration
     public function up () {
         $db = DBManager::get();
         $db->exec("CREATE TABLE `eportfolio_block_infos` (
-          `Seminar_id` varchar(32) NOT NULL,
-          `block_id` int(11) NOT NULL DEFAULT '0',
+          `block_id` int(11) NOT NULL,
+          `Seminar_id` varchar(32) NOT NULL DEFAULT '0',
           `vorlagen_block_id` int(11) NOT NULL DEFAULT '0',
           `blocked` boolean NOT NULL,
           `mkdate` int(11) NOT NULL,
