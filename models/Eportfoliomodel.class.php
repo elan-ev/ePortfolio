@@ -162,7 +162,6 @@ class Eportfoliomodel extends SimpleORMap
           $statement->execute(array(':block_id'=> $block['id']));
           $supervisorFeedback = $statement->fetchAll();
           if($supervisorFeedback[0][json_data] != '""'){
-            echo $supervisorFeedback[0][json_data];
             return true;
           }
         }
