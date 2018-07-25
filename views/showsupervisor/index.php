@@ -69,11 +69,11 @@
 
                       <?php if(EportfolioGroup::checkIfMarkedAsFav($id, $key) == 0): ?>
                         <a href="<?php echo URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/addAsFav/'. $id .'/' . $key); ?>">
-                          <?= Icon::create('favorite', 'clickable')->asImg(20, $params) ?>
+                          <?= Icon::create('visibility-invisible', 'clickable')->asImg(20, $params) ?>
                         </a>
                       <?php else: ?>
                         <a href="<?php echo URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/deleteAsFav/'. $id .'/' . $key); ?>">
-                          <?= Icon::create('favorite', 'attention')->asImg(20, $params) ?>
+                          <?= Icon::create('visibility-visible', 'attention')->asImg(20, $params) ?>
                         </a>
                       <?php endif; ?>
 
