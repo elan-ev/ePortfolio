@@ -70,7 +70,9 @@ class EportfolioFreigabe extends SimpleORMap
             $access->Seminar_id = $seminar_id;
             $access->block_id = $chapter_id;
             $access->user_id = $user_id;
-            $access->store();
+            if($access->store()){
+                Eportfoliomodel::sendNotificationToUser('freigabe', $seminar_id, $chapter_id, $user_id);
+            }
         } else if (self::hasAccess($user_id, $seminar_id, $chapter_id)){
             self::deleteBySQL('Seminar_id = :seminar_id AND block_id = :block_id AND user_id = :user_id',
                 array(':seminar_id' => $seminar_id, ':block_id' => $chapter_id, ':user_id' => $user_id));
