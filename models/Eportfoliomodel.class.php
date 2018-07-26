@@ -322,5 +322,37 @@ class Eportfoliomodel extends SimpleORMap
         }
         return $blocks;
     }
+    
+    public static function sendNotificationToUser($case, $portfolio_id, $block_id, $user_id){
+        
+        $portfolio = Eportfoliomodel::find();
+        $owner = $this->getOwnerFullname();
+        $link = URLHelper::getURL('plugins.php/courseware/courseware', array('cid' => $this->Seminar_id, 'selected' => $block_id));
+        $mail = '';
+        $group = Course($this->group_id)->name;
+
+        switch ($case) {
+            default:
+            case 'supervisornotiz':
+                $mail_msg = sprintf(
+                    _("Neue Notiz von '%s'\n"
+                    . "in: %s \n"
+                    . "Direkt zur Notiz:\n %s"),
+                    $owner, $this->seminar->name , $link
+                );
+                break;
+            case 'freigabe':
+                $mail_msg = sprintf(
+                    _("Neue Freigabe von '%s'\n"
+                    . "in: %s \n"
+                    . "Direkt zum freigegebenen Inhalt:\n %s"),
+                    $owner, $this->seminar->name , $link
+                );
+                break;
+        }
+        
+        
+        StudipMail::sendMessage($mail, sprintf(_('Neues aus Ihrer Supervisionsgruppe "%s"'), $course->name), $mail_msg);
+    }
 
 }
