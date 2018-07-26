@@ -138,7 +138,7 @@ class Eportfoliomodel extends SimpleORMap
       $statement->execute(array(':id'=> $chapter_id));
       $subchapters = $statement->fetchAll(PDO::FETCH_ASSOC);
         foreach ($subchapters as $subchapter) {
-          if (self::checkSupervisorResonanzInSubchapter($subchapter['id'])) return true;
+          if (static::checkSupervisorResonanzInSubchapter($subchapter['id'])) return true;
         }
     }
 
@@ -189,7 +189,7 @@ class Eportfoliomodel extends SimpleORMap
       $statement->execute(array(':id'=> $id));
       $subchapters = $statement->fetchAll(PDO::FETCH_ASSOC);
       foreach ($subchapters as $subchapter) {
-        if(self::checkSupervisorNotizInUnterKapitel($subchapter['id'])) return true;
+        if(static::checkSupervisorNotizInUnterKapitel($subchapter['id'])) return true;
       }
     }
 
