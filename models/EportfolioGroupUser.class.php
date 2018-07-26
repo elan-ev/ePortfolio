@@ -39,7 +39,7 @@ class EportfolioGroupUser extends SimpleORMap
 
      public static function findByGroupId($id)
     {
-        return static::findBySQL('seminar_id = ?', array($id));
+        return EportfolioGroupUser::findBySQL('seminar_id = ?', array($id));
     }
 
     /**
@@ -63,7 +63,7 @@ class EportfolioGroupUser extends SimpleORMap
     **/
     public static function getAnzahlFreigegebenerKapitel($user_id, $group_id){
       $anzahl = 0;
-      $templates = static::getPortfolioIDsFromUserinGroup($group_id, $user_id);
+      $templates = EportfolioGroupUser::getPortfolioIDsFromUserinGroup($group_id, $user_id);
       foreach ($templates as $temp) {
         $query =  "SELECT COUNT(e1.Seminar_id) FROM eportfolio e1
                   JOIN eportfolio_freigaben e2 ON e1.Seminar_id = e2.Seminar_id
@@ -81,7 +81,7 @@ class EportfolioGroupUser extends SimpleORMap
     * Gibt die Verhältnis freigeben/gesamt in Prozent wieder
     **/
     public static function getGesamtfortschrittInProzent($user_id, $group_id){
-      $oben = static::getAnzahlFreigegebenerKapitel($user_id, $group_id);
+      $oben = EportfolioGroupUser::getAnzahlFreigegebenerKapitel($user_id, $group_id);
       $unten = EportfolioGroup::getAnzahlAllerKapitel($group_id);
       return $oben / $unten * 100;
     }
@@ -92,7 +92,7 @@ class EportfolioGroupUser extends SimpleORMap
     **/
     public static function getAnzahlNotizen($user_id, $group_id){
       $anzahl = 0;
-      $temps = static::getPortfolioIDsFromUserinGroup($group_id, $user_id);
+      $temps = EportfolioGroupUser::getPortfolioIDsFromUserinGroup($group_id, $user_id);
       foreach ($temps as $temp) {
         $query = "SELECT COUNT(type) FROM mooc_blocks WHERE Seminar_id = :seminar_id AND type = 'PortfolioBlockSupervisor'";
         $statement = DBManager::get()->prepare($query);

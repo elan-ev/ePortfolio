@@ -40,7 +40,7 @@ class SupervisorGroupUser extends SimpleORMap
 
     public static function findBySupervisorGroupId($id)
     {
-        return static::findBySQL('supervisor_group_id = ?', array($id));
+        return SupervisorGroupUser::findBySQL('supervisor_group_id = ?', array($id));
     }
 
     public static function getSupervisorGroups($user_id){

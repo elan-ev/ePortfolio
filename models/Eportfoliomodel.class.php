@@ -138,7 +138,7 @@ class Eportfoliomodel extends SimpleORMap
       $statement->execute(array(':id'=> $chapter_id));
       $subchapters = $statement->fetchAll(PDO::FETCH_ASSOC);
         foreach ($subchapters as $subchapter) {
-          if (static::checkSupervisorResonanzInSubchapter($subchapter['id'])) return true;
+          if (Eportfoliomodel::checkSupervisorResonanzInSubchapter($subchapter['id'])) return true;
         }
     }
 
@@ -189,7 +189,7 @@ class Eportfoliomodel extends SimpleORMap
       $statement->execute(array(':id'=> $id));
       $subchapters = $statement->fetchAll(PDO::FETCH_ASSOC);
       foreach ($subchapters as $subchapter) {
-        if(static::checkSupervisorNotizInUnterKapitel($subchapter['id'])) return true;
+        if(Eportfoliomodel::checkSupervisorNotizInUnterKapitel($subchapter['id'])) return true;
       }
     }
 
@@ -221,8 +221,8 @@ class Eportfoliomodel extends SimpleORMap
     * Prüft ob ein Unterkapitel vom Nutzer selber erstellt wurde
     **/
     public static function isEigenesUnterkapitel($subchapter_id){
-      $timestapChapter = static::getTimestampOfChapter(static::getParentId($subchapter_id));
-      if ($timestapChapter < static::getTimestampOfChapter($subchapter_id)) {
+      $timestapChapter = Eportfoliomodel::getTimestampOfChapter(Eportfoliomodel::getParentId($subchapter_id));
+      if ($timestapChapter < Eportfoliomodel::getTimestampOfChapter($subchapter_id)) {
         return true; 
       }
     }
