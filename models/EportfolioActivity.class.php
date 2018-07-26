@@ -43,11 +43,11 @@ class EportfolioActivity
     public function getDummyActivities($seminar_id){
         global $user;
         $activities = array();
-        $activities[] = new EportfolioActivity('freigabe', $user, 1532603297, URLHelper::getURL('/dispatch.php/start'), true);
-        $activities[] = new EportfolioActivity('aenderung', $user, 1532403297, URLHelper::getURL('/dispatch.php/start'), true);
-        $activities[] = new EportfolioActivity('freigabe', $user, 1532503297, URLHelper::getURL('/dispatch.php/start'), true);
-        $activities[] = new EportfolioActivity('notiz', $user, 1532609297, URLHelper::getURL('/dispatch.php/start'), false);
-        $activities[] = new EportfolioActivity('notiz', $user, 1532653297, URLHelper::getURL('/dispatch.php/start'), false);
+        $activities[] = new EportfolioActivity('freigabe', $user, 1532603297, URLHelper::getLink('dispatch.php/start'), true);
+        $activities[] = new EportfolioActivity('aenderung', $user, 1532403297, URLHelper::getLink('dispatch.php/start'), true);
+        $activities[] = new EportfolioActivity('freigabe', $user, 1532503297, URLHelper::getLink('dispatch.php/start'), true);
+        $activities[] = new EportfolioActivity('notiz', $user, 1532609297, URLHelper::getLink('dispatch.php/start'), true);
+        $activities[] = new EportfolioActivity('notiz', $user, 1532653297, URLHelper::getLink('dispatch.php/start'), true);
         return $activities;
     }
 
