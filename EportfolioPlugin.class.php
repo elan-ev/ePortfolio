@@ -1,7 +1,6 @@
 <?php
 require 'bootstrap.php';
 require 'classes/group.class.php';
-require 'classes/eportfolio.class.php';
 require 'models/Eportfoliomodel.class.php';
 
 
@@ -120,7 +119,6 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
           $this->getsettingsColor($_GET['cid']);
           exit;
         }
-        $eportfolio = new eportfolio($_GET['cid']);
 
       $serverinfo = $_SERVER['PATH_INFO'];
 

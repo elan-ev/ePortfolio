@@ -47,7 +47,6 @@ class EportfoliopluginController extends StudipController {
       $sem_type_id = Config::get()->getValue('SEM_CLASS_PORTFOLIO_VORLAGE');
 
       $seminar = new Seminar($cid);
-      $eportfolio = new eportfolio($cid);
 
       if ($seminar->status == $sem_type_id) {
         $this->canEdit = true;
@@ -87,7 +86,6 @@ class EportfoliopluginController extends StudipController {
     $cid = $_GET["cid"];
     $this->cid = $cid;
     $this->userId = $userid;
-    $i = 0;
     $eportfolio = new eportfolio($this->cid);
     $isOwner = $eportfolio->isOwner($userid);
     $owner = User::find(Eportfoliomodel::getOwner($this->cid));
