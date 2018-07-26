@@ -1,6 +1,7 @@
 <?php
 
 include_once __DIR__.'/SupervisorGroup.class.php';
+include_once __DIR__.'/EportfolioActivity.class.php';
 
 /**
  * @author  <asudau@uos.de>
@@ -285,4 +286,12 @@ class EportfolioGroup extends SimpleORMap
     return $anzahl;
   }
 
+  public function getActivities($user){
+      
+      $activities = EportfolioActivity::getDummyActivities($this->seminar_id);
+      
+      return $activities;
+      
+  }
+  
 }
