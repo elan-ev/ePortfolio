@@ -49,6 +49,12 @@ class Eportfoliomodel extends SimpleORMap
         return $portfolio[0]->owner_id;
     }
 
+    public function getOwnerFullname(){
+        $user = User($this->owner);
+        $fullname = $user->vorname . ' ' . $user->nachname;
+        return $fullname;
+    }
+
     public function getPortfolioVorlagen(){
 
       global $perm;
