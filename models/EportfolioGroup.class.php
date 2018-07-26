@@ -211,10 +211,20 @@ class EportfolioGroup extends SimpleORMap
   }
 
   /**
+  * Erstellt einen Eintrag in der eportfolio_group_templates Tabelle
+  **/
+  public static function createTemplateForGroup($group_id, $template_id){
+    $time = time();
+    $query = "INSERT INTO eportfolio_group_templates VALUES (:group_id , :template_id, 1, :t)";
+    $statement = DBManager::get()->prepare($query);
+    $statement->execute(array(':group_id' => $group_id , ':template_id' => $template_id, ':t' => $time));
+  }
+
+  /**
   * Makiert ein Template als Favorit
   **/
   public static function markTemplateAsFav($group_id, $template_id){
-    $query = "INSERT INTO eportfolio_group_templates VALUES (:group_id , :template_id, 1)";
+    $query = "UPDATE eportfolio_group_templates SET favorite = 1 WHERE group_id = :group_id AND group_id = :group_id";
     $statement = DBManager::get()->prepare($query);
     $statement->execute(array(':group_id' => $group_id , ':template_id' => $template_id));
   }
@@ -223,7 +233,7 @@ class EportfolioGroup extends SimpleORMap
   * Löscht ein Template als Favorit
   **/
   public static function deletetemplateAsFav($group_id, $template_id){
-    $query = "DELETE FROM eportfolio_group_templates WHERE group_id = :group_id AND Seminar_id = :template_id";
+    $query = "UPDATE eportfolio_group_templates SET favorite = 0 WHERE group_id = :group_id AND Seminar_id = :template_id";
     $statement = DBManager::get()->prepare($query);
     $statement->execute(array(':group_id' => $group_id , ':template_id' => $template_id));
   }
@@ -232,7 +242,7 @@ class EportfolioGroup extends SimpleORMap
   * Gibt den Wert 1 zurück wenn Template in der Gruppe als Favorit makiert ist
   **/
   public static function checkIfMarkedAsFav($group_id, $template_id){
-    $query = "SELECT favorite FROM eportfolio_group_templates WHERE group_id = :group_id AND Seminar_id = :template_id";
+    $query = "SELECT favorite FROM eportfolio_group_templates WHERE group_id = :group_id AND Seminar_id = :template_id AND favorite = 1";
     $statement = DBManager::get()->prepare($query);
     $statement->execute(array(':group_id'=> $group_id, ':template_id' => $template_id));
     $result = $statement->fetchAll();
@@ -247,7 +257,7 @@ class EportfolioGroup extends SimpleORMap
   * Gibt ein Array mit den ID's den als Favorit makierten Templates zurück
   **/
   public static function getAllMarkedAsFav($group_id){
-    $query = "SELECT Seminar_id FROM eportfolio_group_templates WHERE group_id = :group_id";
+    $query = "SELECT Seminar_id FROM eportfolio_group_templates WHERE group_id = :group_id AND favorite = 1";
     $statement = DBManager::get()->prepare($query);
     $statement->execute(array(':group_id'=> $group_id));
     $result = $statement->fetchAll();

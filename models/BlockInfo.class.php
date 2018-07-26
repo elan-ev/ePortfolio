@@ -34,9 +34,9 @@ class BlockInfo extends SimpleORMap
 
         parent::__construct($id);
     }
-    
+
     public static function createEntry($portfolio_id, $block_id, $vorlagen_block_id){
-        $entry = new self(block_id);
+        $entry = new self($block_id);
         $entry->vorlagen_block_id = $vorlagen_block_id;
         $entry->Seminar_id = $portfolio_id;
         $entry->mkdate = time();
@@ -44,19 +44,19 @@ class BlockInfo extends SimpleORMap
             return true;
         } else return false;
     }
-    
+
     public static function isLocked($block_id){
         $entry = self::findById($block_id);
         if($entry->blocked){
             return true;
         } else return false;
     }
-    
+
     public static function getPortfolioBlockByVorlagenID($block_id, $portfolio_id){
         $entry = self::findBySQL('block_id = :block_id AND Seminar_id = :portfolio_id', array(':block_id' => $block_id, 'portfolio_id' => $portfolio_id));
         if($entry && $entry->block_id){
             return $entry->block_id;
         } else return false;
     }
-    
+
 }

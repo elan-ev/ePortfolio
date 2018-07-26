@@ -7,7 +7,7 @@
         <?php echo $vorname . " " . $nachname; ?>
       </div>
       <div class="member-subname">
-        Status: <span class="member-status-label">.</span> <br>
+        Status: <?php echo Icon::create('span-full', 'status-green'); ?><br>
         Studiengang: Medieninformatik <br>
         Portfoliogruppe: Testgruppe<br>
         Letzte �nnderung am: 23.05.2018
@@ -61,18 +61,28 @@
     <?php $subchapter = Eportfoliomodel::getSubChapters($kapitel['id']); ?>
 
     <div class="row member-content-single-line">
-      <div class="col-sm-4 member-content-single-line-ober"><?php echo $kapitel['title'] ?></div>
+      <div class="col-sm-4 member-content-single-line-ober">
+        <?php echo $kapitel['title'] ?>
+        <?php if(Eportfoliomodel::isEigenesKapitel($portfolio_id, $group_id, $kapitel['id'])): ?>
+          <span class="label-selber">Eigenes</span>
+        <?php endif; ?>
+      </div>
       <div class="col-sm-8">
-        <div class="row">
+        <div class="row" style="text-align: center;">
           <div class="col-sm-2">
             <?php if(Eportfoliomodel::checkKapitelFreigabe($kapitel['id'])): ?>
-              <?= Icon::create('accept'); ?>
+              <?php $new_freigabe = LastVisited::chapter_last_visited($kapitel['id'], $user) < EportfolioFreigabe::hasAccessSince($supervisorGroupId, $kapitel['id']);?>
+              <?php if($new_freigabe): ?>
+                <?= Icon::create('accept+new', 'clickable'); ?>
+              <?php else: ?>
+                <?= Icon::create('accept', 'clickable'); ?>
+              <?php endif; ?>
             <?php else: ?>
-              <?= Icon::create('accept', 'inactive'); ?>  
+              <?= Icon::create('accept', 'inactive'); ?>
             <?php endif; ?>
           </div>
           <div class="col-sm-2">
-            <?php if (ShowsupervisorController::checkSupervisorNotiz($kapitel['id']) == true): ?>
+            <?php if (Eportfoliomodel::checkSupervisorNotiz($kapitel['id']) == true): ?>
               <?= Icon::create('file', 'clickable'); ?>
             <?php else: ?>
               <?= Icon::create('file', 'inactive'); ?>
@@ -97,7 +107,13 @@
         <div class="col-sm-8">
           <div class="row member-content-icons">
             <div class="col-sm-2"></div>
-            <div class="col-sm-2"></div>
+            <div class="col-sm-2">
+              <?php if (Eportfoliomodel::checkSupervisorNotizInUnterKapitel($unterkapitel['id'])):?>
+                <?= Icon::create('file', 'clickable'); ?>
+              <?php else: ?>
+                <?= Icon::create('file', 'inactive'); ?>
+              <?php endif; ?>
+            </div>
             <div class="col-sm-2">
               <?php if(Eportfoliomodel::checkSupervisorResonanzInSubchapter($unterkapitel['id'])):?>
                 <?= Icon::create('forum');  ?>
@@ -110,7 +126,5 @@
       <?php endforeach; ?>
 
   <?php endforeach; ?>
-
-  <!-- <span class="label-selber">Eigenes</span -->
 
 </div>

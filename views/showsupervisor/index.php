@@ -69,11 +69,11 @@
 
                       <?php if(EportfolioGroup::checkIfMarkedAsFav($id, $key) == 0): ?>
                         <a href="<?php echo URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/addAsFav/'. $id .'/' . $key); ?>">
-                          <?= Icon::create('favorite', 'clickable')->asImg(20, $params) ?>
+                          <?= Icon::create('visibility-invisible', 'clickable')->asImg(20, $params) ?>
                         </a>
                       <?php else: ?>
                         <a href="<?php echo URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/deleteAsFav/'. $id .'/' . $key); ?>">
-                          <?= Icon::create('favorite', 'attention')->asImg(20, $params) ?>
+                          <?= Icon::create('visibility-visible', 'attention')->asImg(20, $params) ?>
                         </a>
                       <?php endif; ?>
 
@@ -138,6 +138,7 @@
 
           <div class="row member-container">
             <?php foreach ($member as $user):?>
+              <?php $userPortfolioId = EportfolioGroupUser::getPortfolioIdOfUserInGroup($user, $id); ?>
               <div class="col-sm-4 member-single-card">
                 <a class="member-link" data-dialog="size=1000px;" href="/public/plugins.php/eportfolioplugin/showsupervisor/memberdetail/<?php echo $id; ?>/<?php echo $user; ?>">
                 <div class="member-item">
@@ -165,7 +166,7 @@
                       </div>
 
                       <div class="member-subname">
-                        Status: <span class="member-status-label">.</span> <br>
+                        Status: <?php echo Icon::create('span-full', 'status-green'); ?><br>
                         Studiengang etc<br>
                         Letzte Änderung: 12.05 2018
                       </div>
@@ -177,23 +178,31 @@
                               <div class="row">
                                 <?php foreach($favVorlagen as $vorlage): ?>
                                   <?php foreach (Eportfoliomodel::getChapters($vorlage) as $chapter):?>
-                                    <?php $new_freigabe = LastVisited::chapter_last_visited($chapter[id], $user) < EportfolioFreigabe::hasAccessSince($supervisorGroupId, $chapter[id]);?>
+                                    <?php $current_block_id = Eportfoliomodel::getUserPortfilioBlockId($userPortfolioId ,$chapter[id]); ?>
                                     <div class="col-sm-4 member-kapitelname"><?php echo $chapter[title]?></div>
                                     <div class="col-sm-8">
                                       <div class="row member-icons">
                                         <div class="col-sm-4">
-                                          <?php $link = URLHelper::getLink("plugins.php/courseware/courseware", array('cid' => $getsemid , 'selected' => $idNew));?>
-                                          <?= $new_freigabe ? Icon::create('accept+new', 'clickable') : Icon::create('accept', 'clickable'); ?>
+                                          <?php if(Eportfoliomodel::checkKapitelFreigabe($current_block_id)): ?>
+                                            <?php $new_freigabe = LastVisited::chapter_last_visited($current_block_id, $user) < EportfolioFreigabe::hasAccessSince($supervisorGroupId, $current_block_id);?>
+                                            <?php if($new_freigabe): ?>
+                                              <?= Icon::create('accept+new', 'clickable'); ?>
+                                            <?php else: ?>
+                                              <?= Icon::create('accept', 'clickable'); ?>
+                                            <?php endif; ?>
+                                          <?php else: ?>
+                                            <?= Icon::create('accept', 'inactive'); ?>
+                                          <?php endif; ?>
                                         </div>
                                         <div class="col-sm-4">
-                                          <?php if (ShowsupervisorController::checkSupervisorNotiz($chapter[id]) == true): ?>
+                                          <?php if (Eportfoliomodel::checkSupervisorNotiz($current_block_id) == true): ?>
                                             <?= Icon::create('file', 'clickable'); ?>
                                           <?php else: ?>
                                             <?= Icon::create('file', 'inactive'); ?>
                                           <?php endif; ?>
                                         </div>
                                         <div class="col-sm-4">
-                                          <?php if (Eportfoliomodel::checkSupervisorResonanz($chapter[id]) == true): ?>
+                                          <?php if (Eportfoliomodel::checkSupervisorResonanz($current_block_id) == true): ?>
                                             <?= Icon::create('forum', 'clickable');?>
                                           <?php else: ?>
                                             <?= Icon::create('forum', 'inactive'); ?>
