@@ -45,11 +45,10 @@
           <tbody>
             <?php $temps = Eportfoliomodel::getPortfolioVorlagen();
               foreach ($temps as $key):?>
-              <?php $thisPortfolio = new Seminar($key); ?>
-              <?php $eportfolio = new eportfolio($key); ?>
+              <?php $portfolio = new Course($key); ?>
                 <tr>
-                  <td><?php echo $thisPortfolio->getName(); ?></td>
-                  <td><?php echo $eportfolio->getBeschreibung(); ?></td>
+                  <td><?php echo $portfolio->name; ?></td>
+                  <td><?php echo $portfolio->beschreibung; ?></td>
                   <td style="text-align: center;">
                       <a href="<?php echo URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $key)); ?>"><?php echo Icon::create('edit', 'clickable', ['title' => sprintf(_('Portfolio-Vorlage bearbeiten.'))]) ?></a>
                       <?php if($member && (ShowsupervisorController::checkTemplate($id, $key) == false)): ?>
