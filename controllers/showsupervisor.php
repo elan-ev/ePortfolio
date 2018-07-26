@@ -627,6 +627,7 @@ class ShowsupervisorController extends StudipController {
       $id = $_GET["cid"];
       $group = EportfolioGroup::findBySQL('Seminar_id = :cid', array(':cid' => $id));
       $this->activities = $group[0]->getActivities(User::findCurrent());
+      $this->countActivities = $group[0]->getNumberOfNewActivities(User::findCurrent());
     }
 
 }

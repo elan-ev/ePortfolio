@@ -287,11 +287,20 @@ class EportfolioGroup extends SimpleORMap
   }
 
   public function getActivities($user){
-      
+
       $activities = EportfolioActivity::getDummyActivities($this->seminar_id);
-      
+
       return $activities;
-      
+
   }
   
+  public function getNumberOfNewActivities($user){
+    $count = 0;
+    $activities = $this->getActivities($user);
+    foreach ($activities as $activity) {
+      if($activity->is_new) $count++;
+    }
+    return $count;
+  }
+
 }

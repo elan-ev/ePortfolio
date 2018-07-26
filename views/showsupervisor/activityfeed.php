@@ -1,7 +1,15 @@
 <div class="activity-feed-container">
 
   <div class="activity-feed-header">
-    <span class="activity-feed-label">Neue Aktivitäten</span>
+    <span class="activity-feed-label">
+
+      <?php if($countActivities >= 1){
+          echo $countActivities;
+      } else {
+        echo "Keine";
+      } ?>
+
+    Neue Aktivitäten</span>
     <div class="activity-feed-line"></div>
   </div>
 

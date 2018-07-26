@@ -1,6 +1,6 @@
 <?php
 
-/* 
+/*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -13,9 +13,9 @@ class EportfolioActivity
     var $date;      //unix timestamp
     var $link;  //string
     var $is_new;    //bollean
-    
-    
-    
+
+
+
     public function __construct($type, $user, $date, $link, $is_new) {
 
         //$this->db_table = 'eportfolio_block_infos';
@@ -35,20 +35,20 @@ class EportfolioActivity
                 $this->message = 'Ein bereits freigegebener Abschnitt wurde verändert';
                 break;
         }
-        
-        
+
+
         //parent::__construct($id);
     }
-    
+
     public function getDummyActivities($seminar_id){
         global $user;
         $activities = array();
         $activities[] = new EportfolioActivity('freigabe', $user, 1532603297, URLHelper::getURL('/dispatch.php/start'), true);
         $activities[] = new EportfolioActivity('aenderung', $user, 1532403297, URLHelper::getURL('/dispatch.php/start'), true);
         $activities[] = new EportfolioActivity('freigabe', $user, 1532503297, URLHelper::getURL('/dispatch.php/start'), true);
-        $activities[] = new EportfolioActivity('notiz', $user, 1532609297, URLHelper::getURL('/dispatch.php/start'), true);
-        $activities[] = new EportfolioActivity('notiz', $user, 1532653297, URLHelper::getURL('/dispatch.php/start'), true);
+        $activities[] = new EportfolioActivity('notiz', $user, 1532609297, URLHelper::getURL('/dispatch.php/start'), false);
+        $activities[] = new EportfolioActivity('notiz', $user, 1532653297, URLHelper::getURL('/dispatch.php/start'), false);
         return $activities;
     }
-    
+
 }
