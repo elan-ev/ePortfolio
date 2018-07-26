@@ -124,7 +124,8 @@
           </div>
         </div>
       <?php endforeach; ?>
-
+    </div>
   <?php endforeach; ?>
+  <!-- <span class="label-selber">Eigenes</span -->
 
 </div>
