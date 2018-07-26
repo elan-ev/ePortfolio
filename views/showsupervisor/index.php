@@ -140,7 +140,7 @@
             <?php foreach ($member as $user):?>
               <?php $userPortfolioId = EportfolioGroupUser::getPortfolioIdOfUserInGroup($user, $id); ?>
               <div class="col-sm-4 member-single-card">
-                <a class="member-link" data-dialog="size=1000px;" href="/public/plugins.php/eportfolioplugin/showsupervisor/memberdetail/<?php echo $id; ?>/<?php echo $user; ?>">
+                <a class="member-link" data-dialog="size=1000px;" href="<?= $controller->url_for('showsupervisor/memberdetail/' .$id . '/' . $user) ?>">
                 <div class="member-item">
 
                   <div class="member-notification">
