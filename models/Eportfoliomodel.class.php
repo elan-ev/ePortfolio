@@ -20,6 +20,22 @@ class Eportfoliomodel extends SimpleORMap
 {
 
     public $errors = array();
+ 
+    protected static function configure($config = array())
+    {
+        $config['db_table'] = 'eportfolio';
+
+        $config['belongs_to']['seminar'] = array(
+            'class_name' => 'Seminar',
+            'foreign_key' => 'Seminar_id',
+            'on_delete' => 'delete',); 
+        
+        $config['belongs_to']['owner'] = array(
+            'class_name' => 'User',
+            'foreign_key' => 'owner_id',);
+
+        parent::configure($config);
+    }
 
     /**
      * Give primary key of record as param to fetch
@@ -30,11 +46,11 @@ class Eportfoliomodel extends SimpleORMap
      */
     public function __construct($id = null) {
 
-        $this->db_table = 'eportfolio';
-
         parent::__construct($id);
+        
     }
-
+    
+    
     public static function getAllSupervisors($cid){
         $supervisoren = array();
         $portfolio = Eportfoliomodel::findBySQL('Seminar_id = :cid', array(':cid' => $cid));
@@ -44,18 +60,18 @@ class Eportfoliomodel extends SimpleORMap
         return $supervisoren[0];
     }
 
-     public static function getOwner($cid){
+    public static function getOwner($cid){
         $portfolio = Eportfoliomodel::findBySQL('Seminar_id = :cid', array(':cid' => $cid));
         return $portfolio[0]->owner_id;
     }
-
+    
     public function getOwnerFullname(){
         $user = User($this->owner);
         $fullname = $user->vorname . ' ' . $user->nachname;
         return $fullname;
     }
 
-    public function getPortfolioVorlagen(){
+    public static function getPortfolioVorlagen(){
 
       global $perm;
       $seminare = array();
@@ -75,6 +91,17 @@ class Eportfoliomodel extends SimpleORMap
       return $seminare;
 
     }
+    
+    public static function findBySeminarId($sem_id){
+        $eportfolio = Eportfoliomodel::findBySQL('seminar_id = :id', array(':id'=> $sem_id));
+        return $eportfolio;
+    }
+    
+     public static function isOwner($sem_id, $user_id){
+        $eportfolio = Eportfoliomodel::findBySQL('seminar_id = :id', array(':id'=> $sem_id));
+        return $eportfolio->owner_id == $user_id;
+    }
+    
 
     public static function getMyPortfolios(){
 
@@ -144,7 +171,7 @@ class Eportfoliomodel extends SimpleORMap
       $statement->execute(array(':id'=> $chapter_id));
       $subchapters = $statement->fetchAll(PDO::FETCH_ASSOC);
         foreach ($subchapters as $subchapter) {
-          if (static::checkSupervisorResonanzInSubchapter($subchapter['id'])) return true;
+          if (self::checkSupervisorResonanzInSubchapter($subchapter['id'])) return true;
         }
     }
 
@@ -195,7 +222,7 @@ class Eportfoliomodel extends SimpleORMap
       $statement->execute(array(':id'=> $id));
       $subchapters = $statement->fetchAll(PDO::FETCH_ASSOC);
       foreach ($subchapters as $subchapter) {
-        if(static::checkSupervisorNotizInUnterKapitel($subchapter['id'])) return true;
+        if(Eportfoliomodel::checkSupervisorNotizInUnterKapitel($subchapter['id'])) return true;
       }
     }
 

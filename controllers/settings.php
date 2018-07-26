@@ -35,12 +35,11 @@ class settingsController extends StudipController {
 
     // set vars
     $userid = $GLOBALS["user"]->id;
-    $cid = $_GET["cid"]?  $_GET["cid"] : $cid;
-    $this->cid = $cid;
-    $this->isVorlage = Eportfoliomodel::isVorlage($this->cid);
-    $eportfolio = Eportfoliomodel::findBySQL('seminar_id = :id', array(':id'=> $this->cid));
+    $cid = Course::findCurrent()->id;
+    $this->isVorlage = Eportfoliomodel::isVorlage($cid);
+    $eportfolio = Eportfoliomodel::findBySeminarId($cid);
 
-    $seminar = new Seminar($this->cid);
+    $seminar = new Seminar($cid);
     
     # Aktuelle Seite
     PageLayout::setTitle('ePortfolio - Zugriffsrechte: '.$seminar->getName());
@@ -182,7 +181,7 @@ class settingsController extends StudipController {
 
   //TOTO refactoring gehört in ePortfoliomodel
   public function getSupervisorGroupOfPortfolio($id){
-    $portfolio = Eportfoliomodel::findBySQL('Seminar_id = :id', array(':id'=> $id));
+    $portfolio = Eportfoliomodel::findBySeminarId($id);
      if ($portfolio[0]->group_id){
         $portfoliogroup = EportfolioGroup::findbySQL('seminar_id = :id', array(':id'=> $portfolio[0]->group_id));
      } if ($portfoliogroup[0]->supervisor_group_id){
@@ -196,7 +195,7 @@ class settingsController extends StudipController {
   public function addZugriff_action($id){
     $mp             = MultiPersonSearch::load('selectFreigabeUser');
     $seminar        = new Seminar($id);
-    $eportfolio = Eportfoliomodel::findBySQL('Seminar_id = :id', array(':id'=> $id));
+    $eportfolio = Eportfoliomodel::findBySeminarId($id);
     $eportfolio_id  = $eportfolio[0]->eportfolio_id;
     $userRole       = 'autor';
 
@@ -221,7 +220,7 @@ class settingsController extends StudipController {
 
   public function deleteUserAccess($userId, $cid){
     $seminar        = new Seminar($cid);
-    $eportfolio = Eportfoliomodel::findBySQL('Seminar_id = :id', array(':id'=> $cid));
+    $eportfolio = Eportfoliomodel::findBySeminarId($cid);
     $eportfolio_id  = $eportfolio[0]->eportfolio_id;
 
     # User aus Seminar entfernen
