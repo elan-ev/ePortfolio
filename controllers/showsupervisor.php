@@ -65,6 +65,7 @@ class ShowsupervisorController extends StudipController {
         $navcreate->setTitle('Navigation');
         $navcreate->addLink("�bersicht", PluginEngine::getLink($this->plugin, array(), 'show'));
         $navcreate->addLink("Supervisionsansicht", 'showsupervisor', null, array('class' => 'active'));
+         $navcreate->addLink("Activity Feed", PluginEngine::getLink($this->plugin, array(), 'showsupervisor/activityfeed'));
 
         $sidebar->addWidget($navcreate);
 
@@ -620,6 +621,12 @@ class ShowsupervisorController extends StudipController {
       $this->AnzahlAllerKapitel = EportfolioGroup::getAnzahlAllerKapitel($group_id);
       $this->GesamtfortschrittInProzent = EportfolioGroupUser::getGesamtfortschrittInProzent($user_id, $group_id);
       $this->AnzahlNotizen = EportfolioGroupUser::getAnzahlNotizen($user_id, $group_id);
+    }
+
+    public function activityfeed_action(){
+      $id = $_GET["cid"];
+      $group = EportfolioGroup::findBySQL('Seminar_id = :cid', array(':cid' => $id));
+      $this->activities = $group[0]->getActivities(User::findCurrent());
     }
 
 }
