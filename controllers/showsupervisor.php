@@ -388,19 +388,6 @@ class ShowsupervisorController extends StudipController {
       }
     }
 
-    public function addTemplateTest(){
-      $cid = "43ff6d96a50cf30836ef6b8d1ea60667";
-
-      $plugin_courseware = \PluginManager::getInstance()->getPlugin('Courseware');
-      require_once 'public/' . $plugin_courseware->getPluginPath() . '/vendor/autoload.php';
-
-      //export from master course
-      $containerExport =  new Container();
-      $containerExport["cid"] = $cid; //Master cid
-      print_r($containerExport['block_factory']);
-    }
-
-
     public function delete_action($cid){
       $cid = $_GET['cid'];
       EportfolioGroup::deleteGroup($cid);
