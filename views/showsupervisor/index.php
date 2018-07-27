@@ -52,7 +52,7 @@
                   <td style="text-align: center;">
                       <a href="<?php echo URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $key)); ?>"><?php echo Icon::create('edit', 'clickable', ['title' => sprintf(_('Portfolio-Vorlage bearbeiten.'))]) ?></a>
                       <?php if($member && (ShowsupervisorController::checkTemplate($id, $key) == false)): ?>
-                      <a onclick="return confirm('Vorlage an Teilnehmende verteilen') " href="<?= PluginEngine::getLink($this->plugin, array(), 'showsupervisor/createportfolio/' . $key . '/' . $id) ?>">
+                      <a onclick="return confirm('Vorlage an Teilnehmende verteilen') " href="<?= PluginEngine::getLink($this->plugin, array(), 'showsupervisor/createportfolio/' . $key) ?>">
                         <? $params = tooltip2(_("Portfolio-Vorlage an Gruppenmitglieder verteilen.")); ?>
                         <? $params['style'] = 'cursor: pointer'; ?>
                         <?= Icon::create('add', 'clickable')->asImg(20, $params) ?>
