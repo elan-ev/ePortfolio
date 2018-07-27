@@ -111,7 +111,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         
         $group = EportfolioGroup::find($course_id); 
         if($group){
-            $new_ones = sizeof($group->getActivities($user_id));
+            $new_ones = sizeof($group->getActivities());
        
             if ($new_ones) {
                 $title = $new_ones > 1 ? sprintf(_('%s neue Ereignisse in Studierenden-Portfolios'), $new_ones) : _('1 neues Ereignisse in Studierenden-Portfolio');

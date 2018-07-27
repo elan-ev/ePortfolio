@@ -261,17 +261,27 @@ class EportfolioGroup extends SimpleORMap
     return $anzahl;
   }
 
-  public function getActivities($user){
+  public function getActivities(){
 
-      $activities = EportfolioActivity::getDummyActivities($this->seminar_id);
+    $user = User::findCurrent();
+    $activities = EportfolioActivity::getDummyActivities($this->seminar_id);
 
-      return $activities;
+    return $activities;
+
+  }
+  
+  public static function getActivitiesOfUser($seminar_id, $user){
+
+    $currentuser = User::findCurrent();
+    $activities = EportfolioActivity::getDummyActivitiesOfUser($seminar_id, $user);
+
+    return $activities;
 
   }
   
   public function getNumberOfNewActivities($user){
     $count = 0;
-    $activities = $this->getActivities($user);
+    $activities = $this->getActivities();
     foreach ($activities as $activity) {
       if($activity->is_new) $count++;
     }
@@ -352,7 +362,7 @@ class EportfolioGroup extends SimpleORMap
 
 
     public static function getAnzahlAnNeuerungen($userid, $groupid){
-      return 3;
+      return sizeof(self::getActivitiesOfUser($groupid, $userid));
     }
 
 }

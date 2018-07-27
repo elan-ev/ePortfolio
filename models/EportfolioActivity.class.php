@@ -50,5 +50,12 @@ class EportfolioActivity
         $activities[] = new EportfolioActivity('notiz', $user, 1532653297, URLHelper::getLink('dispatch.php/start'), true);
         return $activities;
     }
+    
+    public function getDummyActivitiesOfUser($seminar_id, $user){
+        $activities = array();
+        $activities[] = new EportfolioActivity('freigabe', $user, 1532653297, URLHelper::getLink('dispatch.php/start'), true);
+        $activities[] = new EportfolioActivity('aenderung', $user, 1532413297, URLHelper::getLink('dispatch.php/start'), true);
+        return $activities;
+    }
 
 }
