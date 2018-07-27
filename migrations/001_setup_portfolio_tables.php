@@ -26,11 +26,6 @@ class SetupPortfolioTables extends Migration
           `owner_id` varchar(32) NOT NULL,
           PRIMARY KEY (seminar_id)
           )");
-        $db->exec("CREATE TABLE `eportfolio_groups_user` (
-          `seminar_id` varchar(32) NOT NULL,
-          `user_id` varchar(32) NOT NULL,
-          PRIMARY KEY (seminar_id, user_id)
-          )");
         $db->exec("CREATE TABLE `eportfolio_user` (
           `user_id` varchar(32) NOT NULL,
           `Seminar_id` varchar(32) NOT NULL,
