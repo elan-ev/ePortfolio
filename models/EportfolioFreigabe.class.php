@@ -53,8 +53,7 @@ class EportfolioFreigabe extends SimpleORMap
         
         $hasAccess = EportfolioFreigabe::findBySQL('Seminar_id = :seminar_id AND block_id = :block_id AND user_id = :user_id',
                 array(':seminar_id' => $seminar_id, ':block_id' => $chapter_id, ':user_id' => $user_id)); 
-        $isOwner = Eportfoliomodel::findBySQL('Seminar_id = :seminar_id AND owner_id = :user_id',
-                array(':seminar_id' => $seminar_id, ':user_id' => $user_id)); 
+        $isOwner = Eportfoliomodel::isOwner($seminar_id, $user_id);
         
         if ($hasAccess || $isOwner){ 
             return true; 
