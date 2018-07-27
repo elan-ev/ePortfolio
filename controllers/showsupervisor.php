@@ -108,52 +108,28 @@ class ShowsupervisorController extends StudipController {
     {
         Navigation::activateItem('/course/eportfolioplugin/supervision');
         
-        $id = $_GET["cid"];
-        $this->id = $id;
-        $this->sem = Course::findById($id);
+        $course = Course::findCurrent();
+        $id = $this->sem->id;
 
-      //berechtigung prüfen (group-owner TODO:refactoring
-      if(!$id == ''){
-        $query = "SELECT owner_id FROM eportfolio_groups WHERE seminar_id = :id";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute(array(':id'=> $id));
-        $check = $statement->fetchAll();
+        //berechtigung prüfen (group-owner TODO:refactoring //ggf das hier nur für Supervisor, 
+        //das würde dann aber schon in der Pluginklasse passieren
+        if(!$id == ''){
+            $query = "SELECT owner_id FROM eportfolio_groups WHERE seminar_id = :id";
+            $statement = DBManager::get()->prepare($query);
+            $statement->execute(array(':id'=> $id));
+            $check = $statement->fetchAll();
 
-        //check permission
-        if(!$check[0][0] == $GLOBALS["user"]->id){
-          throw new AccessDeniedException(_("Sie haben keine Berechtigung"));
+            //check permission
+            if(!$check[0][0] == $GLOBALS["user"]->id){
+              throw new AccessDeniedException(_("Sie haben keine Berechtigung"));
+            }
         }
-      }
 
-      $this->userid = $GLOBALS["user"]->id;
+        $this->userid = $GLOBALS["user"]->id;
 
-      $this->url = $_SERVER['REQUEST_URI'];
-      if($this->sem){
-        $course = new Seminar($id);
         $this->group = EportfolioGroup::find($id);
-        $this->courseName = $course->getName();
+        $this->courseName = $course->name;
         $this->member = EportfolioGroup::getGroupMember($id);
-
-        $search_obj = new SQLSearch("SELECT auth_user_md5.user_id, CONCAT(auth_user_md5.nachname, ', ', auth_user_md5.vorname, ' (' , auth_user_md5.email, ')' ) as fullname, username, perms "
-                            . "FROM auth_user_md5 "
-                            . "WHERE (CONCAT(auth_user_md5.Vorname, \" \", auth_user_md5.Nachname) LIKE :input "
-                            . "OR CONCAT(auth_user_md5.Nachname, \" \", auth_user_md5.Vorname) LIKE :input "
-                            . "OR auth_user_md5.username LIKE :input)"
-                            //. "AND auth_user_md5.user_id NOT IN "
-                            //. "(SELECT supervisor_group_user.user_id FROM supervisor_group_user WHERE supervisor_group_user.supervisor_group_id = '". $supervisorgroupid ."')  "
-                            . "ORDER BY Vorname, Nachname ",
-                _("Teilnehmer suchen"), "username");
-
-      $this->mp = MultiPersonSearch::get('supervisorgroupSelectStudents')
-        ->setLinkText(_('Personen hinzuf�gen'))
-        ->setTitle(_('Studierende zur Gruppe hinzuf�gen'))
-        ->setSearchObject($search_obj)
-        ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/addUsersToGroup/'. $id))
-        ->render();
-
-
-
-      } else $this->render_action('index_nogroup');
 
     }
 
