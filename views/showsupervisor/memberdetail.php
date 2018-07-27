@@ -46,7 +46,7 @@
 <div class="member-contant-detail">
 
   <div class="row member-containt-head-detail">
-    <div class="col-sm-4">Kapitelname</div>
+    <div class="col-sm-4">Kapitelname<?= $portfolio_id ?></div>
     <div class="col-sm-8">
       <div class="row member-content-icons">
         <div class="col-sm-2">Freigegeben</div>

@@ -53,16 +53,16 @@ class Eportfoliomodel extends SimpleORMap
     
     public static function getAllSupervisors($cid){
         $supervisoren = array();
-        $portfolio = Eportfoliomodel::findBySQL('Seminar_id = :cid', array(':cid' => $cid));
-        if ($portfolio[0]->group_id){
-            array_push($supervisoren, EportfolioGroup::getAllSupervisors($portfolio[0]->group_id));
+        $portfolio = Eportfoliomodel::findBySeminarId($cid);
+        if ($portfolio->group_id){
+            array_push($supervisoren, EportfolioGroup::getAllSupervisors($portfolio->group_id));
         }
         return $supervisoren[0];
     }
 
     public static function getOwner($cid){
-        $portfolio = Eportfoliomodel::findBySQL('Seminar_id = :cid', array(':cid' => $cid));
-        return $portfolio[0]->owner_id;
+        $portfolio = Eportfoliomodel::findBySeminarId($cid);
+        return $portfolio->owner_id;
     }
     
     public function getOwnerFullname(){
@@ -94,11 +94,11 @@ class Eportfoliomodel extends SimpleORMap
     
     public static function findBySeminarId($sem_id){
         $eportfolio = Eportfoliomodel::findBySQL('seminar_id = :id', array(':id'=> $sem_id));
-        return $eportfolio;
+        return $eportfolio[0];
     }
     
      public static function isOwner($sem_id, $user_id){
-        $eportfolio = Eportfoliomodel::findBySQL('seminar_id = :id', array(':id'=> $sem_id));
+        $eportfolio = Eportfoliomodel::findBySeminarId($sem_id);
         return $eportfolio->owner_id == $user_id;
     }
     
