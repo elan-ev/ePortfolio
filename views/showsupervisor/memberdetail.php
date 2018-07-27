@@ -70,7 +70,7 @@
       <div class="col-sm-8">
         <div class="row" style="text-align: center;">
           <div class="col-sm-2">
-            <?php if(Eportfoliomodel::checkKapitelFreigabe($kapitel['id'])): ?>
+            <?php if($statusKapitel = Eportfoliomodel::checkKapitelFreigabe($kapitel['id'])): ?>
               <?php $new_freigabe = LastVisited::chapter_last_visited($kapitel['id'], $user) < EportfolioFreigabe::hasAccessSince($supervisorGroupId, $kapitel['id']);?>
               <?php if($new_freigabe): ?>
                 <?= Icon::create('accept+new', 'clickable'); ?>
@@ -103,7 +103,14 @@
       </div>
 
       <?php foreach ($subchapter as $unterkapitel): ?>
-        <div class="col-sm-4 member-content-unterkapitel"><?php echo $unterkapitel['title']; ?></div>
+        <div class="col-sm-4 member-content-unterkapitel">
+          <?php echo $unterkapitel['title']; ?>
+          <?php if(!$statusKapitel): ?>
+            <?php if (Eportfoliomodel::isEigenesUnterkapitel($unterkapitel['id'])):?>
+              <span class="label-selber">Eigenes</span>
+            <?php endif; ?>
+          <?php endif; ?>
+        </div>
         <div class="col-sm-8">
           <div class="row member-content-icons">
             <div class="col-sm-2"></div>

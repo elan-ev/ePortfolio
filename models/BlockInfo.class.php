@@ -58,5 +58,4 @@ class BlockInfo extends SimpleORMap
             return $entry->block_id;
         } else return false;
     }
-
 }

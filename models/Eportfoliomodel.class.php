@@ -171,7 +171,7 @@ class Eportfoliomodel extends SimpleORMap
       $statement->execute(array(':id'=> $chapter_id));
       $subchapters = $statement->fetchAll(PDO::FETCH_ASSOC);
         foreach ($subchapters as $subchapter) {
-          if (self::checkSupervisorResonanzInSubchapter($subchapter['id'])) return true;
+          if (Eportfoliomodel::checkSupervisorResonanzInSubchapter($subchapter['id'])) return true;
         }
     }
 
@@ -254,7 +254,10 @@ class Eportfoliomodel extends SimpleORMap
     * Prüft ob ein Unterkapitel vom Nutzer selber erstellt wurde
     **/
     public static function isEigenesUnterkapitel($subchapter_id){
-
+      $timestapChapter = Eportfoliomodel::getTimestampOfChapter(Eportfoliomodel::getParentId($subchapter_id));
+      if ($timestapChapter < Eportfoliomodel::getTimestampOfChapter($subchapter_id)) {
+        return true; 
+      }
     }
 
     /**
@@ -287,6 +290,17 @@ class Eportfoliomodel extends SimpleORMap
       $query = "SELECT mkdate FROM eportfolio_group_templates WHERE group_id = :group_id AND seminar_id = :seminar_id";
       $statement = DBManager::get()->prepare($query);
       $statement->execute(array(':group_id' => $group_id, ':seminar_id' => $seminar_id));
+      $result = $statement->fetchAll();
+      return $result[0][0];
+    }
+
+    /**
+    * liefert ParentId eines Blocks
+    **/
+    public static function getParentId($block_id){
+      $query = "SELECT parent_id FROM mooc_blocks WHERE id = :id";
+      $statement = DBManager::get()->prepare($query);
+      $statement->execute(array(':id' => $block_id));
       $result = $statement->fetchAll();
       return $result[0][0];
     }

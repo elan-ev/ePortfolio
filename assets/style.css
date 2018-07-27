@@ -598,3 +598,37 @@ td, th {
   z-index: 100;
   border: 1px solid #fff;
 }
+
+.single-activity {
+  background-color: #f5f6f6;
+  margin-bottom: 5px;
+  padding: 5px;
+}
+
+.single-activity img {
+  width: 25px;
+  height: 25px;
+}
+
+.single-activity-info {
+  margin-left: 10px;
+}
+
+.activity-feed-header {
+  margin-top: 1px;
+  margin-bottom: 10px;
+}
+
+.activity-feed-label {
+  background-color: #29487b;
+  color: #fff;
+  padding: 2px 14px;
+  border-radius: 36px;
+}
+
+.activity-feed-label-alt {
+  background-color: #ececed;
+  color: black;
+  padding: 2px 14px;
+  border-radius: 36px;
+}
