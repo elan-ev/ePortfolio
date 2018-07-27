@@ -19,9 +19,6 @@ class ShowController extends StudipController {
         $navcreate = new ActionsWidget();
         $navcreate->setTitle('Navigation');
         $navcreate->addLink("Übersicht", 'show' );
-        if ($this->isDozent) {
-          $navcreate->addLink("Supervisionsansicht", "showsupervisor");
-        }
         $sidebar->addWidget($navcreate);
         
         $actions = new ActionsWidget();

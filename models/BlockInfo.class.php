@@ -3,7 +3,6 @@
 
 include_once __DIR__.'/Eportfoliomodel.class.php';
 include_once __DIR__.'/EportfolioGroup.class.php';
-include_once __DIR__.'/EportfolioGroupUser.class.php';
 include_once __DIR__.'/SupervisorGroupUser.class.php';
 
 /**
@@ -35,6 +34,14 @@ class BlockInfo extends SimpleORMap
         parent::__construct($id);
     }
 
+    /**
+     * Use as constructor
+     * is used by VorlagenCopy, when students get their own copy of a courseware
+     *
+     * @param string $portfolio_id 
+     * @param string $block_id 
+     * @param string $vorlagen_block_id 
+     */
     public static function createEntry($portfolio_id, $block_id, $vorlagen_block_id){
         $entry = new self($block_id);
         $entry->vorlagen_block_id = $vorlagen_block_id;
@@ -45,6 +52,11 @@ class BlockInfo extends SimpleORMap
         } else return false;
     }
 
+    /**
+     * check if a given Mooc-Block is marked as locked
+     *
+     * @param string $block_id
+     */
     public static function isLocked($block_id){
         $entry = self::findById($block_id);
         if($entry->blocked){
@@ -52,6 +64,13 @@ class BlockInfo extends SimpleORMap
         } else return false;
     }
 
+    /**
+     * get corresponding Mooc-Block for a PortfolioVorlage in a students portfolio
+     *
+     * @param string $portfolio_id 
+     * @param string $block_id 
+     * @param string $vorlagen_block_id 
+     */
     public static function getPortfolioBlockByVorlagenID($block_id, $portfolio_id){
         $entry = self::findBySQL('block_id = :block_id AND Seminar_id = :portfolio_id', array(':block_id' => $block_id, 'portfolio_id' => $portfolio_id));
         if($entry && $entry->block_id){

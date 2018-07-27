@@ -10,7 +10,7 @@ include_once __DIR__.'/EportfolioActivity.class.php';
  * @property varchar                $owner_id
  * @property text                   $templates
  * @property varchar                $supervisor_group_id
- * @property EportfolioGroupUser[]  $user
+ * @property CourseMember[]  $user
  */
 class EportfolioGroup extends SimpleORMap
 {
@@ -27,11 +27,9 @@ class EportfolioGroup extends SimpleORMap
             'foreign_key' => 'owner_id', );
 
         $config['has_many']['user'] = array(
-            'class_name' => 'EportfolioGroupUser',
+            'class_name' => 'CourseMember',
             'assoc_foreign_key' => 'seminar_id',
-            'assoc_func' => 'findByGroupId',
-            'on_delete' => 'delete',
-            'on_store' => 'store',
+            'assoc_func' => 'findByCourse',
         );
 
         parent::configure($config);
@@ -61,10 +59,10 @@ class EportfolioGroup extends SimpleORMap
     }
 
     public static function getGroupMember($id) {
-      $group = new EportfolioGroup($id);
+      $group = EportfolioGroup::find($id);
       $array = array();
       foreach ($group->user as $user) {
-        array_push($array, $user->user_id);
+        ($user->status == 'autor') ? array_push($array, $user->user_id): '';
       }
       return $array;
     }
@@ -80,30 +78,16 @@ class EportfolioGroup extends SimpleORMap
     }
 
   //TODO anpassen
-  public static function newGroup($owner, $title, $text){
-    $current_semester = Semester::findCurrent();
-    $seminar = new Seminar();
-    $id = $seminar->getId();
-    $seminar->name = $title;
-    $seminar->setEndSemester(-1);
-    $seminar->setStartSemester($current_semester->beginn);
-    $seminar->store();
-    $seminar->addMember($owner, 'dozent', true);
-
-    $sem_class = Config::get()->getValue('SEM_CLASS_PORTFOLIO_Supervisionsgruppe');
-    //Course Objekt vom Seminar erzeugen und visible setzen
-    $course = new Course($id);
-    $course->visible = 0;
-    $course->status = $sem_class;
-    $course->beschreibung = $text;
-    $course->store();
+  public static function newGroup($owner, $sem_id){
+ 
+    $course = Course::find($sem_id);
 
     $supervisorgroup = new SupervisorGroup();
-    $supervisorgroup->name = $title;
+    $supervisorgroup->name = $course->name;
     $supervisorgroup->store();
 
     //var_dump($id);
-    $group = new EportfolioGroup($id);
+    $group = new EportfolioGroup($sem_id);
     $group->supervisor_group_id = $supervisorgroup->id;
     $group->owner_id = $owner;
     $group->store();
@@ -112,17 +96,6 @@ class EportfolioGroup extends SimpleORMap
     $supervisorgroup->store();
     $supervisorgroup->addUser($owner);
 
-    return $id;
-  }
-
-  public static function deleteUser($userId, $seminar_id){
-    $user = EportfolioGroupUser::findBySQL('user_id = :user_id AND seminar_id = :seminar_id',
-                array(':user_id' => $user_id, ':seminar_id' => $seminar_id));
-        $user->delete();
-
-        $seminar = new Seminar($this->eportfolio_group);
-        $seminar->deleteMember($user_id);
-        $sem->store();
   }
 
   public static function getOwner($id){
@@ -172,7 +145,7 @@ class EportfolioGroup extends SimpleORMap
   public function getRelatedStudentPortfolios(){
       $member = $this->user;
       $portfolios = array();
-      if (count($this->templates) >= 1) {
+      if ($this->templates) {
 
         foreach ($member as $key) {
           $portfolio = Eportfoliomodel::findBySQL('group_id = :groupid AND owner_id = :value', array(':groupid'=> $this->seminar_id, ':value'=> $key->user_id));
@@ -302,5 +275,82 @@ class EportfolioGroup extends SimpleORMap
     }
     return $count;
   }
+  
+  /**
+    * Gibt ein Array mit den Portfolio ID's eines Users
+    * innerhalb einer Gruppe wieder
+    **/
+    public static function getPortfolioIDsFromUserinGroup($group_id, $user_id){
+      $query = "SELECT * FROM eportfolio WHERE owner_id = :owner_id AND group_id = :group_id";
+      $statement = DBManager::get()->prepare($query);
+      $statement->execute(array(':owner_id'=> $user_id, ':group_id' => $group_id));
+      $result = $statement->fetchAll();
+      $return = array();
+      foreach ($result as $key) {
+        array_push($return, $key[0]);
+      }
+      return $return;
+    }
+
+    /**
+    * Gibt die Anzahl der freigegeben Kapitel zurück
+    **/
+    public static function getAnzahlFreigegebenerKapitel($user_id, $group_id){
+      $anzahl = 0;
+      $templates = EportfolioGroup::getPortfolioIDsFromUserinGroup($group_id, $user_id);
+      foreach ($templates as $temp) {
+        $query =  "SELECT COUNT(e1.Seminar_id) FROM eportfolio e1
+                  JOIN eportfolio_freigaben e2 ON e1.Seminar_id = e2.Seminar_id
+                  WHERE e1.Seminar_id = :id";
+
+        $statement = DBManager::get()->prepare($query);
+        $statement->execute(array(':id'=> $temp));
+        $result = $statement->fetchAll();
+        $anzahl += $result[0][0];
+      }
+      return $anzahl;
+    }
+
+    /**
+    * Gibt die Verhältnis freigeben/gesamt in Prozent wieder
+    **/
+    public static function getGesamtfortschrittInProzent($user_id, $group_id){
+      $oben = EportfolioGroup::getAnzahlFreigegebenerKapitel($user_id, $group_id);
+      $unten = EportfolioGroup::getAnzahlAllerKapitel($group_id);
+      return $oben / $unten * 100;
+    }
+
+    /**
+    * Gibt die Anzahl der Notizen für den Supervisor eines users
+    * innerhalb einer Gruppe wieder
+    **/
+    public static function getAnzahlNotizen($user_id, $group_id){
+      $anzahl = 0;
+      $temps = EportfolioGroup::getPortfolioIDsFromUserinGroup($group_id, $user_id);
+      foreach ($temps as $temp) {
+        $query = "SELECT COUNT(type) FROM mooc_blocks WHERE Seminar_id = :seminar_id AND type = 'PortfolioBlockSupervisor'";
+        $statement = DBManager::get()->prepare($query);
+        $statement->execute(array(':seminar_id'=> $temp));
+        $result = $statement->fetchAll();
+        $anzahl += $result[0][0];
+      }
+      return $anzahl;
+    }
+
+    /**
+    * Gibt die ID des Portfolios des Nutzers in einer Gruppe zurück
+    **/
+    public static function getPortfolioIdOfUserInGroup($user_id, $group_id){
+      $query = "SELECT Seminar_id FROM eportfolio WHERE owner_id = :owner_id AND group_id = :group_id";
+      $statement = DBManager::get()->prepare($query);
+      $statement->execute( array(':owner_id' => $user_id, ':group_id' => $group_id));
+      $result = $statement->fetchAll();
+      return $result[0][0];
+    }
+
+
+    public static function getAnzahlAnNeuerungen($userid, $groupid){
+      return 3;
+    }
 
 }
