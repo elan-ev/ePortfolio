@@ -249,7 +249,7 @@ class ShowsupervisorController extends StudipController {
       $masterid = $master;
       $groupid = Course::findCurrent()->id;
       $group = Eportfoliogroup::find($groupid);
-      $member     = $group->user;
+      $member     = Eportfoliogroup::getGroupMember($groupid);
       $groupowner = $group->owner_id;
       $groupname  = new Seminar($groupid);
       $supervisorgroupid = Eportfoliogroup::getSupervisorGroupId($groupid);
@@ -262,23 +262,22 @@ class ShowsupervisorController extends StudipController {
       EportfolioGroup::createTemplateForGroup($groupid, $master);
       //wenn bereits Vorlagen an diese Gruppe verteilt wurden, verwende die zugeh�rigen Portfolios um die weiteren Vorlagen hinzuzuf�gen
       if (count($groupHasTemplates) >= 1) {
-        foreach ($member as $user) {
+        foreach ($member as $user_id) {
           $query = "SELECT Seminar_id FROM eportfolio WHERE group_id = :groupid AND owner_id = :value";
           $statement = $db->prepare($query);
-          $statement->execute(array(':groupid'=> $groupid, ':value'=> $user->user_id));
+          $statement->execute(array(':groupid'=> $groupid, ':value'=> $user_id));
           $seminarGroupId = $statement->fetchAll(PDO::FETCH_ASSOC);
           $seminarGroupId = $seminarGroupId[0]['Seminar_id'];
-          $user = new User($user->user_id);
+          $user = new User($user_id);
           $this->semList[$user['Nachname']] = $seminarGroupId;
         }
       } else {
         //Falls noch keine Vorlagen verteilt wurden erh�lt jeder Nutzer ein eigenes ePortfolio
         $master = new Seminar($masterid);
         $sem_type_id = $this->getPortfolioSemId();
-        foreach ($member as $user) {
-            $owner            = User::find($user->user_id);
+        foreach ($member as $user_id) {
+            $owner            = User::find($user_id);
             $owner_fullname   = $owner['Vorname'] . ' ' . $owner['Nachname'];
-            $userid           = $user->user_id; //get userid
             $sem_name         = "Gruppenportfolio: ".$groupname->getName() . " (" . $owner_fullname .")";
             $sem_description  = "Dieses Portfolio wurde Ihnen von einem Supervisor zugeteilt";
             $current_semester = Semester::findCurrent();
@@ -297,7 +296,9 @@ class ShowsupervisorController extends StudipController {
             $avatar = CourseAvatar::getAvatar($sem_id);
             $filename = sprintf('%s/%s',$this->plugin->getpluginPath(),'assets/images/avatare/eportfolio.png');
             $avatar->createFrom($filename);
-            $sem->addMember($userid, 'dozent'); // add user to his to seminar
+            $sem->addMember($user_id, 'dozent'); // add user to his to seminar
+            
+            //TODO groupowner sollte automatisch in die gruppe der supervisoren aufgenommen werden, dann kann das hier wegfallen
             $member = Group::getGroupMember($groupid);
             if (!in_array($groupowner, $member)) {
               $sem->addMember($groupowner, 'autor');
@@ -308,16 +309,16 @@ class ShowsupervisorController extends StudipController {
                 $sem->addMember($supervisor, 'autor');
             }
             $sem->store(); //save sem
-            $user = new User($userid);
+            $user = new User($user_id);
             $this->semList[$user['Nachname']] = $sem->Seminar_id;
             $eportfolio = new Seminar();
             $eportfolio_id = $eportfolio->createId();
             $query = "INSERT INTO eportfolio (Seminar_id, eportfolio_id, group_id, owner_id, template_id, supervisor_id) VALUES (:sem_id, :eportfolio_id, :groupid , :userid, :masterid, :groupowner)";
             $statement = $db->prepare($query);
-            $statement->execute(array(':groupid'=> $groupid, ':sem_id'=> $sem_id, ':eportfolio_id'=> $eportfolio_id, ':userid'=> $userid,  ':masterid'=> $masterid, ':groupowner'=> $groupowner));
+            $statement->execute(array(':groupid'=> $groupid, ':sem_id'=> $sem_id, ':eportfolio_id'=> $eportfolio_id, ':userid'=> $user_id,  ':masterid'=> $masterid, ':groupowner'=> $groupowner));
             $query = "INSERT INTO eportfolio_user(user_id, Seminar_id, eportfolio_id, owner) VALUES (:userid, :Seminar_id , :eportfolio_id, 1)";
             $statement = $db->prepare($query);
-            $statement->execute(array(':Seminar_id'=> $sem_id, ':eportfolio_id'=> $eportfolio_id, ':userid'=> $userid));
+            $statement->execute(array(':Seminar_id'=> $sem_id, ':eportfolio_id'=> $eportfolio_id, ':userid'=> $user_id));
             //delete dummy courseware chapters //TODO funktionier noch nicht
             $query = "DELETE FROM mooc_blocks WHERE seminar_id = :sem_id AND type NOT LIKE 'Courseware'";
             $statement = $db->prepare($query);

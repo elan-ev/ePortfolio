@@ -186,10 +186,12 @@ class EportfolioGroup extends SimpleORMap
 
   /**
   * Erstellt einen Eintrag in der eportfolio_group_templates Tabelle
+  * Damit es nicht knallt wenn beim verteilen einer Vorlage mal was schief geht machen wir hier ein INSERT IGNORE
+  * Langfristig könnte man beim Verteilen von Vorlagen noch was drehen, dass das Template nur eingetragen wird, wenn wirklich alles rund gelaufen ist..
   **/
   public static function createTemplateForGroup($group_id, $template_id){
     $time = time();
-    $query = "INSERT INTO eportfolio_group_templates VALUES (:group_id , :template_id, 1, :t)";
+    $query = "INSERT IGNORE INTO eportfolio_group_templates VALUES (:group_id , :template_id, 1, :t)";
     $statement = DBManager::get()->prepare($query);
     $statement->execute(array(':group_id' => $group_id , ':template_id' => $template_id, ':t' => $time));
   }
