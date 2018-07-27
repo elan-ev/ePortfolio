@@ -245,52 +245,43 @@ class ShowsupervisorController extends StudipController {
     }
 
     public function createportfolio_action($master){
-
       $this->semList = array();
       $masterid = $master;
       $groupid = Course::findCurrent()->id;
-
-      $member     = Group::getGroupMember($groupid);
-      $groupowner = Group::getOwner($groupid);
+      $group = Eportfoliogroup::find($groupid);
+      $member     = $group->user;
+      $groupowner = $group->owner_id;
       $groupname  = new Seminar($groupid);
-
-      $supervisorgroupid = Group::getSupervisorGroupId($groupid);
-
+      $supervisorgroupid = Eportfoliogroup::getSupervisorGroupId($groupid);
       $db = DBManager::get();
       $query = "SELECT templates FROM eportfolio_groups WHERE seminar_id = :groupid";
       $statement = $db->prepare($query);
       $statement->execute(array(':groupid'=> $groupid));
       $groups = $statement->fetchAll()[0][0];
       $groupHasTemplates = json_decode($groups);
-
       EportfolioGroup::createTemplateForGroup($groupid, $master);
-
       //wenn bereits Vorlagen an diese Gruppe verteilt wurden, verwende die zugeh�rigen Portfolios um die weiteren Vorlagen hinzuzuf�gen
       if (count($groupHasTemplates) >= 1) {
-        foreach ($member as $key => $value) {
+        foreach ($member as $user) {
           $query = "SELECT Seminar_id FROM eportfolio WHERE group_id = :groupid AND owner_id = :value";
           $statement = $db->prepare($query);
-          $statement->execute(array(':groupid'=> $groupid, ':value'=> $value));
+          $statement->execute(array(':groupid'=> $groupid, ':value'=> $user->user_id));
           $seminarGroupId = $statement->fetchAll(PDO::FETCH_ASSOC);
           $seminarGroupId = $seminarGroupId[0]['Seminar_id'];
-          $user = new User($value);
+          $user = new User($user->user_id);
           $this->semList[$user['Nachname']] = $seminarGroupId;
         }
-
       } else {
         //Falls noch keine Vorlagen verteilt wurden erh�lt jeder Nutzer ein eigenes ePortfolio
         $master = new Seminar($masterid);
         $sem_type_id = $this->getPortfolioSemId();
-
-        foreach ($member as $key => $value) {
-
-            $owner            = User::find($value);
+        foreach ($member as $user) {
+            $owner            = User::find($user->user_id);
             $owner_fullname   = $owner['Vorname'] . ' ' . $owner['Nachname'];
-            $userid           = $value; //get userid
+            $userid           = $user->user_id; //get userid
             $sem_name         = "Gruppenportfolio: ".$groupname->getName() . " (" . $owner_fullname .")";
             $sem_description  = "Dieses Portfolio wurde Ihnen von einem Supervisor zugeteilt";
             $current_semester = Semester::findCurrent();
-
             $sem              = new Seminar();
             $sem->Seminar_id  = $sem->createId();
             $sem->name        = $sem_name;
@@ -302,30 +293,23 @@ class ShowsupervisorController extends StudipController {
             $sem->setStartSemester($current_semester->beginn);
             $sem->institut_id = Config::Get()->STUDYGROUP_DEFAULT_INST;
             $sem->visible     = 0;
-
             $sem_id = $sem->Seminar_id;
-
             $avatar = CourseAvatar::getAvatar($sem_id);
             $filename = sprintf('%s/%s',$this->plugin->getpluginPath(),'assets/images/avatare/eportfolio.png');
             $avatar->createFrom($filename);
-
             $sem->addMember($userid, 'dozent'); // add user to his to seminar
             $member = Group::getGroupMember($groupid);
-
             if (!in_array($groupowner, $member)) {
-              $sem->addMember($groupowner, 'dozent');
+              $sem->addMember($groupowner, 'autor');
             }
             //add all Supervisors
             $supervisors = EportfolioGroup::getAllSupervisors($groupid);
             foreach($supervisors as $supervisor){
-                $sem->addMember($supervisor, 'dozent');
+                $sem->addMember($supervisor, 'autor');
             }
-
             $sem->store(); //save sem
-
             $user = new User($userid);
             $this->semList[$user['Nachname']] = $sem->Seminar_id;
-
             $eportfolio = new Seminar();
             $eportfolio_id = $eportfolio->createId();
             $query = "INSERT INTO eportfolio (Seminar_id, eportfolio_id, group_id, owner_id, template_id, supervisor_id) VALUES (:sem_id, :eportfolio_id, :groupid , :userid, :masterid, :groupowner)";
