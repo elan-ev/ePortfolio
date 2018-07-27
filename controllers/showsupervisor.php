@@ -91,21 +91,21 @@ class ShowsupervisorController extends StudipController {
     public function before_filter(&$action, &$args)
     {
         parent::before_filter($action, $args);
-        
+
         if(Course::findCurrent()){
             Navigation::activateItem("course/eportfolioplugin");
         }
-        
+
     }
 
     public function index_action()
     {
         Navigation::activateItem('/course/eportfolioplugin/supervision');
-        
+
         $course = Course::findCurrent();
         $id = $course->id;
 
-        //berechtigung prüfen (group-owner TODO:refactoring //ggf das hier nur für Supervisor, 
+        //berechtigung prüfen (group-owner TODO:refactoring //ggf das hier nur für Supervisor,
         //das würde dann aber schon in der Pluginklasse passieren
         /**
         if(!$id == ''){
@@ -118,13 +118,13 @@ class ShowsupervisorController extends StudipController {
             if(!$check[0][0] == $GLOBALS["user"]->id){
               throw new AccessDeniedException(_("Sie haben keine Berechtigung"));
             }
-        ]
+        }
          */
 
         $this->id = $id;
         $this->userid = $GLOBALS["user"]->id;
         $this->group = EportfolioGroup::find($id);
-        
+
         //noch kein Portfoliogruppeneintrag für dieses Seminar vorhanden: Gruppe erstellen
         if(!$this->group){
             EportfolioGroup::newGroup($this->userid, $course->id);
