@@ -45,11 +45,10 @@
           <tbody>
             <?php $temps = Eportfoliomodel::getPortfolioVorlagen();
               foreach ($temps as $key):?>
-              <?php $thisPortfolio = new Seminar($key); ?>
-              <?php $eportfolio = new eportfolio($key); ?>
+              <?php $portfolio = new Course($key); ?>
                 <tr>
-                  <td><?php echo $thisPortfolio->getName(); ?></td>
-                  <td><?php echo $eportfolio->getBeschreibung(); ?></td>
+                  <td><?php echo $portfolio->name; ?></td>
+                  <td><?php echo $portfolio->beschreibung; ?></td>
                   <td style="text-align: center;">
                       <a href="<?php echo URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $key)); ?>"><?php echo Icon::create('edit', 'clickable', ['title' => sprintf(_('Portfolio-Vorlage bearbeiten.'))]) ?></a>
                       <?php if($member && (ShowsupervisorController::checkTemplate($id, $key) == false)): ?>
@@ -138,13 +137,13 @@
 
           <div class="row member-container">
             <?php foreach ($member as $user):?>
-              <?php $userPortfolioId = EportfolioGroupUser::getPortfolioIdOfUserInGroup($user, $id); ?>
+              <?php $userPortfolioId = EportfolioGroup::getPortfolioIdOfUserInGroup($user, $id); ?>
               <div class="col-sm-4 member-single-card">
-                <a class="member-link" data-dialog="size=1000px;" href="/public/plugins.php/eportfolioplugin/showsupervisor/memberdetail/<?php echo $id; ?>/<?php echo $user; ?>">
+                <a class="member-link" data-dialog="size=1000px;" href="<?= $controller->url_for('showsupervisor/memberdetail/' .$id . '/' . $user) ?>">
                 <div class="member-item">
 
                   <div class="member-notification">
-                    <?php echo EportfolioGroupUser::getAnzahlAnNeuerungen($member, $id);  ?>
+                    <?php echo EportfolioGroup::getAnzahlAnNeuerungen($member, $id);  ?>
                   </div>
 
                   <div class="row">
@@ -221,7 +220,7 @@
                         <div class="row member-footer-box">
                           <div class="col-sm-4">
                             <div class="member-footer-box-big">
-                              <?php echo EportfolioGroupUser::getAnzahlFreigegebenerKapitel($user, $id); //id soll die gruppenid sein ?>
+                              <?php echo EportfolioGroup::getAnzahlFreigegebenerKapitel($user, $id); //id soll die gruppenid sein ?>
                               /
                               <?php echo EportfolioGroup::getAnzahlAllerKapitel($id); ?>
                             </div>
@@ -231,7 +230,7 @@
                           </div>
                           <div class="col-sm-4">
                             <div class="member-footer-box-big">
-                              <?php echo EportfolioGroupUser::getGesamtfortschrittInProzent($user, $id); ?> %
+                              <?php echo EportfolioGroup::getGesamtfortschrittInProzent($user, $id); ?> %
                             </div>
                             <div class="member-footer-box-head">
                               bearbeitet
@@ -239,7 +238,7 @@
                           </div>
                           <div class="col-sm-4">
                             <div class="member-footer-box-big">
-                              <?php echo EportfolioGroupUser::getAnzahlNotizen($user, $id); ?>
+                              <?php echo EportfolioGroup::getAnzahlNotizen($user, $id); ?>
                             </div>
                             <div class="member-footer-box-head">
                               Notizen

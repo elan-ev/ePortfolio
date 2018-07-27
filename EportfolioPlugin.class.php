@@ -1,7 +1,6 @@
 <?php
 require 'bootstrap.php';
 require 'classes/group.class.php';
-require 'classes/eportfolio.class.php';
 require 'models/Eportfoliomodel.class.php';
 
 
@@ -66,6 +65,13 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
           $navigation = new Navigation('Supervision', PluginEngine::getURL($this, compact('cid'), 'showsupervisor', true));
           $navigation->setImage(Icon::create('group4', 'info_alt'));
           $navigation->setActiveImage(Icon::create('group4', 'info'));
+          
+          $item = new Navigation(_('Supervisionsansicht'), PluginEngine::getURL($this, compact('cid'), 'showsupervisor', true));
+          $navigation->addSubNavigation('supervision', $item);
+          
+          $item = new Navigation(_('Activity Feed'), PluginEngine::getURL($this, compact('cid'), 'showsupervisor/activityfeed', true));
+          $navigation->addSubNavigation('portfoliofeed', $item);
+          
       } else if ($this->isPortfolio() || $this->isVorlage() ){
           //uebersicht navigation point
           $navigation = new Navigation('Übersicht', PluginEngine::getURL($this, compact('cid'), 'eportfolioplugin', true));
@@ -74,7 +80,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
        }
 
 
-        $owner = Eportfoliomodel::findBySQL('seminar_id = :id AND owner_id = :user_id' , array(':id'=> $course_id, ':user_id' => $user->id));
+        $owner = Eportfoliomodel::isOwner($course_id, $user->id);
         if ($this->isPortfolio() && $owner) {
           $navigationSettings = new Navigation('Zugriffsrechte', PluginEngine::getURL($this, compact('cid'), 'settings', true));
           $navigationSettings->setImage(Icon::create('admin', 'info_alt'));
@@ -120,7 +126,6 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
           $this->getsettingsColor($_GET['cid']);
           exit;
         }
-        $eportfolio = new eportfolio($_GET['cid']);
 
       $serverinfo = $_SERVER['PATH_INFO'];
 

@@ -20,7 +20,7 @@ class blocksettingsController extends StudipController {
     // set vars
     $userid = $GLOBALS["user"]->id;
     $this->cid = Request::option('cid');
-    $this->vorlage = Eportfoliomodel::findBySQL('seminar_id = :id', array(':id'=> $this->cid));
+    $this->vorlage = Eportfoliomodel::findBySeminarId($this->cid);
 
     $seminar = new Seminar($this->cid);
     

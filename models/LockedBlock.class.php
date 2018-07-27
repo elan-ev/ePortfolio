@@ -3,7 +3,6 @@
 
 include_once __DIR__.'/Eportfoliomodel.class.php';
 include_once __DIR__.'/EportfolioGroup.class.php';
-include_once __DIR__.'/EportfolioGroupUser.class.php';
 include_once __DIR__.'/SupervisorGroupUser.class.php';
 
 /**

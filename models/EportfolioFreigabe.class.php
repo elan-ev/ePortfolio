@@ -3,7 +3,6 @@
 
 include_once __DIR__.'/Eportfoliomodel.class.php';
 include_once __DIR__.'/EportfolioGroup.class.php';
-include_once __DIR__.'/EportfolioGroupUser.class.php';
 include_once __DIR__.'/SupervisorGroupUser.class.php';
 
 /**
@@ -37,7 +36,7 @@ class EportfolioFreigabe extends SimpleORMap
     //EportfolioFreigabe::hasAccess($user_id, $seminar_id, $chapter_id)
     public static function hasAccess($user_id, $seminar_id, $chapter_id){
         
-        $portfolio = Eportfoliomodel::findBySQL('seminar_id = :id', array(':id'=> $seminar_id));
+        $portfolio = Eportfoliomodel::findBySeminarId($seminar_id);
         
         //Wenn das Portfolio Teil einer Gruppe mit zugehöriger Supervisorgruppe ist:
         //checke ob user Teil der Supervisorgruppe ist und prüfe in diesem Fall Berechtigung für Supervisorgruppe
@@ -70,7 +69,9 @@ class EportfolioFreigabe extends SimpleORMap
             $access->Seminar_id = $seminar_id;
             $access->block_id = $chapter_id;
             $access->user_id = $user_id;
-            $access->store();
+            if($access->store()){
+                Eportfoliomodel::sendNotificationToUser('freigabe', $seminar_id, $chapter_id, $user_id);
+            }
         } else if (self::hasAccess($user_id, $seminar_id, $chapter_id)){
             self::deleteBySQL('Seminar_id = :seminar_id AND block_id = :block_id AND user_id = :user_id',
                 array(':seminar_id' => $seminar_id, ':block_id' => $chapter_id, ':user_id' => $user_id));

@@ -59,8 +59,8 @@ class ShowsupervisorController extends StudipController {
 
         //sidebar
         $sidebar = Sidebar::Get();
-        Sidebar::Get()->setTitle('Supervisionsansicht');
 
+<<<<<<< HEAD
         $group = EportfolioGroup::findBySQL('Seminar_id = :cid', array(':cid' => $id));
         $this->countActivities = $group[0]->getNumberOfNewActivities(User::findCurrent());
 
@@ -71,7 +71,10 @@ class ShowsupervisorController extends StudipController {
         $navcreate->addLink("Activity Feed", PluginEngine::getLink($this->plugin, array(), 'showsupervisor/activityfeed'), Icon::create('exclaim-circle', 'new' ), array('class'=>'feed-news', 'data-feed' => $this->countActivities));
 
         $sidebar->addWidget($navcreate);
+=======
+>>>>>>> 5a90da7568723766a4fe1cf34bafeb0c3af4a324
 
+        /**
         $nav = new LinksWidget();
         $nav->setTitle(_('Supervisionsgrupppen'));
         $groups = EportfolioGroup::getAllGroupsOfSupervisor($GLOBALS["user"]->id);
@@ -87,79 +90,63 @@ class ShowsupervisorController extends StudipController {
           $navGroupURL = URLHelper::getLink("plugins.php/eportfolioplugin/showsupervisor", array('cid' => $key));
           $nav->addLink($name, $navGroupURL, null, $attr);
         }
-
-        $navcreate = new LinksWidget();
-        $navcreate->setTitle('Gruppen-Aktionen');
+         * 
+         */
 
         if($this->groupid){
+            $navcreate = new LinksWidget();
+            $navcreate->setTitle('Gruppen-Aktionen');
             //$navcreate->addLink("Nutzer eintragen", '', 'icons/16/blue/add/community.svg', NULL);
             $navcreate->addLink("Supervisoren verwalten", URLHelper::getLink("plugins.php/eportfolioplugin/showsupervisor/supervisorgroup/". $id, array('cid' => $id)), Icon::create('edit', 'clickable'), NULL);
-            $navcreate->addLink("Diese Gruppe l�schen", URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/delete/' . $id), Icon::create('trash', 'clickable'), array('onclick' => "return confirm('Gruppe wirklich l�schen?')"));
+            //$navcreate->addLink("Diese Gruppe l�schen", URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/delete/' . $id), Icon::create('trash', 'clickable'), array('onclick' => "return confirm('Gruppe wirklich l�schen?')"));
+            $sidebar->addWidget($navcreate);
         }
 
-        $navcreate->addLink("Neue Gruppe anlegen", PluginEngine::getLink($this->plugin, array(), 'showsupervisor/creategroup') , Icon::create('add', 'clickable'), array('data-dialog'=>"size=auto;reload-on-close"));
-
-        $sidebar->addWidget($navcreate);
-        $sidebar->addWidget($nav);
+        //$navcreate->addLink("Neue Gruppe anlegen", PluginEngine::getLink($this->plugin, array(), 'showsupervisor/creategroup') , Icon::create('add', 'clickable'), array('data-dialog'=>"size=auto;reload-on-close"));
+        //$sidebar->addWidget($nav);
 
     }
 
     public function before_filter(&$action, &$args)
     {
         parent::before_filter($action, $args);
+        
+        if(Course::findCurrent()){
+            Navigation::activateItem("course/eportfolioplugin");
+        }
+        
     }
 
     public function index_action()
     {
-        if(Course::findCurrent()){
-            Navigation::activateItem("course/eportfolioplugin");
+        Navigation::activateItem('/course/eportfolioplugin/supervision');
+        
+        $course = Course::findCurrent();
+        $id = $this->sem->id;
+
+        //berechtigung prüfen (group-owner TODO:refactoring //ggf das hier nur für Supervisor, 
+        //das würde dann aber schon in der Pluginklasse passieren
+        if(!$id == ''){
+            $query = "SELECT owner_id FROM eportfolio_groups WHERE seminar_id = :id";
+            $statement = DBManager::get()->prepare($query);
+            $statement->execute(array(':id'=> $id));
+            $check = $statement->fetchAll();
+
+            //check permission
+            if(!$check[0][0] == $GLOBALS["user"]->id){
+              throw new AccessDeniedException(_("Sie haben keine Berechtigung"));
+            }
         }
 
-        $id = $_GET["cid"];
-        $this->id = $id;
-        $this->sem = Course::findById($id);
-
-      if(!$id == ''){
-        $query = "SELECT owner_id FROM eportfolio_groups WHERE seminar_id = :id";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute(array(':id'=> $id));
-        $check = $statement->fetchAll();
-
-        //check permission
-        if(!$check[0][0] == $GLOBALS["user"]->id){
-          throw new AccessDeniedException(_("Sie haben keine Berechtigung"));
-        }
-      }
-
-      $this->userid = $GLOBALS["user"]->id;
-
-      $this->url = $_SERVER['REQUEST_URI'];
-      if($this->sem){
-        $course = new Seminar($id);
+        $this->userid = $GLOBALS["user"]->id;
         $this->group = EportfolioGroup::find($id);
-        $this->courseName = $course->getName();
-        $this->member = EportfolioGroup::getGroupMember($id);
-
-        $search_obj = new SQLSearch("SELECT auth_user_md5.user_id, CONCAT(auth_user_md5.nachname, ', ', auth_user_md5.vorname, ' (' , auth_user_md5.email, ')' ) as fullname, username, perms "
-                            . "FROM auth_user_md5 "
-                            . "WHERE (CONCAT(auth_user_md5.Vorname, \" \", auth_user_md5.Nachname) LIKE :input "
-                            . "OR CONCAT(auth_user_md5.Nachname, \" \", auth_user_md5.Vorname) LIKE :input "
-                            . "OR auth_user_md5.username LIKE :input)"
-                            //. "AND auth_user_md5.user_id NOT IN "
-                            //. "(SELECT supervisor_group_user.user_id FROM supervisor_group_user WHERE supervisor_group_user.supervisor_group_id = '". $supervisorgroupid ."')  "
-                            . "ORDER BY Vorname, Nachname ",
-                _("Teilnehmer suchen"), "username");
-
-      $this->mp = MultiPersonSearch::get('supervisorgroupSelectStudents')
-        ->setLinkText(_('Personen hinzuf�gen'))
-        ->setTitle(_('Studierende zur Gruppe hinzuf�gen'))
-        ->setSearchObject($search_obj)
-        ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/addUsersToGroup/'. $id))
-        ->render();
-
-
-
-      } else $this->render_action('index_nogroup');
+        
+        //noch kein Portfoliogruppeneintrag für dieses Seminar vorhanden: Gruppe erstellen
+        if(!$this->group){
+            EportfolioGroup::newGroup($this->userid, $course->id);
+        }
+        $this->courseName = $course->name;
+        $this->member = EportfolioGroup::getGroupMember($course->id);
 
     }
 
@@ -287,22 +274,6 @@ class ShowsupervisorController extends StudipController {
 
       }
     }
-
-    public function creategroup_action($master = NULL, $groupid = NULL){
-
-        $this->ownerid = $GLOBALS["user"]->id;
-        if($_POST["create"]){
-          $group_id = EportfolioGroup::newGroup($this->ownerid, studip_utf8decode(strip_tags($_POST["name"])), studip_utf8decode(strip_tags($_POST["beschreibung"])));
-          $avatar = CourseAvatar::getAvatar($group_id);
-          $filename = sprintf('%s/%s',$this->plugin->getpluginPath(),'assets/images/avatare/supervisorgruppe.png');
-          $avatar->createFrom($filename);
-
-          $this->response->add_header('X-Dialog-Close', '1');
-          $this->render_nothing();
-        }
-
-    }
-
 
     public function createportfolio_action($master = NULL, $groupid = NULL){
 
@@ -612,7 +583,7 @@ class ShowsupervisorController extends StudipController {
     }
 
     public function memberdetail_action($group_id, $user_id){
-      $this->portfolio_id = EportfolioGroupUser::getPortfolioIdOfUserInGroup($user_id, $group_id);
+      $this->portfolio_id = EportfolioGroup::getPortfolioIdOfUserInGroup($user_id, $group_id);
       $this->chapters = Eportfoliomodel::getChapters($this->portfolio_id);
       $this->group_id = $group_id;
 
@@ -620,13 +591,14 @@ class ShowsupervisorController extends StudipController {
       $this->vorname = $user['Vorname'];
       $this->nachname = $user['Nachname'];
 
-      $this->AnzahlFreigegebenerKapitel = EportfolioGroupUser::getAnzahlFreigegebenerKapitel($user_id, $group_id);
+      $this->AnzahlFreigegebenerKapitel = EportfolioGroup::getAnzahlFreigegebenerKapitel($user_id, $group_id);
       $this->AnzahlAllerKapitel = EportfolioGroup::getAnzahlAllerKapitel($group_id);
-      $this->GesamtfortschrittInProzent = EportfolioGroupUser::getGesamtfortschrittInProzent($user_id, $group_id);
-      $this->AnzahlNotizen = EportfolioGroupUser::getAnzahlNotizen($user_id, $group_id);
+      $this->GesamtfortschrittInProzent = EportfolioGroup::getGesamtfortschrittInProzent($user_id, $group_id);
+      $this->AnzahlNotizen = EportfolioGroup::getAnzahlNotizen($user_id, $group_id);
     }
 
     public function activityfeed_action(){
+      Navigation::activateItem('/course/eportfolioplugin/portfoliofeed');
       $id = $_GET["cid"];
       $group = EportfolioGroup::findBySQL('Seminar_id = :cid', array(':cid' => $id));
       $this->activities = $group[0]->getActivities(User::findCurrent());

@@ -19,7 +19,7 @@ class EportfoliopluginController extends StudipController {
 
       $cid = Course::findCurrent()->id;
       global $user;
-      $eportfolio = Eportfoliomodel::findOneBySeminar_Id($cid);
+      $eportfolio = Eportfoliomodel::findBySeminarId($cid);
       $isVorlage = Eportfoliomodel::isVorlage($cid);
 
       $sidebar = Sidebar::Get();
@@ -47,7 +47,6 @@ class EportfoliopluginController extends StudipController {
       $sem_type_id = Config::get()->getValue('SEM_CLASS_PORTFOLIO_VORLAGE');
 
       $seminar = new Seminar($cid);
-      $eportfolio = new eportfolio($cid);
 
       if ($seminar->status == $sem_type_id) {
         $this->canEdit = true;
@@ -84,14 +83,13 @@ class EportfoliopluginController extends StudipController {
     ////////////////////////
 
     $userid = $GLOBALS["user"]->id;
-    $cid = $_GET["cid"];
+    $cid = Course::findCurrent()->id;
     $this->cid = $cid;
     $this->userId = $userid;
-    $i = 0;
-    $eportfolio = new eportfolio($this->cid);
-    $isOwner = $eportfolio->isOwner($userid);
-    $owner = User::find(Eportfoliomodel::getOwner($this->cid));
-    $this->isVorlage = Eportfoliomodel::isVorlage($this->cid);
+    $eportfolio = Eportfoliomodel::findBySeminarId($cid);
+    $isOwner = Eportfoliomodel::isOwner($cid, $userid);
+    $owner = $eportfolio->owner;
+    $this->isVorlage = Eportfoliomodel::isVorlage($cid);
     $seminar = new Seminar($this->cid);
     
      # Aktuelle Seite
