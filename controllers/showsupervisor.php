@@ -60,21 +60,6 @@ class ShowsupervisorController extends StudipController {
         //sidebar
         $sidebar = Sidebar::Get();
 
-<<<<<<< HEAD
-        $group = EportfolioGroup::findBySQL('Seminar_id = :cid', array(':cid' => $id));
-        $this->countActivities = $group[0]->getNumberOfNewActivities(User::findCurrent());
-
-        $navcreate = new LinksWidget();
-        $navcreate->setTitle('Navigation');
-        $navcreate->addLink("�bersicht", PluginEngine::getLink($this->plugin, array(), 'show'));
-        $navcreate->addLink("Supervisionsansicht", 'showsupervisor', null, array('class' => 'active'));
-        $navcreate->addLink("Activity Feed", PluginEngine::getLink($this->plugin, array(), 'showsupervisor/activityfeed'), Icon::create('exclaim-circle', 'new' ), array('class'=>'feed-news', 'data-feed' => $this->countActivities));
-
-        $sidebar->addWidget($navcreate);
-=======
->>>>>>> 5a90da7568723766a4fe1cf34bafeb0c3af4a324
-
-        /**
         $nav = new LinksWidget();
         $nav->setTitle(_('Supervisionsgrupppen'));
         $groups = EportfolioGroup::getAllGroupsOfSupervisor($GLOBALS["user"]->id);
@@ -90,8 +75,6 @@ class ShowsupervisorController extends StudipController {
           $navGroupURL = URLHelper::getLink("plugins.php/eportfolioplugin/showsupervisor", array('cid' => $key));
           $nav->addLink($name, $navGroupURL, null, $attr);
         }
-         * 
-         */
 
         if($this->groupid){
             $navcreate = new LinksWidget();
@@ -110,21 +93,21 @@ class ShowsupervisorController extends StudipController {
     public function before_filter(&$action, &$args)
     {
         parent::before_filter($action, $args);
-        
+
         if(Course::findCurrent()){
             Navigation::activateItem("course/eportfolioplugin");
         }
-        
+
     }
 
     public function index_action()
     {
         Navigation::activateItem('/course/eportfolioplugin/supervision');
-        
+
         $course = Course::findCurrent();
         $id = $this->sem->id;
 
-        //berechtigung prüfen (group-owner TODO:refactoring //ggf das hier nur für Supervisor, 
+        //berechtigung prüfen (group-owner TODO:refactoring //ggf das hier nur für Supervisor,
         //das würde dann aber schon in der Pluginklasse passieren
         if(!$id == ''){
             $query = "SELECT owner_id FROM eportfolio_groups WHERE seminar_id = :id";
@@ -140,7 +123,7 @@ class ShowsupervisorController extends StudipController {
 
         $this->userid = $GLOBALS["user"]->id;
         $this->group = EportfolioGroup::find($id);
-        
+
         //noch kein Portfoliogruppeneintrag für dieses Seminar vorhanden: Gruppe erstellen
         if(!$this->group){
             EportfolioGroup::newGroup($this->userid, $course->id);
