@@ -105,7 +105,7 @@ class ShowsupervisorController extends StudipController {
         Navigation::activateItem('/course/eportfolioplugin/supervision');
 
         $course = Course::findCurrent();
-        $id = $this->sem->id;
+        $id = $course->id;
 
         //berechtigung prüfen (group-owner TODO:refactoring //ggf das hier nur für Supervisor,
         //das würde dann aber schon in der Pluginklasse passieren
@@ -121,6 +121,7 @@ class ShowsupervisorController extends StudipController {
             }
         }
 
+        $this->id = $id;
         $this->userid = $GLOBALS["user"]->id;
         $this->group = EportfolioGroup::find($id);
 
@@ -258,11 +259,11 @@ class ShowsupervisorController extends StudipController {
       }
     }
 
-    public function createportfolio_action($master = NULL, $groupid = NULL){
+    public function createportfolio_action($master){
 
       $this->semList = array();
-      $masterid = $_POST['master'] ? $_POST['master'] : $master;
-      $groupid = $_POST['groupid'] ? $_POST['groupid'] : $groupid;
+      $masterid = $master;
+      $groupid = Course::findCurrent()->id;
 
       $member     = Group::getGroupMember($groupid);
       $groupowner = Group::getOwner($groupid);
