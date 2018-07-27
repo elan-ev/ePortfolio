@@ -249,12 +249,13 @@ class ShowsupervisorController extends StudipController {
       $this->semList = array();
       $masterid = $master;
       $groupid = Course::findCurrent()->id;
+      $group = Eportfoliogroup::find($groupid);
 
-      $member     = Group::getGroupMember($groupid);
-      $groupowner = Group::getOwner($groupid);
+      $member     = $group->user;
+      $groupowner = $group->owner_id;
       $groupname  = new Seminar($groupid);
 
-      $supervisorgroupid = Group::getSupervisorGroupId($groupid);
+      $supervisorgroupid = Eportfoliogroup::getSupervisorGroupId($groupid);
 
       $db = DBManager::get();
       $query = "SELECT templates FROM eportfolio_groups WHERE seminar_id = :groupid";
@@ -267,13 +268,13 @@ class ShowsupervisorController extends StudipController {
 
       //wenn bereits Vorlagen an diese Gruppe verteilt wurden, verwende die zugeh�rigen Portfolios um die weiteren Vorlagen hinzuzuf�gen
       if (count($groupHasTemplates) >= 1) {
-        foreach ($member as $key => $value) {
+        foreach ($member as $user) {
           $query = "SELECT Seminar_id FROM eportfolio WHERE group_id = :groupid AND owner_id = :value";
           $statement = $db->prepare($query);
-          $statement->execute(array(':groupid'=> $groupid, ':value'=> $value));
+          $statement->execute(array(':groupid'=> $groupid, ':value'=> $user->user_id));
           $seminarGroupId = $statement->fetchAll(PDO::FETCH_ASSOC);
           $seminarGroupId = $seminarGroupId[0]['Seminar_id'];
-          $user = new User($value);
+          $user = new User($user->user_id);
           $this->semList[$user['Nachname']] = $seminarGroupId;
         }
 
@@ -282,11 +283,11 @@ class ShowsupervisorController extends StudipController {
         $master = new Seminar($masterid);
         $sem_type_id = $this->getPortfolioSemId();
 
-        foreach ($member as $key => $value) {
+        foreach ($member as $user) {
 
-            $owner            = User::find($value);
+            $owner            = User::find($user->user_id);
             $owner_fullname   = $owner['Vorname'] . ' ' . $owner['Nachname'];
-            $userid           = $value; //get userid
+            $userid           = $user->user_id; //get userid
             $sem_name         = "Gruppenportfolio: ".$groupname->getName() . " (" . $owner_fullname .")";
             $sem_description  = "Dieses Portfolio wurde Ihnen von einem Supervisor zugeteilt";
             $current_semester = Semester::findCurrent();
@@ -313,12 +314,12 @@ class ShowsupervisorController extends StudipController {
             $member = Group::getGroupMember($groupid);
 
             if (!in_array($groupowner, $member)) {
-              $sem->addMember($groupowner, 'dozent');
+              $sem->addMember($groupowner, 'autor');
             }
             //add all Supervisors
             $supervisors = EportfolioGroup::getAllSupervisors($groupid);
             foreach($supervisors as $supervisor){
-                $sem->addMember($supervisor, 'dozent');
+                $sem->addMember($supervisor, 'autor');
             }
 
             $sem->store(); //save sem
