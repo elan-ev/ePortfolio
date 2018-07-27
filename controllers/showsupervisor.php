@@ -23,7 +23,7 @@ class ShowsupervisorController extends StudipController {
             $this->userid = $GLOBALS["user"]->id;
             $this->ownerid = $GLOBALS["user"]->id;
 
-            $this->groupTemplates = Group::getTemplates($id);
+            $this->groupTemplates = Eportfoliogroup::getTemplates($id);
             $this->templistid = $this->groupTemplates;
 
             $group = EportfolioGroup::findbySQL('seminar_id = :id', array(':id'=> $this->groupid));
@@ -43,11 +43,6 @@ class ShowsupervisorController extends StudipController {
           exit();
         }
 
-
-        if ($_POST["action"] == 'deleteUserFromGroup') {
-          Group::deleteUser($_POST['userId'], $_POST["seminar_id"]);
-          exit();
-        }
 
         # Aktuelle Seite
         PageLayout::setTitle('ePortfolio - Supervisionsansicht');
@@ -198,6 +193,7 @@ class ShowsupervisorController extends StudipController {
       return $randomString;
     }
 
+    //brauchen wir die hier wirklich?
     public function deletePortfolio(){
       $tempid = $_POST["tempid"];
       $groupid = $_POST["groupid"];
@@ -219,29 +215,7 @@ class ShowsupervisorController extends StudipController {
       $statement = $db->prepare($query);
       $statement->execute(array(':tempid'=> $tempid));
       $q = $statement->fetchAll();
-      $member = Group::getGroupMember($groupid); // get member list as array
-      foreach ($q as $key) {
-        $sid = $key["Seminar_id"];
-        $query = "SELECT owner_id FROM eportfolio WHERE Seminar_id = :sid";
-        $statement = $db->prepare($query);
-        $statement->execute(array(':sid'=> $sid));
-        $ownerid = $statement->fetchAll();
-        if (in_array($ownerid[0][0], $member)) { //delete portfolios of group member only
-            $query = "DELETE FROM seminare WHERE Seminar_id = :sid";
-            $statement = $db->prepare($query);
-            $statement->execute(array(':sid'=> $sid));
-            $query = "DELETE FROM seminar_user WHERE Seminar_id = :sid";
-            $statement = $db->prepare($query);
-            $statement->execute(array(':sid'=> $sid));
-            $query = "DELETE FROM eportfolio_user WHERE Seminar_id = :sid";
-            $statement = $db->prepare($query);
-            $statement->execute(array(':sid'=> $sid));
-            $query = "DELETE FROM eportfolio WHERE Seminar_id = :sid";
-            $statement = $db->prepare($query);
-            $statement->execute(array(':sid'=> $sid));
-        }
-
-      }
+      
     }
 
     public function createportfolio_action($master){
@@ -298,11 +272,6 @@ class ShowsupervisorController extends StudipController {
             $avatar->createFrom($filename);
             $sem->addMember($user_id, 'dozent'); // add user to his to seminar
             
-            //TODO groupowner sollte automatisch in die gruppe der supervisoren aufgenommen werden, dann kann das hier wegfallen
-            $member = Group::getGroupMember($groupid);
-            if (!in_array($groupowner, $member)) {
-              $sem->addMember($groupowner, 'autor');
-            }
             //add all Supervisors
             $supervisors = EportfolioGroup::getAllSupervisors($groupid);
             foreach($supervisors as $supervisor){
@@ -416,20 +385,15 @@ class ShowsupervisorController extends StudipController {
       $this->redirect(URLHelper::getLink("plugins.php/eportfolioplugin/showsupervisor", array('cid' => '')));
     }
 
-    public function deleteUserFromGroup_action($id, $group_id){
-        Group::deleteUser($id, $group_id);
-        $this->redirect('showsupervisor?id=' . $group_id);
-    }
-
     public function supervisorgroup_action($group_Id){
 
-      $groupId = $group_Id ? $group_Id : $_GET['cid'];
+      $groupId = Course::findCurrent()->id;
       $sem = new Seminar($groupId);
       $this->groupName = $sem->getName();
 
-      $supervisorgroupid = Group::getSupervisorGroupId($groupId);
+      $supervisorgroupid = Eportfoliogroup::getSupervisorGroupId($groupId);
 
-      $group = new Supervisorgroup($supervisorgroupid);
+      $group = new SupervisorGroup($supervisorgroupid);
       $this->title = $group->name;
       $this->groupId = $group->id;
       $this->linkId = $groupId;

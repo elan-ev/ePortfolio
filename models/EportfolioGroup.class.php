@@ -139,7 +139,8 @@ class EportfolioGroup extends SimpleORMap
   }
 
   public static function getSupervisorGroupId($id){
-    return self::findById($id)->supervisor_group_id;
+    $group = self::find($id);
+    return $group->supervisor_group_id;
   }
 
   public function getRelatedStudentPortfolios(){
@@ -153,6 +154,14 @@ class EportfolioGroup extends SimpleORMap
         }
         return $portfolios;
       } else return NULL;
+  }
+  
+  public static function getTemplates($id){
+    $query = "SELECT templates FROM eportfolio_groups WHERE seminar_id = :id";
+    $statement = DBManager::get()->prepare($query);
+    $statement->execute(array(':id'=> $id));
+    $q = json_decode($statement->fetchAll()[0][0], true);
+    return $q;
   }
 
   public static function deleteGroup($cid){
