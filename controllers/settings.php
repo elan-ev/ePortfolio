@@ -109,7 +109,7 @@ class settingsController extends StudipController {
 
       $query = "INSERT INTO eportfolio_user (user_id, Seminar_id, eportfolio_id, status, eportfolio_access, owner) VALUES (:viewerId, :cid, :eportfolio_id, 'autor', :json, 0)";
       $statement = $db->prepare($query);
-      $statement->execute(array(':viewerId'=> $viewerId, ':cid'=> $cid, ':eportfolio_id'=> $eportfolio[0]->eportfolio_id, ':json'=> $json));
+      $statement->execute(array(':viewerId'=> $viewerId, ':cid'=> $cid, ':eportfolio_id'=> $eportfolio->eportfolio_id, ':json'=> $json));
     }
 
     //////////////////
@@ -182,8 +182,8 @@ class settingsController extends StudipController {
   //TOTO refactoring gehört in ePortfoliomodel
   public function getSupervisorGroupOfPortfolio($id){
     $portfolio = Eportfoliomodel::findBySeminarId($id);
-     if ($portfolio[0]->group_id){
-        $portfoliogroup = EportfolioGroup::findbySQL('seminar_id = :id', array(':id'=> $portfolio[0]->group_id));
+     if ($portfolio->group_id){
+        $portfoliogroup = EportfolioGroup::findbySQL('seminar_id = :id', array(':id'=> $portfolio->group_id));
      } if ($portfoliogroup[0]->supervisor_group_id){
      
             return $portfoliogroup[0]->supervisor_group_id;
@@ -196,7 +196,7 @@ class settingsController extends StudipController {
     $mp             = MultiPersonSearch::load('selectFreigabeUser');
     $seminar        = new Seminar($id);
     $eportfolio = Eportfoliomodel::findBySeminarId($id);
-    $eportfolio_id  = $eportfolio[0]->eportfolio_id;
+    $eportfolio_id  = $eportfolio->eportfolio_id;
     $userRole       = 'autor';
 
     # User der Gruppe hinzufügen
@@ -221,7 +221,7 @@ class settingsController extends StudipController {
   public function deleteUserAccess($userId, $cid){
     $seminar        = new Seminar($cid);
     $eportfolio = Eportfoliomodel::findBySeminarId($cid);
-    $eportfolio_id  = $eportfolio[0]->eportfolio_id;
+    $eportfolio_id  = $eportfolio->eportfolio_id;
 
     # User aus Seminar entfernen
     $seminar->deleteMember($userId);

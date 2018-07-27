@@ -104,7 +104,7 @@ class ShowsupervisorController extends StudipController {
         Navigation::activateItem('/course/eportfolioplugin/supervision');
         
         $course = Course::findCurrent();
-        $id = $this->sem->id;
+        $id = $course->id;
 
         //berechtigung prüfen (group-owner TODO:refactoring //ggf das hier nur für Supervisor, 
         //das würde dann aber schon in der Pluginklasse passieren
