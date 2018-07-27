@@ -63,7 +63,6 @@ class SetupPortfolioTables extends Migration
         $db->exec("DROP TABLE eportfolio");
         $db->exec("DROP TABLE eportfolio_user");
         $db->exec("DROP TABLE eportfolio_groups");
-        $db->exec("DROP TABLE eportfolio_groups_user");
         $db->exec("DROP TABLE eportfolio_user");
         $db->exec("DROP TABLE supervisor_group");
         $db->exec("DROP TABLE supervisor_group_user");
