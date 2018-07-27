@@ -59,16 +59,9 @@ class ShowsupervisorController extends StudipController {
 
         //sidebar
         $sidebar = Sidebar::Get();
-        Sidebar::Get()->setTitle('Supervisionsansicht');
 
-        $navcreate = new LinksWidget();
-        $navcreate->setTitle('Navigation');
-        $navcreate->addLink("�bersicht", PluginEngine::getLink($this->plugin, array(), 'show'));
-        $navcreate->addLink("Supervisionsansicht", 'showsupervisor', null, array('class' => 'active'));
-         $navcreate->addLink("Activity Feed", PluginEngine::getLink($this->plugin, array(), 'showsupervisor/activityfeed'));
 
-        $sidebar->addWidget($navcreate);
-
+        /**
         $nav = new LinksWidget();
         $nav->setTitle(_('Supervisionsgrupppen'));
         $groups = EportfolioGroup::getAllGroupsOfSupervisor($GLOBALS["user"]->id);
@@ -84,38 +77,42 @@ class ShowsupervisorController extends StudipController {
           $navGroupURL = URLHelper::getLink("plugins.php/eportfolioplugin/showsupervisor", array('cid' => $key));
           $nav->addLink($name, $navGroupURL, null, $attr);
         }
-
-        $navcreate = new LinksWidget();
-        $navcreate->setTitle('Gruppen-Aktionen');
+         * 
+         */
 
         if($this->groupid){
+            $navcreate = new LinksWidget();
+            $navcreate->setTitle('Gruppen-Aktionen');
             //$navcreate->addLink("Nutzer eintragen", '', 'icons/16/blue/add/community.svg', NULL);
             $navcreate->addLink("Supervisoren verwalten", URLHelper::getLink("plugins.php/eportfolioplugin/showsupervisor/supervisorgroup/". $id, array('cid' => $id)), Icon::create('edit', 'clickable'), NULL);
-            $navcreate->addLink("Diese Gruppe l�schen", URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/delete/' . $id), Icon::create('trash', 'clickable'), array('onclick' => "return confirm('Gruppe wirklich l�schen?')"));
+            //$navcreate->addLink("Diese Gruppe l�schen", URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/delete/' . $id), Icon::create('trash', 'clickable'), array('onclick' => "return confirm('Gruppe wirklich l�schen?')"));
+            $sidebar->addWidget($navcreate);
         }
 
-        $navcreate->addLink("Neue Gruppe anlegen", PluginEngine::getLink($this->plugin, array(), 'showsupervisor/creategroup') , Icon::create('add', 'clickable'), array('data-dialog'=>"size=auto;reload-on-close"));
-
-        $sidebar->addWidget($navcreate);
-        $sidebar->addWidget($nav);
+        //$navcreate->addLink("Neue Gruppe anlegen", PluginEngine::getLink($this->plugin, array(), 'showsupervisor/creategroup') , Icon::create('add', 'clickable'), array('data-dialog'=>"size=auto;reload-on-close"));
+        //$sidebar->addWidget($nav);
 
     }
 
     public function before_filter(&$action, &$args)
     {
         parent::before_filter($action, $args);
+        
+        if(Course::findCurrent()){
+            Navigation::activateItem("course/eportfolioplugin");
+        }
+        
     }
 
     public function index_action()
     {
-        if(Course::findCurrent()){
-            Navigation::activateItem("course/eportfolioplugin");
-        }
-
+        Navigation::activateItem('/course/eportfolioplugin/supervision');
+        
         $id = $_GET["cid"];
         $this->id = $id;
         $this->sem = Course::findById($id);
 
+      //berechtigung prüfen (group-owner TODO:refactoring
       if(!$id == ''){
         $query = "SELECT owner_id FROM eportfolio_groups WHERE seminar_id = :id";
         $statement = DBManager::get()->prepare($query);
@@ -624,6 +621,7 @@ class ShowsupervisorController extends StudipController {
     }
 
     public function activityfeed_action(){
+      Navigation::activateItem('/course/eportfolioplugin/portfoliofeed');
       $id = $_GET["cid"];
       $group = EportfolioGroup::findBySQL('Seminar_id = :cid', array(':cid' => $id));
       $this->activities = $group[0]->getActivities(User::findCurrent());

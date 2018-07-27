@@ -65,6 +65,13 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
           $navigation = new Navigation('Supervision', PluginEngine::getURL($this, compact('cid'), 'showsupervisor', true));
           $navigation->setImage(Icon::create('group4', 'info_alt'));
           $navigation->setActiveImage(Icon::create('group4', 'info'));
+          
+          $item = new Navigation(_('Supervisionsansicht'), PluginEngine::getURL($this, compact('cid'), 'showsupervisor', true));
+          $navigation->addSubNavigation('supervision', $item);
+          
+          $item = new Navigation(_('Activity Feed'), PluginEngine::getURL($this, compact('cid'), 'showsupervisor/activityfeed', true));
+          $navigation->addSubNavigation('portfoliofeed', $item);
+          
       } else if ($this->isPortfolio() || $this->isVorlage() ){
           //uebersicht navigation point
           $navigation = new Navigation('Übersicht', PluginEngine::getURL($this, compact('cid'), 'eportfolioplugin', true));
