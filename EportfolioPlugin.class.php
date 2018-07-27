@@ -104,7 +104,25 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     }
 
     public function getIconNavigation($course_id, $last_visit, $user_id) {
-        // ...
+        $icon = new AutoNavigation(
+            'Supervision',
+            PluginEngine::getURL($this, array('cid' => $course_id, 'iconnav' => 'true'), 'eportfolioplugin/portfoliofeed', true)
+        );
+        
+        $group = EportfolioGroup::find($course_id); 
+        if($group){
+            $new_ones = sizeof($group->getActivities($user_id));
+       
+            if ($new_ones) {
+                $title = $new_ones > 1 ? sprintf(_('%s neue Ereignisse in Studierenden-Portfolios'), $new_ones) : _('1 neues Ereignisse in Studierenden-Portfolio');
+                $icon->setImage(Icon::create('group3', 'attention', ['title' => $title]));
+                $icon->setBadgeNumber($new_ones);
+            } else {
+                $icon->setImage(Icon::create('group3', 'inactive', ['title' => 'Supervision']));
+            }
+        }
+
+        return $icon;
     }
 
     public function getInfoTemplate($course_id) {
@@ -242,7 +260,6 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
                 Helpbar::get()->addPlainText(_(''), $tip, '');
                 Helpbar::get()->addPlainText(_('Tip zum Bearbeiten'), $bearbeiten, Icon::create('doctoral-cap', 'info_alt'));
             }
-
          }
     }
 }
