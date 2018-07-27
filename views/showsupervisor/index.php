@@ -253,27 +253,7 @@
             <?php endforeach; ?>
         </div>
 
-
-            <!-- <div class="grid-item">
-              <div class="grid-item-inner">
-                <div class="grid-item-inner-head">
-                  <div class="grid-item-inner-head-avatar">
-                    <?= Avatar::getAvatar($user, $userInfo['username'])->getImageTag(Avatar::SMALL,array('style' => 'margin-right: 5px; border-radius: 25px; width: 25px; border: 1px solid #28497c;', 'title' => htmlReady($userInfo['Vorname']." ".$userInfo['Nachname']))); ?>
-                  </div>
-                  <div class="grid-item-inner-head-name">
-                    <?php echo $userInfo['Vorname']; ?> <br>
-                    <?php echo $userInfo['Nachname'];?>
-                  </div>
-                  <div style="clear: both;"></div>
-                </div>
-              </div>
-            </div> -->
-
         </div>
-
-
-            <!-- <button type="button" name="button" onclick="deletetemplate(<?php echo $tempid; ?>)">Vorlage fr diese Gruppe lschen</button> -->
-            <!--<?= \Studip\Button::create('Vorlage f�r diese Gruppe l�schen', 'button', array('type' => 'button', 'onclick' => 'deletetemplate('.$tempid.')')); ?>-->
   <?php endif; ?>
 
 </div>
