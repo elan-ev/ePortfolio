@@ -28,8 +28,6 @@ class ShowsupervisorController extends StudipController {
 
             $group = EportfolioGroup::findbySQL('seminar_id = :id', array(':id'=> $this->groupid));
             $this->supervisorGroupId = $group[0]->supervisor_group_id;
-
-            //object_set_visit($this->groupid, "portfolio-group");
         }
         //userData for Modal
 
@@ -55,25 +53,6 @@ class ShowsupervisorController extends StudipController {
         //sidebar
         $sidebar = Sidebar::Get();
 
-        /**
-        $nav = new LinksWidget();
-        $nav->setTitle(_('Supervisionsgrupppen'));
-        $groups = EportfolioGroup::getAllGroupsOfSupervisor($GLOBALS["user"]->id);
-        foreach ($groups as $key) {
-          $seminar = new Seminar($key);
-          $name = $seminar->getName();
-          if($_GET['cid'] == $key){
-            $attr = array('class' => 'active');
-          } else {
-            $attr = array('class' => '');
-          }
-
-          $navGroupURL = URLHelper::getLink("plugins.php/eportfolioplugin/showsupervisor", array('cid' => $key));
-          $nav->addLink($name, $navGroupURL, null, $attr);
-        }
-         * 
-         */
-
         if($this->groupid){
             $navcreate = new LinksWidget();
             $navcreate->setTitle('Gruppen-Aktionen');
@@ -82,9 +61,6 @@ class ShowsupervisorController extends StudipController {
             //$navcreate->addLink("Diese Gruppe l�schen", URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/delete/' . $id), Icon::create('trash', 'clickable'), array('onclick' => "return confirm('Gruppe wirklich l�schen?')"));
             $sidebar->addWidget($navcreate);
         }
-
-        //$navcreate->addLink("Neue Gruppe anlegen", PluginEngine::getLink($this->plugin, array(), 'showsupervisor/creategroup') , Icon::create('add', 'clickable'), array('data-dialog'=>"size=auto;reload-on-close"));
-        //$sidebar->addWidget($nav);
 
     }
 
@@ -341,11 +317,11 @@ class ShowsupervisorController extends StudipController {
             $statement->execute(array(':sem_id'=> $sem_id));
 
             /**
-            create_folder(_('Allgemeiner Dateiordner'),
-                          _('Ablage f�r allgemeine Ordner und Dokumente der Veranstaltung'),
-                          $sem->Seminar_id,
-                          7,
-                          $sem->Seminar_id);
+            *create_folder(_('Allgemeiner Dateiordner'),
+            *              _('Ablage f�r allgemeine Ordner und Dokumente der Veranstaltung'),
+            *              $sem->Seminar_id,
+            *              7,
+            *              $sem->Seminar_id);
             **/
         }
 
