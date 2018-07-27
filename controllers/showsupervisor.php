@@ -126,10 +126,14 @@ class ShowsupervisorController extends StudipController {
         }
 
         $this->userid = $GLOBALS["user"]->id;
-
         $this->group = EportfolioGroup::find($id);
+        
+        //noch kein Portfoliogruppeneintrag für dieses Seminar vorhanden: Gruppe erstellen
+        if(!$this->group){
+            EportfolioGroup::newGroup($this->userid, $course->id);
+        }
         $this->courseName = $course->name;
-        $this->member = EportfolioGroup::getGroupMember($id);
+        $this->member = EportfolioGroup::getGroupMember($course->id);
 
     }
 
@@ -257,22 +261,6 @@ class ShowsupervisorController extends StudipController {
 
       }
     }
-
-    public function creategroup_action($master = NULL, $groupid = NULL){
-
-        $this->ownerid = $GLOBALS["user"]->id;
-        if($_POST["create"]){
-          $group_id = EportfolioGroup::newGroup($this->ownerid, studip_utf8decode(strip_tags($_POST["name"])), studip_utf8decode(strip_tags($_POST["beschreibung"])));
-          $avatar = CourseAvatar::getAvatar($group_id);
-          $filename = sprintf('%s/%s',$this->plugin->getpluginPath(),'assets/images/avatare/supervisorgruppe.png');
-          $avatar->createFrom($filename);
-
-          $this->response->add_header('X-Dialog-Close', '1');
-          $this->render_nothing();
-        }
-
-    }
-
 
     public function createportfolio_action($master = NULL, $groupid = NULL){
 
@@ -582,7 +570,7 @@ class ShowsupervisorController extends StudipController {
     }
 
     public function memberdetail_action($group_id, $user_id){
-      $this->portfolio_id = EportfolioGroupUser::getPortfolioIdOfUserInGroup($user_id, $group_id);
+      $this->portfolio_id = EportfolioGroup::getPortfolioIdOfUserInGroup($user_id, $group_id);
       $this->chapters = Eportfoliomodel::getChapters($this->portfolio_id);
       $this->group_id = $group_id;
 
@@ -590,10 +578,10 @@ class ShowsupervisorController extends StudipController {
       $this->vorname = $user['Vorname'];
       $this->nachname = $user['Nachname'];
 
-      $this->AnzahlFreigegebenerKapitel = EportfolioGroupUser::getAnzahlFreigegebenerKapitel($user_id, $group_id);
+      $this->AnzahlFreigegebenerKapitel = EportfolioGroup::getAnzahlFreigegebenerKapitel($user_id, $group_id);
       $this->AnzahlAllerKapitel = EportfolioGroup::getAnzahlAllerKapitel($group_id);
-      $this->GesamtfortschrittInProzent = EportfolioGroupUser::getGesamtfortschrittInProzent($user_id, $group_id);
-      $this->AnzahlNotizen = EportfolioGroupUser::getAnzahlNotizen($user_id, $group_id);
+      $this->GesamtfortschrittInProzent = EportfolioGroup::getGesamtfortschrittInProzent($user_id, $group_id);
+      $this->AnzahlNotizen = EportfolioGroup::getAnzahlNotizen($user_id, $group_id);
     }
 
     public function activityfeed_action(){

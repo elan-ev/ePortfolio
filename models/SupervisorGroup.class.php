@@ -54,15 +54,17 @@ class SupervisorGroup extends SimpleORMap
         //als user in alle ePortfolios der StudentInnen eintragen
         $group = $this->eportfolio_group;
         $seminare = $group->getRelatedStudentPortfolios();
-        foreach($seminare as $seminar){
-            $seminar = new Seminar($seminar);
-            $seminar->addMember($user_id, 'dozent');
-            $seminar->store();
+ 
+        if($seminare){
+            foreach($seminare as $seminar){
+                $seminar = new Seminar($seminar);
+                $seminar->addMember($user_id, 'dozent');
+                $seminar->store();
+            }
         }
-
-        $seminar = new Seminar($this->eportfolio_group->seminar_id);
-        $seminar->addMember($user_id, 'dozent');
-        $seminar->store();
+        //Supervisoren werden nur noch aus der Gruppe der Dozenten hinzugefügt
+        //$seminar = new Seminar($this->eportfolio_group->seminar_id);
+        //$seminar->addMember($user_id, 'dozent');
 
     }
 
