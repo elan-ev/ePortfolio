@@ -46,6 +46,7 @@ class EportfolioGroup extends SimpleORMap
         parent::__construct($id);
     }
 
+    //TODO: ich glaube diese Funktion hier wird garnicht benutzt
     public static function getFavotitenDerGruppe($id){
       $templates = EportfolioGroup::findBySQL('Seminar_id = :cid', array(':cid' => $id));
       $templateList = json_decode($templates[0]->templates);
@@ -79,7 +80,7 @@ class EportfolioGroup extends SimpleORMap
 
   //TODO anpassen
   public static function newGroup($owner, $sem_id){
- 
+
     $course = Course::find($sem_id);
 
     $supervisorgroup = new SupervisorGroup();
@@ -259,14 +260,17 @@ class EportfolioGroup extends SimpleORMap
     return $anzahl;
   }
 
+  /**
+  * Gibt die Aktivitäten der Gruppe zurück
+  **/
   public function getActivities($user){
-
       $activities = EportfolioActivity::getDummyActivities($this->seminar_id);
-
       return $activities;
-
   }
-  
+
+  /**
+  * Gibt die der neuen Aktivitäten eines Nutzers in der Gruppe zurück
+  **/
   public function getNumberOfNewActivities($user){
     $count = 0;
     $activities = $this->getActivities($user);
@@ -275,7 +279,7 @@ class EportfolioGroup extends SimpleORMap
     }
     return $count;
   }
-  
+
   /**
     * Gibt ein Array mit den Portfolio ID's eines Users
     * innerhalb einer Gruppe wieder
@@ -348,7 +352,9 @@ class EportfolioGroup extends SimpleORMap
       return $result[0][0];
     }
 
-
+    /**
+    * Gibt die Anzahl an Neuigkeiten eines Nutzers in einer Gruppe zurück
+    **/
     public static function getAnzahlAnNeuerungen($userid, $groupid){
       return 3;
     }
