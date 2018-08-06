@@ -484,4 +484,18 @@ class ShowsupervisorController extends StudipController {
       $this->countActivities = $group[0]->getNumberOfNewActivities(User::findCurrent());
     }
 
+    public function templatedates_action($group_id, $template_id){
+      $this->group_id = $group_id;
+      $this->template_id = $template_id;
+
+      $timestamp = Eportfoliomodel::getDeadline($group_id, $template_id);
+      $this->abgabe = date('d.m.Y', $timestamp); 
+    }
+
+    public function settemplatedates_action($group_id, $template_id){
+      $dtime = DateTime::createFromFormat("d.m.Y", $_POST['begin']);
+      $timestamp = $dtime->getTimestamp();
+      Eportfoliomodel::setDeadline($group_id, $template_id, $timestamp);
+    }
+
 }

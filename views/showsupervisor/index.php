@@ -61,6 +61,15 @@
                         <? $params = tooltip2(_("Vorlage wurde in dieser Gruppe bereits verteilt.")); ?>
                         <?= Icon::create('check-circle', 'clickable')->asImg(20, $params) ?>
                        <?php endif ?>
+
+                       <?php if($member && (ShowsupervisorController::checkTemplate($id, $key) == true)): ?>
+                        <a class="member-link" data-dialog="size=1000px;" href="<?= $controller->url_for('showsupervisor/templatedates/' . $id . '/' . $key) ?>">
+                           <?= Icon::create('date', 'clickable') ?>
+                        </a>
+                       <?php else: ?>
+                         <?= Icon::create('date', 'inactive') ?>
+                       <?php endif; ?>
+
                   </td>
                   <td style="text-align: center;">
 

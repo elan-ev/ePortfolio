@@ -20,7 +20,7 @@ class Eportfoliomodel extends SimpleORMap
 {
 
     public $errors = array();
- 
+
     protected static function configure($config = array())
     {
         $config['db_table'] = 'eportfolio';
@@ -28,8 +28,8 @@ class Eportfoliomodel extends SimpleORMap
         $config['belongs_to']['seminar'] = array(
             'class_name' => 'Seminar',
             'foreign_key' => 'Seminar_id',
-            'on_delete' => 'delete',); 
-        
+            'on_delete' => 'delete',);
+
         $config['belongs_to']['owner'] = array(
             'class_name' => 'User',
             'foreign_key' => 'owner_id',);
@@ -47,10 +47,10 @@ class Eportfoliomodel extends SimpleORMap
     public function __construct($id = null) {
 
         parent::__construct($id);
-        
+
     }
-    
-    
+
+
     public static function getAllSupervisors($cid){
         $supervisoren = array();
         $portfolio = Eportfoliomodel::findBySeminarId($cid);
@@ -64,7 +64,7 @@ class Eportfoliomodel extends SimpleORMap
         $portfolio = Eportfoliomodel::findBySeminarId($cid);
         return $portfolio->owner_id;
     }
-    
+
     public function getOwnerFullname(){
         $user = User($this->owner);
         $fullname = $user->vorname . ' ' . $user->nachname;
@@ -91,17 +91,17 @@ class Eportfoliomodel extends SimpleORMap
       return $seminare;
 
     }
-    
+
     public static function findBySeminarId($sem_id){
         $eportfolio = Eportfoliomodel::findBySQL('seminar_id = :id', array(':id'=> $sem_id));
         return $eportfolio[0];
     }
-    
+
      public static function isOwner($sem_id, $user_id){
         $eportfolio = Eportfoliomodel::findBySeminarId($sem_id);
         return $eportfolio->owner_id == $user_id;
     }
-    
+
 
     public static function getMyPortfolios(){
 
@@ -256,7 +256,7 @@ class Eportfoliomodel extends SimpleORMap
     public static function isEigenesUnterkapitel($subchapter_id){
       $timestapChapter = Eportfoliomodel::getTimestampOfChapter(Eportfoliomodel::getParentId($subchapter_id));
       if ($timestapChapter < Eportfoliomodel::getTimestampOfChapter($subchapter_id)) {
-        return true; 
+        return true;
       }
     }
 
@@ -369,9 +369,9 @@ class Eportfoliomodel extends SimpleORMap
         }
         return $blocks;
     }
-    
+
     public static function sendNotificationToUser($case, $portfolio_id, $block_id, $user_id){
-        
+
         $portfolio = Eportfoliomodel::find();
         $owner = $this->getOwnerFullname();
         $link = URLHelper::getURL('plugins.php/courseware/courseware', array('cid' => $this->Seminar_id, 'selected' => $block_id));
@@ -397,9 +397,29 @@ class Eportfoliomodel extends SimpleORMap
                 );
                 break;
         }
-        
-        
+
+
         StudipMail::sendMessage($mail, sprintf(_('Neues aus Ihrer Supervisionsgruppe "%s"'), $course->name), $mail_msg);
+    }
+
+    /**
+    * Setzt Abgabedatum für eine verteiltes Template als timestamp
+    **/
+    public static function setDeadline($group_id, $template_id, $date){
+      $query = "UPDATE eportfolio_group_templates SET abgabe_datum = :datum WHERE group_id = :group_id AND Seminar_id = :template_id";
+      $statement = DBManager::get()->prepare($query);
+      $statement->execute(array(':datum'=> $date, ':group_id'=> $group_id, 'template_id' => $template_id));
+    }
+
+    /**
+    * Liefert Abgabedatum für eine verteiltes Template als timestamp
+    **/
+    public static function getDeadline($group_id, $template_id){
+      $query = "SELECT abgabe_datum FROM eportfolio_group_templates WHERE group_id = :group_id AND seminar_id = :seminar_id";
+      $statement = DBManager::get()->prepare($query);
+      $statement->execute(array(':group_id' => $group_id, ':seminar_id' => $template_id));
+      $result = $statement->fetchAll();
+      return $result[0][0];
     }
 
 }
