@@ -359,4 +359,15 @@ class EportfolioGroup extends SimpleORMap
       return 3;
     }
 
+    /**
+    * Liefert alle verteilten Templates einer Gruppe
+    **/
+    public static function getGroupTemplates($group_id){
+      $query = "SELECT Seminar_id FROM eportfolio_group_templates WHERE group_id = :group_id";
+      $statement = DBManager::get()->prepare($query);
+      $statement->execute( array(':group_id' => $group_id));
+      $result = $statement->fetchAll();
+      return $result; 
+    }
+
 }

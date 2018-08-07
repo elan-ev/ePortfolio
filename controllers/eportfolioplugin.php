@@ -111,6 +111,9 @@ class EportfoliopluginController extends StudipController {
     $this->userid = $userid;
     $this->owner = $owner;
 
+    $this->group_id = $eportfolio->group_id;
+    $this->templates = EportfolioGroup::getGroupTemplates($eportfolio->group_id);
+
   }
 
   public function getCardInfos($cid){

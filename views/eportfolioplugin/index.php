@@ -35,74 +35,74 @@
 
     <hr>
 
-    <div class="row">
+    <div class="row member-container">
 
-      <?php $imageNumber = 0; ?>
-      <?php foreach ($cardInfo as $key): ?>
+      <?php foreach ($templates as $key):?>
 
-        <?php if(EportfolioFreigabe::hasAccess($userid, $cid, $key[id]) || $isVorlage): ?>
-        <?php
-         
-            $link = URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $cid, 'selected' => $key[id]));
-            //$link = '/studip/plugins.php/courseware/courseware?cid='.$cid.'&selected='.$key[id];
-            $linkAdmin = $link.'#author';
-        ?>
+        <div class="col-sm-4 member-single-card">
 
-        <div data-blockid="<?php echo $key[id]; ?>" class="col-md-4 card-wrapper">
-          <div class="card-inner" style="">
+          <div class="member-item">
+            <h3>
+              <?php $template = new Seminar($key[0]); echo $template->getName();?>
+              <span class="template-bandage">3</span>
+            </h3>
 
-          <h4><?php echo $key[title]; ?></h4>
-
-          <?php $theurl = $img[$imgcount]; $imgcount++; ?>
-
-          <div class="" style="min-height: 220px;background-image: url('<?php echo $images[$imageNumber]; ?>'); background-size: cover;">
-            &nbsp;
-          </div>
-
-          <?php $imageNumber++; ?>
-
-          <!-- <div class="alert alert-info" style="margin: 20px 0;" role="alert">Warum will ich Lehrerin werden? Welche Staerken will ich einbringen? </div> -->
-
-          <div class="">
-
-            <?php if($isOwner == true):?>
-            <?php //if($isOwner == true):?>
-            <div class="avatar-wrapper">
-              <?php $viewers = EportfolioFreigabe::getUserWithAccess($cid, $key[id]);?>
+            <div class="template-infos">
+              <?= Icon::create('date', 'clickable') ?>
+              <b>Abgabedatum: </b>
               <?php
-              $counter = 0;
-              foreach($viewers as $viewer):?>
-                <?php $viewer = new User($viewer->user_id); ?>
-                  <?php if(!$viewer->vorname):?>
-                    <div class="avatar-container"><?= Avatar::getAvatar('nobody')->getImageTag(Avatar::SMALL, array('title' => 'Gruppen-Supervisoren')) ?></div>
-                  <?php else: ?>
-                    <div class="avatar-container"><?= Avatar::getAvatar($viewer->user_id)->getImageTag(Avatar::SMALL, array('title' => $viewer->vorname . ' ' . $viewer->nachname)) ?></div>
-                  <?php endif; ?>
-                  <?php $counter++; ?>
-                
-              <?php endforeach; ?>
-
+                $timestamp = Eportfoliomodel::getDeadline($group_id, $key[0]);
+                echo date('d.m.Y', $timestamp);
+              ?>
+              <span class="template-infos-days-left">(noch <?php echo Eportfoliomodel::getDaysLeft($group_id, $key[0]); ?> Tage)</span>
+              <br>
+              <?= Icon::create('activity', 'clickable') ?>
+              <b>Letzte Änderung: </b> 23.05.2018
             </div>
-              <?php endif; ?>
-          <?php //endif; ?>
 
-            <br>
-            <?php if($isOwner == true):?>
-              <b>Freigaben: <?php echo $counter; ?></b><br>
-            <?php endif; ?>
-            <!--<b>Kommentare: 12</b><br>-->
-            <br>
+            <div class="row template-kapitel-info">
+              <?php foreach (Eportfoliomodel::getChapters($key[0]) as $chapter):?>
+                <?php $current_block_id = Eportfoliomodel::getUserPortfilioBlockId($userPortfolioId ,$chapter[id]); ?>
+                <div class="col-sm-4 member-kapitelname"><?php echo $chapter[title]?></div>
+                <div class="col-sm-8">
+                  <div class="row member-icons">
+                    <div class="col-sm-4">
+                      <?php if(Eportfoliomodel::checkKapitelFreigabe($current_block_id)): ?>
+                        <?php $new_freigabe = LastVisited::chapter_last_visited($current_block_id, $user) < EportfolioFreigabe::hasAccessSince($supervisorGroupId, $current_block_id);?>
+                        <?php if($new_freigabe): ?>
+                          <?= Icon::create('accept+new', 'clickable'); ?>
+                        <?php else: ?>
+                          <?= Icon::create('accept', 'clickable'); ?>
+                        <?php endif; ?>
+                      <?php else: ?>
+                        <?= Icon::create('accept', 'inactive'); ?>
+                      <?php endif; ?>
+                    </div>
+                    <div class="col-sm-4">
+                      <?php if (Eportfoliomodel::checkSupervisorNotiz($current_block_id) == true): ?>
+                        <?= Icon::create('file', 'clickable'); ?>
+                      <?php else: ?>
+                        <?= Icon::create('file', 'inactive'); ?>
+                      <?php endif; ?>
+                    </div>
+                    <div class="col-sm-4">
+                      <?php if (Eportfoliomodel::checkSupervisorResonanz($current_block_id) == true): ?>
+                        <?= Icon::create('forum', 'clickable');?>
+                      <?php else: ?>
+                        <?= Icon::create('forum', 'inactive'); ?>
+                      <?php endif; ?>
+                    </div>
+                  </div>
+                </div>
+              <?php endforeach; ?>
+            </div>
+
+            <?= \Studip\LinkButton::create('Anschauen',  'http://example.org', array('data-dialog' => '1', 'data-hallo' => 'welt')); ?>
 
           </div>
-          <a href="<?php echo $link; ?>"><?= \Studip\Button::create('Anschauen', 'anschauen', array('type' => 'button')); ?></a>
-
-          <?php if($isOwner == true):?>
-            <a href="<?php echo $linkAdmin; ?>"><?= \Studip\Button::create('Bearbeiten', 'anschauen', array('type' => 'button')); ?></a>
-          <?php endif; ?>
         </div>
-      </div>
-        <?php endif; ?>
       <?php endforeach; ?>
+
     </div>
   </div>
 </div>
@@ -138,8 +138,6 @@
     });
 
   }
- 
+
 
 </script>
-
-

@@ -498,10 +498,6 @@ td, th {
   color: grey;
 }
 
-.member-subname img {
-  margin-bottom: 0px;
-}
-
 .member-content {
   border-top: 1px solid grey;
   border-bottom: 1px solid grey;
@@ -631,4 +627,33 @@ td, th {
   color: black;
   padding: 2px 14px;
   border-radius: 36px;
+}
+
+.template-infos{
+  padding-bottom: 10px;
+  border-bottom: 1px solid grey;
+}
+
+.template-infos-days-left{
+  color: grey!important;
+}
+
+.template-kapitel-info {
+  margin: 10px 0;
+  border-bottom: 1px solid grey;
+  padding-bottom: 10px;
+}
+
+.template-stats-area {
+  border-top: 1px solid grey;
+  padding-top: 10px;
+}
+
+.template-bandage{
+  background-color: red;
+  border-radius: 30px;
+  padding: 1px 5px;
+  color: #ffffff;
+  font-size: 12px;
+
 }

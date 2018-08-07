@@ -417,4 +417,20 @@ class Eportfoliomodel extends SimpleORMap
       return $result[0][0];
     }
 
+    /**
+    * Liefert die zuverbleibenden Tage (gerundet) zwischen
+    * jetzt und Abgabetermin des passenden Templates
+    * der Gruppe. Liefert 0 wenn das Abgabedatum überschritten wurde
+    **/
+    public static function getDaysLeft($group_id, $template_id){
+      $deadline = Eportfoliomodel::getDeadline($group_id, $template_id);
+      $now = time();
+
+      if($now < $deadline){
+        $daysleft = abs($now - $deadline)/60/60/24;
+        return round($daysleft, 0);
+      } else {
+        return 0;
+      }
+    }
 }
