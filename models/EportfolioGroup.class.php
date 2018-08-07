@@ -190,7 +190,7 @@ class EportfolioGroup extends SimpleORMap
   **/
   public static function createTemplateForGroup($group_id, $template_id){
     $time = time();
-    $query = "INSERT INTO eportfolio_group_templates VALUES (:group_id , :template_id, 1, :t)";
+    $query = "INSERT INTO eportfolio_group_templates VALUES (:group_id , :template_id, 1, :t, 0)";
     $statement = DBManager::get()->prepare($query);
     $statement->execute(array(':group_id' => $group_id , ':template_id' => $template_id, ':t' => $time));
   }
