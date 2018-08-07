@@ -48,7 +48,26 @@
               <?php $portfolio = new Course($key); ?>
                 <tr>
                   <td><?php echo $portfolio->name; ?></td>
-                  <td><?php echo $portfolio->beschreibung; ?></td>
+                  <td>
+                    <?php echo $portfolio->beschreibung; ?>
+                    <?php if(ShowsupervisorController::checkTemplate($id, $key)): ?>
+                      <?php if(Eportfoliomodel::getDeadline($id, $key)): ?>
+                        <a data-dialog="size=1000px;" href="<?= $controller->url_for('showsupervisor/templatedates/' . $id . '/' . $key) ?>">
+                           <?= Icon::create('date', 'clickable') ?>
+                        </a>
+                        Abgabetermin:
+                        <?php
+                          $timestamp = Eportfoliomodel::getDeadline($id, $key);
+                          echo date('d.m.Y', $timestamp);
+                        ?>
+                      <?php else: ?>
+                        <a data-dialog="size=1000px;" href="<?= $controller->url_for('showsupervisor/templatedates/' . $id . '/' . $key) ?>">
+                           <?= Icon::create('date', 'clickable') ?>
+                        </a>
+                        Kein Abgabetermin
+                      <?php endif; ?>
+                    <?php endif; ?>
+                  </td>
                   <td style="text-align: center;">
                       <a href="<?php echo URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $key)); ?>"><?php echo Icon::create('edit', 'clickable', ['title' => sprintf(_('Portfolio-Vorlage bearbeiten.'))]) ?></a>
                       <?php if($member && (ShowsupervisorController::checkTemplate($id, $key) == false)): ?>
@@ -61,14 +80,6 @@
                         <? $params = tooltip2(_("Vorlage wurde in dieser Gruppe bereits verteilt.")); ?>
                         <?= Icon::create('check-circle', 'clickable')->asImg(20, $params) ?>
                        <?php endif ?>
-
-                       <?php if($member && (ShowsupervisorController::checkTemplate($id, $key) == true)): ?>
-                        <a class="member-link" data-dialog="size=1000px;" href="<?= $controller->url_for('showsupervisor/templatedates/' . $id . '/' . $key) ?>">
-                           <?= Icon::create('date', 'clickable') ?>
-                        </a>
-                       <?php else: ?>
-                         <?= Icon::create('date', 'inactive') ?>
-                       <?php endif; ?>
 
                   </td>
                   <td style="text-align: center;">
