@@ -60,11 +60,6 @@ class Eportfoliomodel extends SimpleORMap
         return $supervisoren[0];
     }
 
-    public static function getOwner($cid){
-        $portfolio = Eportfoliomodel::findBySeminarId($cid);
-        return $portfolio->owner_id;
-    }
-
     public function getOwnerFullname(){
         $user = User($this->owner);
         $fullname = $user->vorname . ' ' . $user->nachname;
