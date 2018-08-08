@@ -51,13 +51,13 @@
                   <td>
                     <?php echo $portfolio->beschreibung; ?>
                     <?php if(ShowsupervisorController::checkTemplate($id, $key)): ?>
-                      <?php if(Eportfoliomodel::getDeadline($id, $key)): ?>
+                      <?php if(EportfolioGroupTemplates::getDeadline($id, $key)): ?>
                         <a data-dialog="size=1000px;" href="<?= $controller->url_for('showsupervisor/templatedates/' . $id . '/' . $key) ?>">
                            <?= Icon::create('date', 'clickable') ?>
                         </a>
                         Abgabetermin:
                         <?php
-                          $timestamp = Eportfoliomodel::getDeadline($id, $key);
+                          $timestamp = EportfolioGroupTemplates::getDeadline($id, $key);
                           echo date('d.m.Y', $timestamp);
                         ?>
                       <?php else: ?>

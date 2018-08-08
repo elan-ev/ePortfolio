@@ -38,7 +38,7 @@
                 <?= Icon::create('date', 'clickable') ?>
                 <b>Abgabedatum: </b>
                 <?php
-                  $timestamp = Eportfoliomodel::getDeadline($group_id, $key[0]);
+                  $timestamp = EportfolioGroupTemplates::getDeadline($group_id, $key[0]);
                   echo date('d.m.Y', $timestamp);
                 ?>
                 <span class="template-infos-days-left">(noch <?php echo Eportfoliomodel::getDaysLeft($group_id, $key[0]); ?> Tage)</span>

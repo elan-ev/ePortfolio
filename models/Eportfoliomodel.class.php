@@ -397,25 +397,6 @@ class Eportfoliomodel extends SimpleORMap
         StudipMail::sendMessage($mail, sprintf(_('Neues aus Ihrer Supervisionsgruppe "%s"'), $course->name), $mail_msg);
     }
 
-    /**
-    * Setzt Abgabedatum für eine verteiltes Template als timestamp
-    **/
-    public static function setDeadline($group_id, $template_id, $date){
-      $query = "UPDATE eportfolio_group_templates SET abgabe_datum = :datum WHERE group_id = :group_id AND Seminar_id = :template_id";
-      $statement = DBManager::get()->prepare($query);
-      $statement->execute(array(':datum'=> $date, ':group_id'=> $group_id, 'template_id' => $template_id));
-    }
-
-    /**
-    * Liefert Abgabedatum für eine verteiltes Template als timestamp
-    **/
-    public static function getDeadline($group_id, $template_id){
-      $query = "SELECT abgabe_datum FROM eportfolio_group_templates WHERE group_id = :group_id AND seminar_id = :seminar_id";
-      $statement = DBManager::get()->prepare($query);
-      $statement->execute(array(':group_id' => $group_id, ':seminar_id' => $template_id));
-      $result = $statement->fetchAll();
-      return $result[0][0];
-    }
 
     /**
     * Liefert die zuverbleibenden Tage (gerundet) zwischen
@@ -423,7 +404,7 @@ class Eportfoliomodel extends SimpleORMap
     * der Gruppe. Liefert 0 wenn das Abgabedatum überschritten wurde
     **/
     public static function getDaysLeft($group_id, $template_id){
-      $deadline = Eportfoliomodel::getDeadline($group_id, $template_id);
+      $deadline = EportfolioGroupTemplates::getDeadline($group_id, $template_id);
       $now = time();
 
       if($now < $deadline){
