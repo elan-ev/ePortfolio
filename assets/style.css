@@ -631,7 +631,7 @@ td, th {
 
 .template-infos{
   padding-bottom: 10px;
-  border-bottom: 1px solid grey;
+  padding-top: 10px;
 }
 
 .template-infos-days-left{
@@ -640,12 +640,13 @@ td, th {
 
 .template-kapitel-info {
   margin: 10px 0;
+  border-top: 1px solid grey;
   border-bottom: 1px solid grey;
   padding-bottom: 10px;
+  padding-top: 10px;
 }
 
 .template-stats-area {
-  border-top: 1px solid grey;
   padding-top: 10px;
 }
 
@@ -655,5 +656,30 @@ td, th {
   padding: 1px 5px;
   color: #ffffff;
   font-size: 12px;
+}
 
+.template-user-item {
+  padding: 10px 5px;
+  border: 1px solid grey;
+  background-color: rgba(0,0,0,0.01);
+  transition: all 0.1s;
+  /* background-color: grey; */
+}
+
+.template-user-item:hover {
+  /* background-color: #e7ebf1;
+  transition: all 0.3s; */
+}
+
+.template-user-item-head {
+  padding: 0px 11px;
+}
+
+.template-user-item-headline{
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.template-user-item-footer{
+  padding: 10px 11px;
 }

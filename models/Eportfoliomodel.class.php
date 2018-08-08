@@ -433,4 +433,59 @@ class Eportfoliomodel extends SimpleORMap
         return 0;
       }
     }
+
+    /**
+    * Liefert die Anzahl der Kapitel in einem Template
+    **/
+    public static function getNumberOfChaptersFromTemplate($template_id){
+      $query = "SELECT COUNT(id) FROM mooc_blocks WHERE type = 'Chapter' AND Seminar_id = :template_id";
+      $statement = DBManager::get()->prepare($query);
+      $statement->execute(array(':template_id' => $template_id));
+      $result = $statement->fetchAll();
+      return $result[0][0];
+    }
+
+    /**
+    * Liefert die Anzahl der freigebenen Kapitel der Users
+    * innerhalb eines verteilten Templates
+    **/
+    public static function getNumberOfSharedChaptersOfTemplateFromUser($template_id, $user_id, $user_template_id){
+      $return = 0;
+      $templateChapters = Eportfoliomodel::getChapters($template_id);
+      foreach ($templateChapters as $chapter) {
+        $block_id = Eportfoliomodel::getUserPortfilioBlockId($user_template_id, $chapter[id]);
+        if (Eportfoliomodel::checkKapitelFreigabe($block_id)) $return++;
+      }
+      return $return;
+    }
+
+    /**
+    * Liefert Fortschritt des Users in in einem Template
+    **/
+    public static function getProgressOfUserInTemplate($shared, $all){
+      return round($shared / $all * 100, 0);
+    }
+
+    /**
+    * Liefert die Anzahl der Supervisornotizen innerhalb eines $templateStatus
+    * einers Users
+    **/
+    public static function getNumberOfNotesInTemplateOfUser($template_id, $user_template_id){
+      $return = 0;
+      $templateChapters = Eportfoliomodel::getChapters($template_id);
+      foreach ($templateChapters as $chapter) {
+        $block_id = Eportfoliomodel::getUserPortfilioBlockId($user_template_id, $chapter[id]);
+        if (Eportfoliomodel::checkSupervisorNotiz($block_id)) $return++;
+      }
+      return $return;
+    }
+
+    /**
+    * Liefert einen CoursewareLink für das erste Kapitel eines Templates eines Users
+    **/
+    public static function getLinkOfFirstChapter($template_id, $seminar_id){
+      $templateChapters = Eportfoliomodel::getChapters($template_id);
+      return URLHelper::getURL('plugins.php/courseware/courseware', array('cid' => $seminar_id, 'selected' => $templateChapters[0][0]));
+    }
+
 }
