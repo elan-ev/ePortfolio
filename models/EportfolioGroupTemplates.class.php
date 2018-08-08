@@ -37,9 +37,13 @@ class EportfolioGroupTemplates extends SimpleORMap
     * Setzt Abgabedatum für eine verteiltes Template als timestamp
     **/
     public static function setDeadline($group_id, $template_id, $date){
-      $query = "UPDATE eportfolio_group_templates SET abgabe_datum = :datum WHERE group_id = :group_id AND Seminar_id = :template_id";
-      $statement = DBManager::get()->prepare($query);
-      $statement->execute(array(':datum'=> $date, ':group_id'=> $group_id, 'template_id' => $template_id));
+      // $query = "UPDATE eportfolio_group_templates SET abgabe_datum = :datum WHERE group_id = :group_id AND Seminar_id = :template_id";
+      // $statement = DBManager::get()->prepare($query);
+      // $statement->execute(array(':datum'=> $date, ':group_id'=> $group_id, 'template_id' => $template_id));
+      $result = EportfolioGroupTemplates::findBySQL('group_id = :group_id AND Seminar_id = :template_id', array(':group_id'=> $group_id, 'template_id' => $template_id));
+      $object = $result[0];
+      $object->abgabe_datum = $date;
+      $object->store();
     }
 
     /**

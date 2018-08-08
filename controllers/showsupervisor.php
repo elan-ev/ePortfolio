@@ -495,7 +495,7 @@ class ShowsupervisorController extends StudipController {
     public function settemplatedates_action($group_id, $template_id){
       $dtime = DateTime::createFromFormat("d.m.Y", $_POST['begin']);
       $timestamp = $dtime->getTimestamp();
-      Eportfoliomodel::setDeadline($group_id, $template_id, $timestamp);
+      EportfolioGroupTemplates::setDeadline($group_id, $template_id, $timestamp);
       $this->redirect('showsupervisor?cid=' . $group_id);
     }
 
