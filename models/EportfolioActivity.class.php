@@ -41,6 +41,28 @@ class EportfolioActivity extends SimpleORMap
         $config['belongs_to']['eportfolio'] = array(
             'class_name' => 'Eportfoliomodel',
             'foreign_key' => 'eportfolio_id', );
+        
+        $config['additional_fields']['is_new']['get'] = function ($item) {
+            return true;
+        };
+        $config['additional_fields']['link']['get'] = function ($item) {
+            return true;
+        };
+        
+        $config['additional_fields']['message']['get'] = function ($item) {
+            switch($item->type){
+            case 'freigabe':
+                $message = 'Ein neuer Abschnitt wurde für Ihren Zugriff freigegeben';
+                break;
+            case 'notiz':
+                $message = 'Eine neue Notiz wurde erstellt';
+                break;
+            case 'aenderung':
+                $message = 'Ein bereits freigegebener Abschnitt wurde verändert';
+                break;
+            }
+            return $message;
+        };
 
         parent::configure($config);
     }
@@ -55,21 +77,21 @@ class EportfolioActivity extends SimpleORMap
         return EportfolioActivity::findByGroup_id($seminar_id);
     }
 
-    public function getDummyActivities($seminar_id){
+    public function getDummyActivitiesForGroup($seminar_id){
         global $user;
         $activities = array();
-        //$activities[] = EportfolioActivity::getDummyActivity('freigabe', $user, 1532603297, URLHelper::getLink('dispatch.php/start'), true);
-        //$activities[] = EportfolioActivity::getDummyActivity('aenderung', $user, 1532403297, URLHelper::getLink('dispatch.php/start'), true);
-        //$activities[] = EportfolioActivity::getDummyActivity('freigabe', $user, 1532503297, URLHelper::getLink('dispatch.php/start'), true);
-        //$activities[] = EportfolioActivity::getDummyActivity('notiz', $user, 1532609297, URLHelper::getLink('dispatch.php/start'), true);
-        //$activities[] = EportfolioActivity::getDummyActivity('notiz', $user, 1532653297, URLHelper::getLink('dispatch.php/start'), true);
+        $activities[] = EportfolioActivity::getDummyActivity('freigabe', $user, 1532603297, URLHelper::getLink('dispatch.php/start'), true);
+        $activities[] = EportfolioActivity::getDummyActivity('aenderung', $user, 1532403297, URLHelper::getLink('dispatch.php/start'), true);
+        $activities[] = EportfolioActivity::getDummyActivity('freigabe', $user, 1532503297, URLHelper::getLink('dispatch.php/start'), true);
+        $activities[] = EportfolioActivity::getDummyActivity('notiz', $user, 1532609297, URLHelper::getLink('dispatch.php/start'), true);
+        $activities[] = EportfolioActivity::getDummyActivity('notiz', $user, 1532653297, URLHelper::getLink('dispatch.php/start'), true);
         return $activities;
     }
     
     public function getDummyActivitiesOfUser($seminar_id, $user){
         $activities = array();
-        //$activities[] = EportfolioActivity::getDummyActivity('freigabe', $user, 1532653297, URLHelper::getLink('dispatch.php/start'), true);
-        //$activities[] = EportfolioActivity::getDummyActivity('aenderung', $user, 1532413297, URLHelper::getLink('dispatch.php/start'), true);
+        $activities[] = EportfolioActivity::getDummyActivity('freigabe', $user, 1532653297, URLHelper::getLink('dispatch.php/start'), true);
+        $activities[] = EportfolioActivity::getDummyActivity('aenderung', $user, 1532413297, URLHelper::getLink('dispatch.php/start'), true);
         return $activities;
     }
     
@@ -77,21 +99,11 @@ class EportfolioActivity extends SimpleORMap
 
         $activity = new EportfolioActivity();
         $activity->type = $type;
-        $activity->user = $user;
-        $activity->date = $date;
+        $activity->user_id = $user;
+        $activity->mk_date = $date;
         $activity->link = $link;
         $activity->is_new = $is_new;
-        switch($type){
-            case 'freigabe':
-                $this->message = 'Ein neuer Abschnitt wurde für Ihren Zugriff freigegeben';
-                break;
-            case 'notiz':
-                $this->message = 'Eine neue Notiz wurde erstellt';
-                break;
-            case 'aenderung':
-                $this->message = 'Ein bereits freigegebener Abschnitt wurde verändert';
-                break;
-        }
+        
         return $activity;
     }
     
