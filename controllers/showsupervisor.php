@@ -310,6 +310,8 @@ class ShowsupervisorController extends StudipController {
       //$this->response->add_header('X-Dialog-Close', '1');
 
       VorlagenCopy::copyCourseware(new Seminar($masterid), $this->semList);
+      EportfolioActivity::addVorlagenActivity($groupid, User::findCurrent()->id);
+      
       $this->storeTemplateForGroup($groupid, $masterid);
 
       $this->redirect('showsupervisor?cid=' . $groupid);

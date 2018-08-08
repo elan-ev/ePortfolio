@@ -1,7 +1,6 @@
 <?php
 
 include_once __DIR__.'/EportfolioGroup.class.php';
-include_once __DIR__.'/Eportfoliomodel.class.php';
 
 /**
  * @author  <asudau@uos.de>
@@ -13,7 +12,6 @@ include_once __DIR__.'/Eportfoliomodel.class.php';
  * @property string     $user_id (User)
  * @property string     $block_id (Mooc\Block)
  * @property int        $mkdate
- * @property int        $chdate
  */
 
 class EportfolioActivity extends SimpleORMap
@@ -60,6 +58,12 @@ class EportfolioActivity extends SimpleORMap
             case 'aenderung':
                 $message = 'Ein bereits freigegebener Abschnitt wurde verändert';
                 break;
+            case 'vorlage-erhalten':
+                $message = 'In '. Course::find($item->group_id)->name .' wurden neue Portfolio-Inhalte verteilt';
+                break;
+            case 'vorlage-verteilt':
+                $message = 'Es wurden neue Portfolio-Inhalte verteilt';
+                break;
             }
             return $message;
         };
@@ -105,6 +109,26 @@ class EportfolioActivity extends SimpleORMap
         $activity->is_new = $is_new;
         
         return $activity;
+    }
+    
+    public function addVorlagenActivity($group_id, $user_id){
+        $activity = new EportfolioActivity();
+        $activity->type = 'vorlage-verteilt';
+        $activity->user_id = $user_id;
+        $activity->mk_date = time();
+        $activity->group_id = $group_id;
+        $activity->store();
+        
+        foreach(EportfolioGroup::find($group_id)->getRelatedStudentPortfolios() as $portfolio){
+            $activity = new EportfolioActivity();
+            $activity->type = 'vorlage-erhalten';
+            $activity->user_id = $user_id;
+            $activity->mk_date = time();
+            $activity->group_id = $group_id;
+            $activity->eportfolio_id = $portfolio;
+            $activity->store();
+        }
+
     }
     
 }
