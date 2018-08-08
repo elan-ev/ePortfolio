@@ -18,21 +18,14 @@ include_once __DIR__.'/Eportfoliomodel.class.php';
 
 class EportfolioActivity extends SimpleORMap
 {
-    var $type;       // string
-    var $message;    // String
-    var $user;       // Object of Class User
-    var $date;       //unix timestamp
-    var $link;       //string
-    var $is_new;     //boolean
 
-
-
+/*
     public function __construct($id = null) {
 
         parent::__construct($id);
         
     }
-    
+  */  
     protected static function configure($config = array())
     {
         $config['db_table'] = 'eportfolio_activities';
