@@ -3,17 +3,16 @@
 
 include_once __DIR__.'/Eportfoliomodel.class.php';
 include_once __DIR__.'/EportfolioGroup.class.php';
-include_once __DIR__.'/EportfolioGroupUser.class.php';
 include_once __DIR__.'/SupervisorGroupUser.class.php';
 
 /**
  * @author  <asudau@uos.de>
  *
- * @property int     $id
- * @property string  $type
- * @property int     $related_contact
- * @property string  $content
- * @property int     $mkdate
+ * @property string     $Seminar_id
+ * @property string     $block_id
+ * @property string     $user_id
+ * @property int        $mkdate
+ * @property int        $chdate
  */
 class EportfolioFreigabe extends SimpleORMap
 {
@@ -37,12 +36,12 @@ class EportfolioFreigabe extends SimpleORMap
     //EportfolioFreigabe::hasAccess($user_id, $seminar_id, $chapter_id)
     public static function hasAccess($user_id, $seminar_id, $chapter_id){
         
-        $portfolio = Eportfoliomodel::findBySQL('seminar_id = :id', array(':id'=> $seminar_id));
+        $portfolio = Eportfoliomodel::findBySeminarId($seminar_id);
         
-        //Wenn das Portfolio Teil einer Gruppe mit zugehöriger Supervisorgruppe ist:
-        //checke ob user Teil der Supervisorgruppe ist und prüfe in diesem Fall Berechtigung für Supervisorgruppe
-        if ($portfolio[0]->group_id){
-            $portfoliogroup = EportfolioGroup::findbySQL('seminar_id = :id', array(':id'=> $portfolio[0]->group_id));
+        //Wenn das Portfolio Teil einer Gruppe mit zugehÃ¶riger Supervisorgruppe ist:
+        //checke ob user Teil der Supervisorgruppe ist und prÃ¼fe in diesem Fall Berechtigung fÃ¼r Supervisorgruppe
+        if ($portfolio->group_id){
+            $portfoliogroup = EportfolioGroup::findbySQL('seminar_id = :id', array(':id'=> $portfolio->group_id));
             
         } if ($portfoliogroup[0]->supervisor_group_id){
             $isUser = SupervisorGroupUser::findbySQL('supervisor_group_id = :id AND user_id = :user_id', 
@@ -54,8 +53,7 @@ class EportfolioFreigabe extends SimpleORMap
         
         $hasAccess = EportfolioFreigabe::findBySQL('Seminar_id = :seminar_id AND block_id = :block_id AND user_id = :user_id',
                 array(':seminar_id' => $seminar_id, ':block_id' => $chapter_id, ':user_id' => $user_id)); 
-        $isOwner = Eportfoliomodel::findBySQL('Seminar_id = :seminar_id AND owner_id = :user_id',
-                array(':seminar_id' => $seminar_id, ':user_id' => $user_id)); 
+        $isOwner = Eportfoliomodel::isOwner($seminar_id, $user_id);
         
         if ($hasAccess || $isOwner){ 
             return true; 
@@ -70,14 +68,23 @@ class EportfolioFreigabe extends SimpleORMap
             $access->Seminar_id = $seminar_id;
             $access->block_id = $chapter_id;
             $access->user_id = $user_id;
-            $access->store();
-        } else if ($this::hasAccess($user_id, $seminar_id, $chapter_id)){
+            if($access->store()){
+                Eportfoliomodel::sendNotificationToUser('freigabe', $seminar_id, $chapter_id, $user_id);
+                EportfolioActivity::create();
+            }
+        } else if (self::hasAccess($user_id, $seminar_id, $chapter_id)){
             self::deleteBySQL('Seminar_id = :seminar_id AND block_id = :block_id AND user_id = :user_id',
                 array(':seminar_id' => $seminar_id, ':block_id' => $chapter_id, ':user_id' => $user_id));
         }
     }
     
     public static function getUserWithAccess($seminar_id, $chapter_id){
-        
+        return self::findBySQL('Seminar_id = :seminar_id AND block_id = :chapter_id', array(':seminar_id' => $seminar_id, ':chapter_id' => $chapter_id));
+    }
+    
+    public static function hasAccessSince($user_id, $chapter_id){
+        $hasAccessSince = EportfolioFreigabe::findOneBySQL('block_id = :block_id AND user_id = :user_id',
+                array(':block_id' => $chapter_id, ':user_id' => $user_id)); 
+        return $hasAccessSince->mkdate;
     }
 }

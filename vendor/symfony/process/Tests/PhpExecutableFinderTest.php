@@ -14,7 +14,7 @@ namespace Symfony\Component\Process\Tests;
 use Symfony\Component\Process\PhpExecutableFinder;
 
 /**
- * @author Robert Schönthal <seroscho@googlemail.com>
+ * @author Robert SchÃ¶nthal <seroscho@googlemail.com>
  */
 class PhpExecutableFinderTest extends \PHPUnit_Framework_TestCase
 {

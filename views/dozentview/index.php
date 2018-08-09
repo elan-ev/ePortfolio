@@ -1,11 +1,10 @@
 <?php
 
+  //Berechtigungen sollten wir evtl. lieber im Controller abfragen 
   $userId = $GLOBALS["user"]->id;
-  $perm = get_global_perm($userId);
+  global $perm;
 
-  $havePerm = array("root", "dozent", "admin");
-  if (in_array($perm, $havePerm)){
-  } else {
+  if (!$perm->have_perm('dozent')){
     exit("Sie haben keine Berechtigung diese Seite zu betrachten");
   }
 
@@ -33,7 +32,7 @@
 
 <div class="row">
   <div class="col-md-12">
-    <h4>Für Sie sichtbare Portfolios</h4>
+    <h4>FÃ¼r Sie sichtbare Portfolios</h4>
 
     <table  data-link="row" class=" rowlink table  viewportfolioOverview">
       <tr class="tr-head">

@@ -5,7 +5,7 @@ require __DIR__.'/../vendor/autoload.php';
 class AddSemClass extends Migration
 {
     public function description () {
-        return 'add SemClass and SemTypes whose courses have this plugin in their overview slot';
+        return 'add SemClass and SemTypes whos courses have this plugin in their overview slot';
     }
 
 
@@ -45,19 +45,29 @@ class AddSemClass extends Migration
         $nameType = "ePortfolio";
         $id = -2;
 
-        //Fügt Spalte an true or false ePortfolio
+        //FÃ¼gt Spalte an true or false ePortfolio
         // $nameType = "eportfolioStatus";
         // $statement = $db->prepare("ALTER TABLE seminare ADD ? BOOLEAN");
         // $statement->execute(array($nameType));
 
         if($this->validateUniqueness($name)) {
-    			$statement = $db->prepare("INSERT INTO sem_classes SET name = ?, mkdate = UNIX_TIMESTAMP(), chdate = UNIX_TIMESTAMP()");
-    			$statement->execute(array($name));
-    			$id = $db->lastInsertId();
+            $statement = $db->prepare("INSERT INTO sem_classes SET name = ?, mkdate = UNIX_TIMESTAMP(), chdate = UNIX_TIMESTAMP()");
+            $statement->execute(array($name));
+            $id = $db->lastInsertId();
 
-          //Insert sem_type
-          $statementSemTypes = $db->prepare("INSERT INTO sem_types SET name = ?, class = $id, mkdate = UNIX_TIMESTAMP(), chdate = UNIX_TIMESTAMP()");
-          $statementSemTypes->execute(array($nameType));
+            //Insert sem_type
+            $statementSemTypes = $db->prepare("INSERT INTO sem_types SET name = ?, class = $id, mkdate = UNIX_TIMESTAMP(), chdate = UNIX_TIMESTAMP()");
+            $statementSemTypes->execute(array($nameType));
+            $type_id = $db->lastInsertId();
+
+            Config::get()->create('SEM_CLASS_PORTFOLIO', array(
+            'value'       => $type_id,
+            'is_default'  => 0,
+            'type'        => 'integer',
+            'range'       => 'global',
+            'section'     => 'global',
+            'description' => 'ID der Veranstaltungsklasse fÃ¼r Portfolios'
+            ));
 
     	    } else {
     			// We already got a type with that name, should be a previous installation ...
@@ -67,7 +77,7 @@ class AddSemClass extends Migration
     		}
 
     		if($id === -2) {
-    			$message = sprintf('Ungültige id (id=%d)', $id);
+    			$message = sprintf('UngÃ¼ltige id (id=%d)', $id);
                 throw new Exception($message);
     		}
 
@@ -75,6 +85,7 @@ class AddSemClass extends Migration
         $sem_class = SemClass::getDefaultSemClass();
         $sem_class->set('name', $name);
         $sem_class->set('id', $id);
+        //$sem_class->set('studygroup_mode', '1');
 
         // Setting Mooc-courses default datafields: mooc should not to be disabled, courseware and mooc should be active
         $current_modules = $sem_class->getModules(); // get modules
@@ -84,7 +95,7 @@ class AddSemClass extends Migration
         $current_modules['Courseware']['sticky'] = '1'; // sticky = 1 -> can't be chosen in "more"-field of course
         $current_modules['CoreParticipants']['activated'] = '0';
         $current_modules['CoreParticipants']['sticky'] = '1'; 
-        $current_modules['CoreDocuments']['activated'] = '1';
+        $current_modules['CoreDocuments']['activated'] = '0';
         $current_modules['CoreDocuments']['sticky'] = '1'; 
         $current_modules['CoreOverview']['activated'] = '0';
         $current_modules['CoreOverview']['sticky'] = '1'; 

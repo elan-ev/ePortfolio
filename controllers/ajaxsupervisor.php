@@ -8,8 +8,8 @@ class ajaxsupervisorController extends StudipController {
         $this->plugin = $dispatcher->current_plugin;
 
         //check status and trigger query
-        $perm = get_global_perm($GLOBALS["user"]->id);
-        if(!$perm == "dozent"){
+        global $perm;
+        if(!$perm->have_perm('dozent')){
             throw new Exception("Not Allowed");
         } else {
           $code = $this->getPortfolios($_GET["userId"]);

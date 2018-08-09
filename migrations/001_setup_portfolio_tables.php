@@ -26,11 +26,6 @@ class SetupPortfolioTables extends Migration
           `owner_id` varchar(32) NOT NULL,
           PRIMARY KEY (seminar_id)
           )");
-        $db->exec("CREATE TABLE `eportfolio_groups_user` (
-          `seminar_id` varchar(32) NOT NULL,
-          `user_id` varchar(32) NOT NULL,
-          PRIMARY KEY (seminar_id, user_id)
-          )");
         $db->exec("CREATE TABLE `eportfolio_user` (
           `user_id` varchar(32) NOT NULL,
           `Seminar_id` varchar(32) NOT NULL,
@@ -50,19 +45,24 @@ class SetupPortfolioTables extends Migration
           `user_id` varchar(32) NOT NULL,
           PRIMARY KEY (supervisor_group_id, user_id)
           )");
-        
+        $db->exec("CREATE TABLE `eportfolio_group_templates` (
+         `group_id` varchar(32) NOT NULL,
+         `Seminar_id` varchar(32) NOT NULL,
+         `favorite` int,
+         PRIMARY KEY (group_id, Seminar_id)
+         )");
+
         SimpleORMap::expireTableScheme();
     }
 
 
     public function down () {
-        
+
 
         $db = DBManager::get();
         $db->exec("DROP TABLE eportfolio");
         $db->exec("DROP TABLE eportfolio_user");
         $db->exec("DROP TABLE eportfolio_groups");
-        $db->exec("DROP TABLE eportfolio_groups_user");
         $db->exec("DROP TABLE eportfolio_user");
         $db->exec("DROP TABLE supervisor_group");
         $db->exec("DROP TABLE supervisor_group_user");

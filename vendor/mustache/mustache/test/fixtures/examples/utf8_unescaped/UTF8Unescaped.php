@@ -2,5 +2,5 @@
 
 class UTF8Unescaped
 {
-    public $test = '中文又来啦';
+    public $test = 'ä¸­æåæ¥å¦';
 }

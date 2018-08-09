@@ -20,7 +20,7 @@ use Symfony\Component\Process\Pipes\PipesInterface;
 use Symfony\Component\Process\Process;
 
 /**
- * @author Robert Schönthal <seroscho@googlemail.com>
+ * @author Robert SchÃ¶nthal <seroscho@googlemail.com>
  */
 class ProcessTest extends \PHPUnit_Framework_TestCase
 {
@@ -993,7 +993,7 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
     {
         return array(
             array(-4),
-            array('Céphalopodes'),
+            array('CÃ©phalopodes'),
         );
     }
 

@@ -17,28 +17,36 @@ class EportfoliopluginController extends StudipController {
         exit();
       }
 
-      $cid = $_GET['cid'];
+      $cid = Course::findCurrent()->id;
+      global $user;
+      $eportfolio = Eportfoliomodel::findBySeminarId($cid);
+      $isVorlage = Eportfoliomodel::isVorlage($cid);
 
       $sidebar = Sidebar::Get();
-      Sidebar::Get()->setTitle('�bersicht');
+      Sidebar::Get()->setTitle('Übersicht');
 
       $navOverview = new LinksWidget();
-      $navOverview->setTitle('�bersicht');
-      $navOverview->addLink('�bersicht', URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('portfolioid' => $portfolioid)), null , array('class' => 'active-link'));
+      $navOverview->setTitle('Übersicht');
+      $navOverview->addLink('Übersicht', URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('portfolioid' => $portfolioid)), null , array('class' => 'active-link'));
       $sidebar->addWidget($navOverview);
+      
+       //Kontextaktionen
+      if($eportfolio->owner_id == $user->id){
+        $actions = new ActionsWidget();
+        $actions->setTitle(_('Aktionen'));
+        $actions->addLink('Portfolio löschen',
+        URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin/deletePortfolio/'. $portfolioid), null, array('onclick'=> "return confirm('Sind Sie sich sicher, dass Sie das Portfolio löschen wollen? Alle Daten werden hierdurch unwiderruflich gelöscht und können nicht wiederhergestellt werden.')")); 
+        Sidebar::get()->addWidget($actions);
+      }
+      
 
       $nav = new LinksWidget();
       $nav->setTitle(_('Courseware'));
       $nav->addLink($name, "");
 
-      foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
-        if ($sem_type['name'] == 'ePortfolio-Vorlage') {
-          $sem_type_id = $id;
-        }
-      }
+      $sem_type_id = Config::get()->getValue('SEM_CLASS_PORTFOLIO_VORLAGE');
 
       $seminar = new Seminar($cid);
-      $eportfolio = new eportfolio($cid);
 
       if ($seminar->status == $sem_type_id) {
         $this->canEdit = true;
@@ -46,7 +54,7 @@ class EportfoliopluginController extends StudipController {
 
       $getCoursewareChapters = $this->getCardInfos($cid);
       foreach ($getCoursewareChapters as $key => $value) {
-        if (EportfolioFreigabe::hasAccess($GLOBALS["user"]->id, $cid, $value[id])){    
+        if (EportfolioFreigabe::hasAccess($GLOBALS["user"]->id, $cid, $value[id]) || $isVorlage){    
           $nav->addLink($value[title], URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $cid, 'selected' => $value[id])));
         } 
       }
@@ -75,105 +83,40 @@ class EportfoliopluginController extends StudipController {
     ////////////////////////
 
     $userid = $GLOBALS["user"]->id;
-    $cid = $_GET["cid"];
+    $cid = Course::findCurrent()->id;
     $this->cid = $cid;
     $this->userId = $userid;
-    $i = 0;
-    $eportfolio = new eportfolio($cid);
-    $isOwner = $eportfolio->isOwner($userid);
+    $eportfolio = Eportfoliomodel::findBySeminarId($cid);
+    $isOwner = Eportfoliomodel::isOwner($cid, $userid);
+    $owner = $eportfolio->owner;
+    $this->isVorlage = Eportfoliomodel::isVorlage($cid);
+    $seminar = new Seminar($this->cid);
+    
+     # Aktuelle Seite
+    PageLayout::setTitle('ePortfolio von ' . $owner['Vorname'] . ' ' . $owner['Nachname']. ' - Übersicht: '. $seminar->getName());
+    if($this->isVorlage){
+        PageLayout::setTitle('ePortfolio-Vorlage - Übersicht: '. $seminar->getName());
+    }
 
     $db = DBManager::get();
-    $this->plugin = $dispatcher->plugin;
-
-    // get template Status
-    //$templateStatus = $db->query("SELECT templateStatus FROM eportfolio WHERE Seminar_id = '$cid' ")->fetchAll();
-    //$t = $templateStatus[0][templateStatus];
-    //echo $t;
-
-    // get courseware parentId
-    $query = "SELECT id FROM mooc_blocks WHERE type = 'Courseware' AND seminar_id = :cid";
-    $statement = $db->prepare($query);
-    $statement->execute(array(':cid'=> $cid));
-    $getC = $statement->fetchAll()[0][id];
-
-    //get seninar infos
-    $query = "SELECT name FROM seminare WHERE Seminar_id = :cid";
-    $statement = $db->prepare($query);
-    $statement->execute(array(':cid'=> $cid));
-    $getS = $statement->fetchAll()[0][name];
-
-    //get cardinfos for overview
-    $return_arr = array();
-    $query = "SELECT id, title FROM mooc_blocks WHERE seminar_id = :cid AND type = 'Chapter' ORDER BY position ASC";
-    $statement = $db->prepare($query);
-    $statement->execute(array(':cid'=> $cid));
- 
-    foreach ($statement->fetchAll() as $value) {
-      $arrayOne = array();
-      $arrayOne['id'] = $value[id];
-      $arrayOne['title'] = $value[title];
-
-      // get sections of chapter
-      $query = "SELECT id, title FROM mooc_blocks WHERE parent_id = :id";
-      $statement = $db->prepare($query);
-      $statement->execute(array(':id'=> $value[id]));
-      $arrayOne['section'] = $statement->fetchAll();
-
-      array_push($return_arr, $arrayOne);
-    }
 
     //get list chapters
-    $chapterListArray = array();
-    $query = "SELECT * FROM mooc_blocks WHERE type = 'Chapter' AND seminar_id = :cid";
-    $statement = $db->prepare($query);
-    $statement->execute(array(':cid'=> $cid));
-    foreach ($statement->fetchAll() as $key) {
-      $chapterListArray[$key[0]] = array("number" => 0, "user" => array());
-    }
-
-    //get views of chapter
-    //$querygetviewer = $db->query("SELECT eportfolio_access, user_id FROM seminar_user WHERE Seminar_id = '$cid'")->fetchAll();
-    //foreach ($querygetviewer as $key) {
-    //  $getviewerList = unserialize($key[0]);
-    //  foreach ($getviewerList[chapter] as $val => $value) {
-    //    if($value == '1'){
-    //      $chapterListArray[$val][number]++;
-    //      array_push($chapterListArray[$val][user], $key[user_id]);
-    //    }
-    //  }
-    //}
-
-    //get viewer
-    $viewerList = array();
-    $viewerCounter = 0;
-    
-    $query = "SELECT user_id FROM seminar_user WHERE Seminar_id = :cid";
-    $statement = $db->prepare($query);
-    $statement->execute(array(':cid'=> $cid));
-    foreach ($statement->fetchAll() as $key){
-      array_push($viewerList, $key[user_id]);
-      $viewerCounter++;
-    }
+    $chapters = Eportfoliomodel::getChapters($cid);
 
     //push to template
-    $this->cardInfo = $return_arr;
-    $this->seminarTitle = $getS;
+    $this->cardInfo = $chapters; //$return_arr;
+    $this->seminarTitle = $seminar->getName();
     $this->isOwner = $isOwner;
     $this->cid = $cid;
-    $this->viewerList = $viewerList;
-    $this->viewerCounter = $viewerCounter;
-    $this->numChapterViewer = $chapterListArray;
     $this->userid = $userid;
-
-    # Aktuelle Seite
-    PageLayout::setTitle('ePortfolio - �bersicht: '.$getS);
+    $this->owner = $owner;
 
   }
 
   public function getCardInfos($cid){
     $db = DBManager::get();
     $return_arr = array();
-    $query = "SELECT id, title FROM mooc_blocks WHERE seminar_id = :cid AND type = 'Chapter' ORDER BY id ASC";
+    $query = "SELECT id, title FROM mooc_blocks WHERE seminar_id = :cid AND type = 'Chapter' ORDER BY position ASC";
     $statement = $db->prepare($query);
     $statement->execute(array(':cid'=> $cid));
     foreach ($statement->fetchAll() as $value) {
@@ -182,7 +125,7 @@ class EportfoliopluginController extends StudipController {
       $arrayOne['title'] = $value[title];
 
       // get sections of chapter
-      $query = "SELECT id, title FROM mooc_blocks WHERE parent_id = :id";
+      $query = "SELECT id, title FROM mooc_blocks WHERE parent_id = :id ORDER BY position ASC";
       $statement = $db->prepare($query);
       $statement->execute(array(':id'=> $value[id]));
       $arrayOne['section'] = $statement->fetchAll();
@@ -197,29 +140,6 @@ class EportfoliopluginController extends StudipController {
     //array_push($return_arr, $img);
 
     return $return_arr;
-  }
-  
-  
-  //TODO umschreiben
-  public function getChapterViewer($nummer, $chapter){
-    
-      
-      $db = DBManager::get();
-    $query = "SELECT eportfolio_access, user_id FROM eportfolio_user WHERE Seminar_id = :nummer AND owner = '0'";
-    $statement = $db->prepare($query);
-    $statement->execute(array(':nummer'=> $nummer));
-    $viewer = array();
-
-    foreach ($statement->fetchAll() as $key) {
-      $array = unserialize($key[eportfolio_access]);
-      if( $array[$chapter] > 0 ){
-        array_push($viewer, $key[user_id]);
-      }
-      $counter++;
-    }
-
-    return $viewer;
-
   }
 
   public function checkIfTemplate($id){
@@ -237,6 +157,15 @@ class EportfoliopluginController extends StudipController {
     $sem        = new Seminar($cid);
     $sem->name  = $title;
     $sem->store();
+  }
+  
+  public function deletePortfolio_action($id){
+    
+       $sem = Course::findCurrent();
+       $sem->delete();
+       PageLayout::postMessage(MessageBox::success(_('Das Portfolio wurde gelöscht.')));
+        
+       $this->redirect(PluginEngine::GetURL($this->plugin, array(), "show"));
   }
 
   public function infobox($cid, $owner_id, $selected){
@@ -258,7 +187,7 @@ class EportfoliopluginController extends StudipController {
         $newarray["userid"] = $key["user_id"];
         $newarray["access"] = $key["eportfolio_access"];
 
-        $userinfo = UserModel::getUser($key["user_id"]);
+        $userinfo = User::find($key["user_id"]);
         $newarray['firstname'] = $userinfo[Vorname];
         $newarray['lastname'] = $userinfo[Nachname];
 
@@ -284,7 +213,7 @@ class EportfoliopluginController extends StudipController {
       $statement = $db->prepare($query);
       $statement->execute(array(':cid'=> $cid));
       $userId = $statement->fetchAll()[0][0];
-      $supervisor = UserModel::getUser($userId);
+      $supervisor = User::find($userId);
       $infoboxArray['firstname'] = $supervisor[Vorname];
       $infoboxArray['lastname'] = $supervisor[Nachname];
 

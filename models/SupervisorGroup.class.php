@@ -44,26 +44,28 @@ class SupervisorGroup extends SimpleORMap
     public function __construct($id = null) {
         parent::__construct($id);
     }
-    
+
     public function addUser($user_id){
         $user = new SupervisorGroupUser();
         $user->supervisor_group_id = $this->id;
         $user->user_id = $user_id;
-        $user->store(); 
-        
+        $user->store();
+
         //als user in alle ePortfolios der StudentInnen eintragen
         $group = $this->eportfolio_group;
         $seminare = $group->getRelatedStudentPortfolios();
-        foreach($seminare as $seminar){
-            $seminar = new Seminar($seminar);
-            $seminar->addMember($user_id, 'dozent');
-            $seminar->store();
+ 
+        if($seminare){
+            foreach($seminare as $seminar){
+                $seminar = new Seminar($seminar);
+                $seminar->addMember($user_id, 'dozent');
+                $seminar->store();
+            }
         }
+        //Supervisoren werden nur noch aus der Gruppe der Dozenten hinzugefügt
+        //$seminar = new Seminar($this->eportfolio_group->seminar_id);
+        //$seminar->addMember($user_id, 'dozent');
 
-        $seminar = new Seminar($this->eportfolio_group->seminar_id);
-        $seminar->addMember($user_id, 'dozent');
-        $seminar->store();
-        
     }
 
     public function deleteUser($user_id){
@@ -71,7 +73,7 @@ class SupervisorGroup extends SimpleORMap
         $user = SupervisorGroupUser::findBySQL('user_id = :user_id AND supervisor_group_id = :supervisor_group_id',
                 array(':user_id' => $user_id, ':supervisor_group_id' => $this->id));
         $user->delete();
-        
+
         //als user aus allen ePortfolios der StudentInnen austragen
         $group = new EportfolioGroup($this->eportfolio_group);
         $seminare = $group->getRelatedStudentPortfolios();
@@ -87,13 +89,13 @@ class SupervisorGroup extends SimpleORMap
     }
 
   public static function newGroup($name){
-    $group = new Supervisorgroup();
+    $group = new SupervisorGroup();
     $group->name = $name;
     $group->save();
   }
 
   public static function deleteGroup($group_id){
-    $group = SupervisorGroup($group_id); 
+    $group = new SupervisorGroup($group_id);
     $group->delete();
   }
   //testen

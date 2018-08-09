@@ -3,11 +3,11 @@
   border: 1px solid #ddd;
 }
 
-/* portfolio cards */ 
+/* portfolio cards */
 .col-md-4 {
     width: 32%;
     float: left;
-    
+
 }
 .card-wrapper {
     padding: 5px;
@@ -425,4 +425,210 @@ td, th {
 
 .widget-custom-content {
   padding: 1ex;
+}
+
+#blocksettings tr.Subchapter > td > h4 {
+    padding-left: 10px;
+}
+#blocksettings tr.Section > td > h4 {
+    padding-left: 20px;
+}
+#blocksettings tr.Block > td > h4 {
+    padding-left: 30px;
+}
+
+.row {
+  margin-left: 0px!important;
+  margin-right: 0px!important;
+}
+
+.member-container {
+  padding: 30px 0;
+}
+
+.member-single-card {
+  margin-bottom: 30px;
+}
+
+.member-link:hover {
+  color: black;
+}
+
+.member-item {
+  padding: 20px 5px;
+  border: 1px solid grey;
+  background-color: rgba(0,0,0,0.01);
+  transition: all 0.1s;
+  /* background-color: grey; */
+}
+
+.member-item:hover {
+  background-color: #e7ebf1;
+  transition: all 0.3s;
+}
+
+.member-avatar {
+  text-align: center;
+  margin-bottom: 21px;
+}
+
+.member-avatar-label {
+  background-color: red;
+  width: 30px;
+  height: 10px;
+  position: absolute;
+}
+
+.member-links {
+  text-align: center;
+}
+
+.member-name {
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.member-name-detail {
+  font-weight: 700;
+  font-size: 25px;
+}
+
+.member-subname {
+  margin-top: 7px;
+  color: grey;
+}
+
+.member-subname img {
+  margin-bottom: 0px;
+}
+
+.member-content {
+  border-top: 1px solid grey;
+  border-bottom: 1px solid grey;
+  padding: 20px 0px;
+  margin-top: 20px;
+}
+
+.member-footer-box {
+  text-align: center;
+  padding-top: 10px;
+}
+
+.member-footer-box-detail {
+  text-align: center;
+  padding-top: 36px;
+}
+
+.member-footer-box-head {
+  color: grey;
+  margin-bottom: 10px;
+}
+
+.member-footer-box-big {
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.member-footer-box-big-detail {
+  font-weight: 700;
+  font-size: 25px;
+}
+
+.member-contant-detail {
+  font-size: 16px;
+}
+
+.member-containt-head-detail {
+  border-top: 1px solid grey;
+  font-weight: 700;
+  background-color: rgba(0,0,0,0.01);
+  margin-top: 30px;
+}
+
+
+.member-content-unterkapitel {
+  padding-left: 30px!important;
+  color: grey;
+}
+
+.member-content-single-line {
+  border-top: 1px solid grey;
+}
+
+.member-content-single-line-ober {
+  font-weight: 700;
+}
+
+.label-selber {
+  background-color: #204170;
+  border-radius: 5px;
+  color: #fff;
+  padding: 1px 4px;
+  font-size: 11px;
+  margin-left: 5px;
+}
+
+.member-content-icons {
+  text-align: center;
+}
+
+.member-status-label  {
+  background-color: green;
+  width: 5px;
+  height: 5px;
+  content: "";
+  border-radius: 10px;
+  margin-left: 5px;
+}
+
+.member-aktionen-detail a  {
+  margin-right: 7px;
+}
+
+.member-notification {
+  background-color: red;
+  color: #fff;
+  position: absolute;
+  border-radius: 20px;
+  width: 10px;
+  font-size: 16px;
+  text-align: center;
+  width: 22px;
+  margin-left: 15px;
+  z-index: 100;
+  border: 1px solid #fff;
+}
+
+.single-activity {
+  background-color: #f5f6f6;
+  margin-bottom: 5px;
+  padding: 5px;
+}
+
+.single-activity img {
+  width: 25px;
+  height: 25px;
+}
+
+.single-activity-info {
+  margin-left: 10px;
+}
+
+.activity-feed-header {
+  margin-top: 1px;
+  margin-bottom: 10px;
+}
+
+.activity-feed-label {
+  background-color: #29487b;
+  color: #fff;
+  padding: 2px 14px;
+  border-radius: 36px;
+}
+
+.activity-feed-label-alt {
+  background-color: #ececed;
+  color: black;
+  padding: 2px 14px;
+  border-radius: 36px;
 }
