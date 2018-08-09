@@ -23,28 +23,47 @@
 
       <?php foreach ($templates as $key):?>
 
+        <?php
+          $avatar = CourseAvatar::getAvatar($key[0]);
+          $avatarUrl = $avatar->getCustomAvatarUrl('medium');
+        ?>
+
         <div class="col-sm-4 member-single-card">
 
 
           <div class="template-user-item">
 
             <div class="template-user-item-head">
+
               <div class="template-user-item-headline">
                 <?php $template = new Seminar($key[0]); echo $template->getName();?>
                 <span class="template-bandage">3</span>
               </div>
 
-              <div class="template-infos">
-                <?= Icon::create('date', 'clickable') ?>
-                <b>Abgabedatum: </b>
-                <?php
-                  $timestamp = EportfolioGroupTemplates::getDeadline($group_id, $key[0]);
-                  echo date('d.m.Y', $timestamp);
-                ?>
-                <span class="template-infos-days-left">(noch <?php echo Eportfoliomodel::getDaysLeft($group_id, $key[0]); ?> Tage)</span>
-                <br>
-                <?= Icon::create('activity', 'clickable') ?>
-                <b>Letzte Änderung: </b> 23.05.2018
+              <div class="row">
+                <div style="padding:0px;" class="col-sm-6 template-user-item-head-image">
+                  <img src="<?php echo $avatarUrl ?>" alt="CourseAvatar">
+                </div>
+                <div class="col-sm-6 template-infos">
+
+                  <div class="template-infos-single">
+                    <?php echo Icon::create('span-full', 'status-green'); ?> Status
+                  </div>
+
+                  <div class="template-infos-single">
+                    <?= Icon::create('date', 'clickable') ?>
+                    <?php
+                      $timestamp = EportfolioGroupTemplates::getDeadline($group_id, $key[0]);
+                      echo date('d.m.Y', $timestamp);
+                    ?>
+                    <span style="margin-left: 20px;" class="template-infos-days-left"><br>(noch <?php echo Eportfoliomodel::getDaysLeft($group_id, $key[0]); ?> Tage)</span>
+                  </div>
+
+                  <div class="template-infos-single">
+                    <?= Icon::create('activity', 'clickable') ?> 23.05.2018
+                  </div>
+
+                </div>
               </div>
             </div>
 

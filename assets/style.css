@@ -678,8 +678,17 @@ td, th {
 .template-user-item-headline{
   font-size: 18px;
   font-weight: bold;
+  margin-bottom: 15px;
 }
 
 .template-user-item-footer{
   padding: 10px 11px;
+}
+
+.template-user-item-head-image{
+  padding:0px;
+}
+
+.template-user-item-head-image img{
+  width: 100%;
 }
