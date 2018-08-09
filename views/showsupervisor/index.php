@@ -163,7 +163,7 @@
                 <div class="member-item">
 
                   <div class="member-notification">
-                    <?php echo EportfolioGroup::getAnzahlAnNeuerungen($member, $id);  ?>
+                    <?php echo EportfolioGroup::getAnzahlAnNeuerungen($user, $id);  ?>
                   </div>
 
                   <div class="row">
