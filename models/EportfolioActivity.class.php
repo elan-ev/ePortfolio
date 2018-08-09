@@ -105,6 +105,9 @@ class EportfolioActivity extends SimpleORMap
     }
     
     public function getActivitiesOfGroupUser($seminar_id, $user){
+        if(!$user){
+            $user = User::findCurrent()->id;
+        }
         return EportfolioActivity::findBySQL('group_id = :seminar_id AND user_id = :user_id', array('seminar_id' => $seminar_id, ':user_id' => $user));
     }
     
