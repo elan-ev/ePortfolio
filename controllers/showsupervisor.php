@@ -23,7 +23,7 @@ class ShowsupervisorController extends StudipController {
             $this->userid = $GLOBALS["user"]->id;
             $this->ownerid = $GLOBALS["user"]->id;
 
-            $this->groupTemplates = Eportfoliogroup::getTemplates($id);
+            $this->groupTemplates = EportfolioGroup::getGroupTemplates($id);
             $this->templistid = $this->groupTemplates;
 
             $group = EportfolioGroup::findbySQL('seminar_id = :id', array(':id'=> $this->groupid));
@@ -200,12 +200,12 @@ class ShowsupervisorController extends StudipController {
       $this->semList = array();
       $masterid = $master;
       $groupid = Course::findCurrent()->id;
-      $group = Eportfoliogroup::find($groupid);
+      $group = Eportfolioroup::find($groupid);
 
-      $member     = Eportfoliogroup::getGroupMember($groupid);;
+      $member     = EportfolioGroup::getGroupMember($groupid);;
       $groupowner = $group->owner_id;
       $groupname  = new Seminar($groupid);
-      $supervisorgroupid = Eportfoliogroup::getSupervisorGroupId($groupid);
+      $supervisorgroupid = EportfolioGroup::getSupervisorGroupId($groupid);
       $db = DBManager::get();
       $query = "SELECT templates FROM eportfolio_groups WHERE seminar_id = :groupid";
       $statement = $db->prepare($query);
