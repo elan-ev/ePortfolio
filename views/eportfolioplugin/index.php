@@ -47,7 +47,21 @@
                 <div class="col-sm-6 template-infos">
 
                   <div class="template-infos-single">
-                    <?php echo Icon::create('span-full', 'status-green'); ?> Status
+                    <?php
+                     $icon;
+                     switch (EportfolioUser::getStatusOfUserInTemplate($owner, $key[0], $group_id, $cid)) {
+                       case 1:
+                         $icon = 'status-green';
+                         break;
+                      case 0:
+                        $icon = 'stats-yellow';
+                        break;
+                      case -1:
+                          $icon = 'status-red';
+                          break;
+                     }
+                   ?>
+                    <?php echo Icon::create('span-full', $icon); ?> Status
                   </div>
 
                   <div class="template-infos-single">
