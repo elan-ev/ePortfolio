@@ -42,7 +42,7 @@ class EportfolioActivity extends SimpleORMap
             'foreign_key' => 'eportfolio_id', );
         
         $config['additional_fields']['is_new']['get'] = function ($item) {
-            if($item->group_id && User::findCurrent()->id){
+            if($item->group_id && User::findCurrent()->id && (User::findCurrent()->id != $item->user_id)){
                 $seminar_id = $item->group_id; 
                 $user_id = User::findCurrent()->id;
                 //object_get_visit($object_id, $type, $mode = "last", $open_object_id = '', $user_id = '', $refresh_cache = false)
@@ -152,6 +152,10 @@ class EportfolioActivity extends SimpleORMap
         $activity->block_id = intval($block_id);
         $activity->eportfolio_id = $portfolio_id;
         $activity->store();
+    }
+    
+    public function getDate(){
+        return $this->mk_date;
     }
     
 }
