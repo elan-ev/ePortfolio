@@ -200,7 +200,7 @@ class ShowsupervisorController extends StudipController {
       $this->semList = array();
       $masterid = $master;
       $groupid = Course::findCurrent()->id;
-      $group = Eportfolioroup::find($groupid);
+      $group = EportfolioGroup::find($groupid);
 
       $member     = EportfolioGroup::getGroupMember($groupid);;
       $groupowner = $group->owner_id;
@@ -291,7 +291,7 @@ class ShowsupervisorController extends StudipController {
 
       VorlagenCopy::copyCourseware(new Seminar($masterid), $this->semList);
       EportfolioActivity::addVorlagenActivity($groupid, User::findCurrent()->id);
-      
+
       $this->storeTemplateForGroup($groupid, $masterid);
 
       $this->redirect('showsupervisor?cid=' . $groupid);
