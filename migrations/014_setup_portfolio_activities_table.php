@@ -13,8 +13,8 @@ class SetupPortfolioActivitiesTable extends Migration
         $db = DBManager::get();
         $db->exec("CREATE TABLE `eportfolio_activities` (
           `id` INT NOT NULL AUTO_INCREMENT,
-          `group_id` varchar(32) NOT NULL,
-          `eportfolio_id` varchar(32) NOT NULL,
+          `group_id` varchar(32) NULL,
+          `eportfolio_id` varchar(32) NULL,
           `type` varchar(32) NOT NULL DEFAULT '0',
           `user_id` varchar(32) NOT NULL,
           `block_id` int(11) DEFAULT NULL,

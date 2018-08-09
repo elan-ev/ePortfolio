@@ -273,8 +273,8 @@ class EportfolioGroup extends SimpleORMap
   public function getActivities(){
 
     $user = User::findCurrent();
-    $activities = EportfolioActivity::getDummyActivitiesForGroup($this->seminar_id);
-    //$activities = EportfolioActivity::getActivitiesForGroup($this->seminar_id);
+    //$activities = EportfolioActivity::getDummyActivitiesForGroup($this->seminar_id);
+    $activities = EportfolioActivity::getActivitiesForGroup($this->seminar_id);
 
     return $activities;
 

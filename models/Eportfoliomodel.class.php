@@ -93,8 +93,8 @@ class Eportfoliomodel extends SimpleORMap
     }
     
     public static function findBySeminarId($sem_id){
-        $eportfolio = Eportfoliomodel::findBySQL('seminar_id = :id', array(':id'=> $sem_id));
-        return $eportfolio[0];
+        $eportfolio = Eportfoliomodel::findOneBySQL('seminar_id = :id', array(':id'=> $sem_id));
+        return $eportfolio;
     }
     
      public static function isOwner($sem_id, $user_id){

@@ -1,6 +1,7 @@
 <?php
 
 include_once __DIR__.'/EportfolioGroup.class.php';
+include_once __DIR__.'/Eportfoliomodel.class.php';
 
 /**
  * @author  <asudau@uos.de>
@@ -129,6 +130,18 @@ class EportfolioActivity extends SimpleORMap
             $activity->store();
         }
 
+    }
+    
+    public function addSupervisornotizActivity($portfolio_id, $user_id, $block_id){
+        $activity = new EportfolioActivity();
+        $activity->type = 'supervisor-notiz';
+        $activity->user_id = $user_id;
+        $activity->mk_date = time();
+        $group_id = Eportfoliomodel::findBySeminarId($portfolio_id)->group_id;
+        $activity->group_id = $group_id ? $group_id : NULL;
+        $activity->block_id = intval($block_id);
+        $activity->eportfolio_id = $portfolio_id;
+        $activity->store();
     }
     
 }

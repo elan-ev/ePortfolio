@@ -20,6 +20,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         Navigation::addItem('/eportfolioplugin', $navigation);
         //Navigation::activateItem("/eportfolioplugin");
         NotificationCenter::addObserver($this, "setup_navigation", "PageWillRender");
+        NotificationCenter::addObserver($this, "store_activity","UserDidPostSupervisorNotiz");
 
     }
 
@@ -260,5 +261,13 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
                 Helpbar::get()->addPlainText(_('Tip zum Bearbeiten'), $bearbeiten, Icon::create('doctoral-cap', 'info_alt'));
             }
          }
+    }
+    
+    public function store_activity($notification, $block_id, $course_id){
+        switch ($notification){
+            case 'UserDidPostSupervisorNotiz': 
+                EportfolioActivity::addSupervisornotizActivity($course_id, User::findCurrent()->id, $block_id);
+                return;
+        }
     }
 }
