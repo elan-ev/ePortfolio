@@ -202,7 +202,7 @@ class ShowsupervisorController extends StudipController {
       $groupid = Course::findCurrent()->id;
       $group = Eportfoliogroup::find($groupid);
 
-      $member     = $group->user;
+      $member     = Eportfoliogroup::getGroupMember($groupid);;
       $groupowner = $group->owner_id;
       $groupname  = new Seminar($groupid);
       $supervisorgroupid = Eportfoliogroup::getSupervisorGroupId($groupid);
