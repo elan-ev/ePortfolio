@@ -50,25 +50,6 @@ class ShowsupervisorController extends StudipController {
         //sidebar
         $sidebar = Sidebar::Get();
 
-        /**
-        $nav = new LinksWidget();
-        $nav->setTitle(_('Supervisionsgrupppen'));
-        $groups = EportfolioGroup::getAllGroupsOfSupervisor($GLOBALS["user"]->id);
-        foreach ($groups as $key) {
-          $seminar = new Seminar($key);
-          $name = $seminar->getName();
-          if($_GET['cid'] == $key){
-            $attr = array('class' => 'active');
-          } else {
-            $attr = array('class' => '');
-          }
-
-          $navGroupURL = URLHelper::getLink("plugins.php/eportfolioplugin/showsupervisor", array('cid' => $key));
-          $nav->addLink($name, $navGroupURL, null, $attr);
-        }
-         * 
-         */
-
         if($this->groupid){
             $navcreate = new LinksWidget();
             $navcreate->setTitle('Gruppen-Aktionen');
@@ -78,29 +59,26 @@ class ShowsupervisorController extends StudipController {
             $sidebar->addWidget($navcreate);
         }
 
-        //$navcreate->addLink("Neue Gruppe anlegen", PluginEngine::getLink($this->plugin, array(), 'showsupervisor/creategroup') , Icon::create('add', 'clickable'), array('data-dialog'=>"size=auto;reload-on-close"));
-        //$sidebar->addWidget($nav);
-
     }
 
     public function before_filter(&$action, &$args)
     {
         parent::before_filter($action, $args);
-        
+
         if(Course::findCurrent()){
             Navigation::activateItem("course/eportfolioplugin");
         }
-        
+
     }
 
     public function index_action()
     {
         Navigation::activateItem('/course/eportfolioplugin/supervision');
-        
+
         $course = Course::findCurrent();
         $id = $course->id;
 
-        //berechtigung prüfen (group-owner TODO:refactoring //ggf das hier nur für Supervisor, 
+        //berechtigung prüfen (group-owner TODO:refactoring //ggf das hier nur für Supervisor,
         //das würde dann aber schon in der Pluginklasse passieren
         /**
         if(!$id == ''){
@@ -113,13 +91,13 @@ class ShowsupervisorController extends StudipController {
             if(!$check[0][0] == $GLOBALS["user"]->id){
               throw new AccessDeniedException(_("Sie haben keine Berechtigung"));
             }
-        ]
+        }
          */
 
         $this->id = $id;
         $this->userid = $GLOBALS["user"]->id;
         $this->group = EportfolioGroup::find($id);
-        
+
         //noch kein Portfoliogruppeneintrag für dieses Seminar vorhanden: Gruppe erstellen
         if(!$this->group){
             EportfolioGroup::newGroup($this->userid, $course->id);
@@ -215,7 +193,7 @@ class ShowsupervisorController extends StudipController {
       $statement = $db->prepare($query);
       $statement->execute(array(':tempid'=> $tempid));
       $q = $statement->fetchAll();
-      
+
     }
 
     public function createportfolio_action($master){
@@ -223,7 +201,8 @@ class ShowsupervisorController extends StudipController {
       $masterid = $master;
       $groupid = Course::findCurrent()->id;
       $group = Eportfoliogroup::find($groupid);
-      $member     = Eportfoliogroup::getGroupMember($groupid);
+
+      $member     = $group->user;
       $groupowner = $group->owner_id;
       $groupname  = new Seminar($groupid);
       $supervisorgroupid = Eportfoliogroup::getSupervisorGroupId($groupid);
@@ -249,6 +228,7 @@ class ShowsupervisorController extends StudipController {
         //Falls noch keine Vorlagen verteilt wurden erh�lt jeder Nutzer ein eigenes ePortfolio
         $master = new Seminar($masterid);
         $sem_type_id = $this->getPortfolioSemId();
+
         foreach ($member as $user_id) {
             $owner            = User::find($user_id);
             $owner_fullname   = $owner['Vorname'] . ' ' . $owner['Nachname'];
@@ -271,7 +251,7 @@ class ShowsupervisorController extends StudipController {
             $filename = sprintf('%s/%s',$this->plugin->getpluginPath(),'assets/images/avatare/eportfolio.png');
             $avatar->createFrom($filename);
             $sem->addMember($user_id, 'dozent'); // add user to his to seminar
-            
+
             //add all Supervisors
             $supervisors = EportfolioGroup::getAllSupervisors($groupid);
             foreach($supervisors as $supervisor){
@@ -294,11 +274,11 @@ class ShowsupervisorController extends StudipController {
             $statement->execute(array(':sem_id'=> $sem_id));
 
             /**
-            create_folder(_('Allgemeiner Dateiordner'),
-                          _('Ablage f�r allgemeine Ordner und Dokumente der Veranstaltung'),
-                          $sem->Seminar_id,
-                          7,
-                          $sem->Seminar_id);
+            *create_folder(_('Allgemeiner Dateiordner'),
+            *              _('Ablage f�r allgemeine Ordner und Dokumente der Veranstaltung'),
+            *              $sem->Seminar_id,
+            *              7,
+            *              $sem->Seminar_id);
             **/
         }
 
@@ -366,19 +346,6 @@ class ShowsupervisorController extends StudipController {
         }
       }
     }
-
-    public function addTemplateTest(){
-      $cid = "43ff6d96a50cf30836ef6b8d1ea60667";
-
-      $plugin_courseware = \PluginManager::getInstance()->getPlugin('Courseware');
-      require_once 'public/' . $plugin_courseware->getPluginPath() . '/vendor/autoload.php';
-
-      //export from master course
-      $containerExport =  new Container();
-      $containerExport["cid"] = $cid; //Master cid
-      print_r($containerExport['block_factory']);
-    }
-
 
     public function delete_action($cid){
       $cid = $_GET['cid'];
@@ -469,6 +436,21 @@ class ShowsupervisorController extends StudipController {
       $group = EportfolioGroup::findOneBySQL('Seminar_id = :cid', array(':cid' => $id));
       $this->activities = $group->getActivities();
       $this->countActivities = $group->getNumberOfNewActivities(User::findCurrent());
+    }
+
+    public function templatedates_action($group_id, $template_id){
+      $this->group_id = $group_id;
+      $this->template_id = $template_id;
+
+      $timestamp = EportfolioGroupTemplates::getDeadline($group_id, $template_id);
+      $this->abgabe = date('d.m.Y', $timestamp);
+    }
+
+    public function settemplatedates_action($group_id, $template_id){
+      $dtime = DateTime::createFromFormat("d.m.Y", $_POST['begin']);
+      $timestamp = $dtime->getTimestamp();
+      EportfolioGroupTemplates::setDeadline($group_id, $template_id, $timestamp);
+      $this->redirect('showsupervisor?cid=' . $group_id);
     }
 
 }

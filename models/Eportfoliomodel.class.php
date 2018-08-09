@@ -20,7 +20,7 @@ class Eportfoliomodel extends SimpleORMap
 {
 
     public $errors = array();
- 
+
     protected static function configure($config = array())
     {
         $config['db_table'] = 'eportfolio';
@@ -28,8 +28,8 @@ class Eportfoliomodel extends SimpleORMap
         $config['belongs_to']['seminar'] = array(
             'class_name' => 'Seminar',
             'foreign_key' => 'Seminar_id',
-            'on_delete' => 'delete',); 
-        
+            'on_delete' => 'delete',);
+
         $config['belongs_to']['owner'] = array(
             'class_name' => 'User',
             'foreign_key' => 'owner_id',);
@@ -47,10 +47,10 @@ class Eportfoliomodel extends SimpleORMap
     public function __construct($id = null) {
 
         parent::__construct($id);
-        
+
     }
-    
-    
+
+
     public static function getAllSupervisors($cid){
         $supervisoren = array();
         $portfolio = Eportfoliomodel::findBySeminarId($cid);
@@ -60,11 +60,6 @@ class Eportfoliomodel extends SimpleORMap
         return $supervisoren[0];
     }
 
-    public static function getOwner($cid){
-        $portfolio = Eportfoliomodel::findBySeminarId($cid);
-        return $portfolio->owner_id;
-    }
-    
     public function getOwnerFullname(){
         $user = User($this->owner);
         $fullname = $user->vorname . ' ' . $user->nachname;
@@ -91,17 +86,17 @@ class Eportfoliomodel extends SimpleORMap
       return $seminare;
 
     }
-    
+
     public static function findBySeminarId($sem_id){
         $eportfolio = Eportfoliomodel::findOneBySQL('seminar_id = :id', array(':id'=> $sem_id));
         return $eportfolio;
     }
-    
+
      public static function isOwner($sem_id, $user_id){
         $eportfolio = Eportfoliomodel::findBySeminarId($sem_id);
         return $eportfolio->owner_id == $user_id;
     }
-    
+
 
     public static function getMyPortfolios(){
 
@@ -256,7 +251,7 @@ class Eportfoliomodel extends SimpleORMap
     public static function isEigenesUnterkapitel($subchapter_id){
       $timestapChapter = Eportfoliomodel::getTimestampOfChapter(Eportfoliomodel::getParentId($subchapter_id));
       if ($timestapChapter < Eportfoliomodel::getTimestampOfChapter($subchapter_id)) {
-        return true; 
+        return true;
       }
     }
 
@@ -369,9 +364,9 @@ class Eportfoliomodel extends SimpleORMap
         }
         return $blocks;
     }
-    
+
     public static function sendNotificationToUser($case, $portfolio_id, $block_id, $user_id){
-        
+
         $portfolio = Eportfoliomodel::find();
         $owner = $this->getOwnerFullname();
         $link = URLHelper::getURL('plugins.php/courseware/courseware', array('cid' => $this->Seminar_id, 'selected' => $block_id));
@@ -397,9 +392,81 @@ class Eportfoliomodel extends SimpleORMap
                 );
                 break;
         }
-        
-        
+
+
         StudipMail::sendMessage($mail, sprintf(_('Neues aus Ihrer Supervisionsgruppe "%s"'), $course->name), $mail_msg);
+    }
+
+
+    /**
+    * Liefert die zuverbleibenden Tage (gerundet) zwischen
+    * jetzt und Abgabetermin des passenden Templates
+    * der Gruppe. Liefert 0 wenn das Abgabedatum überschritten wurde
+    **/
+    public static function getDaysLeft($group_id, $template_id){
+      $deadline = EportfolioGroupTemplates::getDeadline($group_id, $template_id);
+      $now = time();
+
+      if($now < $deadline){
+        $daysleft = abs($now - $deadline)/60/60/24;
+        return round($daysleft, 0);
+      } else {
+        return 0;
+      }
+    }
+
+    /**
+    * Liefert die Anzahl der Kapitel in einem Template
+    **/
+    public static function getNumberOfChaptersFromTemplate($template_id){
+      $query = "SELECT COUNT(id) FROM mooc_blocks WHERE type = 'Chapter' AND Seminar_id = :template_id";
+      $statement = DBManager::get()->prepare($query);
+      $statement->execute(array(':template_id' => $template_id));
+      $result = $statement->fetchAll();
+      return $result[0][0];
+    }
+
+    /**
+    * Liefert die Anzahl der freigebenen Kapitel der Users
+    * innerhalb eines verteilten Templates
+    **/
+    public static function getNumberOfSharedChaptersOfTemplateFromUser($template_id, $user_id, $user_template_id){
+      $return = 0;
+      $templateChapters = Eportfoliomodel::getChapters($template_id);
+      foreach ($templateChapters as $chapter) {
+        $block_id = Eportfoliomodel::getUserPortfilioBlockId($user_template_id, $chapter[id]);
+        if (Eportfoliomodel::checkKapitelFreigabe($block_id)) $return++;
+      }
+      return $return;
+    }
+
+    /**
+    * Liefert Fortschritt des Users in in einem Template
+    **/
+    public static function getProgressOfUserInTemplate($shared, $all){
+      return round($shared / $all * 100, 0);
+    }
+
+    /**
+    * Liefert die Anzahl der Supervisornotizen innerhalb eines $templateStatus
+    * einers Users
+    **/
+    public static function getNumberOfNotesInTemplateOfUser($template_id, $user_template_id){
+      $return = 0;
+      $templateChapters = Eportfoliomodel::getChapters($template_id);
+      foreach ($templateChapters as $chapter) {
+        $block_id = Eportfoliomodel::getUserPortfilioBlockId($user_template_id, $chapter[id]);
+        if (Eportfoliomodel::checkSupervisorNotiz($block_id)) $return++;
+      }
+      return $return;
+    }
+
+    /**
+    * Liefert einen CoursewareLink für das erste Kapitel eines Templates eines Users
+    **/
+    public static function getLinkOfFirstChapter($template_id, $seminar_id){
+      $templateChapters = Eportfoliomodel::getChapters($template_id);
+      return URLHelper::getURL('plugins.php/courseware/courseware', array('cid' => $seminar_id, 'selected' => $templateChapters[0][0]));
     }
 
 }

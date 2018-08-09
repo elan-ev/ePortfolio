@@ -48,7 +48,26 @@
               <?php $portfolio = new Course($key); ?>
                 <tr>
                   <td><?php echo $portfolio->name; ?></td>
-                  <td><?php echo $portfolio->beschreibung; ?></td>
+                  <td>
+                    <?php echo $portfolio->beschreibung; ?>
+                    <?php if(ShowsupervisorController::checkTemplate($id, $key)): ?>
+                      <?php if(EportfolioGroupTemplates::getDeadline($id, $key)): ?>
+                        <a data-dialog="size=1000px;" href="<?= $controller->url_for('showsupervisor/templatedates/' . $id . '/' . $key) ?>">
+                           <?= Icon::create('date', 'clickable') ?>
+                        </a>
+                        Abgabetermin:
+                        <?php
+                          $timestamp = EportfolioGroupTemplates::getDeadline($id, $key);
+                          echo date('d.m.Y', $timestamp);
+                        ?>
+                      <?php else: ?>
+                        <a data-dialog="size=1000px;" href="<?= $controller->url_for('showsupervisor/templatedates/' . $id . '/' . $key) ?>">
+                           <?= Icon::create('date', 'clickable') ?>
+                        </a>
+                        Kein Abgabetermin
+                      <?php endif; ?>
+                    <?php endif; ?>
+                  </td>
                   <td style="text-align: center;">
                       <a href="<?php echo URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $key)); ?>"><?php echo Icon::create('edit', 'clickable', ['title' => sprintf(_('Portfolio-Vorlage bearbeiten.'))]) ?></a>
                       <?php if($member && (ShowsupervisorController::checkTemplate($id, $key) == false)): ?>
@@ -61,6 +80,7 @@
                         <? $params = tooltip2(_("Vorlage wurde in dieser Gruppe bereits verteilt.")); ?>
                         <?= Icon::create('check-circle', 'clickable')->asImg(20, $params) ?>
                        <?php endif ?>
+
                   </td>
                   <td style="text-align: center;">
 
@@ -149,7 +169,7 @@
                   <div class="row">
                     <div class="col-sm-4">
                       <div class="member-avatar">
-                        <?= Avatar::getAvatar($user, $userInfo['username'])->getImageTag(Avatar::SMALL,array('style' => 'margin-right: 0px; border-radius: 75px; height: 75px; width: 75px; border: 1px solid #28497c;', 'title' => htmlReady($userInfo['Vorname']." ".$userInfo['Nachname']))); ?>
+                        <?= Avatar::getAvatar($user, $userInfo['username'])->getImageTag(Avatar::MEDIUM,array('style' => 'margin-right: 0px; border-radius: 75px; height: 75px; width: 75px; border: 1px solid #28497c;', 'title' => htmlReady($userInfo['Vorname']." ".$userInfo['Nachname']))); ?>
                       </div>
                         <div class="row member-links">
                           <div class="col-sm-4"><?php echo  Icon::create('mail', 'clickable'); ?></div>
@@ -253,27 +273,7 @@
             <?php endforeach; ?>
         </div>
 
-
-            <!-- <div class="grid-item">
-              <div class="grid-item-inner">
-                <div class="grid-item-inner-head">
-                  <div class="grid-item-inner-head-avatar">
-                    <?= Avatar::getAvatar($user, $userInfo['username'])->getImageTag(Avatar::SMALL,array('style' => 'margin-right: 5px; border-radius: 25px; width: 25px; border: 1px solid #28497c;', 'title' => htmlReady($userInfo['Vorname']." ".$userInfo['Nachname']))); ?>
-                  </div>
-                  <div class="grid-item-inner-head-name">
-                    <?php echo $userInfo['Vorname']; ?> <br>
-                    <?php echo $userInfo['Nachname'];?>
-                  </div>
-                  <div style="clear: both;"></div>
-                </div>
-              </div>
-            </div> -->
-
         </div>
-
-
-            <!-- <button type="button" name="button" onclick="deletetemplate(<?php echo $tempid; ?>)">Vorlage fr diese Gruppe lschen</button> -->
-            <!--<?= \Studip\Button::create('Vorlage f�r diese Gruppe l�schen', 'button', array('type' => 'button', 'onclick' => 'deletetemplate('.$tempid.')')); ?>-->
   <?php endif; ?>
 
 </div>

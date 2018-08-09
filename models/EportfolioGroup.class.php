@@ -46,6 +46,7 @@ class EportfolioGroup extends SimpleORMap
         parent::__construct($id);
     }
 
+    //TODO: ich glaube diese Funktion hier wird garnicht benutzt
     public static function getFavotitenDerGruppe($id){
       $templates = EportfolioGroup::findBySQL('Seminar_id = :cid', array(':cid' => $id));
       $templateList = json_decode($templates[0]->templates);
@@ -79,7 +80,7 @@ class EportfolioGroup extends SimpleORMap
 
   //TODO anpassen
   public static function newGroup($owner, $sem_id){
- 
+
     $course = Course::find($sem_id);
 
     $supervisorgroup = new SupervisorGroup();
@@ -270,34 +271,31 @@ class EportfolioGroup extends SimpleORMap
     return $anzahl;
   }
 
-  public function getActivities(){
-
-    $user = User::findCurrent();
+  public function getActivities($user){
     //$activities = EportfolioActivity::getDummyActivitiesForGroup($this->seminar_id);
     $activities = EportfolioActivity::getActivitiesForGroup($this->seminar_id);
-
     return $activities;
-
   }
   
   public static function getActivitiesOfUser($seminar_id, $user){
-
     $currentuser = User::findCurrent();
     $activities = EportfolioActivity::getDummyActivitiesOfUser($seminar_id, $user);
 
     return $activities;
-
   }
-  
+
+  /**
+  * Gibt die der neuen Aktivitäten eines Nutzers in der Gruppe zurück
+  **/
   public function getNumberOfNewActivities($user){
     $count = 0;
-    $activities = $this->getActivities();
+    $activities = $this->getActivities($user);
     foreach ($activities as $activity) {
       if($activity->is_new) $count++;
     }
     return $count;
   }
-  
+
   /**
     * Gibt ein Array mit den Portfolio ID's eines Users
     * innerhalb einer Gruppe wieder
@@ -370,9 +368,22 @@ class EportfolioGroup extends SimpleORMap
       return $result[0][0];
     }
 
-
+    /**
+    * Gibt die Anzahl an Neuigkeiten eines Nutzers in einer Gruppe zurück
+    **/
     public static function getAnzahlAnNeuerungen($userid, $groupid){
       return sizeof(self::getActivitiesOfUser($groupid, $userid));
+    }
+
+    /**
+    * Liefert alle verteilten Templates einer Gruppe
+    **/
+    public static function getGroupTemplates($group_id){
+      $query = "SELECT Seminar_id FROM eportfolio_group_templates WHERE group_id = :group_id";
+      $statement = DBManager::get()->prepare($query);
+      $statement->execute( array(':group_id' => $group_id));
+      $result = $statement->fetchAll();
+      return $result; 
     }
 
 }

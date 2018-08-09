@@ -2,7 +2,7 @@
 <form data-dialog="size=auto;reload-on-close" action="<?= URLHelper::getLink("plugins.php/eportfolioplugin/show/newportfolio") ?>"
       method="post" enctype="multipart/form-data"
       <?= Request::isAjax() ? "data-dialog" : "" ?>>
-    
+
     <fieldset>
         <legend><?= _("Neues Portfolio") ?></legend>
         <label>
@@ -14,10 +14,9 @@
             <input type="text" name="beschreibung" required="" class="size-l">
         </label>
     </fieldset>
-    
-    
+
+
      <div data-dialog-button>
         <?= \Studip\Button::create(_("Speichern"), 'newportfolio', array("data-dialog"=>"size=auto;reload-on-close")) ?>
     </div>
 </form>
-

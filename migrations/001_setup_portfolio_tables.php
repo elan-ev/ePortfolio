@@ -49,6 +49,8 @@ class SetupPortfolioTables extends Migration
          `group_id` varchar(32) NOT NULL,
          `Seminar_id` varchar(32) NOT NULL,
          `favorite` int,
+         `mkdate` int(11),
+         `abgabe_datum` int(11),
          PRIMARY KEY (group_id, Seminar_id)
          )");
 
@@ -66,6 +68,7 @@ class SetupPortfolioTables extends Migration
         $db->exec("DROP TABLE eportfolio_user");
         $db->exec("DROP TABLE supervisor_group");
         $db->exec("DROP TABLE supervisor_group_user");
+        $db->exec("DROP TABLE eportfolio_group_templates"); 
         SimpleORMap::expireTableScheme();
 
     }

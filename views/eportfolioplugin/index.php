@@ -1,25 +1,9 @@
-<?php
-
-  $images = array(
-    "https://www.arbeitstipps.de/wp-content/uploads/2010/06/leere-blatt-syndrom-mangelnde-kreativitaet-tipps.jpg",
-    "https://www.pointer.de/bilder/teaser_top/2374lernen_bibliothek_studium.jpg",
-    "https://www.maz-online.de/var/storage/images/maz/lokales/teltow-flaeming/sorge-um-unterrichtsausfall-trotz-neuer-lehrer/262589062-1-ger-DE/Sorge-um-Unterrichtsausfall-trotz-neuer-Lehrer_pdaArticleWide.jpg",
-    "https://www.daad.de/medien/ausland/symbole/fittosize_558_314_3de6fbc25ed35bc4e67ac128c2c40130_abschlussfeier_by_thomas_koelsch_pixelio.jpg",
-    "https://p5.focus.de/img/fotos/origs2589632/6655443606-w630-h354-o-q75-p5/schule-lehrer.jpg",
-    "https://p5.focus.de/img/fotos/origs1094264/3255449779-w630-h354-o-q75-p5/schule-lernen.jpg",
-    "https://www.km.bayern.de/bilder/km_absatz/foto/6667_0710_bibliotheken_partner_der_schule_455.jpg",
-    "https://www.pointer.de/bilder/teaser_top/2374lernen_bibliothek_studium.jpg",
-  );
-
- ?>
-
-<!-- HEAD END -->
 
 <div class="row">
   <div class="col-md-12">
 
     <!-- overview area -->
-    <div id="title">
+    <!-- <div id="title">
       <h3 style="border:none!important;">
         <?php  echo $seminarTitle; ?>
         <?php  echo ' - Dieses Portfolio gehört ' . $owner['Vorname'] . ' ' . $owner['Nachname']; ?>
@@ -33,76 +17,129 @@
       </div>
     <?php endif; ?>
 
-    <hr>
+    <hr> -->
 
-    <div class="row">
+    <div class="row member-container">
 
-      <?php $imageNumber = 0; ?>
-      <?php foreach ($cardInfo as $key): ?>
+      <?php foreach ($templates as $key):?>
 
-        <?php if(EportfolioFreigabe::hasAccess($userid, $cid, $key[id]) || $isVorlage): ?>
         <?php
-         
-            $link = URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $cid, 'selected' => $key[id]));
-            //$link = '/studip/plugins.php/courseware/courseware?cid='.$cid.'&selected='.$key[id];
-            $linkAdmin = $link.'#author';
+          $avatar = CourseAvatar::getAvatar($key[0]);
+          $avatarUrl = $avatar->getCustomAvatarUrl('medium');
         ?>
 
-        <div data-blockid="<?php echo $key[id]; ?>" class="col-md-4 card-wrapper">
-          <div class="card-inner" style="">
+        <div class="col-sm-4 member-single-card">
 
-          <h4><?php echo $key[title]; ?></h4>
 
-          <?php $theurl = $img[$imgcount]; $imgcount++; ?>
+          <div class="template-user-item">
 
-          <div class="" style="min-height: 220px;background-image: url('<?php echo $images[$imageNumber]; ?>'); background-size: cover;">
-            &nbsp;
-          </div>
+            <div class="template-user-item-head">
 
-          <?php $imageNumber++; ?>
+              <div class="template-user-item-headline">
+                <?php $template = new Seminar($key[0]); echo $template->getName();?>
+                <span class="template-bandage">3</span>
+              </div>
 
-          <!-- <div class="alert alert-info" style="margin: 20px 0;" role="alert">Warum will ich Lehrerin werden? Welche Staerken will ich einbringen? </div> -->
+              <div class="row">
+                <div style="padding:0px;" class="col-sm-6 template-user-item-head-image">
+                  <img src="<?php echo $avatarUrl ?>" alt="CourseAvatar">
+                </div>
+                <div class="col-sm-6 template-infos">
 
-          <div class="">
+                  <div class="template-infos-single">
+                    <?php echo Icon::create('span-full', 'status-green'); ?> Status
+                  </div>
 
-            <?php if($isOwner == true):?>
-            <?php //if($isOwner == true):?>
-            <div class="avatar-wrapper">
-              <?php $viewers = EportfolioFreigabe::getUserWithAccess($cid, $key[id]);?>
-              <?php
-              $counter = 0;
-              foreach($viewers as $viewer):?>
-                <?php $viewer = new User($viewer->user_id); ?>
-                  <?php if(!$viewer->vorname):?>
-                    <div class="avatar-container"><?= Avatar::getAvatar('nobody')->getImageTag(Avatar::SMALL, array('title' => 'Gruppen-Supervisoren')) ?></div>
-                  <?php else: ?>
-                    <div class="avatar-container"><?= Avatar::getAvatar($viewer->user_id)->getImageTag(Avatar::SMALL, array('title' => $viewer->vorname . ' ' . $viewer->nachname)) ?></div>
-                  <?php endif; ?>
-                  <?php $counter++; ?>
-                
-              <?php endforeach; ?>
+                  <div class="template-infos-single">
+                    <?= Icon::create('date', 'clickable') ?>
+                    <?php
+                      $timestamp = EportfolioGroupTemplates::getDeadline($group_id, $key[0]);
+                      echo date('d.m.Y', $timestamp);
+                    ?>
+                    <span style="margin-left: 20px;" class="template-infos-days-left"><br>(noch <?php echo Eportfoliomodel::getDaysLeft($group_id, $key[0]); ?> Tage)</span>
+                  </div>
 
+                  <div class="template-infos-single">
+                    <?= Icon::create('activity', 'clickable') ?> 23.05.2018
+                  </div>
+
+                </div>
+              </div>
             </div>
-              <?php endif; ?>
-          <?php //endif; ?>
 
-            <br>
-            <?php if($isOwner == true):?>
-              <b>Freigaben: <?php echo $counter; ?></b><br>
-            <?php endif; ?>
-            <!--<b>Kommentare: 12</b><br>-->
-            <br>
+            <div class="row template-kapitel-info">
+              <?php foreach (Eportfoliomodel::getChapters($key[0]) as $chapter):?>
+                <?php $current_block_id = Eportfoliomodel::getUserPortfilioBlockId($cid ,$chapter[id]); ?>
+                <div class="col-sm-4 member-kapitelname"><?php echo $chapter[title]?></div>
+                <div class="col-sm-8">
+                  <div class="row member-icons">
+                    <div class="col-sm-4">
+                      <?php if(Eportfoliomodel::checkKapitelFreigabe($current_block_id)): ?>
+                          <?= Icon::create('accept', 'clickable'); ?>
+                      <?php else: ?>
+                        <?= Icon::create('accept', 'inactive'); ?>
+                      <?php endif; ?>
+                    </div>
+                    <div class="col-sm-4">
+                      <?php if (Eportfoliomodel::checkSupervisorNotiz($current_block_id) == true): ?>
+                        <?= Icon::create('file', 'clickable'); ?>
+                      <?php else: ?>
+                        <?= Icon::create('file', 'inactive'); ?>
+                      <?php endif; ?>
+                    </div>
+                    <div class="col-sm-4">
+                      <?php if (Eportfoliomodel::checkSupervisorResonanz($current_block_id) == true): ?>
+                        <?= Icon::create('forum', 'clickable');?>
+                      <?php else: ?>
+                        <?= Icon::create('forum', 'inactive'); ?>
+                      <?php endif; ?>
+                    </div>
+                  </div>
+                </div>
+              <?php endforeach; ?>
+            </div>
+
+            <div class="row template-user-stats-area">
+              <div class="col-sm-12">
+                <div class="row member-footer-box">
+                  <div class="col-sm-4">
+                    <div class="member-footer-box-big">
+                      <?php echo $sharedChapters = Eportfoliomodel::getNumberOfSharedChaptersOfTemplateFromUser($key[0], $userid, $cid);?>
+                      /
+                      <?php echo $allChapters = Eportfoliomodel::getNumberOfChaptersFromTemplate($key[0]); ?>
+                    </div>
+                    <div class="member-footer-box-head">
+                      freigegeben
+                    </div>
+                  </div>
+                  <div class="col-sm-4">
+                    <div class="member-footer-box-big">
+                      <?php echo Eportfoliomodel::getProgressOfUserInTemplate($sharedChapters, $allChapters); ?> %
+                    </div>
+                    <div class="member-footer-box-head">
+                      bearbeitet
+                    </div>
+                  </div>
+                  <div class="col-sm-4">
+                    <div class="member-footer-box-big">
+                      <?php echo Eportfoliomodel::getNumberOfNotesInTemplateOfUser($key[0], $cid); ?>
+                    </div>
+                    <div class="member-footer-box-head">
+                      Notizen
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="template-user-item-footer">
+              <?= \Studip\LinkButton::create('Anschauen', Eportfoliomodel::getLinkOfFirstChapter($key[0], $cid)); ?>
+            </div>
 
           </div>
-          <a href="<?php echo $link; ?>"><?= \Studip\Button::create('Anschauen', 'anschauen', array('type' => 'button')); ?></a>
-
-          <?php if($isOwner == true):?>
-            <a href="<?php echo $linkAdmin; ?>"><?= \Studip\Button::create('Bearbeiten', 'anschauen', array('type' => 'button')); ?></a>
-          <?php endif; ?>
         </div>
-      </div>
-        <?php endif; ?>
       <?php endforeach; ?>
+
     </div>
   </div>
 </div>
@@ -138,8 +175,6 @@
     });
 
   }
- 
+
 
 </script>
-
-

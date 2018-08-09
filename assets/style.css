@@ -498,10 +498,6 @@ td, th {
   color: grey;
 }
 
-.member-subname img {
-  margin-bottom: 0px;
-}
-
 .member-content {
   border-top: 1px solid grey;
   border-bottom: 1px solid grey;
@@ -631,4 +627,68 @@ td, th {
   color: black;
   padding: 2px 14px;
   border-radius: 36px;
+}
+
+.template-infos{
+  padding-bottom: 10px;
+  padding-top: 10px;
+}
+
+.template-infos-days-left{
+  color: grey!important;
+}
+
+.template-kapitel-info {
+  margin: 10px 0;
+  border-top: 1px solid grey;
+  border-bottom: 1px solid grey;
+  padding-bottom: 10px;
+  padding-top: 10px;
+}
+
+.template-stats-area {
+  padding-top: 10px;
+}
+
+.template-bandage{
+  background-color: red;
+  border-radius: 30px;
+  padding: 1px 5px;
+  color: #ffffff;
+  font-size: 12px;
+}
+
+.template-user-item {
+  padding: 10px 5px;
+  border: 1px solid grey;
+  background-color: rgba(0,0,0,0.01);
+  transition: all 0.1s;
+  /* background-color: grey; */
+}
+
+.template-user-item:hover {
+  /* background-color: #e7ebf1;
+  transition: all 0.3s; */
+}
+
+.template-user-item-head {
+  padding: 0px 11px;
+}
+
+.template-user-item-headline{
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.template-user-item-footer{
+  padding: 10px 11px;
+}
+
+.template-user-item-head-image{
+  padding:0px;
+}
+
+.template-user-item-head-image img{
+  width: 100%;
 }
