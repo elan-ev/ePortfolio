@@ -29,6 +29,32 @@ class EportfolioUser extends SimpleORMap
 
         parent::__construct($id);
     }
-    
-    
+
+    /**
+    * Liefert den Status eines Nutzers innerhalb einer Vorlage
+    * 1   = grün
+    * 0   = orange
+    * -1  = rot
+    **/
+    public static function getStatusOfUserInTemplate($user_id, $template_id, $group_id, $seminar_id){
+      $deadline = EportfolioGroupTemplates::getDeadline($group_id, $template_id);
+      $timestampXTageVorher = strtotime('-4 day', $deadline);
+      $now = time();
+
+      $anzahlDerFreischaltungen = Eportfoliomodel::getNumberOfSharedChaptersOfTemplateFromUser($template_id, $user_id, $seminar_id);
+      $anzahlDerGesamtFreischaltungen = Eportfoliomodel::getNumberOfChaptersFromTemplate($template_id);
+
+      if ($now < $timestampXTageVorher || $anzahlDerFreischaltungen == $anzahlDerGesamtFreischaltungen) {
+        return 1;
+      } else {
+        if ($now > $timestampXTageVorher && $now < $deadline) {
+          return 0;
+        } else {
+          return -1;
+        }
+      }
+
+    }
+
+
 }
