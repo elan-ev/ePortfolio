@@ -118,7 +118,7 @@
                 <div class="row member-footer-box">
                   <div class="col-sm-4">
                     <div class="member-footer-box-big">
-                      <?php echo $sharedChapters = Eportfoliomodel::getNumberOfSharedChaptersOfTemplateFromUser($key[0], $userid, $cid);?>
+                      <?php echo $sharedChapters = Eportfoliomodel::getNumberOfSharedChaptersOfTemplateFromUser($key[0], $cid);?>
                       /
                       <?php echo $allChapters = Eportfoliomodel::getNumberOfChaptersFromTemplate($key[0]); ?>
                     </div>

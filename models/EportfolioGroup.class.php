@@ -269,7 +269,7 @@ class EportfolioGroup extends SimpleORMap
     $activities = EportfolioActivity::getActivitiesForGroup($this->seminar_id);
     return $activities;
   }
-  
+
   public static function getActivitiesOfUser($seminar_id, $user){
     $activities = EportfolioActivity::getActivitiesOfGroupUser($seminar_id, $user);
     return $activities;
@@ -369,7 +369,7 @@ class EportfolioGroup extends SimpleORMap
       $statement = DBManager::get()->prepare($query);
       $statement->execute( array(':group_id' => $group_id));
       $result = $statement->fetchAll();
-      return $result; 
+      return $result;
     }
 
 }

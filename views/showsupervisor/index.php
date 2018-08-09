@@ -185,7 +185,23 @@
                       </div>
 
                       <div class="member-subname">
-                        Status: <?php echo Icon::create('span-full', 'status-green'); ?><br>
+                        Status:
+                        <?php
+                           $icon;
+                           switch (EportfolioUser::getStatusOfUserInGroup($user, $id, $userPortfiloId)) {
+                             case 1:
+                               $icon = 'status-green';
+                               break;
+                            case 0:
+                              $icon = 'stats-yellow';
+                              break;
+                            case -1:
+                                $icon = 'status-red';
+                                break;
+                           }
+
+                           echo Icon::create('span-full', $icon);
+                        ?><br>
                         Studiengang etc<br>
                         Letzte Änderung: 12.05 2018
                       </div>

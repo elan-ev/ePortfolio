@@ -430,7 +430,7 @@ class Eportfoliomodel extends SimpleORMap
     * Liefert die Anzahl der freigebenen Kapitel der Users
     * innerhalb eines verteilten Templates
     **/
-    public static function getNumberOfSharedChaptersOfTemplateFromUser($template_id, $user_id, $user_template_id){
+    public static function getNumberOfSharedChaptersOfTemplateFromUser($template_id, $user_template_id){
       $return = 0;
       $templateChapters = Eportfoliomodel::getChapters($template_id);
       foreach ($templateChapters as $chapter) {

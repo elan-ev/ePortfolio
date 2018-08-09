@@ -41,7 +41,7 @@ class EportfolioUser extends SimpleORMap
       $timestampXTageVorher = strtotime('-4 day', $deadline);
       $now = time();
 
-      $anzahlDerFreischaltungen = Eportfoliomodel::getNumberOfSharedChaptersOfTemplateFromUser($template_id, $user_id, $seminar_id);
+      $anzahlDerFreischaltungen = Eportfoliomodel::getNumberOfSharedChaptersOfTemplateFromUser($template_id, $seminar_id);
       $anzahlDerGesamtFreischaltungen = Eportfoliomodel::getNumberOfChaptersFromTemplate($template_id);
 
       if ($now < $timestampXTageVorher || $anzahlDerFreischaltungen == $anzahlDerGesamtFreischaltungen) {
@@ -54,6 +54,20 @@ class EportfolioUser extends SimpleORMap
         }
       }
 
+    }
+
+    /**
+    * Liefert den Status des Users in einer Gruppe
+    * Status wird erzeugt aus den als Favorit makierten templates
+    * Kleinster Status wird zurückgegeben
+    **/
+    public static function getStatusOfUserInGroup($user_id, $group_id, $seminar_id){
+      $results = array();
+      $templates = EportfolioGroup::getAllMarkedAsFav($group_id);
+      foreach ($templates as $template) {
+        array_push($results, EportfolioUser::getStatusOfUserInTemplate($user_id, $template, $group_id, $seminar_id));
+      }
+      return min($results);  
     }
 
 
