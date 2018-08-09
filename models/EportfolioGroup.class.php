@@ -271,29 +271,23 @@ class EportfolioGroup extends SimpleORMap
     return $anzahl;
   }
 
-  public function getActivities($user){
+  //all activities in Group ($user can be used to check if activity is a new one for given user)
+  public function getActivities($user = NULL){
     //$activities = EportfolioActivity::getDummyActivitiesForGroup($this->seminar_id);
     $activities = EportfolioActivity::getActivitiesForGroup($this->seminar_id);
     return $activities;
   }
   
   public static function getActivitiesOfUser($seminar_id, $user){
-    $currentuser = User::findCurrent();
-    $activities = EportfolioActivity::getDummyActivitiesOfUser($seminar_id, $user);
-
+    $activities = EportfolioActivity::getActivitiesOfGroupUser($seminar_id, $user);
     return $activities;
   }
 
   /**
   * Gibt die der neuen Aktivitäten eines Nutzers in der Gruppe zurück
   **/
-  public function getNumberOfNewActivities($user){
-    $count = 0;
-    $activities = $this->getActivities($user);
-    foreach ($activities as $activity) {
-      if($activity->is_new) $count++;
-    }
-    return $count;
+  public function getNumberOfNewActivities($user = NULL){
+    return sizeof($this->getActivities($user));
   }
 
   /**

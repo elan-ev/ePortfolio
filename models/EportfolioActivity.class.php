@@ -42,7 +42,15 @@ class EportfolioActivity extends SimpleORMap
             'foreign_key' => 'eportfolio_id', );
         
         $config['additional_fields']['is_new']['get'] = function ($item) {
-            return true;
+            if($item->group_id && User::findCurrent()->id){
+                $seminar_id = $item->group_id; 
+                $user_id = User::findCurrent()->id;
+                //object_get_visit($object_id, $type, $mode = "last", $open_object_id = '', $user_id = '', $refresh_cache = false)
+                $last_visit = object_get_visit($seminar_id, 'sem');
+                return $item->mk_date > $last_visit;
+            } else {
+                return false;
+            }
         };
         $config['additional_fields']['link']['get'] = function ($item) {
             return true;
@@ -55,6 +63,9 @@ class EportfolioActivity extends SimpleORMap
                 break;
             case 'notiz':
                 $message = 'Eine neue Notiz wurde erstellt';
+                break;
+            case 'supervisor-notiz':
+                $message = 'Eine neue Notiz für die Gruppensupervisoren wurde erstellt';
                 break;
             case 'aenderung':
                 $message = 'Ein bereits freigegebener Abschnitt wurde verändert';
@@ -93,11 +104,8 @@ class EportfolioActivity extends SimpleORMap
         return $activities;
     }
     
-    public function getDummyActivitiesOfUser($seminar_id, $user){
-        $activities = array();
-        $activities[] = EportfolioActivity::getDummyActivity('freigabe', $user, 1532653297, URLHelper::getLink('dispatch.php/start'), true);
-        $activities[] = EportfolioActivity::getDummyActivity('aenderung', $user, 1532413297, URLHelper::getLink('dispatch.php/start'), true);
-        return $activities;
+    public function getActivitiesOfGroupUser($seminar_id, $user){
+        return EportfolioActivity::findBySQL('group_id = :seminar_id AND user_id = :user_id', array('seminar_id' => $seminar_id, ':user_id' => $user));
     }
     
     public function getDummyActivity($type, $user, $date, $link, $is_new) {
@@ -129,7 +137,6 @@ class EportfolioActivity extends SimpleORMap
             $activity->eportfolio_id = $portfolio;
             $activity->store();
         }
-
     }
     
     public function addSupervisornotizActivity($portfolio_id, $user_id, $block_id){
