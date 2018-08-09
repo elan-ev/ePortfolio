@@ -428,6 +428,7 @@ class ShowsupervisorController extends StudipController {
       $this->AnzahlAllerKapitel = EportfolioGroup::getAnzahlAllerKapitel($group_id);
       $this->GesamtfortschrittInProzent = EportfolioGroup::getGesamtfortschrittInProzent($user_id, $group_id);
       $this->AnzahlNotizen = EportfolioGroup::getAnzahlNotizen($user_id, $group_id);
+      $this->templates = EportfolioGroup::getGroupTemplates($group_id); 
     }
 
     public function activityfeed_action(){

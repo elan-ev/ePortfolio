@@ -692,3 +692,9 @@ td, th {
 .template-user-item-head-image img{
   width: 100%;
 }
+
+.status-area {
+  border-top: 1px solid grey;
+  margin-top: 10px;
+  padding: 10px;
+}
