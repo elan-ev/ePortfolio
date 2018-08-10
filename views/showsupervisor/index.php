@@ -15,14 +15,6 @@
 
 <div>
 
-      <!-- <select class="" id="tempselector" name="template">
-        <?php  $templates = Eportfoliomodel::getPortfolioVorlagen(); ?>
-        <?php foreach ($templates as $key => $value):?>
-          <option value="<?php echo $value[id] ?>"><?php echo $value[temp_name] ?></option>
-        <?php endforeach; ?>
-      </select>
-      <?= \Studip\Button::create('Hinzufügen', 'button', array('type' => 'button', 'onclick' => 'addTemp()')); ?> -->
-
       <div id="wrapper_table_tamplates" style="margin-top: 30px;">
         <h4>Portfoliovorlage hinzufügen</h4>
 
@@ -315,65 +307,6 @@
 
 <script type="text/javascript">
 
-$( function() {
-    $( "#vorlagen-tabs" ).tabs();
-} );
-
-$('#myModal').on('shown.bs.modal', function () {
-$('#myInput').focus()
-})
-
-if ( $('#table_templates').find("td").length === 0 ) {
-    $('#wrapper_table_tamplates').css('display', 'none');
-}
-
-
-function addUserToGroup(item_id, item_name, item_firstname, item_userid){
-  console.log(item_id[0]);
-}
-
-function getUserData(id){
-  var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/ajaxsupervisor', {userId: id});
-  $.ajax({
-    type: "POST",
-    url: url,
-    dataType: 'JSON',
-    success: function(data) {
-      $('#userInfoModel').mclassodal('toggle');
-      console.log(data);
-      _.forEach(data, function(value){
-        console.log(value);
-      });
-    }
-  });
-}
-
-$('#myTabs a').click(function (e) {
-  e.preventDefault()
-  $(this).tab('show')
-})
-
-function addTemp(){
-  const tempid = $('#tempselector').val();
-  var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/showsupervisor');
-
-  $.ajax({
-    type: "POST",
-    url: url,
-    data: {
-      type: 'addTemp',
-      groupid: '<?php echo $id ?>',
-      tempid: tempid
-    },
-    success: function(data){
-      if (data == "  created") {
-        createPortfolio(tempid);
-      }
-    }
-  });
-}
-
-
 function deleteUserFromGroup(userid, obj) {
   var deleteThis    = $(obj).parents('tr');
   var tdParent      = $(obj).parents('td');
@@ -396,87 +329,5 @@ function deleteUserFromGroup(userid, obj) {
     }
   });
 }
-
-function deletetemplate(tempid){
-  var c = confirm("Es werden alle bestehenden ePortfolios dieses Templates gelöscht! Möchten Sie fortfahren?");
-  if (c == true){
-
-    var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/showsupervisor');
-    $.ajax({
-      type: "POST",
-      url: url,
-      data: {
-        type: 'delete',
-        tempid: tempid,
-        groupid: '<?php echo $id ?>'
-      },
-      success: function(data){
-        console.log(data);
-      }
-    });
-
-  } else {
-    console.log("cancel");
-  }
-}
-
-
-$(document).ready(
-  function(){
-    $('div[role="tabpanel"]:first').addClass('active');
-  }
-);
-
-function testfunction(){
-  var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/showsupervisor');
-  $.ajax({
-    type: "POST",
-    url: url,
-    data: {
-      type: 'addTemplateTest'
-    },
-    success: function(data){
-      console.log(data);
-    }
-  });
-}
-
-
-
-var unique = function(origArr) {
-    var newArr = [],
-        origLen = origArr.length,
-        found, x, y;
-
-    for (x = 0; x < origLen; x++) {
-        found = undefined;
-        for (y = 0; y < newArr.length; y++) {
-            if (origArr[x] === newArr[y]) {
-                found = true;
-                break;
-            }
-        }
-        if (!found) {
-            newArr.push(origArr[x]);
-        }
-    }
-    return newArr;
-};
-
-var uniqID = function() {
-    var ts = +new Date;
-    var tsStr = ts.toString();
-
-    var arr = tsStr.split('');
-    var rev = arr.reverse();
-
-
-    var filtered = unique(rev);
-
-    return filtered.join('');
-
-}
-
-
 
 </script>
