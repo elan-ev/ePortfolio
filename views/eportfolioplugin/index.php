@@ -38,7 +38,7 @@
 
               <div class="template-user-item-headline">
                 <?php $template = new Seminar($key[0]); echo $template->getName();?>
-                <span class="template-bandage">3</span>
+                <!-- <span class="template-bandage">3</span> -->
               </div>
 
               <div class="row">
