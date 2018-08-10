@@ -42,7 +42,8 @@
                   <td><?php echo $portfolio->name; ?></td>
                   <td>
                     <?php echo $portfolio->beschreibung; ?>
-                    <?php if(ShowsupervisorController::checkTemplate($id, $key)): ?>
+                    <?php EportfolioGroupTemplates::checkIfGroupHasTemplate($id, $key); ?>
+                    <?php if(EportfolioGroupTemplates::checkIfGroupHasTemplate($id, $key)): ?>
                       <?php if(EportfolioGroupTemplates::getDeadline($id, $key)): ?>
                         <a data-dialog="size=1000px;" href="<?= $controller->url_for('showsupervisor/templatedates/' . $id . '/' . $key) ?>">
                            <?= Icon::create('date', 'clickable') ?>
@@ -62,7 +63,7 @@
                   </td>
                   <td style="text-align: center;">
                       <a href="<?php echo URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $key)); ?>"><?php echo Icon::create('edit', 'clickable', ['title' => sprintf(_('Portfolio-Vorlage bearbeiten.'))]) ?></a>
-                      <?php if($member && (ShowsupervisorController::checkTemplate($id, $key) == false)): ?>
+                      <?php if($member && (EportfolioGroupTemplates::checkIfGroupHasTemplate($id, $key) == false)): ?>
                       <a onclick="return confirm('Vorlage an Teilnehmende verteilen') " href="<?= PluginEngine::getLink($this->plugin, array(), 'showsupervisor/createportfolio/' . $key) ?>">
                         <? $params = tooltip2(_("Portfolio-Vorlage an Gruppenmitglieder verteilen.")); ?>
                         <? $params['style'] = 'cursor: pointer'; ?>
@@ -76,7 +77,7 @@
                   </td>
                   <td style="text-align: center;">
 
-                    <?php if($member && (ShowsupervisorController::checkTemplate($id, $key) == true)): ?>
+                    <?php if($member && (EportfolioGroupTemplates::checkIfGroupHasTemplate($id, $key) == true)): ?>
 
                       <?php if(EportfolioGroup::checkIfMarkedAsFav($id, $key) == 0): ?>
                         <a href="<?php echo URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/addAsFav/'. $id .'/' . $key); ?>">

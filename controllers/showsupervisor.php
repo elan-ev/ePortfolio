@@ -23,7 +23,7 @@ class ShowsupervisorController extends StudipController {
             $this->userid = $GLOBALS["user"]->id;
             $this->ownerid = $GLOBALS["user"]->id;
 
-            $this->groupTemplates = EportfolioGroup::getGroupTemplates($id);
+            $this->groupTemplates = EportfolioGroupTemplates::getGroupTemplates($id);
             $this->templistid = $this->groupTemplates;
 
             $group = EportfolioGroup::findbySQL('seminar_id = :id', array(':id'=> $this->groupid));
@@ -211,10 +211,9 @@ class ShowsupervisorController extends StudipController {
       $statement = $db->prepare($query);
       $statement->execute(array(':groupid'=> $groupid));
       $groups = $statement->fetchAll()[0][0];
-      $groupHasTemplates = json_decode($groups);
       EportfolioGroup::createTemplateForGroup($groupid, $master);
       //wenn bereits Vorlagen an diese Gruppe verteilt wurden, verwende die zugeh�rigen Portfolios um die weiteren Vorlagen hinzuzuf�gen
-      if (count($groupHasTemplates) >= 1) {
+      if (EportfolioGroupTemplates::getNumberOfGroupTemplates($id) > 0) {
         foreach ($member as $user_id) {
           $query = "SELECT Seminar_id FROM eportfolio WHERE group_id = :groupid AND owner_id = :value";
           $statement = $db->prepare($query);
@@ -292,7 +291,7 @@ class ShowsupervisorController extends StudipController {
       VorlagenCopy::copyCourseware(new Seminar($masterid), $this->semList);
       EportfolioActivity::addVorlagenActivity($groupid, User::findCurrent()->id);
 
-      $this->storeTemplateForGroup($groupid, $masterid);
+      //$this->storeTemplateForGroup($groupid, $masterid);
 
       $this->redirect('showsupervisor?cid=' . $groupid);
 
@@ -307,45 +306,27 @@ class ShowsupervisorController extends StudipController {
       }
     }
 
-    public function storeTemplateForGroup($groupid, $postMaster){
-      $db = DBManager::get();
-      $query = "SELECT templates FROM eportfolio_groups WHERE seminar_id = :groupid";
-      $statement = $db->prepare($query);
-      $statement->execute(array(':groupid'=> $groupid));
-      $query = $statement->fetchAll();
-      if (!empty($query[0][0])) {
-        $array = json_decode($query[0][0]);
-        array_push($array, $postMaster);
-        $array = json_encode($array);
-        $query = "UPDATE eportfolio_groups SET templates = :array WHERE seminar_id = :groupid";
-        $statement = $db->prepare($query);
-        $statement->execute(array(':array'=> $array, ':groupid'=> $groupid));
-      } else {
-        $array = array($postMaster);
-        $array = json_encode($array);
-        $query = "UPDATE eportfolio_groups SET templates = :array WHERE seminar_id = :groupid";
-        $statement = $db->prepare($query);
-        $statement->execute(array(':array'=> $array, ':groupid'=> $groupid));
-      }
-    }
-
-    public function checkTemplate($groupid, $masterid) {
-      $db = DBManager::get();
-      $query = "SELECT templates FROM eportfolio_groups WHERE seminar_id = :groupid";
-      $statement = $db->prepare($query);
-      $statement->execute(array(':groupid'=> $groupid));
-      $query = $statement->fetchAll();
-      if (empty($query[0][0])) {
-        return false;
-      } else {
-        $array = json_decode($query[0][0]);
-        if (in_array($masterid, $array)) {
-          return true;
-        } else {
-          return false;
-        }
-      }
-    }
+    // public function storeTemplateForGroup($groupid, $postMaster){
+    //   $db = DBManager::get();
+    //   $query = "SELECT templates FROM eportfolio_groups WHERE seminar_id = :groupid";
+    //   $statement = $db->prepare($query);
+    //   $statement->execute(array(':groupid'=> $groupid));
+    //   $query = $statement->fetchAll();
+    //   if (!empty($query[0][0])) {
+    //     $array = json_decode($query[0][0]);
+    //     array_push($array, $postMaster);
+    //     $array = json_encode($array);
+    //     $query = "UPDATE eportfolio_groups SET templates = :array WHERE seminar_id = :groupid";
+    //     $statement = $db->prepare($query);
+    //     $statement->execute(array(':array'=> $array, ':groupid'=> $groupid));
+    //   } else {
+    //     $array = array($postMaster);
+    //     $array = json_encode($array);
+    //     $query = "UPDATE eportfolio_groups SET templates = :array WHERE seminar_id = :groupid";
+    //     $statement = $db->prepare($query);
+    //     $statement->execute(array(':array'=> $array, ':groupid'=> $groupid));
+    //   }
+    // }
 
     public function delete_action($cid){
       $cid = $_GET['cid'];
@@ -428,7 +409,7 @@ class ShowsupervisorController extends StudipController {
       $this->AnzahlAllerKapitel = EportfolioGroup::getAnzahlAllerKapitel($group_id);
       $this->GesamtfortschrittInProzent = EportfolioGroup::getGesamtfortschrittInProzent($user_id, $group_id);
       $this->AnzahlNotizen = EportfolioGroup::getAnzahlNotizen($user_id, $group_id);
-      $this->templates = EportfolioGroup::getGroupTemplates($group_id); 
+      $this->templates = EportfolioGroupTemplates::getGroupTemplates($group_id);
     }
 
     public function activityfeed_action(){

@@ -112,7 +112,7 @@ class EportfoliopluginController extends StudipController {
     $this->owner = $owner;
 
     $this->group_id = $eportfolio->group_id;
-    $this->templates = EportfolioGroup::getGroupTemplates($eportfolio->group_id);
+    $this->templates = EportfolioGroupTemplates::getGroupTemplates($eportfolio->group_id);
 
   }
 

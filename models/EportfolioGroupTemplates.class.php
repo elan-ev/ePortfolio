@@ -53,4 +53,38 @@ class EportfolioGroupTemplates extends SimpleORMap
       return $result[0]->abgabe_datum;
     }
 
+    /**
+    * Liefert alle verteilten Templates einer Gruppe
+    **/
+    public static function getGroupTemplates($group_id){
+      $query = "SELECT Seminar_id FROM eportfolio_group_templates WHERE group_id = :group_id";
+      $statement = DBManager::get()->prepare($query);
+      $statement->execute( array(':group_id' => $group_id));
+      $result = $statement->fetchAll();
+      return $result;
+    }
+
+    /**
+    * Liefert die Anzahl der verteilten Templates einer Gruppe
+    **/
+    public static function getNumberOfGroupTemplates($group_id){
+      $query = "SELECT COUNT(Seminar_id) FROM eportfolio_group_templates WHERE group_id = :group_id";
+      $statement = DBManager::get()->prepare($query);
+      $statement->execute(array(':group_id' => $group_id));
+      $result = $statement->fetchAll();
+      return $result[0][0];
+    }
+
+    /**
+    * Prüft ob ein Template schon verteilt wurde
+    **/
+    public static function checkIfGroupHasTemplate($group_id, $template_id){
+      $result = EportfolioGroupTemplates::findBySQL("Seminar_id = :template_id AND group_id = :group_id", array(':template_id' => $template_id, ':group_id' => $group_id));
+      if (empty($result)) {
+        return false;
+      } else {
+        return true;
+      }
+    }
+
 }
