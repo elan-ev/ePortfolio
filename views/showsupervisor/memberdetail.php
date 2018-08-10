@@ -43,10 +43,10 @@
 
 <div class="status-area">
   <h3>Status des Studenten</h3>
-  <?php foreach ($templates as $templateId):?>
+  <?php foreach ($templates as $template_id):?>
     <?php
-      $template = Course::findById($templateId[0]);
-      $deadline = EportfolioGroupTemplates::getDeadline($group_id ,$templateId[0]);
+      $template = Course::findById($template_id[0]);
+      $deadline = EportfolioGroupTemplates::getDeadline($group_id ,$template_id[0]);
       if ($deadline == 0) {
         $deadlineOutput = 'Kein Abgabedatum';
       } else {
@@ -56,7 +56,7 @@
     <div class="status-area-single">
     <?php
         $icon;
-        $status = EportfolioUser::getStatusOfUserInTemplate($user_id, $templateId[0], $group_id, $portfolio_id);
+        $status = EportfolioUser::getStatusOfUserInTemplate($user_id, $template_id[0], $group_id, $portfolio_id);
         switch ($status){
           case 1:
             $icon = 'status-green';
