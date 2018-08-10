@@ -26,6 +26,7 @@
         <?php
           $avatar = CourseAvatar::getAvatar($key[0]);
           $avatarUrl = $avatar->getCustomAvatarUrl('medium');
+          $timestamp = EportfolioGroupTemplates::getDeadline($group_id, $key[0]);
         ?>
 
         <div class="col-sm-4 member-single-card">
@@ -60,17 +61,32 @@
                           $icon = 'status-red';
                           break;
                      }
+
+                     if ($timestamp == 0) {
+                       $icon = 'inactive';
+                     }
                    ?>
                     <?php echo Icon::create('span-full', $icon); ?> Status
+
                   </div>
 
                   <div class="template-infos-single">
                     <?= Icon::create('date', 'clickable') ?>
                     <?php
-                      $timestamp = EportfolioGroupTemplates::getDeadline($group_id, $key[0]);
+                    if (!$timestamp == 0) {
                       echo date('d.m.Y', $timestamp);
+                    } else {
+                      echo "kein Abgabedatum";
+                    }
+
                     ?>
-                    <span style="margin-left: 20px;" class="template-infos-days-left"><br>(noch <?php echo Eportfoliomodel::getDaysLeft($group_id, $key[0]); ?> Tage)</span>
+                    <span style="margin-left: 20px;" class="template-infos-days-left"><br>
+                      <?php if (!$timestamp == 0) {
+                        echo "(noch ".Eportfoliomodel::getDaysLeft($group_id, $key[0])." Tage)";
+                      } else {
+                        echo "&nbsp;";
+                      } ?>
+                    </span>
                   </div>
 
                   <div class="template-infos-single">
