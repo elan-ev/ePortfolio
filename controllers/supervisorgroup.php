@@ -41,7 +41,7 @@ class SupervisorgroupController extends StudipController {
     $navcreate = new LinksWidget();
     $navcreate->setTitle('Supervisorgruppen');
     $attr = array("onclick"=>"showModalNewSupervisorGroupAction()");
-    $navcreate->addLink("Neue Gruppe anlegen", "#", "", $attr);
+    $navcreate->addLink("Neue Gruppe anlegen", "#", NULL, $attr);
 
     $navgroups = new LinksWidget();
     $navgroups->setTitle("Supervisorgruppen");
