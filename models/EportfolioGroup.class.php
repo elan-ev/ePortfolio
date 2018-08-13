@@ -279,7 +279,7 @@ class EportfolioGroup extends SimpleORMap
   * Gibt die der neuen Aktivitäten eines Nutzers in der Gruppe zurück
   **/
   public function getNumberOfNewActivities($user = NULL){
-    return sizeof($this->getActivities($user));
+    return sizeof(EportfolioActivity::newActivities($this->seminar_id));
   }
 
   /**

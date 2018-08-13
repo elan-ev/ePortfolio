@@ -12,7 +12,7 @@ include_once __DIR__.'/Eportfoliomodel.class.php';
  * @property string     $type
  * @property string     $user_id (User)
  * @property string     $block_id (Mooc\Block)
- * @property int        $mkdate
+ * @property int        $mk_date
  */
 
 class EportfolioActivity extends SimpleORMap
@@ -114,6 +114,14 @@ class EportfolioActivity extends SimpleORMap
         return EportfolioActivity::findBySQL('group_id = :seminar_id AND user_id = :user_id', array('seminar_id' => $seminar_id, ':user_id' => $user));
     }
     
+    public function newActivities($seminar_id){
+        $user_id = User::findCurrent()->id;
+        //object_get_visit($object_id, $type, $mode = "last", $open_object_id = '', $user_id = '', $refresh_cache = false)
+        $last_visit = object_get_visit($seminar_id, 'sem');
+        return EportfolioActivity::findBySQL('group_id = :seminar_id  AND mk_date > :last_visit', 
+                array('seminar_id' => $seminar_id, ':last_visit' => $last_visit));
+    }
+    
     public function getDummyActivity($type, $user, $date, $link, $is_new) {
 
         $activity = new EportfolioActivity();
@@ -145,7 +153,7 @@ class EportfolioActivity extends SimpleORMap
         }
     }
     
-    public function addActivity($portfolio_id, $user_id, $block_id, $notification){
+    public function addActivity($portfolio_id, $block_id, $notification){
         
         $activity = new EportfolioActivity();
 
@@ -160,7 +168,7 @@ class EportfolioActivity extends SimpleORMap
                 $activity->type = $notification;
         }
         
-        $activity->user_id = $user_id;
+        $activity->user_id = User::findCurrent()->id;
         $activity->mk_date = time();
         $group_id = Eportfoliomodel::findBySeminarId($portfolio_id)->group_id;
         $activity->group_id = $group_id ? $group_id : NULL;

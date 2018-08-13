@@ -266,6 +266,6 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     }
     
     public function store_activity($notification, $block_id, $course_id){
-        EportfolioActivity::addActivity($course_id, User::findCurrent()->id, $block_id, $notification);
+        EportfolioActivity::addActivity($course_id, $block_id, $notification);
     }
 }
