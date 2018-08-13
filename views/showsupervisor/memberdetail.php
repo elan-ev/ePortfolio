@@ -56,7 +56,7 @@
     <div class="status-area-single">
     <?php
         $icon;
-        $status = EportfolioUser::getStatusOfUserInTemplate($user_id, $template_id[0], $group_id, $portfolio_id);
+        $status = EportfolioUser::getStatusOfUserInTemplate($template_id[0], $group_id, $portfolio_id);
         switch ($status){
           case 1:
             $icon = 'status-green';

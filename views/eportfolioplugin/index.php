@@ -50,7 +50,7 @@
                   <div class="template-infos-single">
                     <?php
                      $icon;
-                     switch (EportfolioUser::getStatusOfUserInTemplate($owner, $key[0], $group_id, $cid)) {
+                     switch (EportfolioUser::getStatusOfUserInTemplate($key[0], $group_id, $cid)) {
                        case 1:
                          $icon = 'status-green';
                          break;
