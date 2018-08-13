@@ -1,6 +1,6 @@
 <div class="row">
   <div class="col-sm-2 member-avatar">
-    <?= Avatar::getAvatar($user, $userInfo['username'])->getImageTag(Avatar::SMALL,array('style' => 'margin-right: 0px; border-radius: 75px; height: 75px; width: 75px; border: 1px solid #28497c;', 'title' => htmlReady($userInfo['Vorname']." ".$userInfo['Nachname']))); ?>
+    <?= Avatar::getAvatar($user_id, $userInfo['username'])->getImageTag(Avatar::MEDIUM,array('style' => 'margin-right: 0px; border-radius: 75px; height: 75px; width: 75px; border: 1px solid #28497c;', 'title' => htmlReady($userInfo['Vorname']." ".$userInfo['Nachname']))); ?>
   </div>
   <div class="col-sm-5">
       <div class="member-name-detail">
