@@ -32,12 +32,15 @@ class EportfolioUser extends SimpleORMap
 
     /**
     * Liefert den Status eines Nutzers innerhalb einer Vorlage
+    * 2   = grau (kein Abgabetermin festgelegt)
     * 1   = grün
     * 0   = orange
     * -1  = rot
     **/
     public static function getStatusOfUserInTemplate($user_id, $template_id, $group_id, $seminar_id){
       $deadline = EportfolioGroupTemplates::getDeadline($group_id, $template_id);
+      if ($deadline == 0) return 2;
+
       $timestampXTageVorher = strtotime('-4 day', $deadline);
       $now = time();
 
@@ -65,9 +68,12 @@ class EportfolioUser extends SimpleORMap
       $results = array();
       $templates = EportfolioGroup::getAllMarkedAsFav($group_id);
       foreach ($templates as $template) {
-        array_push($results, EportfolioUser::getStatusOfUserInTemplate($user_id, $template, $group_id, $seminar_id));
+        $x = EportfolioUser::getStatusOfUserInTemplate($user_id, $template, $group_id, $seminar_id);
+        if ($x < 2) {
+          array_push($results, $x);
+        }
       }
-      return min($results);  
+      return min($results);
     }
 
 
