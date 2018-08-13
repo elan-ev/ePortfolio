@@ -33,11 +33,6 @@ class ShowsupervisorController extends StudipController {
         }
         //userData for Modal
 
-        if($_POST["type"] == 'addTemp'){
-          $this->addTempToDB();
-          exit();
-        }
-
         if($_POST["type"] == 'delete'){
           $this->deletePortfolio();
           exit();
