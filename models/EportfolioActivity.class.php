@@ -177,12 +177,13 @@ class EportfolioActivity extends SimpleORMap
         switch($notification){
             case 'UserDidPostSupervisorNotiz': 
                 $activity->type = 'supervisor-notiz';
-                return;
+                break;
             case 'SupervisorDidPostAnswer':
                 $activity->type = 'supervisor-answer';
-                return;
+                break;
             default:
                 $activity->type = $notification;
+                break;
         }
         
         $activity->user_id = User::findCurrent()->id;
