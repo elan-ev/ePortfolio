@@ -354,7 +354,7 @@ class ShowsupervisorController extends StudipController {
       $id = $_GET["cid"];
       $group = EportfolioGroup::findOneBySQL('Seminar_id = :cid', array(':cid' => $id));
       $this->activities = $group->getActivities();
-      $this->countActivities = $group->getNumberOfNewActivities(User::findCurrent());
+      $this->countActivities = $group->getNumberOfNewActivities();
     }
 
     public function templatedates_action($group_id, $template_id){

@@ -4,6 +4,7 @@
 include_once __DIR__.'/Eportfoliomodel.class.php';
 include_once __DIR__.'/EportfolioGroup.class.php';
 include_once __DIR__.'/SupervisorGroupUser.class.php';
+include_once __DIR__.'/EportfolioActivity.class.php';
 
 /**
  * @author  <asudau@uos.de>
@@ -61,6 +62,15 @@ class EportfolioFreigabe extends SimpleORMap
         else return false;
     }
     
+    /**
+     * Give primary key of record as param to fetch
+     * corresponding record from db if available, if not preset primary key
+     * with given value. Give null to create new record
+     *
+     * @param string $seminar_id id of seminar(eportfolio)
+     * @param int $chapter_id of courseware_chapter (Mooc\block)
+     * @param boolean $status true => user_id gets access to chapter)
+     */
     public static function setAccess($user_id, $seminar_id, $chapter_id, $status){
         if ($status && !self::hasAccess($user_id, $seminar_id, $chapter_id)){
             $access = new self();
@@ -70,11 +80,17 @@ class EportfolioFreigabe extends SimpleORMap
             $access->user_id = $user_id;
             if($access->store()){
                 Eportfoliomodel::sendNotificationToUser('freigabe', $seminar_id, $chapter_id, $user_id);
-                EportfolioActivity::create();
+                //freigaben werden nur als globale activity aufgenommen wenn sie für die supervisoren erfolgten
+                if (SupervisorGroup::find($user_id)){
+                    EportfolioActivity::addActivity($seminar_id, $chapter_id, 'freigabe');
+                }
             }
         } else if (self::hasAccess($user_id, $seminar_id, $chapter_id)){
             self::deleteBySQL('Seminar_id = :seminar_id AND block_id = :block_id AND user_id = :user_id',
                 array(':seminar_id' => $seminar_id, ':block_id' => $chapter_id, ':user_id' => $user_id));
+            if (SupervisorGroup::find($user_id)){
+                EportfolioActivity::addActivity($seminar_id, $chapter_id, 'freigabe-entfernt');
+            }
         }
     }
     

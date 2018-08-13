@@ -278,8 +278,8 @@ class EportfolioGroup extends SimpleORMap
   /**
   * Gibt die der neuen Aktivitäten eines Nutzers in der Gruppe zurück
   **/
-  public function getNumberOfNewActivities($user = NULL){
-    return sizeof($this->getActivities($user));
+  public function getNumberOfNewActivities(){
+    return sizeof(EportfolioActivity::newActivities($this->seminar_id));
   }
 
   /**
@@ -361,6 +361,10 @@ class EportfolioGroup extends SimpleORMap
     **/
     public static function getAnzahlAnNeuerungen($userid, $groupid){
       return sizeof(self::getActivitiesOfUser($groupid, $userid));
+    }
+    
+    public function isSupervisor($user_id){
+        return SupervisorGroupUser::findBySQL('$supervisor_group_id = :group_id AND user_id = :user_id', array(':group_id' => $this->supervisor_group_id, ':user_id' => $user_id));
     }
 
 }

@@ -33,16 +33,16 @@
                 <?= Icon::create('file', 'clickable');  ?>
               <?php endif; ?>
 
-              <?= Avatar::getAvatar($user, $userInfo['username'])->getImageTag(Avatar::MEDIUM,array('style' => 'margin-right: 0px; border-radius: 35px; position: relative; left: -9px; top: 3px; border: 3px solid #f5f6f6;', 'title' => htmlReady($userInfo['Vorname']." ".$userInfo['Nachname']))); ?>
+              <?= Avatar::getAvatar($activity->user_id, User::find($activity->user_id)->username)->getImageTag(Avatar::MEDIUM,array('style' => 'margin-right: 0px; border-radius: 35px; position: relative; left: -9px; top: 3px; border: 3px solid #f5f6f6;', 'title' => htmlReady($userInfo['Vorname']." ".$userInfo['Nachname']))); ?>
 
             </div>
             <div class="" style="line-height: 36px;">
-              <b>Max Mustermann: </b> <?php echo $activity->message; ?>
+              <b><?= User::find($activity->user_id)->username?>: </b> <?php echo $activity->message; ?>
             </div>
           </div>
           </div>
           <div class="col-sm-4" style="line-height: 36px; text-align: center;">
-            <?php echo date('d.m.Y', $activity->mk_date); ?>
+            <?php echo date('d.m.Y - G:i', $activity->mk_date); ?>
             <div class="" style="float: right; position: relative; top: 3px; ">
               <a href="<?php echo $activity->link; ?>">
                 <?= Icon::create('link-intern'); ?>
@@ -81,16 +81,16 @@
                 <?= Icon::create('file', 'clickable');  ?>
               <?php endif; ?>
 
-              <?= Avatar::getAvatar($user, $userInfo['username'])->getImageTag(Avatar::MEDIUM,array('style' => 'margin-right: 0px; border-radius: 35px; position: relative; left: -9px; top: 3px; border: 3px solid #f5f6f6;', 'title' => htmlReady($userInfo['Vorname']." ".$userInfo['Nachname']))); ?>
+              <?= Avatar::getAvatar($activity->user_id, User::find($activity->user_id)->username)->getImageTag(Avatar::MEDIUM,array('style' => 'margin-right: 0px; border-radius: 35px; position: relative; left: -9px; top: 3px; border: 3px solid #f5f6f6;', 'title' => htmlReady($userInfo['Vorname']." ".$userInfo['Nachname']))); ?>
 
             </div>
             <div class="" style="line-height: 36px;">
-              <b>Max Mustermann: </b> <?php echo $activity->message; ?>
+              <b><?= User::find($activity->user_id)->username?>: </b> <?php echo $activity->message; ?>
             </div>
           </div>
           </div>
           <div class="col-sm-4" style="line-height: 36px; text-align: center;">
-            <?php echo date('d.m.Y', $activity->mk_date); ?>
+            <?php echo date('d.m.Y - G:i', $activity->mk_date); ?>
             <div class="" style="float: right; position: relative; top: 3px; ">
               <a href="<?php echo $activity->link; ?>">
                 <?= Icon::create('link-intern'); ?>
