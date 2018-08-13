@@ -42,7 +42,7 @@
           </div>
           </div>
           <div class="col-sm-4" style="line-height: 36px; text-align: center;">
-            <?php echo date('d.m.Y - h:m', $activity->mk_date); ?>
+            <?php echo date('d.m.Y - G:i', $activity->mk_date); ?>
             <div class="" style="float: right; position: relative; top: 3px; ">
               <a href="<?php echo $activity->link; ?>">
                 <?= Icon::create('link-intern'); ?>
@@ -90,7 +90,7 @@
           </div>
           </div>
           <div class="col-sm-4" style="line-height: 36px; text-align: center;">
-            <?php echo date('d.m.Y - h:m', $activity->mk_date); ?>
+            <?php echo date('d.m.Y - G:i', $activity->mk_date); ?>
             <div class="" style="float: right; position: relative; top: 3px; ">
               <a href="<?php echo $activity->link; ?>">
                 <?= Icon::create('link-intern'); ?>
