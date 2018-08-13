@@ -323,7 +323,9 @@ class EportfolioGroup extends SimpleORMap
     public static function getGesamtfortschrittInProzent($user_id, $group_id){
       $oben = EportfolioGroup::getAnzahlFreigegebenerKapitel($user_id, $group_id);
       $unten = EportfolioGroup::getAnzahlAllerKapitel($group_id);
-      return $oben / $unten * 100;
+      $zahl = $oben / $unten * 100;
+      $zahl = round($zahl, 1);
+      return $zahl;
     }
 
     /**
