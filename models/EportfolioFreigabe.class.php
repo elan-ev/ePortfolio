@@ -80,11 +80,17 @@ class EportfolioFreigabe extends SimpleORMap
             $access->user_id = $user_id;
             if($access->store()){
                 Eportfoliomodel::sendNotificationToUser('freigabe', $seminar_id, $chapter_id, $user_id);
-                EportfolioActivity::addActivity($seminar_id, $chapter_id, 'freigabe');
+                //freigaben werden nur als globale activity aufgenommen wenn sie für die supervisoren erfolgten
+                if (SupervisorGroup::find($user_id)){
+                    EportfolioActivity::addActivity($seminar_id, $chapter_id, 'freigabe');
+                }
             }
         } else if (self::hasAccess($user_id, $seminar_id, $chapter_id)){
             self::deleteBySQL('Seminar_id = :seminar_id AND block_id = :block_id AND user_id = :user_id',
                 array(':seminar_id' => $seminar_id, ':block_id' => $chapter_id, ':user_id' => $user_id));
+            if (SupervisorGroup::find($user_id)){
+                EportfolioActivity::addActivity($seminar_id, $chapter_id, 'freigabe-entfernt');
+            }
         }
     }
     

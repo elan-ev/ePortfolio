@@ -360,5 +360,9 @@ class EportfolioGroup extends SimpleORMap
     public static function getAnzahlAnNeuerungen($userid, $groupid){
       return sizeof(self::getActivitiesOfUser($groupid, $userid));
     }
+    
+    public function isSupervisor($user_id){
+        return SupervisorGroupUser::findBySQL('$supervisor_group_id = :group_id AND user_id = :user_id', array(':group_id' => $this->supervisor_group_id, ':user_id' => $user_id));
+    }
 
 }

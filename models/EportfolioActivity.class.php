@@ -60,6 +60,9 @@ class EportfolioActivity extends SimpleORMap
             case 'vorlage-verteilt':
                 $link = URLHelper::getURL('plugins.php/eportfolioplugin/showsupervisor', array('cid' => $item->group_id));
                 break;
+            case 'freigabe-entfernt':
+                $link = URLHelper::getURL('plugins.php/eportfolioplugin/eportfolioplugin', array('cid' => $item->eportfolio_id));
+                break;
             default:
                 $link = URLHelper::getURL('plugins.php/courseware/courseware', array('cid' => $item->eportfolio_id, 'selected' => $item->block_id));
                 break;
@@ -71,6 +74,9 @@ class EportfolioActivity extends SimpleORMap
             switch($item->type){
             case 'freigabe':
                 $message = 'hat einen neuen Abschnitt für Ihren Zugriff freigegeben';
+                break;
+            case 'freigabe-entfernt':
+                $message = 'hat die Freigabe für einen Abschnitt zurückgenommen';
                 break;
             case 'notiz':
                 $message = 'hat eine neue Notiz erstellt';
