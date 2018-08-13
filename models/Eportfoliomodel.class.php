@@ -396,11 +396,15 @@ class Eportfoliomodel extends SimpleORMap
 
         
             $rec_uname = array();
-            //foreach (Request::getArray("message_to") as $user_id) {
-                if ($user_id) {
-                    $rec_uname[] = get_username($user_id);
+            //id ist kein user sondern supervisorgruppe
+            if(!User::find($user_id)){
+                $supervisor_group_user = SupervisorGroup::find($user_id)->user;
+          
+                foreach ($supervisor_group_user as $group_user) {
+                        $rec_uname[] = get_username($group_user->user_id);
                 }
-            //}
+            } else $rec_uname[] = $user_id;
+
             $messaging = new messaging();
             $messaging->send_as_email =  true;
             $messaging->insert_message(
