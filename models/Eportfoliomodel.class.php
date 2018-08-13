@@ -370,7 +370,6 @@ class Eportfoliomodel extends SimpleORMap
         $portfolio = Eportfoliomodel::findBySeminarId($portfolio_id);
         $owner = $portfolio->getOwnerFullname();
         $link = URLHelper::getURL('plugins.php/courseware/courseware', array('cid' => $portfolio_id, 'selected' => $block_id));
-        $mail = '';
         $group = Course::find($portfolio->group_id)->name;
 
         switch ($case) {
