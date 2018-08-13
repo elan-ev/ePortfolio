@@ -53,7 +53,18 @@ class EportfolioActivity extends SimpleORMap
             }
         };
         $config['additional_fields']['link']['get'] = function ($item) {
-            return true;
+            switch($item->type){
+            case 'vorlage-erhalten':
+                $link = URLHelper::getURL('plugins.php/eportfolioplugin/eportfolioplugin', array('cid' => $item->eportfolio_id));
+                break;
+            case 'vorlage-verteilt':
+                $link = URLHelper::getURL('plugins.php/eportfolioplugin/showsupervisor', array('cid' => $item->group_id));
+                break;
+            default:
+                $link = URLHelper::getURL('plugins.php/courseware/courseware', array('cid' => $item->eportfolio_id, 'selected' => $item->block_id));
+                break;
+            }
+            return $link;
         };
         
         $config['additional_fields']['message']['get'] = function ($item) {
@@ -93,7 +104,7 @@ class EportfolioActivity extends SimpleORMap
     
     public static function getActivitiesForGroup($seminar_id){
  
-        return EportfolioActivity::findByGroup_id($seminar_id);
+        return EportfolioActivity::findBySQL('group_id = ?  ORDER BY mk_date DESC', array($seminar_id));
     }
 
     public function getDummyActivitiesForGroup($seminar_id){
@@ -118,8 +129,8 @@ class EportfolioActivity extends SimpleORMap
         $user_id = User::findCurrent()->id;
         //object_get_visit($object_id, $type, $mode = "last", $open_object_id = '', $user_id = '', $refresh_cache = false)
         $last_visit = object_get_visit($seminar_id, 'sem');
-        return EportfolioActivity::findBySQL('group_id = :seminar_id  AND mk_date > :last_visit', 
-                array('seminar_id' => $seminar_id, ':last_visit' => $last_visit));
+        return EportfolioActivity::findBySQL('group_id = :seminar_id  AND mk_date > :last_visit AND user_id != :user_id ORDER BY mk_date DESC', 
+                array('seminar_id' => $seminar_id, 'user_id' => $user_id, ':last_visit' => $last_visit));
     }
     
     public function getDummyActivity($type, $user, $date, $link, $is_new) {
