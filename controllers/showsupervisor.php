@@ -117,48 +117,12 @@ class ShowsupervisorController extends StudipController {
 
     }
 
-        public function addTempToDB(){
-      $groupid = $_POST["groupid"];
-      $tempid = $_POST["tempid"];
-      $db = DBManager::get();
-      $query = "SELECT templates FROM eportfolio_groups WHERE seminar_id = :groupid";
-      $statement = $db->prepare($query);
-      $statement->execute(array(':groupid'=> $groupid));
-      $q = $statement->fetchAll();
-      if(empty($q[0][0])){
-        $array = array($tempid);
-        $array = json_encode($array);
-        $query = "UPDATE eportfolio_groups SET templates = :array WHERE seminar_id = :groupid";
-        $statement = $db->prepare($query);
-        $statement->execute(array(':groupid'=> $groupid, ':array'=> $array));
-        echo "created";
-      } else {
-        $array = json_decode($q[0][0]);
-        if(in_array($tempid, $array)){
-          echo "already";
-          exit();
-        }
-        array_push($array, $tempid);
-        $array = json_encode($array);
-        $query = "UPDATE eportfolio_groups SET templates = :array WHERE seminar_id = :groupid";
-        $statement = $db->prepare($query);
-        $statement->execute(array(':groupid'=> $groupid, ':array'=> $array));
-        echo "created";
-      }
-    }
-
     public function getChapters($id){
         $db = DBManager::get();
         $query = "SELECT title, id FROM mooc_blocks WHERE seminar_id = :id AND type = 'Chapter' ORDER BY position ASC";
         $statement = $db->prepare($query);
         $statement->execute(array(':id'=> $id));
         return $statement->fetchAll();
-    }
-
-    public function getTemplateName($id){
-      //$q = DBManager::get()->query("SELECT temp_name FROM eportfolio_templates WHERE id = '$id'")->fetchAll();
-      //$array = array();
-      //return $q[0][0];
     }
 
     public function generateRandomString($length = 32) {
@@ -305,28 +269,6 @@ class ShowsupervisorController extends StudipController {
         }
       }
     }
-
-    // public function storeTemplateForGroup($groupid, $postMaster){
-    //   $db = DBManager::get();
-    //   $query = "SELECT templates FROM eportfolio_groups WHERE seminar_id = :groupid";
-    //   $statement = $db->prepare($query);
-    //   $statement->execute(array(':groupid'=> $groupid));
-    //   $query = $statement->fetchAll();
-    //   if (!empty($query[0][0])) {
-    //     $array = json_decode($query[0][0]);
-    //     array_push($array, $postMaster);
-    //     $array = json_encode($array);
-    //     $query = "UPDATE eportfolio_groups SET templates = :array WHERE seminar_id = :groupid";
-    //     $statement = $db->prepare($query);
-    //     $statement->execute(array(':array'=> $array, ':groupid'=> $groupid));
-    //   } else {
-    //     $array = array($postMaster);
-    //     $array = json_encode($array);
-    //     $query = "UPDATE eportfolio_groups SET templates = :array WHERE seminar_id = :groupid";
-    //     $statement = $db->prepare($query);
-    //     $statement->execute(array(':array'=> $array, ':groupid'=> $groupid));
-    //   }
-    // }
 
     public function delete_action($cid){
       $cid = $_GET['cid'];
