@@ -59,22 +59,25 @@ class EportfolioActivity extends SimpleORMap
         $config['additional_fields']['message']['get'] = function ($item) {
             switch($item->type){
             case 'freigabe':
-                $message = 'Ein neuer Abschnitt wurde für Ihren Zugriff freigegeben';
+                $message = 'hat einen neuen Abschnitt für Ihren Zugriff freigegeben';
                 break;
             case 'notiz':
-                $message = 'Eine neue Notiz wurde erstellt';
+                $message = 'hat eine neue Notiz erstellt';
                 break;
             case 'supervisor-notiz':
-                $message = 'Eine neue Notiz für die Gruppensupervisoren wurde erstellt';
+                $message = 'hat eine neue Notiz für die Gruppensupervisoren erstellt';
+                break;
+            case 'supervisor-answer':
+                $message = 'hat auf eine Anfrage geantwortet';
                 break;
             case 'aenderung':
-                $message = 'Ein bereits freigegebener Abschnitt wurde verändert';
+                $message = 'hat einen bereits freigegebenen Abschnitt verändert';
                 break;
             case 'vorlage-erhalten':
                 $message = 'In '. Course::find($item->group_id)->name .' wurden neue Portfolio-Inhalte verteilt';
                 break;
             case 'vorlage-verteilt':
-                $message = 'Es wurden neue Portfolio-Inhalte verteilt';
+                $message = 'hat neue Portfolio-Inhalte verteilt';
                 break;
             }
             return $message;
@@ -142,9 +145,21 @@ class EportfolioActivity extends SimpleORMap
         }
     }
     
-    public function addSupervisornotizActivity($portfolio_id, $user_id, $block_id){
+    public function addActivity($portfolio_id, $user_id, $block_id, $notification){
+        
         $activity = new EportfolioActivity();
-        $activity->type = 'supervisor-notiz';
+
+        switch($notification){
+            case 'UserDidPostSupervisorNotiz': 
+                $activity->type = 'supervisor-notiz';
+                return;
+            case 'SupervisorDidPostAnswer':
+                $activity->type = 'supervisor-answer';
+                return;
+            default:
+                $activity->type = $notification;
+        }
+        
         $activity->user_id = $user_id;
         $activity->mk_date = time();
         $group_id = Eportfoliomodel::findBySeminarId($portfolio_id)->group_id;
@@ -153,6 +168,8 @@ class EportfolioActivity extends SimpleORMap
         $activity->eportfolio_id = $portfolio_id;
         $activity->store();
     }
+    
+    
     
     public function getDate(){
         return $this->mk_date;

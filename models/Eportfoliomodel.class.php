@@ -61,7 +61,7 @@ class Eportfoliomodel extends SimpleORMap
     }
 
     public function getOwnerFullname(){
-        $user = User($this->owner);
+        $user = $this->owner;
         $fullname = $user->vorname . ' ' . $user->nachname;
         return $fullname;
     }
@@ -367,34 +367,57 @@ class Eportfoliomodel extends SimpleORMap
 
     public static function sendNotificationToUser($case, $portfolio_id, $block_id, $user_id){
 
-        $portfolio = Eportfoliomodel::find();
-        $owner = $this->getOwnerFullname();
-        $link = URLHelper::getURL('plugins.php/courseware/courseware', array('cid' => $this->Seminar_id, 'selected' => $block_id));
+        $portfolio = Eportfoliomodel::findBySeminarId($portfolio_id);
+        $owner = $portfolio->getOwnerFullname();
+        $link = URLHelper::getURL('plugins.php/courseware/courseware', array('cid' => $portfolio_id, 'selected' => $block_id));
         $mail = '';
-        $group = Course($this->group_id)->name;
+        $group = Course::find($portfolio->group_id)->name;
 
         switch ($case) {
             default:
             case 'supervisornotiz':
+                $mail_subj = 'Neue Portfolio-Notiz für Supervisoren';
                 $mail_msg = sprintf(
                     _("Neue Notiz von '%s'\n"
                     . "in: %s \n"
                     . "Direkt zur Notiz:\n %s"),
-                    $owner, $this->seminar->name , $link
+                    $owner, Course::find($portfolio->seminar_id)->name , $link
                 );
                 break;
             case 'freigabe':
+                $mail_subj = 'Neue Portfolio Freigabe';
                 $mail_msg = sprintf(
                     _("Neue Freigabe von '%s'\n"
                     . "in: %s \n"
                     . "Direkt zum freigegebenen Inhalt:\n %s"),
-                    $owner, $this->seminar->name , $link
+                    $owner, Course::find($portfolio->seminar_id)->name , $link
                 );
                 break;
         }
 
-
-        StudipMail::sendMessage($mail, sprintf(_('Neues aus Ihrer Supervisionsgruppe "%s"'), $course->name), $mail_msg);
+        
+            $rec_uname = array();
+            //foreach (Request::getArray("message_to") as $user_id) {
+                if ($user_id) {
+                    $rec_uname[] = get_username($user_id);
+                }
+            //}
+            $messaging = new messaging();
+            $messaging->send_as_email =  true;
+            $messaging->insert_message(
+                $mail_msg,
+                $rec_uname,
+                '____%system%____',
+                '',
+                '',
+                '',
+                null,
+                $mail_subj,
+                "",
+                'normal',
+                trim(Request::get("message_tags")) ?: null
+            );
+        //StudipMail::sendMessage($mail, sprintf(_('Neues aus Ihrer Supervisionsgruppe "%s"'), $course->name), $mail_msg);
     }
 
 

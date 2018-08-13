@@ -21,6 +21,8 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         //Navigation::activateItem("/eportfolioplugin");
         NotificationCenter::addObserver($this, "setup_navigation", "PageWillRender");
         NotificationCenter::addObserver($this, "store_activity","UserDidPostSupervisorNotiz");
+        NotificationCenter::addObserver($this, "store_activity","SupervisorDidPostAnswer");
+        NotificationCenter::addObserver($this, "store_activity","UserDidPostNotiz");
 
     }
 
@@ -264,10 +266,6 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     }
     
     public function store_activity($notification, $block_id, $course_id){
-        switch ($notification){
-            case 'UserDidPostSupervisorNotiz': 
-                EportfolioActivity::addSupervisornotizActivity($course_id, User::findCurrent()->id, $block_id);
-                return;
-        }
+        EportfolioActivity::addActivity($course_id, User::findCurrent()->id, $block_id, $notification);
     }
 }
