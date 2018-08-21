@@ -55,7 +55,7 @@
                          $icon = 'status-green';
                          break;
                       case 0:
-                        $icon = 'stats-yellow';
+                        $icon = 'status-yellow';
                         break;
                       case -1:
                           $icon = 'status-red';
