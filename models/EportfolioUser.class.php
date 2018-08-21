@@ -73,7 +73,7 @@ class EportfolioUser extends SimpleORMap
           array_push($results, $x);
         }
       }
-      return min($results);
+      return (!empty($results)) ? min($results) : '1';
     }
 
 
