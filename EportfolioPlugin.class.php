@@ -63,18 +63,34 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
       global $perm, $user;
       $isDozent = $perm->have_studip_perm('dozent', $course_id);
 
+      //Veranstaltungsreiter in Vorlesung
       if ($isDozent && !$this->isPortfolio() && !$this->isVorlage()) {
           $navigation = new Navigation('Supervision', PluginEngine::getURL($this, compact('cid'), 'showsupervisor', true));
           $navigation->setImage(Icon::create('group4', 'info_alt'));
           $navigation->setActiveImage(Icon::create('group4', 'info'));
-          
-          $item = new Navigation(_('Supervisionsansicht'), PluginEngine::getURL($this, compact('cid'), 'showsupervisor', true));
+
+          $item = new Navigation(_('Übersicht'), PluginEngine::getURL($this, compact('cid'), 'showsupervisor', true));
           $navigation->addSubNavigation('supervision', $item);
-          
+
           $item = new Navigation(_('Activity Feed'), PluginEngine::getURL($this, compact('cid'), 'showsupervisor/activityfeed', true));
           $navigation->addSubNavigation('portfoliofeed', $item);
-          
-      } else if ($this->isPortfolio() || $this->isVorlage() ){
+
+      //Navigation in Portfolios
+      } else if ($this->isPortfolio() ){
+          //uebersicht navigation point
+          $navigation = new Navigation('Übersicht', PluginEngine::getURL($this, compact('cid'), 'eportfolioplugin', true));
+          $navigation->setImage(Icon::create('group4', 'info_alt'));
+          $navigation->setActiveImage(Icon::create('group4', 'info'));
+
+          $owner = Eportfoliomodel::isOwner($course_id, $user->id);
+          if ($owner) {
+              $navigationSettings = new Navigation('Zugriffsrechte', PluginEngine::getURL($this, compact('cid'), 'settings', true));
+              $navigationSettings->setImage(Icon::create('admin', 'info_alt'));
+              $navigationSettings->setActiveImage(Icon::create('admin', 'info'));
+              $tabs['settings'] = $navigationSettings;
+          }
+       //Navigation in Vorlagen 
+       } else if ($this->isVorlage() ){
           //uebersicht navigation point
           $navigation = new Navigation('Übersicht', PluginEngine::getURL($this, compact('cid'), 'eportfolioplugin', true));
           $navigation->setImage(Icon::create('group4', 'info_alt'));
@@ -97,7 +113,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
       
 
       $tabs['eportfolioplugin'] = $navigation;
-      return $tabs;
+      return array_reverse($tabs);
 
     }
 
@@ -233,7 +249,11 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
             //$settings = Navigation::getItem('/course/settings');
             //Navigation::removeItem('/course/settings');
             //Navigation::insertItem('/course/settings', $settings, '/course/files');
-            Navigation::getItem('/course/mooc_courseware')->setTitle(ePortfolio);
+            if ($this->isVorlage() ){
+                  Navigation::getItem('/course/mooc_courseware')->setTitle(Vorlage);
+            } else { 
+                Navigation::getItem('/course/mooc_courseware')->setTitle(ePortfolio);
+            }
 
             //default Courseware-Hilfe ersetzen
             $widgets = Helpbar::get()->getWidgets();
