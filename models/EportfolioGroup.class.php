@@ -202,7 +202,7 @@ class EportfolioGroup extends SimpleORMap
   * Makiert ein Template als Favorit
   **/
   public static function markTemplateAsFav($group_id, $template_id){
-    $query = "UPDATE eportfolio_group_templates SET favorite = 1 WHERE group_id = :group_id AND group_id = :group_id";
+    $query = "UPDATE eportfolio_group_templates SET favorite = 1 WHERE group_id = :group_id AND Seminar_id = :template_id";
     $statement = DBManager::get()->prepare($query);
     $statement->execute(array(':group_id' => $group_id , ':template_id' => $template_id));
   }
@@ -362,7 +362,7 @@ class EportfolioGroup extends SimpleORMap
     public static function getAnzahlAnNeuerungen($userid, $groupid){
       return sizeof(self::getActivitiesOfUser($groupid, $userid));
     }
-    
+
     public function isSupervisor($user_id){
         return SupervisorGroupUser::findBySQL('$supervisor_group_id = :group_id AND user_id = :user_id', array(':group_id' => $this->supervisor_group_id, ':user_id' => $user_id));
     }
