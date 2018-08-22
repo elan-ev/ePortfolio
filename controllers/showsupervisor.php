@@ -76,17 +76,17 @@ class ShowsupervisorController extends StudipController {
         //berechtigung prüfen (group-owner TODO:refactoring //ggf das hier nur für Supervisor,
         //das würde dann aber schon in der Pluginklasse passieren
         /**
-        if(!$id == ''){
-            $query = "SELECT owner_id FROM eportfolio_groups WHERE seminar_id = :id";
-            $statement = DBManager::get()->prepare($query);
-            $statement->execute(array(':id'=> $id));
-            $check = $statement->fetchAll();
-
-            //check permission
-            if(!$check[0][0] == $GLOBALS["user"]->id){
-              throw new AccessDeniedException(_("Sie haben keine Berechtigung"));
-            }
-        }
+        *if(!$id == ''){
+        *    $query = "SELECT owner_id FROM eportfolio_groups WHERE seminar_id = :id";
+        *    $statement = DBManager::get()->prepare($query);
+        *    $statement->execute(array(':id'=> $id));
+        *    $check = $statement->fetchAll();
+        *
+        *    //check permission
+        *    if(!$check[0][0] == $GLOBALS["user"]->id){
+        *      throw new AccessDeniedException(_("Sie haben keine Berechtigung"));
+        *    }
+        *}
          */
 
         $this->id = $id;
