@@ -8,7 +8,7 @@
       </div>
       <div class="member-subname">
         Portfoliogruppe: Testgruppe<br>
-        Letzte Ännderung am: 23.05.2018
+        Letzte Änderung: <?= date('d.m.Y', Eportfoliomodel::getLastOwnerEdit($portfolio_id)) ?>
       </div>
   </div>
   <div class="col-sm-5">

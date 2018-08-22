@@ -494,5 +494,16 @@ class Eportfoliomodel extends SimpleORMap
       $templateChapters = Eportfoliomodel::getChapters($template_id);
       return URLHelper::getURL('plugins.php/courseware/courseware', array('cid' => $seminar_id, 'selected' => $templateChapters[0][0]));
     }
+    
+    public static function getLastOwnerEdit($sem_id){
+      $query = "SELECT chdate FROM mooc_blocks WHERE Seminar_id = :id ORDER BY chdate DESC";
+      $statement = DBManager::get()->prepare($query);
+      $statement->execute(array(':id' => $sem_id));
+      $result = $statement->fetchAll();
+      $last_edit = $result[0][0];;
+      $last_freigabe = EportfolioActivity::getLastFreigabeOfPortfolio($sem_id);
+      
+      return max(array($last_edit, $last_freigabe));
+    }
 
 }

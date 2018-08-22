@@ -196,7 +196,7 @@
                            echo Icon::create('span-full', $icon);
                         ?><br>
                         Studiengang etc<br>
-                        Letzte Änderung: 12.05 2018
+                        Letzte Änderung: <?= date('d.m.Y', Eportfoliomodel::getLastOwnerEdit($userPortfolioId)) ?>
                       </div>
                     </div>
                       <div class="col-sm-12">

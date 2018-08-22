@@ -195,7 +195,10 @@ class EportfolioActivity extends SimpleORMap
         $activity->store();
     }
     
-    
+    public static function getLastFreigabeOfPortfolio($portfolio_id){
+        $freigabe = self::findOneBySQL("eportfolio_id = ? AND type = 'freigabe' ORDER BY mk_date DESC", array($portfolio_id));
+        return $freigabe ? $freigabe->mk_date : 0;
+    }
     
     public function getDate(){
         return $this->mk_date;

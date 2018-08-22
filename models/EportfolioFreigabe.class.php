@@ -102,5 +102,5 @@ class EportfolioFreigabe extends SimpleORMap
         $hasAccessSince = EportfolioFreigabe::findOneBySQL('block_id = :block_id AND user_id = :user_id',
                 array(':block_id' => $chapter_id, ':user_id' => $user_id)); 
         return $hasAccessSince->mkdate;
-    }
+    }   
 }
