@@ -146,8 +146,6 @@
 
         <div class="grid-container">
 
-          Sortieren nach: Fortschritt
-
           <div class="row member-container">
             <?php foreach ($member as $user):?>
               <?php $userPortfolioId = EportfolioGroup::getPortfolioIdOfUserInGroup($user, $id); ?>
