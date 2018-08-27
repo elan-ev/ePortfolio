@@ -307,13 +307,6 @@
 
 </div>
 
-
-<?php if (empty($groupTemplates)){
-     echo $mp;
-    }
- ?>
-
-
 <!-- Legende -->
 <div class="legend">
   <ul>
