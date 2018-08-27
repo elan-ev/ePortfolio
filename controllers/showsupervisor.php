@@ -373,4 +373,14 @@ class ShowsupervisorController extends StudipController {
       $this->redirect('showsupervisor?cid=' . $group_id);
     }
 
+    public function createlateportfolio_action($group_id, $user_id){
+      /**
+      * 1.   Hat ein nutzer überhaput schon ein Portfolio in der Gruppe ?
+      *      Wenn nicht, muss eins erstellt werden.
+      * 2.   Welche Templates fehlem dem Nutzer ? Diese müssen dann verteilt werden.
+      **/
+      
+      //$this->redirect('showsupervisor?cid=' . $group_id);
+    }
+
 }
