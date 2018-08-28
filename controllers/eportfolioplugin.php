@@ -96,6 +96,7 @@ class EportfoliopluginController extends StudipController {
     PageLayout::setTitle('ePortfolio von ' . $owner['Vorname'] . ' ' . $owner['Nachname']. ' - Übersicht: '. $seminar->getName());
     if($this->isVorlage){
         PageLayout::setTitle('ePortfolio-Vorlage - Übersicht: '. $seminar->getName());
+        $this->render_action('index_vorlage');
     }
 
     $db = DBManager::get();
