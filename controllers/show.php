@@ -113,8 +113,8 @@ class ShowController extends StudipController {
       $current_semester = Semester::findCurrent();
 
       $userid           = $GLOBALS["user"]->id; //get userid
-      $sem_name         = $_POST['name'];
-      $sem_description  = $_POST['beschreibung'];
+      $sem_name         = strip_tags($_POST['name']);
+      $sem_description  = strip_tags($_POST['beschreibung']);
 
       $sem              = new Seminar();
       //$sem->Seminar_id  = $sem->id;
@@ -160,8 +160,8 @@ class ShowController extends StudipController {
         $current_semester = Semester::findCurrent();
 
         $userid           = $GLOBALS["user"]->id; //get userid
-        $sem_name         = studip_utf8decode(strip_tags($_POST['name']));
-        $sem_description  = studip_utf8decode(strip_tags($_POST['beschreibung']));
+        $sem_name         = strip_tags($_POST['name']);
+        $sem_description  = strip_tags($_POST['beschreibung']);
       
         $sem              = new Seminar();
         $sem->Seminar_id  = $sem->createId();
