@@ -275,9 +275,9 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
             if ($this->isVorlage()){
                 $description  = _('Unter **Teilnehmende** können Sie festlegen, wer Zugriff auf diese Vorlage hat. ') . ' ';
                 $description .= _('Ausserdem können Sie unter **Einstellungen** Inhalte der Vorlage für die spätere Bearbeitung durch Studierende sperren.') . '';
-                $tip = _('Unter **ePortfolio** können Sie die Vorlage bearbeiten. ');
+                $tip = _('Unter **Vorlage** können Sie die Vorlage bearbeiten. ');
                 $tip .= _('');
-                $bearbeiten = _('Um Inhalte oder Kapitel hinzuzufügen, klicken Sie im Reiter **ePortfolio** oben rechts auf den Doktorandenhut');
+                $bearbeiten = _('Um Inhalte oder Kapitel hinzuzufügen, klicken Sie im Reiter **Vorlage** oben rechts auf den Doktorandenhut');
                 Helpbar::get()->addPlainText(_(''), $description, '');
                 Helpbar::get()->addPlainText(_(''), $tip, '');
                 Helpbar::get()->addPlainText(_('Tip zum Bearbeiten'), $bearbeiten, Icon::create('doctoral-cap', 'info_alt'));
