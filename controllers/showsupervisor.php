@@ -374,11 +374,39 @@ class ShowsupervisorController extends StudipController {
     }
 
     public function createlateportfolio_action($group_id, $user_id){
+
       /**
-      * 1.   Hat ein nutzer überhaput schon ein Portfolio in der Gruppe ?
-      *      Wenn nicht, muss eins erstellt werden.
-      * 2.   Welche Templates fehlem dem Nutzer ? Diese müssen dann verteilt werden.
+      *     1.   Hat ein nutzer überhaput schon ein Portfolio in der Gruppe ?
+      *          Wenn nicht, muss eins erstellt werden.
+      *     2.   Welche Templates fehlem dem Nutzer ? Diese müssen dann verteilt werden.
       **/
+
+      $portfolio_id = EportfolioGroup::getPortfolioIDsFromUserinGroup($group_id, $user_id);
+      
+      if(!$portfolio_id){
+        /**
+         * Der User hat noch kein Portfilio 
+         * in die das Template importiert werden kann
+         * **/
+        $portfolio_id = EportfolioModel::createPortfolioForUser($group_id, $user_id);
+        $portfolio_id = $portfolio_id[0];
+
+        $template_list_not_shared = EportfolioGroupTemplates::getGroupTemplates($group_id);
+
+      } else {
+
+        $portfolio_id = $portfolio_id[0];
+
+        /**
+          * Welche Templates wurden dem Nutzer noch nicht Verteilt?
+          * **/
+        $template_list_not_shared = EportfolioModel::getNotSharedTemplatesOfUserInGroup($group_id, $user_id, $portfolio_id);
+      }
+
+      /**
+       * Jedes Template in der Liste verteilen
+       * **/
+      
 
       //$this->redirect('showsupervisor?cid=' . $group_id);
     }
