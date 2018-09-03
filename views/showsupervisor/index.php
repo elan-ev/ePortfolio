@@ -246,11 +246,17 @@
                                     <?php else: ?>
                                       <?php if($x == 1): ?>
                                         Es wurden noch nicht alle Vorlagen verteilt. <br>
-                                        Jetzt verteilen!
-                                        <div class="">
-                                          <a href="<?php  echo URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/createlateportfolio/'.$id.'/'.$user, array()) ?>">
-                                            <?= \Studip\Button::create('Verteilen!', 'verteilen', array()); ?>
-                                          </a>
+                                        Jetzt verteilen
+                                        
+                                        <?php 
+                                          /**
+                                           * wegen CSS problemen bei einem Link im Link, vorerst die Lösung über onClick via js
+                                           * **/
+                                          $link = URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/createlateportfolio/'.$id.'/'.$user, array());
+                                        ?>
+
+                                        <div class="btn-verteilen" onclick="window.location = '<?php echo $link; ?>'">
+                                          <?= \Studip\Button::create('Verteilen!', 'verteilen', array()); ?>
                                         </div>
 
                                       <?php endif; ?>

@@ -379,7 +379,7 @@ class ShowsupervisorController extends StudipController {
       *      Wenn nicht, muss eins erstellt werden.
       * 2.   Welche Templates fehlem dem Nutzer ? Diese müssen dann verteilt werden.
       **/
-      
+
       //$this->redirect('showsupervisor?cid=' . $group_id);
     }
 
