@@ -195,7 +195,6 @@
 
                            echo Icon::create('span-full', $icon);
                         ?><br>
-                        Studiengang etc<br>
                         Letzte Änderung: 12.05 2018
                       </div>
                     </div>
