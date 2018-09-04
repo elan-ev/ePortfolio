@@ -156,7 +156,7 @@ class ShowsupervisorController extends StudipController {
     }
 
     public function createportfolio_action($master){
-      $this->semList = array();
+      $this->seminar_list = array();
       $masterid = $master;
       $groupid = Course::findCurrent()->id;
       $group = EportfolioGroup::find($groupid);
@@ -165,83 +165,39 @@ class ShowsupervisorController extends StudipController {
       $groupowner = $group->owner_id;
       $groupname  = new Seminar($groupid);
       $supervisorgroupid = EportfolioGroup::getSupervisorGroupId($groupid);
-      $db = DBManager::get();
-      $query = "SELECT templates FROM eportfolio_groups WHERE seminar_id = :groupid";
-      $statement = $db->prepare($query);
-      $statement->execute(array(':groupid'=> $groupid));
-      $groups = $statement->fetchAll()[0][0];
-      //wenn bereits Vorlagen an diese Gruppe verteilt wurden, verwende die zugeh�rigen Portfolios um die weiteren Vorlagen hinzuzuf�gen
-      if (EportfolioGroupTemplates::getNumberOfGroupTemplates($groupid) > 0) {
-        foreach ($member as $user_id) {
-          $query = "SELECT Seminar_id FROM eportfolio WHERE group_id = :groupid AND owner_id = :value";
-          $statement = $db->prepare($query);
-          $statement->execute(array(':groupid'=> $groupid, ':value'=> $user_id));
-          $seminarGroupId = $statement->fetchAll(PDO::FETCH_ASSOC);
-          $seminarGroupId = $seminarGroupId[0]['Seminar_id'];
-          $user = new User($user_id);
-          $this->semList[$user['Nachname']] = $seminarGroupId;
-        }
-      } else {
-        //Falls noch keine Vorlagen verteilt wurden erh�lt jeder Nutzer ein eigenes ePortfolio
-        $master = new Seminar($masterid);
-        $sem_type_id = Eportfoliomodel::getPortfolioSemId();
 
-        foreach ($member as $user_id) {
+      /**
+       * Jeden User in der Gruppe einzeln behandeln
+       * **/
 
-            /**
-             * TODO: Durch Funktion in EportdolioModel.class ersetzten
-             * **/
+      foreach ($member as $user_id) {
 
-            $owner            = User::find($user_id);
-            $owner_fullname   = $owner['Vorname'] . ' ' . $owner['Nachname'];
-            $sem_name         = "Gruppenportfolio: ".$groupname->getName() . " (" . $owner_fullname .")";
-            $sem_description  = "Dieses Portfolio wurde Ihnen von einem Supervisor zugeteilt";
-            $current_semester = Semester::findCurrent();
-            $sem              = new Seminar();
-            $sem->Seminar_id  = $sem->createId();
-            $sem->name        = $sem_name;
-            $sem->description = $sem_description;
-            $sem->status      = $sem_type_id;
-            $sem->read_level  = 1;
-            $sem->write_level = 1;
-            $sem->setEndSemester(-1);
-            $sem->setStartSemester($current_semester->beginn);
-            $sem->institut_id = Config::Get()->STUDYGROUP_DEFAULT_INST;
-            $sem->visible     = 0;
-            $sem_id = $sem->Seminar_id;
-            $avatar = CourseAvatar::getAvatar($sem_id);
-            $filename = sprintf('%s/%s',$this->plugin->getpluginPath(),'assets/images/avatare/eportfolio.png');
-            $avatar->createFrom($filename);
-            $sem->addMember($user_id, 'dozent'); // add user to his to seminar
+        /**
+         * Überprüfen ob es für den Nutzer schon ein Portfolio-Seminar gibt
+         * **/
 
-            //add all Supervisors
-            $supervisors = EportfolioGroup::getAllSupervisors($groupid);
-            foreach($supervisors as $supervisor){
-                $sem->addMember($supervisor, 'autor');
-            }
-            $sem->store(); //save sem
-            $user = new User($user_id);
-            $this->semList[$user['Nachname']] = $sem->Seminar_id;
-            $eportfolio = new Seminar();
-            $eportfolio_id = $eportfolio->createId();
-            $query = "INSERT INTO eportfolio (Seminar_id, eportfolio_id, group_id, owner_id, template_id, supervisor_id) VALUES (:sem_id, :eportfolio_id, :groupid , :userid, :masterid, :groupowner)";
-            $statement = $db->prepare($query);
-            $statement->execute(array(':groupid'=> $groupid, ':sem_id'=> $sem_id, ':eportfolio_id'=> $eportfolio_id, ':userid'=> $user_id,  ':masterid'=> $masterid, ':groupowner'=> $groupowner));
-            $query = "INSERT INTO eportfolio_user(user_id, Seminar_id, eportfolio_id, owner) VALUES (:userid, :Seminar_id , :eportfolio_id, 1)";
-            $statement = $db->prepare($query);
-            $statement->execute(array(':Seminar_id'=> $sem_id, ':eportfolio_id'=> $eportfolio_id, ':userid'=> $user_id));
-            //delete dummy courseware chapters //TODO funktionier noch nicht
-            $query = "DELETE FROM mooc_blocks WHERE seminar_id = :sem_id AND type NOT LIKE 'Courseware'";
-            $statement = $db->prepare($query);
-            $statement->execute(array(':sem_id'=> $sem_id));
+        $portfolio_id = EportfolioGroup::getPortfolioIDsFromUserinGroup($groupid, $user_id);
 
-            /**
-            *create_folder(_('Allgemeiner Dateiordner'),
-            *              _('Ablage f�r allgemeine Ordner und Dokumente der Veranstaltung'),
-            *              $sem->Seminar_id,
-            *              7,
-            *              $sem->Seminar_id);
-            **/
+        if (!empty($portfolio_id)) {
+
+          /**
+           * Wenn ja: Template einfach wie gehabt Kopieren
+           * bzw. in die seminar_list anfügen und später triggern
+           * **/
+
+          $portfolio_id_add = $portfolio_id[0];
+          array_push($this->seminar_list, $portfolio_id_add);
+
+        } else {
+
+           /**
+           * Wenn nein: Neues Portfolio-Seminar für den User anlegen und ausgewähltes Template kopieren
+           * in seminar_list anfügen
+           * **/
+
+          $portfolio_id_add = EportfolioModel::createPortfolioForUser($groupid, $user_id);
+          array_push($this->seminar_list, $portfolio_id_add);
+
         }
 
       }
@@ -250,12 +206,9 @@ class ShowsupervisorController extends StudipController {
 
       $this->masterid = $masterid;
       $this->groupid = $groupid;
-      //$this->response->add_header('X-Dialog-Close', '1');
 
-      VorlagenCopy::copyCourseware(new Seminar($masterid), $this->semList);
+      VorlagenCopy::copyCourseware(new Seminar($masterid), $this->seminar_list);
       EportfolioActivity::addVorlagenActivity($groupid, User::findCurrent()->id);
-
-      //$this->storeTemplateForGroup($groupid, $masterid);
 
       $this->redirect('showsupervisor?cid=' . $groupid);
 

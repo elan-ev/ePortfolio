@@ -207,10 +207,8 @@
                                 <?php foreach($favVorlagen as $vorlage): ?>
                                   <?php foreach (Eportfoliomodel::getChapters($vorlage) as $chapter):?>
                                     <?php $current_block_id = Eportfoliomodel::getUserPortfilioBlockId($userPortfolioId ,$chapter[id]); ?>
-                                    <?php if(!$current_block_id){
-                                      $x++;
-                                    }?>
-                                    <?php if($x == 0): ?>
+                                  
+                                    <?php if($current_block_id): ?>
                                       <div class="col-sm-4 member-kapitelname"><?php echo $chapter[title]?></div>
                                       <div class="col-sm-8">
                                         <div class="row member-icons">
@@ -243,7 +241,11 @@
                                         </div>
                                       </div>
                                     <?php else: ?>
-                                      <?php if($x == 1): ?>
+                                      <?php $x++; ?>
+                                    <?php endif; ?>
+
+                                    <?php if($x == 1): ?>
+                                      <div class="verteilen-bandage">
                                         Es wurden noch nicht alle Vorlagen verteilt. <br>
                                         Jetzt verteilen
                                         
@@ -258,9 +260,9 @@
                                           <?= \Studip\Button::create('Verteilen!', 'verteilen', array()); ?>
                                         </div>
 
-                                      <?php endif; ?>
+                                      </div>
                                     <?php endif; ?>
-
+                                    
                                   <?php endforeach; ?>
                                 <?php  endforeach;?>
                               </div>
