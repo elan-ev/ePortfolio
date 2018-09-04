@@ -170,7 +170,6 @@ class ShowsupervisorController extends StudipController {
       $statement = $db->prepare($query);
       $statement->execute(array(':groupid'=> $groupid));
       $groups = $statement->fetchAll()[0][0];
-      EportfolioGroup::createTemplateForGroup($groupid, $master);
       //wenn bereits Vorlagen an diese Gruppe verteilt wurden, verwende die zugeh�rigen Portfolios um die weiteren Vorlagen hinzuzuf�gen
       if (EportfolioGroupTemplates::getNumberOfGroupTemplates($groupid) > 0) {
         foreach ($member as $user_id) {
@@ -185,9 +184,14 @@ class ShowsupervisorController extends StudipController {
       } else {
         //Falls noch keine Vorlagen verteilt wurden erh�lt jeder Nutzer ein eigenes ePortfolio
         $master = new Seminar($masterid);
-        $sem_type_id = $this->getPortfolioSemId();
+        $sem_type_id = Eportfoliomodel::getPortfolioSemId();
 
         foreach ($member as $user_id) {
+
+            /**
+             * TODO: Durch Funktion in EportdolioModel.class ersetzten
+             * **/
+
             $owner            = User::find($user_id);
             $owner_fullname   = $owner['Vorname'] . ' ' . $owner['Nachname'];
             $sem_name         = "Gruppenportfolio: ".$groupname->getName() . " (" . $owner_fullname .")";
@@ -241,7 +245,8 @@ class ShowsupervisorController extends StudipController {
         }
 
       }
-
+      
+      EportfolioGroup::createTemplateForGroup($groupid, $masterid);
 
       $this->masterid = $masterid;
       $this->groupid = $groupid;
@@ -254,15 +259,6 @@ class ShowsupervisorController extends StudipController {
 
       $this->redirect('showsupervisor?cid=' . $groupid);
 
-    }
-
-
-    public function getPortfolioSemId(){
-      foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
-        if ($sem_type['name'] == 'ePortfolio') {
-          return $id;
-        }
-      }
     }
 
     public function delete_action($cid){
@@ -403,12 +399,31 @@ class ShowsupervisorController extends StudipController {
         $template_list_not_shared = EportfolioModel::getNotSharedTemplatesOfUserInGroup($group_id, $user_id, $portfolio_id);
       }
 
-      /**
-       * Jedes Template in der Liste verteilen
-       * **/
+        /**
+         * Jedes Template in der Liste verteilen
+         * **/
       
+        foreach ($template_list_not_shared as $current_template_id) {
 
-      //$this->redirect('showsupervisor?cid=' . $group_id);
+          /**
+           * Portfolio in ein Array packen da die copyCourseware-Funktion
+           * ein Array mit Portfolio_ids erwartet
+           * **/
+          $portfolio_list = array();
+          array_push($portfolio_list, $portfolio_id);
+
+          VorlagenCopy::copyCourseware(new Seminar($current_template_id), $portfolio_list);
+
+          /**
+           * TODO:
+           * Hier vielleicht einen neuen Aktivitättypen einführen
+           * für das nachträgliche Verteilen von Templates
+           * z.B. Es wurden 5 Templates nachträglich an User XY verteilt
+           * **/
+          EportfolioActivity::addVorlagenActivity($group_id, User::findCurrent()->id);
+        }
+        
+      $this->redirect('showsupervisor?cid=' . $group_id);
     }
 
 }

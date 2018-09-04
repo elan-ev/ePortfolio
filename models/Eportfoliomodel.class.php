@@ -507,7 +507,7 @@ class Eportfoliomodel extends SimpleORMap
       $groupname  = new Seminar($group_id);
       $groupid = Course::findCurrent()->id;
       $group = EportfolioGroup::find($group_id);
-      $sem_type_id = $this->getPortfolioSemId();
+      $sem_type_id = Eportfoliomodel::getPortfolioSemId();
 
       $owner            = User::find($user_id);
       $owner_fullname   = $owner['Vorname'] . ' ' . $owner['Nachname'];
@@ -527,18 +527,27 @@ class Eportfoliomodel extends SimpleORMap
       $sem->institut_id = Config::Get()->STUDYGROUP_DEFAULT_INST;
       $sem->visible     = 0;
       $sem_id = $sem->Seminar_id;
-      $avatar = CourseAvatar::getAvatar($sem_id);
-      $filename = sprintf('%s/%s',$this->plugin->getpluginPath(),'assets/images/avatare/eportfolio.png');
-      $avatar->createFrom($filename);
+
+      /**
+       * TODO: Fehler beim $this->
+       * andere Möglichkeit suchen den PluginPath zu bekommen
+       * **/
+
+      //$avatar = CourseAvatar::getAvatar($sem_id);
+      //$filename = sprintf('%s/%s',$this->plugin->getpluginPath(),'assets/images/avatare/eportfolio.png');
+      //$avatar->createFrom($filename);
+
       $sem->addMember($user_id, 'dozent'); // add user to his to seminar
 
-      //add all Supervisors
+      /**
+       * Alle Supervisoren hinzufügen
+       * **/
       $supervisors = EportfolioGroup::getAllSupervisors($group_id);
       foreach($supervisors as $supervisor){
           $sem->addMember($supervisor, 'autor');
       }
-      $sem->store(); //save sem
 
+      $sem->store();
 
       $user = new User($user_id);
 
@@ -581,5 +590,12 @@ class Eportfoliomodel extends SimpleORMap
 
     }
 
+    public static function getPortfolioSemId(){
+      foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
+        if ($sem_type['name'] == 'ePortfolio') {
+          return $id;
+        }
+      }
+    }
 
 }
