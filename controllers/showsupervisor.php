@@ -166,11 +166,6 @@ class ShowsupervisorController extends StudipController {
       $groupname  = new Seminar($groupid);
       $supervisorgroupid = EportfolioGroup::getSupervisorGroupId($groupid);
       $db = DBManager::get();
-      $query = "SELECT templates FROM eportfolio_groups WHERE seminar_id = :groupid";
-      $statement = $db->prepare($query);
-      $statement->execute(array(':groupid'=> $groupid));
-      $groups = $statement->fetchAll()[0][0];
-      EportfolioGroup::createTemplateForGroup($groupid, $master);
       //wenn bereits Vorlagen an diese Gruppe verteilt wurden, verwende die zugeh�rigen Portfolios um die weiteren Vorlagen hinzuzuf�gen
       if (EportfolioGroupTemplates::getNumberOfGroupTemplates($groupid) > 0) {
         foreach ($member as $user_id) {
@@ -241,7 +236,7 @@ class ShowsupervisorController extends StudipController {
         }
 
       }
-
+      EportfolioGroup::createTemplateForGroup($groupid, $masterid);
 
       $this->masterid = $masterid;
       $this->groupid = $groupid;
