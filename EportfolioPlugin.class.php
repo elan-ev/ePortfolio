@@ -63,16 +63,22 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
       global $perm, $user;
       $isDozent = $perm->have_studip_perm('dozent', $course_id);
 
-      if ($isDozent && !$this->isPortfolio() && !$this->isVorlage()) {
-          $navigation = new Navigation('Supervision', PluginEngine::getURL($this, compact('cid'), 'showsupervisor', true));
-          $navigation->setImage(Icon::create('group4', 'info_alt'));
-          $navigation->setActiveImage(Icon::create('group4', 'info'));
-          
-          $item = new Navigation(_('Supervisionsansicht'), PluginEngine::getURL($this, compact('cid'), 'showsupervisor', true));
-          $navigation->addSubNavigation('supervision', $item);
-          
-          $item = new Navigation(_('Activity Feed'), PluginEngine::getURL($this, compact('cid'), 'showsupervisor/activityfeed', true));
-          $navigation->addSubNavigation('portfoliofeed', $item);
+      if (!$this->isPortfolio() && !$this->isVorlage()) {
+          if ($isDozent){
+              $navigation = new Navigation('Supervision', PluginEngine::getURL($this, compact('cid'), 'showsupervisor', true));
+              $navigation->setImage(Icon::create('group4', 'info_alt'));
+              $navigation->setActiveImage(Icon::create('group4', 'info'));
+
+              $item = new Navigation(_('Supervisionsansicht'), PluginEngine::getURL($this, compact('cid'), 'showsupervisor', true));
+              $navigation->addSubNavigation('supervision', $item);
+
+              $item = new Navigation(_('Activity Feed'), PluginEngine::getURL($this, compact('cid'), 'showsupervisor/activityfeed', true));
+              $navigation->addSubNavigation('portfoliofeed', $item);
+          } else {
+              $navigation = new Navigation('ePortfolios', PluginEngine::getURL($this, compact('cid'), 'showstudent', true));
+              $navigation->setImage(Icon::create('group4', 'info_alt'));
+              $navigation->setActiveImage(Icon::create('group4', 'info'));
+          }
           
       } else if ($this->isPortfolio() || $this->isVorlage() ){
           //uebersicht navigation point
