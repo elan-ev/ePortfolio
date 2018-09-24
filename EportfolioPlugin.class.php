@@ -14,10 +14,10 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     public function __construct() {
         parent::__construct();
 
-        $navigation = new AutoNavigation(_('ePortfolio'));
-        $navigation->setImage(Icon::create('edit', 'clickable'));
+        $navigation = new Navigation(_('ePortfolio'));
+        //$navigation->setImage(Icon::create('edit', 'clickable'));
         $navigation->setURL(PluginEngine::GetURL($this, array(), "show"));
-        Navigation::addItem('/eportfolioplugin', $navigation);
+        Navigation::addItem('/profile/eportfolioplugin', $navigation);
         //Navigation::activateItem("/eportfolioplugin");
         NotificationCenter::addObserver($this, "setup_navigation", "PageWillRender");
         NotificationCenter::addObserver($this, "store_activity","UserDidPostSupervisorNotiz");
