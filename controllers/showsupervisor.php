@@ -40,7 +40,7 @@ class ShowsupervisorController extends StudipController {
 
 
         # Aktuelle Seite
-        PageLayout::setTitle('ePortfolio - Supervisionsansicht');
+        PageLayout::setTitle('ePortfolio Administration');
 
         //sidebar
         $sidebar = Sidebar::Get();
@@ -337,14 +337,14 @@ class ShowsupervisorController extends StudipController {
          * Der User hat noch kein Portfilio 
          * in die das Template importiert werden kann
          * **/
-        $portfolio_id = EportfolioModel::createPortfolioForUser($group_id, $user_id);
-        $portfolio_id = $portfolio_id[0];
-
+        $portfolio_id_in_array = EportfolioModel::createPortfolioForUser($group_id, $user_id);
         $template_list_not_shared = EportfolioGroupTemplates::getGroupTemplates($group_id);
 
-      } else {
+        array_push($portfolio_list, $portfolio_id_in_array);
 
-        $portfolio_id = $portfolio_id[0];
+      } else {
+        $portfolio_id_in_array = $portfolio_id[0];
+        array_push($portfolio_list, $portfolio_id_in_array);
 
         /**
           * Welche Templates wurden dem Nutzer noch nicht Verteilt?
@@ -363,7 +363,6 @@ class ShowsupervisorController extends StudipController {
            * ein Array mit Portfolio_ids erwartet
            * **/
           $portfolio_list = array();
-          array_push($portfolio_list, $portfolio_id);
 
           VorlagenCopy::copyCourseware(new Seminar($current_template_id), $portfolio_list);
 
@@ -375,7 +374,7 @@ class ShowsupervisorController extends StudipController {
            * **/
           EportfolioActivity::addVorlagenActivity($group_id, User::findCurrent()->id);
         }
-        
+      
       $this->redirect('showsupervisor?cid=' . $group_id);
     }
 

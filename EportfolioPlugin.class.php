@@ -64,7 +64,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
       $isDozent = $perm->have_studip_perm('dozent', $course_id);
 
       if ($isDozent && !$this->isPortfolio() && !$this->isVorlage()) {
-          $navigation = new Navigation('Supervision', PluginEngine::getURL($this, compact('cid'), 'showsupervisor', true));
+          $navigation = new Navigation('ePortfolio Administration', PluginEngine::getURL($this, compact('cid'), 'showsupervisor', true));
           $navigation->setImage(Icon::create('group4', 'info_alt'));
           $navigation->setActiveImage(Icon::create('group4', 'info'));
           
