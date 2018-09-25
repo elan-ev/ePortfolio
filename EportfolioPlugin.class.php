@@ -14,10 +14,10 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     public function __construct() {
         parent::__construct();
 
-        $navigation = new AutoNavigation(_('ePortfolio'));
-        $navigation->setImage(Icon::create('edit', 'clickable'));
+        $navigation = new Navigation(_('ePortfolio'));
+        //$navigation->setImage(Icon::create('edit', 'clickable'));
         $navigation->setURL(PluginEngine::GetURL($this, array(), "show"));
-        Navigation::addItem('/eportfolioplugin', $navigation);
+        Navigation::addItem('/profile/eportfolioplugin', $navigation);
         //Navigation::activateItem("/eportfolioplugin");
         NotificationCenter::addObserver($this, "setup_navigation", "PageWillRender");
         NotificationCenter::addObserver($this, "store_activity","UserDidPostSupervisorNotiz");
@@ -63,6 +63,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
       global $perm, $user;
       $isDozent = $perm->have_studip_perm('dozent', $course_id);
 
+<<<<<<< HEAD
       if ($isDozent && !$this->isPortfolio() && !$this->isVorlage()) {
           $navigation = new Navigation('ePortfolio Administration', PluginEngine::getURL($this, compact('cid'), 'showsupervisor', true));
           $navigation->setImage(Icon::create('group4', 'info_alt'));
@@ -73,6 +74,24 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
           
           $item = new Navigation(_('Activity Feed'), PluginEngine::getURL($this, compact('cid'), 'showsupervisor/activityfeed', true));
           $navigation->addSubNavigation('portfoliofeed', $item);
+=======
+      if (!$this->isPortfolio() && !$this->isVorlage()) {
+          if ($isDozent){
+              $navigation = new Navigation('Supervision', PluginEngine::getURL($this, compact('cid'), 'showsupervisor', true));
+              $navigation->setImage(Icon::create('group4', 'info_alt'));
+              $navigation->setActiveImage(Icon::create('group4', 'info'));
+
+              $item = new Navigation(_('Supervisionsansicht'), PluginEngine::getURL($this, compact('cid'), 'showsupervisor', true));
+              $navigation->addSubNavigation('supervision', $item);
+
+              $item = new Navigation(_('Activity Feed'), PluginEngine::getURL($this, compact('cid'), 'showsupervisor/activityfeed', true));
+              $navigation->addSubNavigation('portfoliofeed', $item);
+          } else {
+              $navigation = new Navigation('ePortfolios', PluginEngine::getURL($this, compact('cid'), 'showstudent', true));
+              $navigation->setImage(Icon::create('group4', 'info_alt'));
+              $navigation->setActiveImage(Icon::create('group4', 'info'));
+          }
+>>>>>>> fd7fd3d03baa20f0bbbae9cb1cff82ea26e0714a
           
       } else if ($this->isPortfolio() || $this->isVorlage() ){
           //uebersicht navigation point
