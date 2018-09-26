@@ -51,6 +51,7 @@ class SetupPortfolioTables extends Migration
          `favorite` int,
          `mkdate` int(11),
          `abgabe_datum` int(11),
+         `verteilt_durch` varchar(32),
          PRIMARY KEY (group_id, Seminar_id)
          )");
 

@@ -156,6 +156,7 @@ class ShowsupervisorController extends StudipController {
     }
 
     public function createportfolio_action($master){
+
       $this->seminar_list = array();
       $masterid = $master;
       $groupid = Course::findCurrent()->id;
@@ -202,7 +203,7 @@ class ShowsupervisorController extends StudipController {
 
       }
       
-      EportfolioGroup::createTemplateForGroup($groupid, $masterid);
+      EportfolioGroup::createTemplateForGroup($groupid, $masterid, $GLOBALS["user"]->id);
 
       $this->masterid = $masterid;
       $this->groupid = $groupid;

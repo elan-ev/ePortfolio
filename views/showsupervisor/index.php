@@ -44,6 +44,10 @@
                     <?php echo $portfolio->beschreibung; ?>
                     <?php EportfolioGroupTemplates::checkIfGroupHasTemplate($id, $key); ?>
                     <?php if(EportfolioGroupTemplates::checkIfGroupHasTemplate($id, $key)): ?>
+                      <?= Icon::create('own-license') ?>
+                      <?php echo EportfolioGroupTemplates::getCreatorName($id, $key); ?>
+                      <?= Icon::create('share') ?>  
+                      <?php echo date('d.m.Y', EportfolioGroupTemplates::getWannWurdeVerteilt($id, $key)) ; ?>
                       <?php if(EportfolioGroupTemplates::getDeadline($id, $key)): ?>
                         <a data-dialog="size=1000px;" href="<?= $controller->url_for('showsupervisor/templatedates/' . $id . '/' . $key) ?>">
                            <?= Icon::create('date', 'clickable') ?>
