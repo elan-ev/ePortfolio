@@ -289,6 +289,7 @@ class ShowsupervisorController extends StudipController {
       $this->group_id = $group_id;
 
       $user = new User($user_id);
+      $this->user = $user;
       $this->user_id = $user_id;
       $this->vorname = $user['Vorname'];
       $this->nachname = $user['Nachname'];
