@@ -37,6 +37,7 @@ class ShowController extends StudipController {
         parent::before_filter($action, $args);
         //$this->set_layout($GLOBALS['template_factory']->open('layouts/base.php'));
         PageLayout::setTitle('ePortfolio - Übersicht');
+        Navigation::activateItem('/profile/eportfolioplugin');
     }
 
 

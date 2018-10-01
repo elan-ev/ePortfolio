@@ -698,3 +698,23 @@ td, th {
   margin-top: 10px;
   padding: 10px;
 }
+
+.verteilen-bandage {
+  padding: 17px;
+  border: 1px solid rgba(214,0,0,1);
+  width: 100%;
+  background: rgba(214,0,0,0.05);
+  color: rgba(214,0,0,1); 
+}
+
+.btn-verteilen > button {
+  background: rgba(214,0,0,0.05);
+  border-color: rgba(214,0,0,1);
+  color: rgba(214,0,0,1);
+}
+
+.btn-verteilen > button:hover {
+  background: rgba(214,0,0,1);
+  color: #fff;
+  transition: all 200ms;
+}

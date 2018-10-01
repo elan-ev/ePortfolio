@@ -14,10 +14,10 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     public function __construct() {
         parent::__construct();
 
-        $navigation = new AutoNavigation(_('ePortfolio'));
-        $navigation->setImage(Icon::create('edit', 'clickable'));
+        $navigation = new Navigation(_('ePortfolio'));
+        //$navigation->setImage(Icon::create('edit', 'clickable'));
         $navigation->setURL(PluginEngine::GetURL($this, array(), "show"));
-        Navigation::addItem('/eportfolioplugin', $navigation);
+        Navigation::addItem('/profile/eportfolioplugin', $navigation);
         //Navigation::activateItem("/eportfolioplugin");
         NotificationCenter::addObserver($this, "setup_navigation", "PageWillRender");
         NotificationCenter::addObserver($this, "store_activity","UserDidPostSupervisorNotiz");
@@ -64,33 +64,25 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
       $isDozent = $perm->have_studip_perm('dozent', $course_id);
 
       //Veranstaltungsreiter in Vorlesung
-      if ($isDozent && !$this->isPortfolio() && !$this->isVorlage()) {
-          $navigation = new Navigation('Supervision', PluginEngine::getURL($this, compact('cid'), 'showsupervisor', true));
-          $navigation->setImage(Icon::create('group4', 'info_alt'));
-          $navigation->setActiveImage(Icon::create('group4', 'info'));
+      if (!$this->isPortfolio() && !$this->isVorlage()) {
+          if ($isDozent){
+              $navigation = new Navigation('Supervision', PluginEngine::getURL($this, compact('cid'), 'showsupervisor', true));
+              $navigation->setImage(Icon::create('group4', 'info_alt'));
+              $navigation->setActiveImage(Icon::create('group4', 'info'));
 
-          $item = new Navigation(_('Übersicht'), PluginEngine::getURL($this, compact('cid'), 'showsupervisor', true));
-          $navigation->addSubNavigation('supervision', $item);
+              $item = new Navigation(_('Supervisionsansicht'), PluginEngine::getURL($this, compact('cid'), 'showsupervisor', true));
+              $navigation->addSubNavigation('supervision', $item);
 
-          $item = new Navigation(_('Activity Feed'), PluginEngine::getURL($this, compact('cid'), 'showsupervisor/activityfeed', true));
-          $navigation->addSubNavigation('portfoliofeed', $item);
+              $item = new Navigation(_('Activity Feed'), PluginEngine::getURL($this, compact('cid'), 'showsupervisor/activityfeed', true));
+              $navigation->addSubNavigation('portfoliofeed', $item);
+          } else {
+              $navigation = new Navigation('ePortfolios', PluginEngine::getURL($this, compact('cid'), 'showstudent', true));
+              $navigation->setImage(Icon::create('group4', 'info_alt'));
+              $navigation->setActiveImage(Icon::create('group4', 'info'));
+		  }
 
-      //Navigation in Portfolios
-      } else if ($this->isPortfolio() ){
-          //uebersicht navigation point
-          $navigation = new Navigation('Übersicht', PluginEngine::getURL($this, compact('cid'), 'eportfolioplugin', true));
-          $navigation->setImage(Icon::create('group4', 'info_alt'));
-          $navigation->setActiveImage(Icon::create('group4', 'info'));
+      } else if ($this->isPortfolio() || $this->isVorlage() ){
 
-          $owner = Eportfoliomodel::isOwner($course_id, $user->id);
-          if ($owner) {
-              $navigationSettings = new Navigation('Zugriffsrechte', PluginEngine::getURL($this, compact('cid'), 'settings', true));
-              $navigationSettings->setImage(Icon::create('admin', 'info_alt'));
-              $navigationSettings->setActiveImage(Icon::create('admin', 'info'));
-              $tabs['settings'] = $navigationSettings;
-          }
-       //Navigation in Vorlagen 
-       } else if ($this->isVorlage() ){
           //uebersicht navigation point
           $navigation = new Navigation('Übersicht', PluginEngine::getURL($this, compact('cid'), 'eportfolioplugin', true));
           $navigation->setImage(Icon::create('group4', 'info_alt'));

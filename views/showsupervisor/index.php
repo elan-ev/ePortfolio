@@ -146,13 +146,13 @@
 
         <div class="grid-container">
 
-          Sortieren nach: Fortschritt
-
           <div class="row member-container">
             <?php foreach ($member as $user):?>
               <?php $userPortfolioId = EportfolioGroup::getPortfolioIdOfUserInGroup($user, $id); ?>
               <div class="col-sm-4 member-single-card">
-                <a class="member-link" data-dialog="size=1000px;" href="<?= $controller->url_for('showsupervisor/memberdetail/' .$id . '/' . $user) ?>">
+                <?php if($userPortfolioId): ?>
+                  <a class="member-link" data-dialog="size=1000px;" href="<?= $controller->url_for('showsupervisor/memberdetail/' .$id . '/' . $user) ?>">
+                <?php endif; ?>
                 <div class="member-item">
 
                   <div class="member-notification">
@@ -204,40 +204,66 @@
                         <?php $favVorlagen = EportfolioGroup::getAllMarkedAsFav($id); ?>
                             <div class="member-content">
                               <div class="row">
+                                <?php $x = 0; ?>
                                 <?php foreach($favVorlagen as $vorlage): ?>
                                   <?php foreach (Eportfoliomodel::getChapters($vorlage) as $chapter):?>
                                     <?php $current_block_id = Eportfoliomodel::getUserPortfilioBlockId($userPortfolioId ,$chapter[id]); ?>
-                                    <div class="col-sm-4 member-kapitelname"><?php echo $chapter[title]?></div>
-                                    <div class="col-sm-8">
-                                      <div class="row member-icons">
-                                        <div class="col-sm-4">
-                                          <?php if(Eportfoliomodel::checkKapitelFreigabe($current_block_id)): ?>
-                                            <?php $new_freigabe = LastVisited::chapter_last_visited($current_block_id, $user) < EportfolioFreigabe::hasAccessSince($supervisorGroupId, $current_block_id);?>
-                                            <?php if($new_freigabe): ?>
-                                              <?= Icon::create('accept+new', 'clickable'); ?>
+                                  
+                                    <?php if($current_block_id): ?>
+                                      <div class="col-sm-4 member-kapitelname"><?php echo $chapter[title]?></div>
+                                      <div class="col-sm-8">
+                                        <div class="row member-icons">
+                                          <div class="col-sm-4">
+                                            <?php if(Eportfoliomodel::checkKapitelFreigabe($current_block_id)): ?>
+                                              <?php $new_freigabe = LastVisited::chapter_last_visited($current_block_id, $user) < EportfolioFreigabe::hasAccessSince($supervisorGroupId, $current_block_id);?>
+                                              <?php if($new_freigabe): ?>
+                                                <?= Icon::create('accept+new', 'clickable'); ?>
+                                              <?php else: ?>
+                                                <?= Icon::create('accept', 'clickable'); ?>
+                                              <?php endif; ?>
                                             <?php else: ?>
-                                              <?= Icon::create('accept', 'clickable'); ?>
+                                              <?= Icon::create('accept', 'inactive'); ?>
                                             <?php endif; ?>
-                                          <?php else: ?>
-                                            <?= Icon::create('accept', 'inactive'); ?>
-                                          <?php endif; ?>
-                                        </div>
-                                        <div class="col-sm-4">
-                                          <?php if (Eportfoliomodel::checkSupervisorNotiz($current_block_id) == true): ?>
-                                            <?= Icon::create('file', 'clickable'); ?>
-                                          <?php else: ?>
-                                            <?= Icon::create('file', 'inactive'); ?>
-                                          <?php endif; ?>
-                                        </div>
-                                        <div class="col-sm-4">
-                                          <?php if (Eportfoliomodel::checkSupervisorResonanz($current_block_id) == true): ?>
-                                            <?= Icon::create('forum', 'clickable');?>
-                                          <?php else: ?>
-                                            <?= Icon::create('forum', 'inactive'); ?>
-                                          <?php endif; ?>
+                                          </div>
+                                          <div class="col-sm-4">
+                                            <?php if (Eportfoliomodel::checkSupervisorNotiz($current_block_id) == true): ?>
+                                              <?= Icon::create('file', 'clickable'); ?>
+                                            <?php else: ?>
+                                              <?= Icon::create('file', 'inactive'); ?>
+                                            <?php endif; ?>
+                                          </div>
+                                          <div class="col-sm-4">
+                                            <?php if (Eportfoliomodel::checkSupervisorResonanz($current_block_id) == true): ?>
+                                              <?= Icon::create('forum', 'clickable');?>
+                                            <?php else: ?>
+                                              <?= Icon::create('forum', 'inactive'); ?>
+                                            <?php endif; ?>
+                                          </div>
                                         </div>
                                       </div>
-                                    </div>
+                                    <?php else: ?>
+                                      <?php $x++; ?>
+                                    <?php endif; ?>
+
+                                    <?php if($x == 1): ?>
+                                      <div class="verteilen-bandage">
+                                        Es wurden noch nicht alle Vorlagen verteilt. <br>
+                                        Jetzt verteilen
+                                        
+                                        <?php 
+                                          /**
+                                           * wegen CSS problemen bei einem Link im Link, vorerst die Lösung über onClick via js
+                                           * **/
+                                          $link = URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/createlateportfolio/'.$id.'/'.$user, array());
+                                        ?>
+
+                                        <div class="btn-verteilen" onclick="window.location = '<?php echo $link; ?>'">
+                                          <?= \Studip\Button::create('Verteilen!', 'verteilen', array()); ?>
+                                        </div>
+
+                                      </div>
+                                    <?php endif; ?>
+                                    
                                   <?php endforeach; ?>
                                 <?php  endforeach;?>
                               </div>
@@ -277,7 +303,7 @@
                       </div>
                   </div>
                 </div>
-              </a>
+                  </a>
               </div>
             <?php endforeach; ?>
         </div>
@@ -286,13 +312,6 @@
   <?php endif; ?>
 
 </div>
-
-
-<?php if (empty($groupTemplates)){
-     echo $mp;
-    }
- ?>
-
 
 <!-- Legende -->
 <div class="legend">

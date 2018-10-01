@@ -223,6 +223,7 @@ class Eportfoliomodel extends SimpleORMap
 
     /**
     * Gibt die passende BlockId des EPortfolios anhand der VorlagenblockID zurück
+    * $seminar_id ist hier die seminar_id des Portfolios des Users
     **/
     public static function getUserPortfilioBlockId($seminar_id, $block_id){
       $query = "SELECT block_id FROM eportfolio_block_infos WHERE seminar_id = :seminar_id AND vorlagen_block_id = :block_id";
@@ -504,6 +505,108 @@ class Eportfoliomodel extends SimpleORMap
       $last_freigabe = EportfolioActivity::getLastFreigabeOfPortfolio($sem_id);
       
       return max(array($last_edit, $last_freigabe));
+    }
+
+    /**
+     * TODO: Kann in createPortfolio_action evtl. eingebaut werden
+     * Erstellt für einen User ein Portfolio
+     * Gibt die Seminar_id des Portfolios zurück
+     * **/
+    public static function createPortfolioForUser($group_id, $user_id){
+
+      $db = DBManager::get();
+      $groupname  = new Seminar($group_id);
+      $groupid = Course::findCurrent()->id;
+      $group = EportfolioGroup::find($group_id);
+      $sem_type_id = Eportfoliomodel::getPortfolioSemId();
+
+      $owner            = User::find($user_id);
+      $owner_fullname   = $owner['Vorname'] . ' ' . $owner['Nachname'];
+      $sem_name         = "Gruppenportfolio: ".$groupname->getName() . " (" . $owner_fullname .")";
+      $sem_description  = "Dieses Portfolio wurde Ihnen von einem Supervisor zugeteilt";
+      $current_semester = Semester::findCurrent();
+
+      $sem              = new Seminar();
+      $sem->Seminar_id  = $sem->createId();
+      $sem->name        = $sem_name;
+      $sem->description = $sem_description;
+      $sem->status      = $sem_type_id;
+      $sem->read_level  = 1;
+      $sem->write_level = 1;
+      $sem->setEndSemester(-1);
+      $sem->setStartSemester($current_semester->beginn);
+      $sem->institut_id = Config::Get()->STUDYGROUP_DEFAULT_INST;
+      $sem->visible     = 0;
+      $sem_id = $sem->Seminar_id;
+
+      /**
+       * TODO: Fehler beim $this->
+       * andere Möglichkeit suchen den PluginPath zu bekommen
+       * **/
+
+      //$avatar = CourseAvatar::getAvatar($sem_id);
+      //$filename = sprintf('%s/%s',$this->plugin->getpluginPath(),'assets/images/avatare/eportfolio.png');
+      //$avatar->createFrom($filename);
+
+      $sem->addMember($user_id, 'dozent'); // add user to his to seminar
+
+      /**
+       * Alle Supervisoren hinzufügen
+       * **/
+      $supervisors = EportfolioGroup::getAllSupervisors($group_id);
+      foreach($supervisors as $supervisor){
+          $sem->addMember($supervisor, 'autor');
+      }
+
+      $sem->store();
+
+      $user = new User($user_id);
+
+      $eportfolio = new Seminar();
+      $eportfolio_id = $eportfolio->createId();
+      $query = "INSERT INTO eportfolio (Seminar_id, eportfolio_id, group_id, owner_id, template_id, supervisor_id) VALUES (:sem_id, :eportfolio_id, :groupid , :userid, :masterid, :groupowner)";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':groupid'=> $group_id, ':sem_id'=> $sem_id, ':eportfolio_id'=> $eportfolio_id, ':userid'=> $user_id,  ':masterid'=> $masterid, ':groupowner'=> $groupowner));
+      $query = "INSERT INTO eportfolio_user(user_id, Seminar_id, eportfolio_id, owner) VALUES (:userid, :Seminar_id , :eportfolio_id, 1)";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':Seminar_id'=> $sem_id, ':eportfolio_id'=> $eportfolio_id, ':userid'=> $user_id));
+      //delete dummy courseware chapters //TODO funktionier noch nicht
+      $query = "DELETE FROM mooc_blocks WHERE seminar_id = :sem_id AND type NOT LIKE 'Courseware'";
+      $statement = $db->prepare($query);
+      $statement->execute(array(':sem_id'=> $sem_id));
+
+      return $sem->Seminar_id;
+    }
+    
+    /**
+     * Gibt eine Liste mit den Template_ids zurück
+     * die einem Nutzer noch nicht verteilt wurden
+     * innerhalb einer Veranstaltung
+    **/
+    public static function getNotSharedTemplatesOfUserInGroup($group_id, $user_id, $portfolio_id){
+
+      $return = array(); 
+
+      $template_list = EportfolioGroupTemplates::getGroupTemplates($group_id); 
+      foreach ($template_list as $template) {
+        $template_chapters = Eportfoliomodel::getChapters($template['Seminar_id']);
+        foreach ($template_chapters as $chapter) {
+          if(!Eportfoliomodel::getUserPortfilioBlockId($portfolio_id ,$chapter['id'])){
+            array_push($return, $template['Seminar_id']);
+          }
+        }
+      } 
+      
+      return array_unique($return);
+
+    }
+
+    public static function getPortfolioSemId(){
+      foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type){ //get the id of ePortfolio Seminarclass
+        if ($sem_type['name'] == 'ePortfolio') {
+          return $id;
+        }
+      }
     }
 
 }
