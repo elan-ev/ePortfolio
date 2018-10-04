@@ -28,13 +28,8 @@
 
 <tbody>
 
-<?php
-  # das hier wird nicht mehr gebraucht weil fremde nutzer keine Settings-Seite sehen
-  # Prï¿½fen ob eigenes Portfolio
-  $eigenesPortfolio = SettingsController::eigenesPortfolio($cid);
- ?>
 
-<?php if ($eigenesPortfolio == false): ?>
+<?php if (Eportfoliomodel::findBySeminarId($cid)->group_id): ?>
   <tr style="background-color: lightblue;">
     <td>
     <?= Avatar::getNobody()->getImageTag(Avatar::SMALL,
