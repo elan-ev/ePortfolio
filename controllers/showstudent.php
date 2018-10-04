@@ -74,11 +74,23 @@ class ShowstudentController extends StudipController {
         $this->id = $id;
         $this->userid = $GLOBALS["user"]->id;
         $this->group = EportfolioGroup::find($id);
+        $this->link_eportfolios = URLHelper::getLink('plugins.php/eportfolioplugin/show');
+        $this->link_courseware = URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => EportfolioGroup::getPortfolioIdOfUserInGroup($this->userid, $this->id)));
 
         //Wenn noch keine POrtfolios verteilt wurden oder nicht mal eine Gruppe existiert:
         //Hinweis an student dass noch keine inhalte verteilt wurden
         if(!$this->group){
+            echo "Es wurden noch keine Portfolios...";
             //Wenn noch keine POrtfolios verteilt wurden oder nicht mal eine Gruppe existiert Hinweis an student dass noch keine inhalte verteilt wurden
+        } else  {
+            $this->groupTemplates = EportfolioGroupTemplates::getGroupTemplates($id);
+            if (!$this->groupTemplates) {
+                $this->isThereAnyTemplate = false;
+            } else {
+                $this->isThereAnyTemplate = true;
+            }
+                
+            
         }
         //andernfalls auflisten welche vorlagen wann verteilt wurden und direktlink ins portfolio des aktuellen studierenden
 
