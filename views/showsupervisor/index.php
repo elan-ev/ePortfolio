@@ -1,7 +1,7 @@
 <? use Studip\LinkButton; ?>
 
 
-<div class="row">
+<!--<div class="row">
   <div class="col-md-12">
     <div class="jumbotron" style="border-radius: 10px;">
       <div class="container" style="padding: 0 50px;">
@@ -11,14 +11,20 @@
       </div>
     </div>
   </div>
-</div>
+</div>-->
 
 <div>
 
       <div id="wrapper_table_tamplates" style="margin-top: 30px;">
-        <h4>Portfoliovorlage hinzufügen</h4>
 
         <table id="table_templates" class="default">
+            <caption>Portfolio Vorlagen
+                <span class='actions'> <a data-dialog="size=auto;reload-on-close" href="<?= PluginEngine::getLink($this->plugin, array(), 'show/createvorlage') ?>">      
+                <? $params = tooltip2(_("Neue Vorlage erstellen")); ?>
+                    <? $params['style'] = 'cursor: pointer'; ?>
+                    <?= Icon::create('add', 'clickable')->asImg(20, $params) ?>
+                </span>
+            </a></caption>
           <colgroup>
             <col width="30%">
             <col width="60%">
@@ -26,7 +32,7 @@
           </colgroup>
           <thead>
             <tr class="sortable">
-              <th>Portfolio-Name</th>
+              <th>Titel der Vorlage</th>
               <th>Beschreibung</th>
               <th>Aktionen</th>
               <th>Favorit</th>
