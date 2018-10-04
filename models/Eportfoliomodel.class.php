@@ -533,8 +533,8 @@ class Eportfoliomodel extends SimpleORMap
       $sem->status      = $sem_type_id;
       $sem->read_level  = 1;
       $sem->write_level = 1;
-      $sem->setEndSemester(-1);
-      $sem->setStartSemester($current_semester->beginn);
+      //$sem->setEndSemester(-1);
+      //$sem->setStartSemester($current_semester->beginn);
       $sem->institut_id = Config::Get()->STUDYGROUP_DEFAULT_INST;
       $sem->visible     = 0;
       $sem_id = $sem->Seminar_id;
