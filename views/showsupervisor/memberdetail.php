@@ -45,8 +45,8 @@
   <h3>Status des Studenten</h3>
   <?php foreach ($templates as $template_id):?>
     <?php
-      $template = Course::findById($template_id[0]);
-      $deadline = EportfolioGroupTemplates::getDeadline($group_id ,$template_id[0]);
+      $template = Course::findById($template_id);
+      $deadline = EportfolioGroupTemplates::getDeadline($group_id ,$template_id);
       if ($deadline == 0) {
         $deadlineOutput = 'Kein Abgabedatum';
       } else {
@@ -56,7 +56,7 @@
     <div class="status-area-single">
     <?php
         $icon;
-        $status = EportfolioUser::getStatusOfUserInTemplate($template_id[0], $group_id, $portfolio_id);
+        $status = EportfolioUser::getStatusOfUserInTemplate($template_id, $group_id, $portfolio_id);
         switch ($status){
           case 1:
             $icon = 'status-green';
@@ -73,10 +73,10 @@
           $icon = "inactive";
         }
     ?>
-    <?php echo Icon::create('span-full', $icon); ?> <b><?php echo $template[0]->name ?></b> <?php echo $deadlineOutput ?>
+    <?php echo Icon::create('span-full', $icon); ?> <b><?php echo $template->name ?></b> <?php echo $deadlineOutput ?>
     <span class="template-infos-days-left">
       <?php if (!$deadline == 0) {
-        echo "(noch ".Eportfoliomodel::getDaysLeft($group_id, $template_id[0]) ." Tage)";
+        echo "(noch ".Eportfoliomodel::getDaysLeft($group_id, $template_id) ." Tage)";
       } ?>
     </span>
   <?php endforeach; ?>

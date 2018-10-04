@@ -24,9 +24,9 @@
       <?php foreach ($templates as $key):?>
 
         <?php
-          $avatar = CourseAvatar::getAvatar($key[0]);
+          $avatar = CourseAvatar::getAvatar($key);
           $avatarUrl = $avatar->getCustomAvatarUrl('medium');
-          $timestamp = EportfolioGroupTemplates::getDeadline($group_id, $key[0]);
+          $timestamp = EportfolioGroupTemplates::getDeadline($group_id, $key);
         ?>
 
         <div class="col-sm-4 member-single-card">
@@ -37,7 +37,7 @@
             <div class="template-user-item-head">
 
               <div class="template-user-item-headline">
-                <?php $template = new Seminar($key[0]); echo $template->getName();?>
+                <?php $template = new Seminar($key); echo $template->getName();?>
                 <!-- <span class="template-bandage">3</span> -->
               </div>
 
@@ -50,7 +50,7 @@
                   <div class="template-infos-single">
                     <?php
                      $icon;
-                     switch (EportfolioUser::getStatusOfUserInTemplate($key[0], $group_id, $cid)) {
+                     switch (EportfolioUser::getStatusOfUserInTemplate($key, $group_id, $cid)) {
                        case 1:
                          $icon = 'status-green';
                          break;
@@ -82,7 +82,7 @@
                     ?>
                     <span style="margin-left: 20px;" class="template-infos-days-left"><br>
                       <?php if (!$timestamp == 0) {
-                        echo "(noch ".Eportfoliomodel::getDaysLeft($group_id, $key[0])." Tage)";
+                        echo "(noch ".Eportfoliomodel::getDaysLeft($group_id, $key)." Tage)";
                       } else {
                         echo "&nbsp;";
                       } ?>
@@ -98,7 +98,7 @@
             </div>
 
             <div class="row template-kapitel-info">
-              <?php foreach (Eportfoliomodel::getChapters($key[0]) as $chapter):?>
+              <?php foreach (Eportfoliomodel::getChapters($key) as $chapter):?>
                 <?php $current_block_id = Eportfoliomodel::getUserPortfilioBlockId($cid ,$chapter[id]); ?>
                 <div class="col-sm-4 member-kapitelname"><?php echo $chapter[title]?></div>
                 <div class="col-sm-8">
@@ -134,9 +134,9 @@
                 <div class="row member-footer-box">
                   <div class="col-sm-4">
                     <div class="member-footer-box-big">
-                      <?php echo $sharedChapters = Eportfoliomodel::getNumberOfSharedChaptersOfTemplateFromUser($key[0], $cid);?>
+                      <?php echo $sharedChapters = Eportfoliomodel::getNumberOfSharedChaptersOfTemplateFromUser($key, $cid);?>
                       /
-                      <?php echo $allChapters = Eportfoliomodel::getNumberOfChaptersFromTemplate($key[0]); ?>
+                      <?php echo $allChapters = Eportfoliomodel::getNumberOfChaptersFromTemplate($key); ?>
                     </div>
                     <div class="member-footer-box-head">
                       freigegeben
@@ -152,7 +152,7 @@
                   </div>
                   <div class="col-sm-4">
                     <div class="member-footer-box-big">
-                      <?php echo Eportfoliomodel::getNumberOfNotesInTemplateOfUser($key[0], $cid); ?>
+                      <?php echo Eportfoliomodel::getNumberOfNotesInTemplateOfUser($key, $cid); ?>
                     </div>
                     <div class="member-footer-box-head">
                       Notizen
@@ -163,7 +163,7 @@
             </div>
 
             <div class="template-user-item-footer">
-              <?= \Studip\LinkButton::create('Anschauen', Eportfoliomodel::getLinkOfFirstChapter($key[0], $cid)); ?>
+              <?= \Studip\LinkButton::create('Anschauen', Eportfoliomodel::getLinkOfFirstChapter($key, $cid)); ?>
             </div>
 
           </div>

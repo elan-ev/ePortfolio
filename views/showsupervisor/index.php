@@ -104,7 +104,7 @@
       </div>
 
   <?php
-    if (empty($groupTemplates[0])):
+    if (empty($groupTemplates)):
   ?>
 
 

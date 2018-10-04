@@ -589,10 +589,10 @@ class Eportfoliomodel extends SimpleORMap
 
       $template_list = EportfolioGroupTemplates::getGroupTemplates($group_id); 
       foreach ($template_list as $template) {
-        $template_chapters = Eportfoliomodel::getChapters($template['Seminar_id']);
+        $template_chapters = Eportfoliomodel::getChapters($template);
         foreach ($template_chapters as $chapter) {
           if(!Eportfoliomodel::getUserPortfilioBlockId($portfolio_id ,$chapter['id'])){
-            array_push($return, $template['Seminar_id']);
+            array_push($return, $template);
           }
         }
       } 
