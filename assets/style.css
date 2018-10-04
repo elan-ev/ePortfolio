@@ -718,3 +718,25 @@ td, th {
   color: #fff;
   transition: all 200ms;
 }
+
+.showstudent {
+  background-color: #ececed;
+  padding: 20px;
+}
+
+.showstudent_videobox {
+  margin: 20px 0;
+}
+
+.showstudent_textblock {
+  margin-top: 10px;
+}
+
+.showstudent > h1 {
+  font-size: 27px;
+  border: none;
+}
+
+.showstudent_verteilteVorlagen{
+  margin-top: 30px;
+}
