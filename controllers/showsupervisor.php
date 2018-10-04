@@ -340,16 +340,14 @@ class ShowsupervisorController extends StudipController {
          * in die das Template importiert werden kann
          * **/
         $portfolio_id = EportfolioModel::createPortfolioForUser($group_id, $user_id);
-        $portfolio_id = $portfolio_id[0];
+        $portfolio_id = $portfolio_id;
 
         $template_list_not_shared = EportfolioGroupTemplates::getGroupTemplates($group_id);
-
-        array_push($portfolio_list, $portfolio_id_in_array);
+        //array_push($portfolio_list, $portfolio_id_in_array);
 
       } else {
 
         $portfolio_id = $portfolio_id[0];
-
         /**
           * Welche Templates wurden dem Nutzer noch nicht Verteilt?
           * **/
@@ -359,7 +357,6 @@ class ShowsupervisorController extends StudipController {
         /**
          * Jedes Template in der Liste verteilen
          * **/
-      
         foreach ($template_list_not_shared as $current_template_id) {
 
           /**

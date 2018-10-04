@@ -61,8 +61,12 @@ class EportfolioGroupTemplates extends SimpleORMap
       $query = "SELECT Seminar_id FROM eportfolio_group_templates WHERE group_id = :group_id";
       $statement = DBManager::get()->prepare($query);
       $statement->execute( array(':group_id' => $group_id));
-      $result = $statement->fetchAll();
-      return $result;
+      $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+      $sem_ids = array();
+      foreach ($result as $sem){
+          $sem_ids[] = $sem['Seminar_id'];
+      }
+      return $sem_ids;
     }
 
     /**
