@@ -13,6 +13,7 @@ include_once __DIR__.'/SupervisorGroupUser.class.php';
  * @property int        $favorite
  * @property int        $mkdate
  * @property int        $abgabe_datum
+ * @property varchar    $verteilt_durch 
  */
 class EportfolioGroupTemplates extends SimpleORMap
 {
@@ -87,4 +88,22 @@ class EportfolioGroupTemplates extends SimpleORMap
       }
     }
 
+    public static function getWannWurdeVerteilt($group_id, $template_id){
+      $result = EportfolioGroupTemplates::findBySQL("Seminar_id = :template_id AND group_id = :group_id", array(':template_id' => $template_id, ':group_id' => $group_id));
+      return $result[0]["mkdate"]; 
+    }
+
+    /**
+     * Liefert den Names des Users der das Template verteilt hat als String
+     * **/
+    public static function getCreatorName($group_id, $template_id){
+      $result = EportfolioGroupTemplates::findBySQL("Seminar_id = :template_id AND group_id = :group_id", array(':template_id' => $template_id, ':group_id' => $group_id));
+      $user_id = $result[0]["verteilt_durch"];
+      if (!$user_id) {
+        return "Unknown";
+      } else {
+        $user = new User($user_id);
+        return $user["Vorname"] . " " . $user["Nachname"]; 
+      }
+    } 
 }

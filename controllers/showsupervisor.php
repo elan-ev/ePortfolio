@@ -40,7 +40,7 @@ class ShowsupervisorController extends StudipController {
 
 
         # Aktuelle Seite
-        PageLayout::setTitle('ePortfolio - Supervisionsansicht');
+        PageLayout::setTitle('ePortfolio Administration');
 
         //sidebar
         $sidebar = Sidebar::Get();
@@ -156,6 +156,7 @@ class ShowsupervisorController extends StudipController {
     }
 
     public function createportfolio_action($master){
+
       $this->seminar_list = array();
       $masterid = $master;
       $groupid = Course::findCurrent()->id;
@@ -202,7 +203,7 @@ class ShowsupervisorController extends StudipController {
 
       }
       
-      EportfolioGroup::createTemplateForGroup($groupid, $masterid);
+      EportfolioGroup::createTemplateForGroup($groupid, $masterid, $GLOBALS["user"]->id);
 
       $this->masterid = $masterid;
       $this->groupid = $groupid;
@@ -288,6 +289,7 @@ class ShowsupervisorController extends StudipController {
       $this->group_id = $group_id;
 
       $user = new User($user_id);
+      $this->user = $user;
       $this->user_id = $user_id;
       $this->vorname = $user['Vorname'];
       $this->nachname = $user['Nachname'];
@@ -342,6 +344,8 @@ class ShowsupervisorController extends StudipController {
 
         $template_list_not_shared = EportfolioGroupTemplates::getGroupTemplates($group_id);
 
+        array_push($portfolio_list, $portfolio_id_in_array);
+
       } else {
 
         $portfolio_id = $portfolio_id[0];
@@ -362,8 +366,6 @@ class ShowsupervisorController extends StudipController {
            * Portfolio in ein Array packen da die copyCourseware-Funktion
            * ein Array mit Portfolio_ids erwartet
            * **/
-//          $portfolio_list = array();
-//          array_push($portfolio_list, $portfolio_id);
 
           //$semList as $user_id => $cid
           VorlagenCopy::copyCourseware(new Seminar($current_template_id), array($user_id => $portfolio_id));
@@ -376,7 +378,7 @@ class ShowsupervisorController extends StudipController {
            * **/
           EportfolioActivity::addVorlagenActivity($group_id, User::findCurrent()->id);
         }
-        
+      
       $this->redirect('showsupervisor?cid=' . $group_id);
     }
 
