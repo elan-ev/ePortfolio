@@ -5,6 +5,9 @@
 
 <p> Ausserdem finden Sie eine Gesamtliste Ihrer Portfolios in Ihrem Profil unter ePortfolios. </p>
 
+<? if ($portfolio_id): ?>
+    <a href ='<?= URLHelper::getLink('seminar_main.php?auswahl=' . $portfolio_id[0]) ?>'> Mein Portfolio </a> 
+<? endif ?>
 
 <?php
 

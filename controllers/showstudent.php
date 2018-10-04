@@ -23,7 +23,7 @@ class ShowstudentController extends StudipController {
             $this->userid = $GLOBALS["user"]->id;
             $this->ownerid = $GLOBALS["user"]->id;
 
-            $this->groupTemplates = EportfolioGroupTemplates::getGroupTemplates($id);
+            //$this->groupTemplates = EportfolioGroupTemplates::getGroupTemplates($id);
             $this->templistid = $this->groupTemplates;
 
             $group = EportfolioGroup::findbySQL('seminar_id = :id', array(':id'=> $this->groupid));
@@ -74,11 +74,13 @@ class ShowstudentController extends StudipController {
         $this->id = $id;
         $this->userid = $GLOBALS["user"]->id;
         $this->group = EportfolioGroup::find($id);
-
+        
         //Wenn noch keine POrtfolios verteilt wurden oder nicht mal eine Gruppe existiert:
         //Hinweis an student dass noch keine inhalte verteilt wurden
-        if(!$this->group){
+        if($this->group){
             //Wenn noch keine POrtfolios verteilt wurden oder nicht mal eine Gruppe existiert Hinweis an student dass noch keine inhalte verteilt wurden
+            $this->portfolio_id = EportfolioGroup::getPortfolioIDsFromUserinGroup($id, $this->userid);
+            
         }
         //andernfalls auflisten welche vorlagen wann verteilt wurden und direktlink ins portfolio des aktuellen studierenden
 
