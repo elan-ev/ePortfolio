@@ -18,7 +18,7 @@ class EportfoliopluginController extends StudipController {
       }
 
       $cid = Course::findCurrent()->id;
-      global $user;
+      global $user, $perm;
       $eportfolio = Eportfoliomodel::findBySeminarId($cid);
       $isVorlage = Eportfoliomodel::isVorlage($cid);
 
@@ -38,6 +38,16 @@ class EportfoliopluginController extends StudipController {
 //        URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin/deletePortfolio/'. $portfolioid), null, array('onclick'=> "return confirm('Sind Sie sich sicher, dass Sie das Portfolio löschen wollen? Alle Daten werden hierdurch unwiderruflich gelöscht und können nicht wiederhergestellt werden.')"));
 //        Sidebar::get()->addWidget($actions);
 //      }
+      
+       if($eportfolio->group_id){
+        $action = $perm->have_studip_perm('tutor', $eportfolio->group_id) ? 'showsupervisor' : 'showstudent';
+            
+        $actions = new ActionsWidget();
+        $actions->setTitle(_('Aktionen'));
+        $actions->addLink('In die zugehörige Veranstaltung wechseln',
+        URLHelper::getLink('plugins.php/eportfolioplugin/' . $action . '?cid=' . $eportfolio->group_id), null, null);
+        Sidebar::get()->addWidget($actions);
+      }
 
 
 //      $nav = new LinksWidget();
