@@ -4,18 +4,17 @@
         <h1>Generelle Hinweise</h1>
 
             <div class="showstudent_textblock">
-                Ihr Dozent/Ihre Dozentin wird im Verlauf der Veranstaltung Inhalte verteilen, 
-                welche Sie in Form eines ePortfolios zur Verfügung gestellt bekommen.
+                Dein Dozent/Deine Dozentin wird im Verlauf der Veranstaltung Inhalte verteilen, 
+                welche Dir in Form eines ePortfolios zur Verfügung gestellt werden.
             </div>
             <div class="showstudent_textblock">
-                Sobald erste Inhalte Verteilt wurden, finden Sie hier eine Übersicht, sowie einen Direktlink in Ihr Portfolio. <br>
-                Ausserdem finden Sie eine Gesamtliste Ihrer Portfolios in Ihrem Profil unter <a href="<?php echo $link_eportfolios; ?>">ePortfolios</a>.
+                Sobald erste Inhalte Verteilt wurden, findest Du hier eine Übersicht, sowie einen Direktlink in Dein Portfolio. <br>
+                Ausserdem findest Du eine Gesamtliste Deiner Portfolios in Deinem Profil unter <a href="<?php echo $link_eportfolios; ?>">ePortfolios</a>.<br>
+                Weitere Details zur Portfolioarbeit erklären wir im folgenden Video:
             </div>
-        
-            <div class="showstudent_videobox" style="text-align:center;">
-                <iframe width="560" height="315" src="https://www.youtube.com/embed/VAibAJquJSo" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-            </div>
+
         </div>
+    
         <? else: ?>
         <div class="showstudent_textblock" style="margin:15px;">
             <a style="float:left" title='Mein Portfolio' href ='<?= URLHelper::getLink('seminar_main.php?auswahl=' . $portfolio_id[0]) ?>'> <?=Icon::create('eportfolio', 'clickable', ['size' => 200])?> </a> 
@@ -23,40 +22,37 @@
                 Klicke auf das Portfolio-Symbol um direkt in dein eigenes Portfolio zu wechseln.<br>
                 <br>
                 Dies ist im Rahmen dieser Veranstaltung deine individuelle Arbeitsmappe.<br>
-                Vorlagen und Arbeitsblätter, welche von Dozierenden verteilt werden, landen direkt in deinem eigenen ePortfolio.<br>
+                Vorlagen und Arbeitsblätter, welche von Dozierenden verteilt werden, landen direkt in deinem eigenen ePortfolio.
+                Um deine Arbeitsergebnisse mit deinem Dozenten/deiner Dozentin zu teilen, musst du die Zugriffsrechte explizit freigeben.<br>
                 <br>
-                Ausserdem findest du eine Gesamtliste deiner Portfolios in deinem Profil unter <a href="<?php echo $link_eportfolios; ?>">ePortfolios</a>.<br>
+                Falls du in mehreren Veranstaltungen mit Portfolios arbeitest, findest du eine Gesamtliste deiner Portfolios in deinem Profil unter <a href="<?php echo $link_eportfolios; ?>">ePortfolios</a>.<br>
                 <br>
-                Um deine Arbeitsergebnisse mit deinem Dozenten/deiner Dozentin zu teilen, musst du die Zugriffsrechet explizit freigeben.<br>
-                Weitere Details erklären wir im folgenden Video:
+                Weitere Details zur Portfolioarbeit erfährst du im Video weiter unten.
         </div>
         
         <? endif ?>
+        
+        <?php if ($isThereAnyTemplate):?>
+        <div class="showstudent_verteilteVorlagen"></div>
+        <h1>Verteilte Vorlagen <?= Icon::create('info-circle', 'clickable', array('title' => 'Diese Vorlagen wurden deinem persönlichen Portfolio bereits hinzugefügt'))?>
+        </h1> 
+            <?php foreach ($groupTemplates as $template_id):?>
+            <div>
+                <?php $template = Course::find($template_id);?>
+                <?php echo $template->name; ?> verteilt am 
+                <?= date('d.m.Y', EportfolioGroupTemplates::getWannWurdeVerteilt($id, $template_id))?>
+            </div>
+            <?php endforeach;?>
+
+
+        <?php endif;?>
+        
+        
+        
     </div>
     <div  style="margin:30px">
           <iframe width="560" height="315" src="https://www.youtube.com/embed/VAibAJquJSo" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
     </div>
-
-
-    <div class="showstudent_verteilteVorlagen"></div>
-        <h1>Verteilte Vorlagen</h1>
-
-        <?php if ($isThereAnyTemplate):?>
-
-            <?php foreach ($groupTemplates as $template_id):?>
-            <div>
-                <?php $template = new Course($template_id['Seminar_id']);?>
-                <?php echo $template->name; ?> <a href="<?php echo $link_courseware; ?>">Anschauen</a>
-            </div>
-            <?php endforeach;?>
-
-        <?php else: ?>
-
-        <div class="showstudent_hinweis">
-            Es wurden noch keine Templates von Ihrem Supervisor/Dozenten verteilt.
-        </div>
-
-        <?php endif;?>
 
 </div>
 
