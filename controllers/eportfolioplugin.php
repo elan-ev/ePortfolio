@@ -31,18 +31,18 @@ class EportfoliopluginController extends StudipController {
       $sidebar->addWidget($navOverview);
 
        //Kontextaktionen
-      if($eportfolio->owner_id == $user->id){
-        $actions = new ActionsWidget();
-        $actions->setTitle(_('Aktionen'));
-        $actions->addLink('Portfolio löschen',
-        URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin/deletePortfolio/'. $portfolioid), null, array('onclick'=> "return confirm('Sind Sie sich sicher, dass Sie das Portfolio löschen wollen? Alle Daten werden hierdurch unwiderruflich gelöscht und können nicht wiederhergestellt werden.')"));
-        Sidebar::get()->addWidget($actions);
-      }
+//      if($eportfolio->owner_id == $user->id){
+//        $actions = new ActionsWidget();
+//        $actions->setTitle(_('Aktionen'));
+//        $actions->addLink('Portfolio löschen',
+//        URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin/deletePortfolio/'. $portfolioid), null, array('onclick'=> "return confirm('Sind Sie sich sicher, dass Sie das Portfolio löschen wollen? Alle Daten werden hierdurch unwiderruflich gelöscht und können nicht wiederhergestellt werden.')"));
+//        Sidebar::get()->addWidget($actions);
+//      }
 
 
-      $nav = new LinksWidget();
-      $nav->setTitle(_('Courseware'));
-      $nav->addLink($name, "");
+//      $nav = new LinksWidget();
+//      $nav->setTitle(_('Courseware'));
+//      $nav->addLink($name, "");
 
       $sem_type_id = Config::get()->getValue('SEM_CLASS_PORTFOLIO_VORLAGE');
 
@@ -52,14 +52,14 @@ class EportfoliopluginController extends StudipController {
         $this->canEdit = true;
       }
 
-      $getCoursewareChapters = $this->getCardInfos($cid);
-      foreach ($getCoursewareChapters as $key => $value) {
-        if (EportfolioFreigabe::hasAccess($GLOBALS["user"]->id, $cid, $value[id]) || $isVorlage){
-          $nav->addLink($value[title], URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $cid, 'selected' => $value[id])));
-        }
-      }
+//      $getCoursewareChapters = $this->getCardInfos($cid);
+//      foreach ($getCoursewareChapters as $key => $value) {
+//        if (EportfolioFreigabe::hasAccess($GLOBALS["user"]->id, $cid, $value[id]) || $isVorlage){
+//          $nav->addLink($value[title], URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $cid, 'selected' => $value[id])));
+//        }
+//      }
 
-      $sidebar->addWidget($nav);
+//      $sidebar->addWidget($nav);
 
       //$navEinstellungen = new LinksWidget();
       //$navEinstellungen->setTitle('Einstellungen');
