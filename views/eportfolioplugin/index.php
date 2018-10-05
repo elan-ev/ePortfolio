@@ -89,8 +89,9 @@
                     </span>
                   </div>
 
-                  <div class="template-infos-single">
-                    <?= Icon::create('activity', 'clickable') ?> 23.05.2018
+                  <div class="template-infos-single" title="Verteilt am">
+                    <?= Icon::create('activity', 'clickable') ?> 
+                    <?= date('d.m.Y', EportfolioGroupTemplates::getWannWurdeVerteilt($group_id, $key)) ?>
                   </div>
 
                 </div>
