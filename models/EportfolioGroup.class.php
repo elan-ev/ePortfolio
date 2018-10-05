@@ -2,6 +2,7 @@
 
 include_once __DIR__.'/SupervisorGroup.class.php';
 include_once __DIR__.'/EportfolioActivity.class.php';
+include_once __DIR__.'/EportfolioGroupTemplates.class.php';
 
 /**
  * @author  <asudau@uos.de>
@@ -193,10 +194,13 @@ class EportfolioGroup extends SimpleORMap
   * user_id ist in diesem Fall die User_id des Nutzers der die Vorlage verteilt
   **/
   public static function createTemplateForGroup($group_id, $template_id, $user_id){
-    $time = time();
-    $query = "INSERT IGNORE INTO eportfolio_group_templates VALUES (:group_id , :template_id, 1, :t, 0, :creator)";
-    $statement = DBManager::get()->prepare($query);
-    $statement->execute(array(':group_id' => $group_id , ':template_id' => $template_id, ':t' => $time, ':creator' => $user_id));
+    $template_entry = new EportfolioGroupTemplates();
+    $template_entry->group_id = $group_id;
+    $template_entry->Seminar_id = $template_id;
+    $template_entry->favorite = 1;
+    $template_entry->verteilt_durch = $user_id;
+    $template_entry->mkdate = time();
+    $template_entry->store();
   }
 
   /**

@@ -20,23 +20,25 @@
         <table id="table_templates" class="default">
             <caption>Portfolio Vorlagen
                 <span class='actions'> <a data-dialog="size=auto;reload-on-close" href="<?= PluginEngine::getLink($this->plugin, array(), 'show/createvorlage') ?>">      
-                <? $params = tooltip2(_("Neue Vorlage erstellen")); ?>
+                    <? $params = tooltip2(_("Neue Vorlage erstellen")); ?>
                     <? $params['style'] = 'cursor: pointer'; ?>
                     <?= Icon::create('add', 'clickable')->asImg(20, $params) ?>
                 </span>
             </a></caption>
           <colgroup>
             <col width="30%">
-            <col width="60%">
-
+            <col width="30%">
+            <col width="30%">
+            <col width="10%">
+            <col width="5%">
           </colgroup>
           <thead>
             <tr class="sortable">
               <th>Titel der Vorlage</th>
               <th>Beschreibung</th>
+              <th>Details</th>
               <th>Aktionen</th>
-              <th>Favorit</th>
-
+              <th>Anzeigen</th>
             </tr>
           </thead>
 
@@ -48,26 +50,36 @@
                   <td><?php echo $portfolio->name; ?></td>
                   <td>
                     <?php echo $portfolio->beschreibung; ?>
+                  </td>
+                  <td>
                     <?php EportfolioGroupTemplates::checkIfGroupHasTemplate($id, $key); ?>
                     <?php if(EportfolioGroupTemplates::checkIfGroupHasTemplate($id, $key)): ?>
-                      <?= Icon::create('own-license') ?>
-                      <?php echo EportfolioGroupTemplates::getCreatorName($id, $key); ?>
-                      <?= Icon::create('share') ?>  
-                      <?php echo date('d.m.Y', EportfolioGroupTemplates::getWannWurdeVerteilt($id, $key)) ; ?>
-                      <?php if(EportfolioGroupTemplates::getDeadline($id, $key)): ?>
-                        <a data-dialog="size=1000px;" href="<?= $controller->url_for('showsupervisor/templatedates/' . $id . '/' . $key) ?>">
-                           <?= Icon::create('date', 'clickable') ?>
-                        </a>
-                        Abgabetermin:
-                        <?php
-                          $timestamp = EportfolioGroupTemplates::getDeadline($id, $key);
-                          echo date('d.m.Y', $timestamp);
-                        ?>
+                      <div title="Verteilt von">
+                          <?= Icon::create('own-license') ?>
+                          <?php echo EportfolioGroupTemplates::getCreatorName($id, $key); ?>
+                      </div>
+                      <div title="Verteilt am">
+                          <?= Icon::create('share') ?>  
+                          <?php echo date('d.m.Y', EportfolioGroupTemplates::getWannWurdeVerteilt($id, $key)) ; ?>
+                      </div>
+                      <div>
+                          <?php if(EportfolioGroupTemplates::getDeadline($id, $key)): ?>
+                            <a data-dialog="size=1000px;" href="<?= $controller->url_for('showsupervisor/templatedates/' . $id . '/' . $key) ?>">
+                               <?= Icon::create('date', 'clickable') ?>
+                            Abgabetermin:
+                            <?php
+                              $timestamp = EportfolioGroupTemplates::getDeadline($id, $key);
+                              echo date('d.m.Y', $timestamp);
+                            ?>
+                            </a>
+                      </div>
                       <?php else: ?>
+                        <div title="Abgabetermin bearbeiten">
                         <a data-dialog="size=1000px;" href="<?= $controller->url_for('showsupervisor/templatedates/' . $id . '/' . $key) ?>">
                            <?= Icon::create('date', 'clickable') ?>
-                        </a>
                         Kein Abgabetermin
+                        </a>
+                            </div>
                       <?php endif; ?>
                     <?php endif; ?>
                   </td>
@@ -232,7 +244,7 @@
                                                 <?= Icon::create('accept', 'clickable'); ?>
                                               <?php endif; ?>
                                             <?php else: ?>
-                                              <?= Icon::create('accept', 'inactive'); ?>
+                                              <?= Icon::create('decline', 'inactive'); ?>
                                             <?php endif; ?>
                                           </div>
                                           <div class="col-sm-4">
@@ -246,7 +258,6 @@
                                             <?php if (Eportfoliomodel::checkSupervisorResonanz($current_block_id) == true): ?>
                                               <?= Icon::create('forum', 'clickable');?>
                                             <?php else: ?>
-                                              <?= Icon::create('forum', 'inactive'); ?>
                                             <?php endif; ?>
                                           </div>
                                         </div>
@@ -326,9 +337,10 @@
 <!-- Legende -->
 <div class="legend">
   <ul>
-    <li><?php echo  Icon::create('decline', 'clickable'); ?>  Kapitel/Impuls noch nicht freigeschaltet</li>
+    <li><?php echo  Icon::create('decline', 'inactive'); ?>  Kapitel/Impuls noch nicht freigeschaltet</li>
     <li><?php echo  Icon::create('accept', 'clickable'); ?>  Kapitel/Impuls freigeschaltet</li>
     <li><?php echo  Icon::create('accept+new', 'clickable'); ?></i>  Kapitel freigeschaltet und Änderungen seit ich das letzte mal reingeschaut habe</li>
+    <li><?php echo  Icon::create('file', 'inactive'); ?>  keine Supervisionsanliegen freigeschaltet</li>
     <li><?php echo  Icon::create('file', 'clickable'); ?>  Supervisionsanliegen freigeschaltet</li>
     <li><?php echo  Icon::create('forum', 'clickable'); ?>  Resonanz gegeben</li>
   </ul>
