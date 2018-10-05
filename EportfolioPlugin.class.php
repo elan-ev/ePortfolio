@@ -14,7 +14,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     public function __construct() {
         parent::__construct();
 
-        $navigation = new Navigation(_('ePortfolio'));
+        $navigation = new Navigation(_('ePortfolios'));
         //$navigation->setImage(Icon::create('edit', 'clickable'));
         $navigation->setURL(PluginEngine::GetURL($this, array(), "show"));
         Navigation::addItem('/profile/eportfolioplugin', $navigation);
@@ -66,7 +66,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
       //Veranstaltungsreiter in Vorlesung
       if (!$this->isPortfolio() && !$this->isVorlage()) {
           if ($isDozent){
-              $navigation = new Navigation('ePortfolio Administration', PluginEngine::getURL($this, compact('cid'), 'showsupervisor', true));
+              $navigation = new Navigation('Portfolio-Arbeit', PluginEngine::getURL($this, compact('cid'), 'showsupervisor', true));
               $navigation->setImage(Icon::create('group4', 'info_alt'));
               $navigation->setActiveImage(Icon::create('group4', 'info'));
 
@@ -76,7 +76,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
               $item = new Navigation(_('Activity Feed'), PluginEngine::getURL($this, compact('cid'), 'showsupervisor/activityfeed', true));
               $navigation->addSubNavigation('portfoliofeed', $item);
           } else {
-              $navigation = new Navigation('ePortfolios', PluginEngine::getURL($this, compact('cid'), 'showstudent', true));
+              $navigation = new Navigation('Portfolio-Arbeit', PluginEngine::getURL($this, compact('cid'), 'showstudent', true));
               $navigation->setImage(Icon::create('group4', 'info_alt'));
               $navigation->setActiveImage(Icon::create('group4', 'info'));
 		  }
