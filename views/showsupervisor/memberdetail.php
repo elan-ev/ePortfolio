@@ -7,7 +7,7 @@
         <?php echo $vorname . " " . $nachname; ?>
       </div>
       <div class="member-subname">
-        Portfoliogruppe: Testgruppe<br>
+        Portfoliogruppe: <?= $group_title ?><br>
         Letzte Änderung: <?= date('d.m.Y', Eportfoliomodel::getLastOwnerEdit($portfolio_id)) ?>
       </div>
   </div>
@@ -89,8 +89,8 @@
     <div class="col-sm-4">Kapitelname</div>
     <div class="col-sm-8">
       <div class="row member-content-icons">
-        <div class="col-sm-2">Freigegeben</div>
-        <div class="col-sm-2">Anliegen</div>
+        <div class="col-sm-2">Freigabe</div>
+        <div class="col-sm-2">Notiz</div>
         <div class="col-sm-2">Resonanz</div>
         <div class="col">Aktionen</div>
       </div>
@@ -118,7 +118,7 @@
                 <?= Icon::create('accept', 'clickable'); ?>
               <?php endif; ?>
             <?php else: ?>
-              <?= Icon::create('accept', 'inactive'); ?>
+              <?= Icon::create('decline', 'inactive'); ?>
             <?php endif; ?>
           </div>
           <div class="col-sm-2">
@@ -132,12 +132,13 @@
           <?php if (Eportfoliomodel::checkSupervisorResonanz($kapitel['id'])):?>
             <?= Icon::create('forum');  ?>
           <?php else: ?>
-            <?= Icon::create('forum', 'inactive'); ?>
           <?php endif; ?>
           </div>
           <div class="col member-aktionen-detail">
-            <a href="<?php echo URLHelper::getLink("plugins.php/courseware/courseware?cid=" . $portfolio_id); ?>">Anschauen</a>
-            <a href="<?php echo URLHelper::getLink("plugins.php/courseware/courseware?cid=" . $portfolio_id); ?>">Feedback geben</a>
+            <a href="<?php echo URLHelper::getLink("plugins.php/courseware/courseware?cid=" . $portfolio_id . "&selected=" . $kapitel['id']); ?>">Anschauen</a>
+            <?php if (Eportfoliomodel::checkSupervisorNotiz($kapitel['id'])):?>
+                <a href="<?php echo URLHelper::getLink("plugins.php/courseware/courseware?cid=" . $portfolio_id . "&selected=" . $kapitel['id']); ?>">Feedback geben</a>
+            <?php endif; ?>
           </div>
         </div>
       </div>
@@ -165,7 +166,6 @@
               <?php if(Eportfoliomodel::checkSupervisorResonanzInSubchapter($unterkapitel['id'])):?>
                 <?= Icon::create('forum');  ?>
               <?php else:?>
-                <?= Icon::create('forum', 'inactive'); ?>
               <?php endif; ?>
             </div>
           </div>
