@@ -1,6 +1,7 @@
 <?php
 
 include_once __DIR__.'/EportfolioGroup.class.php';
+include_once __DIR__.'/BlockInfo.class.php';
 
 /**
  * @author  <asudau@uos.de>
@@ -493,7 +494,10 @@ class Eportfoliomodel extends SimpleORMap
     **/
     public static function getLinkOfFirstChapter($template_id, $seminar_id){
       $templateChapters = Eportfoliomodel::getChapters($template_id);
-      return URLHelper::getURL('plugins.php/courseware/courseware', array('cid' => $seminar_id, 'selected' => $templateChapters[0][0]));
+      $vorlagenchapter = $templateChapters[0]['id'];
+      $portfolio_block_id = BlockInfo::findOneBySQL('vorlagen_block_id = :vorlagenchapter AND Seminar_id = :cid', 
+              array(':cid' => $seminar_id, ':vorlagenchapter' => $vorlagenchapter));
+      return URLHelper::getURL('plugins.php/courseware/courseware', array('cid' => $seminar_id, 'selected' => $portfolio_block_id->block_id));
     }
     
     public static function getLastOwnerEdit($sem_id){
