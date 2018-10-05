@@ -37,7 +37,7 @@
 
             </div>
             <div class="" style="line-height: 36px;">
-              <b><?= User::find($activity->user_id)->username?>: </b> <?php echo $activity->message; ?>
+              <b><?= User::find($activity->user_id)->vorname . ' ' . User::find($activity->user_id)->nachname?>: </b> <?php echo $activity->message; ?>
             </div>
           </div>
           </div>
@@ -85,7 +85,7 @@
 
             </div>
             <div class="" style="line-height: 36px;">
-              <b><?= User::find($activity->user_id)->username?>: </b> <?php echo $activity->message; ?>
+              <b><?= User::find($activity->user_id)->vorname . ' ' . User::find($activity->user_id)->nachname?>: </b> <?php echo $activity->message; ?>
             </div>
           </div>
           </div>
