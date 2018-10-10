@@ -83,10 +83,12 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
 
       } else if ($this->isPortfolio() || $this->isVorlage() ){
 
-          //uebersicht navigation point
-          $navigation = new Navigation('Übersicht', PluginEngine::getURL($this, compact('cid'), 'eportfolioplugin', true));
-          $navigation->setImage(Icon::create('group4', 'info_alt'));
-          $navigation->setActiveImage(Icon::create('group4', 'info'));
+          if($isDozent){
+            $navigation = new Navigation('Übersicht', PluginEngine::getURL($this, compact('cid'), 'eportfolioplugin', true));
+            $navigation->setImage(Icon::create('group4', 'info_alt'));
+            $navigation->setActiveImage(Icon::create('group4', 'info'));
+          }
+          
        }
 
 
