@@ -55,43 +55,6 @@
 <?php endif; ?>
 
 <?php $i = 1; ?>
- <?php foreach ($viewerList as $viewer):?>
-   <tr>
-     <td>
-       
-       <?php $userInfo = User::find($viewer[user_id]);?>
-         <a href="<?= URLHelper::getLink('dispatch.php/profile?username=' . $userInfo['username']) ?>" >
-                        <?= Avatar::getAvatar($viewer[user_id])->getImageTag(Avatar::SMALL,
-                                array('style' => 'margin-right: 5px;border-radius: 30px; width: 25px; border: 1px solid #28497c;', 'title' => htmlReady($viewer['Vorname']." ".$viewer['Nachname']))); ?>
-                        <?= htmlReady($viewer['Vorname']." ".$viewer['Nachname']) ?>         
-                    </a>
-       
-       
-       
-       
-       <a title='Nutzer Zugriff vollständig entziehen (Nutzer wird komplett aus Zugriffs-Liste entfernt)' onclick="deleteUserAccess('<?php echo $viewer[viewer_id] ?>', '<?php echo $cid ?>', this);">
-          <?php echo Icon::create('trash', 'clickable') ?>
-       </a>
-     </td>
-     <?php foreach ($chapterList as $chapter):?>
-
-      <?php $viewer_id = $viewer[user_id]; ?>
-      <?php $hasAccess = EportfolioFreigabe::hasAccess($viewer_id, $cid, $chapter[id]); ?>
-      <td onClick="setAccess('<?= $chapter[id]?>', '<?= $viewer_id ?>', this, '<?= $cid ?>');" class="righttable-inner">
-
-        <?php if($hasAccess):?>
-          <span id="icon-<?php echo $viewer[viewer_id].'-'.$chapter[id]; ?>" class="glyphicon glyphicon-ok" title='Zugriff sperren'><?= Icon::create('accept', 'clickable'); ?></span>
-        <?php else :?>
-          <span id="icon-<?php echo $viewer[viewer_id].'-'.$chapter[id]; ?>" class="glyphicon glyphicon-remove" title='Zugriff erlauben'><?= Icon::create('decline', 'clickable'); ?></span>
-        <?php endif;?>
-
-      </td>
-
-      <?php endforeach; ?>
-
-    <?php $i = 1; ?>
-   </tr>
-  <?php endforeach; ?>
   </tbody>
 </table>
 
