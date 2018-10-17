@@ -1,9 +1,7 @@
 <?php
 
 include_once __DIR__.'/../models/EportfolioFreigabe.class.php';
-//print_r($GLOBALS);
-
-//print('modifier.php active');
+include_once __DIR__.'/..models/Eportfoliomodel.class.php';
 
 //set variables
 $cid = $_GET["cid"];
@@ -13,6 +11,15 @@ $selected = $_GET["selected"];
 $workingArray = EportfolioFreigabe::hasAccess($userId, $cid, $selected);
 //$workingArray = unserialize($workingArray);
 //$workingArray = json_encode($workingArray);
+
+$status_anything_shared = 0;
+$chapters = Eportfoliomodel::getChapters($cid);
+foreach ($chapters as $chapter) {
+  $hasAccess = EportfolioFreigabe::hasAccess($userId, $cid, $chapter[id]);
+  if($hasAccess) {
+    $status_anything_shared = 1;
+  }
+}
 
 ?>
 
@@ -123,6 +130,15 @@ $workingArray = EportfolioFreigabe::hasAccess($userId, $cid, $selected);
     border-color: #28497c transparent transparent transparent;
 }
 
+.keine_freigaben_box {
+  border: 1px solid red; 
+  background-color: #d015268f;
+  padding: 20px;
+}
+
+.cw-eportfolio-header {
+  height: auto!important;
+}
 
 /*Overflow Visible*/
 #layout_content {
@@ -193,16 +209,30 @@ $workingArray = EportfolioFreigabe::hasAccess($userId, $cid, $selected);
   </div>
 </script>
 
+<script id="alert_box_keine_freigaben" type="x-tmpl-mustache">
+  <div class="keine_freigaben_box">
+    Es wurden noch keine Kapitel von Nutzer freigegeben!
+  </div>
+</script>
+
 <script type="text/javascript">
 
   $(document).ready(function(){
-    var color;
-
-    getsettingsColor();
-    infobox();
-    authorModeColor();
+    //getsettingsColor();
+    //infobox();
+    //authorModeColor();
     changeTitle();
+    render_alert_box(); 
   });
+
+  function render_alert_box(){
+    var x = "<?php echo $status_anything_shared ?>"; 
+    console.log(x); 
+    if(x == "0"){
+      var template  = $('#alert_box_keine_freigaben').html();
+      $('.cw-eportfolio-header').prepend(Mustache.render(template));
+    }
+  }
 
   function changeTitle(){
     $('span[title="Courseware"]').html('ePortfolio');

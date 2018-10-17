@@ -24,6 +24,11 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         NotificationCenter::addObserver($this, "store_activity","SupervisorDidPostAnswer");
         NotificationCenter::addObserver($this, "store_activity","UserDidPostNotiz");
 
+        $serverinfo = $_SERVER['PATH_INFO'];
+        if ($serverinfo == "/courseware/courseware"){
+            include 'coursewareController/modifier.php';
+        }
+        
     }
 
     public function getCardInfos($cid){
@@ -51,10 +56,8 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     }
 
     public function initialize () {
-      //PageLayout::addStylesheet($this->getPluginURL().'/assets/bootstrap.css');
-      PageLayout::addStylesheet($this->getPluginURL().'/assets/style.css');
-      PageLayout::addStylesheet($this->getPluginURL().'/assets/flexboxgrid.min.css');
-
+        PageLayout::addStylesheet($this->getPluginURL().'/assets/style.css');
+        PageLayout::addStylesheet($this->getPluginURL().'/assets/flexboxgrid.min.css');
     }
 
     public function getTabNavigation($course_id) {
