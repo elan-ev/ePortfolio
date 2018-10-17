@@ -61,39 +61,6 @@
 
 <?php echo $mp ?>
 
-<!-- <hr>
-
-<div class="personal-colors">
-  <h5>Courseware Hintergrundfarbe</h5>
-  <?php $color = SettingsController::getsettingsColor();?>
-  <div style="">
-    <div class="row" style="margin-left: 3px;">
-      <div onclick="settingsColor(this)" data-color="#1abc9c" style="background-color:#1abc9c" class="pers-color-block"><i class="fa fa-check" aria-hidden="true"></i></div>
-      <div onclick="settingsColor(this)" data-color="#e67e22" style="background-color:#e67e22" class="pers-color-block"><i class="fa fa-check" aria-hidden="true"></i></div>
-      <div onclick="settingsColor(this)" data-color="#9b59b6" style="background-color:#9b59b6" class="pers-color-block"><i class="fa fa-check" aria-hidden="true"></i></div>
-      <div onclick="settingsColor(this)" data-color="#f39c12" style="background-color:#f39c12" class="pers-color-block"><i class="fa fa-check" aria-hidden="true"></i></div>
-      <div onclick="settingsColor(this)" data-color="#27ae60" style="background-color:#27ae60" class="pers-color-block"><i class="fa fa-check" aria-hidden="true"></i></div>
-      <div onclick="settingsColor(this)" data-color="#c0392b" style="background-color:#c0392b" class="pers-color-block"><i class="fa fa-check" aria-hidden="true"></i></div>
-    </div>
-  </div>
-</div> -->
-
-<script type="text/javascript">
-function rgb2hex(rgb) {
-  rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
-  function hex(x) {
-      return ("0" + parseInt(x).toString(16)).slice(-2);
-  }
-  return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
-}
-
-var color = rgb2hex('<?php echo $color; ?>');
-console.log(color);
-$('div[data-color="'+color+'"] i').css('opacity', '1').attr('data-status', 'active');
-</script>
-
-
-
 <script type="text/javascript" src="<?php echo $GLOBALS['ABSOLUTE_URI_STUDIP'] . 'plugins_packages/uos/EportfolioPlugin/assets/js/eportfolio.js'; ?>"></script>
 <script type="text/javascript">
 
@@ -218,28 +185,6 @@ $('div[data-color="'+color+'"] i').css('opacity', '1').attr('data-status', 'acti
     });
   }
 
-  function settingsColor(obj){
-    var color = $(obj).css('background-color');
-    var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/settings');
-    console.log(color);
-    $.ajax({
-      type: "POST",
-      url: url,
-      data: {
-        'action': 'setsettingsColor',
-        'color': color,
-        'cid': '<?php echo $cid; ?>',
-      },
-      success: function(data) {
-        //console.log(data);
-        $('i[data-status="active"]').css('opacity', '0').removeAttr('data-status');
-        var activate = $(obj).find('i');
-        $(activate).attr('data-status', 'active').css('opacity', '1');
-      }
-    });
-  }
-
-  
   function setAccess(id, viewerId, obj, cid){
   var status = $(obj).children('span').hasClass('glyphicon-ok');
   var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/settings/setAccess/'+viewerId+ '/' +cid+ '/' +id +'/' +!status);
