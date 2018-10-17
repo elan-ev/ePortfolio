@@ -26,7 +26,7 @@ class ShowController extends StudipController {
         if ($this->isDozent) {
         $actions->addLink("Vorlage erstellen", PluginEngine::getLink($this->plugin, array(), 'show/createvorlage') , Icon::create('add', 'clickable'), array('data-dialog'=>"size=auto;reload-on-close"));
         }
-        $actions->addLink("ePortfolio erstellen", PluginEngine::getLink($this->plugin, array(), 'show/createportfolio') , Icon::create('add', 'clickable'), array('data-dialog'=>"size=auto;reload-on-close"));
+        //$actions->addLink("ePortfolio erstellen", PluginEngine::getLink($this->plugin, array(), 'show/createportfolio') , Icon::create('add', 'clickable'), array('data-dialog'=>"size=auto;reload-on-close"));
         
         $sidebar->addWidget($actions);
 
