@@ -85,7 +85,7 @@ class AddSemClass extends Migration
         $sem_class = SemClass::getDefaultSemClass();
         $sem_class->set('name', $name);
         $sem_class->set('id', $id);
-        //$sem_class->set('studygroup_mode', '1');
+        $sem_class->set('studygroup_mode', '1');
 
         // Setting Mooc-courses default datafields: mooc should not to be disabled, courseware and mooc should be active
         $current_modules = $sem_class->getModules(); // get modules
