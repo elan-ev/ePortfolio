@@ -24,10 +24,10 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         NotificationCenter::addObserver($this, "store_activity","SupervisorDidPostAnswer");
         NotificationCenter::addObserver($this, "store_activity","UserDidPostNotiz");
 
-        $serverinfo = $_SERVER['PATH_INFO'];
-        if ($serverinfo == "/courseware/courseware"){
-            include 'coursewareController/modifier.php';
-        }
+//        $serverinfo = $_SERVER['PATH_INFO'];
+//        if ($serverinfo == "/courseware/courseware"){
+//            include 'coursewareController/modifier.php';
+//        }
         
     }
 
