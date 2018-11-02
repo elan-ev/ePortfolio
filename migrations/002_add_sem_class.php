@@ -85,18 +85,24 @@ class AddSemClass extends Migration
         $sem_class = SemClass::getDefaultSemClass();
         $sem_class->set('name', $name);
         $sem_class->set('id', $id);
-        //$sem_class->set('studygroup_mode', '1');
+        $sem_class->set('studygroup_mode', '1');
+        $sem_class->set('default_read_level', 1);
+        $sem_class->set('default_write_level', 1);
+        $sem_class->set('course_creation_forbidden', 1);
+        $sem_class->set('admission_type_default', 3);
 
         // Setting Mooc-courses default datafields: mooc should not to be disabled, courseware and mooc should be active
         $current_modules = $sem_class->getModules(); // get modules
         $current_modules['EportfolioPlugin']['activated'] = '1';
         $current_modules['EportfolioPlugin']['sticky'] = '1'; 
-        $current_modules['Courseware']['activated'] = '1';   // set values
+        $current_modules['Courseware']['activated'] = '1';  // set values
         $current_modules['Courseware']['sticky'] = '1'; // sticky = 1 -> can't be chosen in "more"-field of course
         $current_modules['CoreParticipants']['activated'] = '0';
         $current_modules['CoreParticipants']['sticky'] = '1'; 
-        $current_modules['CoreDocuments']['activated'] = '0';
-        $current_modules['CoreDocuments']['sticky'] = '1'; 
+        $current_modules['CoreDocuments']['activated'] = '1';
+        $current_modules['CoreDocuments']['sticky'] = '1';
+        $current_modules['CoreForum']['activated'] = '0';
+        $current_modules['CoreForum']['sticky'] = '1'; 
         $current_modules['CoreOverview']['activated'] = '0';
         $current_modules['CoreOverview']['sticky'] = '1'; 
         $current_modules['CoreAdmin']['activated'] = '0';
@@ -106,8 +112,13 @@ class AddSemClass extends Migration
         $current_modules['CoreWiki']['activated'] = '0';
         $current_modules['CoreWiki']['sticky'] = '1'; 
         $current_modules['CoreElearningInterface']['activated'] = '0';
-        $current_modules['CoreElearningInterface']['sticky'] = '1'; 
-        
+        $current_modules['CoreElearningInterface']['sticky'] = '1';
+        $current_modules['CoreResources']['activated'] = '0';
+        $current_modules['CoreResources']['sticky'] = '1';
+        $current_modules['CoreLiterature']['activated'] = '0';
+        $current_modules['CoreLiterature']['sticky'] = '1';
+        $current_modules['VipsPlugin']['activated'] = '0';
+        $current_modules['VipsPlugin']['sticky'] = '1';
         
         $sem_class->set('overview', 'EportfolioPlugin');
         $sem_class->setModules($current_modules); // set modules
