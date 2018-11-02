@@ -371,13 +371,13 @@ class Eportfoliomodel extends SimpleORMap
 
         $portfolio = Eportfoliomodel::findBySeminarId($portfolio_id);
         $owner = $portfolio->getOwnerFullname();
-        $link = URLHelper::getURL('plugins.php/courseware/courseware', array('cid' => $portfolio_id, 'selected' => $block_id));
+        $link = $GLOBALS['ABSOLUTE_URI_STUDIP'] . 'plugins.php/courseware/courseware?cid=' . $portfolio_id . '&selected=' . $block_id;
         $group = Course::find($portfolio->group_id)->name;
 
         switch ($case) {
             default:
             case 'supervisornotiz':
-                $mail_subj = 'Neue Portfolio-Notiz für Supervisoren';
+                $mail_subj = 'Neue Portfolio-Notiz für Supervisoren von ' . $owner;
                 $mail_msg = sprintf(
                     _("Neue Notiz von '%s'\n"
                     . "in: %s \n"
@@ -386,7 +386,7 @@ class Eportfoliomodel extends SimpleORMap
                 );
                 break;
             case 'freigabe':
-                $mail_subj = 'Neue Portfolio Freigabe';
+                $mail_subj = 'Neue Portfolio Freigabe von ' . $owner;
                 $mail_msg = sprintf(
                     _("Neue Freigabe von '%s'\n"
                     . "in: %s \n"
