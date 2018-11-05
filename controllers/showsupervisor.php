@@ -218,7 +218,7 @@ class ShowsupervisorController extends StudipController {
     public function delete_action($cid){
       $cid = $_GET['cid'];
       EportfolioGroup::deleteGroup($cid);
-      PageLayout::postMessage(MessageBox::success(_('Die Gruppe wurde gel�scht.')));
+      PageLayout::postMessage(MessageBox::success(_('Die Gruppe wurde gelöscht.')));
       $this->redirect(URLHelper::getLink("plugins.php/eportfolioplugin/showsupervisor", array('cid' => '')));
     }
 
@@ -247,8 +247,8 @@ class ShowsupervisorController extends StudipController {
                 _("Teilnehmer suchen"), "username");
 
       $this->mp = MultiPersonSearch::get('supervisorgroupSelectUsers')
-        ->setLinkText(_('Supervisoren hinzuf�gen'))
-        ->setTitle(_('Personen zur Supervisorgruppe hinzuf�gen'))
+        ->setLinkText(_('Supervisoren hinzufügen'))
+        ->setTitle(_('Personen zur Supervisorgruppe hinzufügen'))
         ->setSearchObject($search_obj)
         ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/supervisorgroup/addUser/'. $group->id, array('id' => $group_id, 'redirect' => $this->url_for('showsupervisor/supervisorgroup/'. $this->linkId))))
         ->render();
