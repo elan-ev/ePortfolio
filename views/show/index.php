@@ -1,179 +1,137 @@
-<? use Studip\LinkButton; ?>
+<h1 id="headline_uebersicht">
+    <?= Avatar::getAvatar($user->id, $userInfo['username'])->getImageTag(Avatar::MEDIUM,
+        ['style' => 'margin-right: 5px;border-radius: 35px; height:36px; width:36px; border: 1px solid #28497c;', 'title' => htmlReady($userInfo['Vorname'] . " " . $userInfo['Nachname'])]); ?>
+    <?= ngettext('Mein Portfolio', 'Meine Portfolios', $countPortfolios);?>
+    <span>
+        <?= _('Hier finden Sie alle ePortfolios, die Sie angelegt haben oder die andere f&uuml;r Sie freigegeben haben.')?>
+    </span>
+</h1>
 
 
-<div class="row">
-
-  <div class="col-md-12">
-
-    <div class="jumbotron" style="border-radius: 10px;">
-      <div class="container" style="padding: 0 50px;">
-
-        <h2>
-          <?= Avatar::getAvatar($user->id, $userInfo['username'])->getImageTag(Avatar::MEDIUM,
-                                array('style' => 'margin-right: 5px;border-radius: 35px; height:36px; width:36px; border: 1px solid #28497c;', 'title' => htmlReady($userInfo['Vorname']." ".$userInfo['Nachname'])));  ?>
-          <span id="headline_uebersicht"></span>
-        </h2>
-
-        <p>Hier finden Sie alle ePortfolios, die Sie angelegt haben oder die andere f&uuml;r Sie freigegeben haben.</p>
-        <!-- <p><?= \Studip\Button::create('Mehr Informationen'); ?></p> -->
-      </div>
-    </div>
-
-  </div>
-
-</div>
-
-
-
-<?php if ($isDozent):?>
-<div class="row">
-  <div class="col-md-12">
+<? if ($isDozent): ?>
     <table class="default">
-      <caption>Portfolio Vorlagen
-       <span class='actions'> <a data-dialog="size=auto;reload-on-close" href="<?= PluginEngine::getLink($this->plugin, array(), 'show/createvorlage') ?>">      
+        <colgroup>
+            <col style="width: 30%">
+            <col style="width:60%">
+            <col style="width: 120px">
+        </colgroup>
+        <caption>
+            <?= _('Portfolio Vorlagen') ?>
+            <span class='actions'> <a data-dialog="size=auto;reload-on-close"
+                                      href="<?= PluginEngine::getLink($this->plugin, [], 'show/createvorlage') ?>">
             <? $params = tooltip2(_("Neue Vorlage erstellen")); ?>
-                    <? $params['style'] = 'cursor: pointer'; ?>
-                    <?= Icon::create('add', 'clickable')->asImg(20, $params) ?>
+            <? $params['style'] = 'cursor: pointer'; ?>
+            <?= Icon::create('add', 'clickable')->asImg(20, $params) ?>
        </span>
-        </a></caption>
-      <colgroup>
-        <col width="30%">
-        <col width="60%">
+        </caption>
+        <thead>
+            <tr class="sortable">
+                <th><?= _('Name') ?></th>
+                <th><?= _('Beschreibung') ?></th>
+                <th class="actions"><?= _('Aktionen') ?></th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php $temps = Eportfoliomodel::getPortfolioVorlagen();
+            
+            foreach ($temps as $key):?>
+                
+                <?php $thisPortfolio = new Seminar($key); ?>
 
-      </colgroup>
-      <thead>
-        <tr class="sortable">
-          <th>Name</th>
-          <th>Beschreibung</th>
-          <th>Aktionen</th>
-
-        </tr>
-      </thead>
-
-      <tbody>
-        <?php $temps = Eportfoliomodel::getPortfolioVorlagen();
-
-          foreach ($temps as $key):?>
-
-          <?php $thisPortfolio = new Seminar($key); ?>
-
-          <tr>
-            <td><?php echo $thisPortfolio->getName(); ?></td>
-            <td><?php echo ShowController::getCourseBeschreibung($key); ?></td>
-            <td style="text-align: center;"><a href="<?php echo URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $key)); ?>" title='Portfolio-Vorlage bearbeiten'><?php echo Icon::create('edit', 'clickable') ?></a></td>
-          </tr>
-
-        <?php endforeach; ?>
-      </tbody>
+                <tr>
+                    <td><?= $thisPortfolio->getName(); ?></td>
+                    <td><?= ShowController::getCourseBeschreibung($key); ?></td>
+                    <td class="actions">
+                        <a href="<?= URLHelper::getLink('plugins.php/courseware/courseware', ['cid' => $key]); ?>"
+                           title="<?= _('Portfolio-Vorlage bearbeiten') ?>">
+                            <?= Icon::create('edit', 'clickable') ?>
+                        </a>
+                    </td>
+                </tr>
+            <? endforeach; ?>
+        </tbody>
     </table>
-       
+<? endif; ?>
 
-  </div>
-
-
-</div>
-<?php endif; ?>
-
-<div class="row">
-  <div class="col-md-12">
-
-    <?php ?>
-
-    <table class="default">
-      <caption>Meine Portfolios
-      <span class='actions'> 
-          <a data-dialog="size=auto;reload-on-close" href="<?= PluginEngine::getLink($this->plugin, array(), 'show/createportfolio') ?>">
-                    <? $params = tooltip2(_("Neues Portfolio erstellen")); ?>
-                    <? $params['style'] = 'cursor: pointer'; ?>
-                    <?= Icon::create('add', 'clickable')->asImg(20, $params) ?>
+<table class="default">
+    <caption><?= _('Meine Portfolios') ?>
+        <span class="actions">
+          <a data-dialog="size=auto;reload-on-close"
+             href="<?= PluginEngine::getLink($this->plugin, [], 'show/createportfolio') ?>">
+                    <?= Icon::create('add', 'clickable')->asImg(20, tooltip2(_("Neues Portfolio erstellen")) + ['style' => 'cursor: pointer']) ?>
         </a>
        </span>
-      </caption>
-      <colgroup>
-        <col width="30%">
-        <col width="50%">
-        <col width="10%" style="text-align: center;">
-        <col width="10%" style="text-align: center;">
-      </colgroup>
-      <thead>
+    </caption>
+    <colgroup>
+        <col style="width: 30%">
+        <col style="width: 30%">
+        <col>
+        <col>
+    </colgroup>
+    <thead>
         <tr class="sortable">
-          <th>Portfolio-Name</th>
-          <th>Beschreibung</th>
-          <th style="text-align: center;">Freigaben</th>
-          <th style="text-align: center;">Aktionen</th>
+            <th><?= _('Portfolio-Name') ?></th>
+            <th><?= _('Beschreibung') ?></th>
+            <th style="text-align: center;"><?= _('Freigaben') ?></th>
+            <th class="actions"><?= _('Aktionen') ?></th>
         </tr>
-      </thead>
-      <tbody>
+    </thead>
+    <tbody>
         <?php $countPortfolios = 0; ?>
         <?php $myportfolios = Eportfoliomodel::getMyPortfolios(); ?>
         <?php foreach ($myportfolios as $portfolio): ?>
-          <?php $thisPortfolio = new Seminar($portfolio);
-                $countPortfolios++; ?>
-          <tr class=''>
-            <td><a href="<?php echo URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('cid' => $portfolio)); ?>"><?php echo $thisPortfolio->getName(); ?></a></td>
-            <td><?php echo ShowController::getCourseBeschreibung($portfolio); ?></td>
-            <td style="text-align: center;"><?php echo ShowController::countViewer($portfolio); ?></td>
-            <td style="text-align: center;"><a href="<?php echo URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $portfolio)); ?>" title='Portfolio bearbeiten'><?php echo Icon::create('edit', 'clickable') ?></a></td>
-          </tr>
-        <?php endforeach; ?>
-      </tbody>
-      
-      <script type="text/javascript">
-
-        function PortfolioHeadline(i) {
-          var one = "Mein Portfolio";
-          var two = "Meine Portfolios"
-
-          if (i <= 1) {
-            $('#headline_uebersicht').text('Mein Portfolio');
-          } else {
-            $('#headline_uebersicht').text('Meine Portfolios');
-          }
-        }
-
-        PortfolioHeadline(<?php echo $countPortfolios; ?>);
-
-      </script>
-
-    </table>
-  </div>
-</div>
+            <?php $thisPortfolio = new Seminar($portfolio);
+            $countPortfolios++; ?>
+            <tr>
+                <td>
+                    <a href="<?= URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', ['cid' => $portfolio]); ?>">
+                        <?= $thisPortfolio->getName(); ?>
+                    </a>
+                </td>
+                <td><?= ShowController::getCourseBeschreibung($portfolio); ?></td>
+                <td style="text-align: center;"><?= ShowController::countViewer($portfolio); ?></td>
+                <td class="actions">
+                    <a href="<?= URLHelper::getLink('plugins.php/courseware/courseware', ['cid' => $portfolio]); ?>"
+                       title="<?= _('Portfolio bearbeiten') ?>">
+                        <?= Icon::create('edit', 'clickable') ?>
+                    </a>
+                </td>
+            </tr>
+        <? endforeach; ?>
+    </tbody>
+</table>
 
 
-
-<div class="row">
-  <div class="col-md-12">
-    <table  class="default">
-      <caption>F&uuml;r mich freigegebene Portfolios</caption>
-      <colgroup>
+<table class="default">
+    <caption><?= _('Für mich freigegebene Portfolios') ?></caption>
+    <colgroup>
         <col width="30%">
         <col width="60%">
         <col width="10%">
-      </colgroup>
-      <thead>
+    </colgroup>
+    <thead>
         <tr class="sortable">
-          <th>Portfolio-Name</th>
-          <th>Beschreibung</th>
-          <th>Besitzer</th>
+            <th><?= _('Portfolio-Name') ?></th>
+            <th><?= _('Beschreibung') ?></th>
+            <th><?= _('Besitzer') ?></th>
         </tr>
-      </thead>
-      <tbody>
-      <?php $myAccess = ShowController::getAccessPortfolio(); ?>
-      <?php foreach ($myAccess as $portfolio): ?>
-        <?php $thisPortfolio = new Seminar($portfolio); ?>
-        <tr class='insert_tr'>
-          <td><a href='<?php echo URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('cid' => $portfolio)); ?>'><?php echo $thisPortfolio->getName(); ?></a></td>
-          <td></td>
-          <td>
-            <?php
-              print_r(ShowController::getOwnerName($thisPortfolio->getId()));
-             ?>
-          </td>
-        </tr>
-      <?php endforeach; ?>
-      </tbody>
-    </table>
-  </div>
-</div>
+    </thead>
+    <tbody>
+        <? $myAccess = ShowController::getAccessPortfolio(); ?>
+        <? foreach ($myAccess as $portfolio): ?>
+            <? $thisPortfolio = new Seminar($portfolio); ?>
+            <tr class='insert_tr'>
+                <td>
+                    <a href="<?= URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', ['cid' => $portfolio]); ?>">
+                        <?= $thisPortfolio->getName(); ?></a>
+                </td>
+                <td></td>
+                <td>
+                    <?= ShowController::getOwnerName($thisPortfolio->getId()); ?>
+                </td>
+            </tr>
+        <? endforeach; ?>
+    </tbody>
+</table>
 
 

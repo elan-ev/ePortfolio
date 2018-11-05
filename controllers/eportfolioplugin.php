@@ -1,240 +1,198 @@
 <?php
 
-class EportfoliopluginController extends StudipController {
-
-  public function __construct($dispatcher)
-  {
-      parent::__construct($dispatcher);
-      $this->plugin = $dispatcher->current_plugin;
-
-      if ($_POST['titleChanger']) {
-        $this->changeTitle();
-        exit();
-      }
-
-      if ($_POST['infobox']) {
-        $this->infobox($_POST["cid"], $_POST["userid"], $_POST["selected"]);
-        exit();
-      }
-
-      $cid = Course::findCurrent()->id;
-      global $user, $perm;
-      $eportfolio = Eportfoliomodel::findBySeminarId($cid);
-      $isVorlage = Eportfoliomodel::isVorlage($cid);
-
-      $sidebar = Sidebar::Get();
-      Sidebar::Get()->setTitle('Übersicht');
-
-      $navOverview = new LinksWidget();
-      $navOverview->setTitle('Übersicht');
-      $navOverview->addLink('Übersicht', URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', array('portfolioid' => $portfolioid)), null , array('class' => 'active-link'));
-      $sidebar->addWidget($navOverview);
-
-       //Kontextaktionen
-//      if($eportfolio->owner_id == $user->id){
-//        $actions = new ActionsWidget();
-//        $actions->setTitle(_('Aktionen'));
-//        $actions->addLink('Portfolio löschen',
-//        URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin/deletePortfolio/'. $portfolioid), null, array('onclick'=> "return confirm('Sind Sie sich sicher, dass Sie das Portfolio löschen wollen? Alle Daten werden hierdurch unwiderruflich gelöscht und können nicht wiederhergestellt werden.')"));
-//        Sidebar::get()->addWidget($actions);
-//      }
-      
-       if($eportfolio->group_id){
-        $action = $perm->have_studip_perm('tutor', $eportfolio->group_id) ? 'showsupervisor' : 'showstudent';
+class EportfoliopluginController extends StudipController
+{
+    
+    public function __construct($dispatcher)
+    {
+        parent::__construct($dispatcher);
+        $this->plugin = $dispatcher->current_plugin;
+        
+        if (Request::get('titleChanger')) {
+            $this->changeTitle();
+            exit();
+        }
+        
+        if (Request::get('infobox')) {
+            $this->infobox(Request::get('cid'), Request::get('userid'), Request::get('selected'));
+            exit();
+        }
+        
+        $cid        = Course::findCurrent()->id;
+        $eportfolio = Eportfoliomodel::findBySeminarId($cid);
+        
+        $sidebar = Sidebar::Get();
+        Sidebar::Get()->setTitle(_('Übersicht'));
+        
+        $navOverview = new LinksWidget();
+        $navOverview->setTitle('Übersicht');
+        $navOverview->addLink(
+            _('Übersicht'),
+            URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', ['portfolioid' => $portfolioid]), null, ['class' => 'active-link']
+        );
+        $sidebar->addWidget($navOverview);
+        
+        if ($eportfolio->group_id) {
+            $action = $GLOBALS['perm']->have_studip_perm('tutor', $eportfolio->group_id) ? 'showsupervisor' : 'showstudent';
             
-        $actions = new ActionsWidget();
-        $actions->setTitle(_('Aktionen'));
-        $actions->addLink('In die zugehörige Veranstaltung wechseln',
-        URLHelper::getLink('plugins.php/eportfolioplugin/' . $action . '?cid=' . $eportfolio->group_id), null, null);
-        Sidebar::get()->addWidget($actions);
-      }
-
-
-//      $nav = new LinksWidget();
-//      $nav->setTitle(_('Courseware'));
-//      $nav->addLink($name, "");
-
-      $sem_type_id = Config::get()->getValue('SEM_CLASS_PORTFOLIO_VORLAGE');
-
-      $seminar = new Seminar($cid);
-
-      if ($seminar->status == $sem_type_id) {
-        $this->canEdit = true;
-      }
-
-//      $getCoursewareChapters = $this->getCardInfos($cid);
-//      foreach ($getCoursewareChapters as $key => $value) {
-//        if (EportfolioFreigabe::hasAccess($GLOBALS["user"]->id, $cid, $value[id]) || $isVorlage){
-//          $nav->addLink($value[title], URLHelper::getLink('plugins.php/courseware/courseware', array('cid' => $cid, 'selected' => $value[id])));
-//        }
-//      }
-
-//      $sidebar->addWidget($nav);
-
-      //$navEinstellungen = new LinksWidget();
-      //$navEinstellungen->setTitle('Einstellungen');
-      //$navEinstellungen->addLink('Portfolioeinstellungen', URLHelper::getLink('plugins.php/eportfolioplugin/settings', array('portfolioid' => $portfolioid)));
-      //$sidebar->addWidget($navEinstellungen);
-
-  }
-
-  public function before_filter(&$action, &$args)
-  {
-      parent::before_filter($action, $args);
-
-  }
-
-
-  public function index_action()
-  {
-
-    //set AutoNavigation/////
-    Navigation::activateItem("course/eportfolioplugin");
-    ////////////////////////
-
-    $userid = $GLOBALS["user"]->id;
-    $cid = Course::findCurrent()->id;
-    $this->cid = $cid;
-    $this->userId = $userid;
-    $eportfolio = Eportfoliomodel::findBySeminarId($cid);
-    $isOwner = Eportfoliomodel::isOwner($cid, $userid);
-    $owner = $eportfolio->owner;
-    $this->isVorlage = Eportfoliomodel::isVorlage($cid);
-    $seminar = new Seminar($this->cid);
-
-     # Aktuelle Seite
-    PageLayout::setTitle('ePortfolio von ' . $owner['Vorname'] . ' ' . $owner['Nachname']. ' - Übersicht: '. $seminar->getName());
-    if($this->isVorlage){
-        PageLayout::setTitle('ePortfolio-Vorlage - Übersicht: '. $seminar->getName());
-        $this->render_action('index_vorlage');
-    }
-
-    $db = DBManager::get();
-
-    //get list chapters
-    $chapters = Eportfoliomodel::getChapters($cid);
-
-    //push to template
-    $this->cardInfo = $chapters; //$return_arr;
-    $this->seminarTitle = $seminar->getName();
-    $this->isOwner = $isOwner;
-    $this->cid = $cid;
-    $this->userid = $userid;
-    $this->owner = $owner;
-
-    $this->group_id = $eportfolio->group_id;
-    $this->templates = EportfolioGroupTemplates::getGroupTemplates($eportfolio->group_id);
-
-  }
-
-  public function getCardInfos($cid){
-    $db = DBManager::get();
-    $return_arr = array();
-    $query = "SELECT id, title FROM mooc_blocks WHERE seminar_id = :cid AND type = 'Chapter' ORDER BY position ASC";
-    $statement = $db->prepare($query);
-    $statement->execute(array(':cid'=> $cid));
-    foreach ($statement->fetchAll() as $value) {
-      $arrayOne = array();
-      $arrayOne['id'] = $value[id];
-      $arrayOne['title'] = $value[title];
-
-      // get sections of chapter
-      $query = "SELECT id, title FROM mooc_blocks WHERE parent_id = :id ORDER BY position ASC";
-      $statement = $db->prepare($query);
-      $statement->execute(array(':id'=> $value[id]));
-      $arrayOne['section'] = $statement->fetchAll();
-
-      array_push($return_arr, $arrayOne);
-    }
-
-    //$tempid = $db->query("SELECT * FROM eportfolio WHERE Seminar_id = '$cid'")->fetchAll();
-    //$tempid = $tempid[0]["template_id"];
-    //$img = $db->query("SELECT * FROM eportfolio_templates WHERE id = '$tempid'")-fetchAll();
-    //$img =  $img[0]["img"];
-    //array_push($return_arr, $img);
-
-    return $return_arr;
-  }
-
-  public function checkIfTemplate($id){
-    $db = DBManager::get();
-    $query = "SELECT template_id FROM eportfolio WHERE seminar_id = :id";
-    $statement = $db->prepare($query);
-    $statement->execute(array(':id'=> $id));
-    return $statement->fetchAll()[0][0];
-  }
-
-  public function changeTitle(){
-    $title      = studip_utf8decode(strip_tags($_POST['title']));
-    $cid        = $_POST['cid'];
-
-    $sem        = new Seminar($cid);
-    $sem->name  = $title;
-    $sem->store();
-  }
-
-  public function deletePortfolio_action($id){
-
-       $sem = Course::findCurrent();
-       $sem->delete();
-       PageLayout::postMessage(MessageBox::success(_('Das Portfolio wurde gelöscht.')));
-
-       $this->redirect(PluginEngine::GetURL($this->plugin, array(), "show"));
-  }
-
-  public function infobox($cid, $owner_id, $selected){
-
-    $infoboxArray = array();
-    $db = DBManager::get();
-
-    if ($this->isOwner($cid, $owner_id) == true) {
-
-      $infoboxArray["owner"] = true;
-      $infoboxArray["users"] = array();
-
-      //get user list
-      $query = "SELECT * FROM eportfolio_user WHERE Seminar_id = :cid";
-      $statement = $db->prepare($query);
-      $statement->execute(array(':cid'=> $cid));
-      foreach ($statement->fetchAll() as $key) {
-        $newarray = array();
-        $newarray["userid"] = $key["user_id"];
-        $newarray["access"] = $key["eportfolio_access"];
-
-        $userinfo = User::find($key["user_id"]);
-        $newarray['firstname'] = $userinfo[Vorname];
-        $newarray['lastname'] = $userinfo[Nachname];
-
-        // $userAccess = json_decode($key["eportfolio_access"]);
-        // print_r($userAccess);
-        $access = unserialize($newarray["access"]);
-
-        if ($selected == 0) {
-          $keys = array_keys($access);
-          $selected = $keys[0];
+            $actions = new ActionsWidget();
+            $actions->setTitle(_('Aktionen'));
+            $actions->addLink(
+                _('In die zugehörige Veranstaltung wechseln'),
+                URLHelper::getLink('plugins.php/eportfolioplugin/' . $action . '?cid=' . $eportfolio->group_id), null, null);
+            Sidebar::get()->addWidget($actions);
         }
-
-        if ($access[$selected] == 1) {
-          $infoboxArray["users"][] = $newarray;
+        
+        
+        $sem_type_id = Config::get()->SEM_CLASS_PORTFOLIO_VORLAGE;
+        
+        $seminar = new Seminar($cid);
+        
+        if ($seminar->status == $sem_type_id) {
+            $this->canEdit = true;
         }
-
-      }
-
-    } else {
-
-      //get owner Id
-      $query = "SELECT owner_id FROM eportfolio WHERE Seminar_id = :cid";
-      $statement = $db->prepare($query);
-      $statement->execute(array(':cid'=> $cid));
-      $userId = $statement->fetchAll()[0][0];
-      $supervisor = User::find($userId);
-      $infoboxArray['firstname'] = $supervisor[Vorname];
-      $infoboxArray['lastname'] = $supervisor[Nachname];
-
     }
-
-    print_r(json_encode($infoboxArray));
-
-  }
-
+    
+    public function before_filter(&$action, &$args)
+    {
+        parent::before_filter($action, $args);
+        
+    }
+    
+    
+    public function index_action()
+    {
+        
+        //set AutoNavigation/////
+        Navigation::activateItem("course/eportfolioplugin");
+        ////////////////////////
+        
+        $userid          = $GLOBALS["user"]->id;
+        $cid             = Course::findCurrent()->id;
+        $this->cid       = $cid;
+        $this->userId    = $userid;
+        $eportfolio      = Eportfoliomodel::findBySeminarId($cid);
+        $isOwner         = Eportfoliomodel::isOwner($cid, $userid);
+        $owner           = $eportfolio->owner;
+        $this->isVorlage = Eportfoliomodel::isVorlage($cid);
+        $seminar         = new Seminar($this->cid);
+        
+        # Aktuelle Seite
+        PageLayout::setTitle('ePortfolio von ' . $owner['Vorname'] . ' ' . $owner['Nachname'] . ' - Übersicht: ' . $seminar->getName());
+        if ($this->isVorlage) {
+            PageLayout::setTitle('ePortfolio-Vorlage - Übersicht: ' . $seminar->getName());
+            $this->render_action('index_vorlage');
+        }
+        
+        //get list chapters
+        $chapters = Eportfoliomodel::getChapters($cid);
+        
+        //push to template
+        $this->cardInfo     = $chapters; //$return_arr;
+        $this->seminarTitle = $seminar->getName();
+        $this->isOwner      = $isOwner;
+        $this->cid          = $cid;
+        $this->userid       = $userid;
+        $this->owner        = $owner;
+        
+        $this->group_id  = $eportfolio->group_id;
+        $this->templates = EportfolioGroupTemplates::getGroupTemplates($eportfolio->group_id);
+        
+    }
+    
+    public function getCardInfos($cid)
+    {
+        $db         = DBManager::get();
+        $return_arr = [];
+        $query      = "SELECT id, title FROM mooc_blocks WHERE seminar_id = :cid AND type = 'Chapter' ORDER BY position ASC";
+        $statement  = $db->prepare($query);
+        $statement->execute([':cid' => $cid]);
+        foreach ($statement->fetchAll() as $value) {
+            $arrayOne          = [];
+            $arrayOne['id']    = $value[id];
+            $arrayOne['title'] = $value[title];
+            
+            // get sections of chapter
+            $query     = "SELECT id, title FROM mooc_blocks WHERE parent_id = :id ORDER BY position ASC";
+            $statement = $db->prepare($query);
+            $statement->execute([':id' => $value[id]]);
+            $arrayOne['section'] = $statement->fetchAll();
+            
+            array_push($return_arr, $arrayOne);
+        }
+        
+        return $return_arr;
+    }
+    
+    public function checkIfTemplate($id)
+    {
+        $query     = "SELECT template_id FROM eportfolio WHERE seminar_id = :id";
+        $statement = DBManager::get()->prepare($query);
+        $statement->execute([':id' => $id]);
+        return $statement->fetchAll()[0][0];
+    }
+    
+    public function changeTitle()
+    {
+        $sem       = new Seminar(Request::get('cid'));
+        $sem->name = strip_tags(Request::get('title'));
+        $sem->store();
+    }
+    
+    public function deletePortfolio_action($id)
+    {
+        $sem = Course::findCurrent();
+        $sem->delete();
+        PageLayout::postMessage(MessageBox::success());
+        
+        $this->redirect(PluginEngine::GetURL($this->plugin, [], "show"));
+    }
+    
+    public function infobox($cid, $owner_id, $selected)
+    {
+        $infoboxArray = [];
+      
+        if ($this->isOwner($cid, $owner_id) == true) {
+            $infoboxArray["owner"] = true;
+            $infoboxArray["users"] = [];
+            
+            //get user list
+            $query     = "SELECT * FROM eportfolio_user WHERE Seminar_id = :cid";
+            $statement = DBManager::get()->prepare($query);
+            $statement->execute([':cid' => $cid]);
+            foreach ($statement->fetchAll() as $key) {
+                $newarray           = [];
+                $newarray["userid"] = $key["user_id"];
+                $newarray["access"] = $key["eportfolio_access"];
+                
+                $userinfo              = User::find($key["user_id"]);
+                $newarray['firstname'] = $userinfo[Vorname];
+                $newarray['lastname']  = $userinfo[Nachname];
+                
+                $access = unserialize($newarray["access"]);
+                
+                if ($selected == 0) {
+                    $keys     = array_keys($access);
+                    $selected = $keys[0];
+                }
+                
+                if ($access[$selected] == 1) {
+                    $infoboxArray["users"][] = $newarray;
+                }
+                
+            }
+            
+        } else {
+            //get owner Id
+            $query     = "SELECT owner_id FROM eportfolio WHERE Seminar_id = :cid";
+            $statement = DBManager::get()->prepare($query);
+            $statement->execute([':cid' => $cid]);
+            $userId                    = $statement->fetchAll()[0][0];
+            $supervisor                = User::find($userId);
+            $infoboxArray['firstname'] = $supervisor[Vorname];
+            $infoboxArray['lastname']  = $supervisor[Nachname];
+        }
+        
+        print_r(json_encode($infoboxArray));
+    }
 }

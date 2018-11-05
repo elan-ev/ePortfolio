@@ -1,15 +1,16 @@
 <?php
 
-require __DIR__.'/../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 class SetupPortfolioTables extends Migration
 {
-    public function description () {
+    public function description()
+    {
         return 'add tables for portfolio plugin';
     }
-
-
-    public function up () {
+    
+    public function up()
+    {
         $db = DBManager::get();
         $db->exec("CREATE TABLE `eportfolio` (
           `Seminar_id` varchar(32) NOT NULL,
@@ -40,7 +41,7 @@ class SetupPortfolioTables extends Migration
           `name` varchar(100) NOT NULL,
           PRIMARY KEY (id)
           )");
-         $db->exec("CREATE TABLE `supervisor_group_user` (
+        $db->exec("CREATE TABLE `supervisor_group_user` (
           `supervisor_group_id` varchar(32) NOT NULL,
           `user_id` varchar(32) NOT NULL,
           PRIMARY KEY (supervisor_group_id, user_id)
@@ -54,14 +55,15 @@ class SetupPortfolioTables extends Migration
          `verteilt_durch` varchar(32),
          PRIMARY KEY (group_id, Seminar_id)
          )");
-
+        
         SimpleORMap::expireTableScheme();
     }
-
-
-    public function down () {
-
-
+    
+    
+    public function down()
+    {
+        
+        
         $db = DBManager::get();
         $db->exec("DROP TABLE eportfolio");
         $db->exec("DROP TABLE eportfolio_user");
@@ -69,10 +71,10 @@ class SetupPortfolioTables extends Migration
         $db->exec("DROP TABLE eportfolio_user");
         $db->exec("DROP TABLE supervisor_group");
         $db->exec("DROP TABLE supervisor_group_user");
-        $db->exec("DROP TABLE eportfolio_group_templates"); 
+        $db->exec("DROP TABLE eportfolio_group_templates");
         SimpleORMap::expireTableScheme();
-
+        
     }
-
-
+    
+    
 }
