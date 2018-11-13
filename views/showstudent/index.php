@@ -51,7 +51,7 @@
         
     </div>
     <div  style="margin:30px">
-          <iframe width="560" height="315" src="https://www.youtube.com/embed/VAibAJquJSo" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+          <iframe width="560" height="315" src="https://video-weiterbildung.virtuos.uos.de/paella/ui/watch.html?id=8183d785-16d6-4b86-81ea-280b51693792" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
     </div>
 
 </div>
