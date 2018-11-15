@@ -240,8 +240,8 @@ class ShowsupervisorController extends StudipController
             _("Teilnehmer suchen"), "username");
         
         $this->mp = MultiPersonSearch::get('supervisorgroupSelectUsers')
-            ->setLinkText(_('Supervisoren hinzuf�gen'))
-            ->setTitle(_('Personen zur Supervisorgruppe hinzuf�gen'))
+            ->setLinkText(_('Supervisoren hinzufügen'))
+            ->setTitle(_('Personen zur Supervisorgruppe hinzufügen'))
             ->setSearchObject($search_obj)
             ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/supervisorgroup/addUser/' . $group->id, ['id' => $group_id, 'redirect' => $this->url_for('showsupervisor/supervisorgroup/' . $this->linkId)]))
             ->render();
