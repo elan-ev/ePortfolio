@@ -70,12 +70,11 @@ class SupervisorGroup extends SimpleORMap
 
     public function deleteUser($user_id){
         //aus Supervisorgruppe austragen
-        $user = SupervisorGroupUser::findBySQL('user_id = :user_id AND supervisor_group_id = :supervisor_group_id',
+        $user = SupervisorGroupUser::findOneBySQL('user_id = :user_id AND supervisor_group_id = :supervisor_group_id',
                 array(':user_id' => $user_id, ':supervisor_group_id' => $this->id));
         $user->delete();
-
         //als user aus allen ePortfolios der StudentInnen austragen
-        $group = new EportfolioGroup($this->eportfolio_group);
+        $group = $this->eportfolio_group;
         $seminare = $group->getRelatedStudentPortfolios();
         foreach($seminare as $seminar){
             $seminar = new Seminar($seminar);
@@ -83,9 +82,9 @@ class SupervisorGroup extends SimpleORMap
             $seminar->store();
         }
         //aus Portfoliogruppen-veranstaltung austragen
-        $seminar = new Seminar($this->eportfolio_group);
-        $seminar->deleteMember($user_id);
-        $sem->store();
+        //$seminar = new Seminar($this->eportfolio_group);
+        //$seminar->deleteMember($user_id);
+        //$sem->store();
     }
 
   public static function newGroup($name){
