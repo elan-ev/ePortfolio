@@ -31,19 +31,3 @@
 
 <?php echo $mp; ?>
 
-
-<script type="text/javascript">
-  function deleteUserFromGroup(groupId, userId, obj){
-    $.ajax({
-      type: "POST",
-      url: "<?php echo URLHelper::getLink('plugins.php/eportfolioplugin/supervisorgroup/deleteUser');?>",
-      data: {
-        groupId: groupId,
-        userId: userId
-      },
-      success:function(data){
-        $(obj).parents('td').fadeOut();
-      }
-    });
-  }
-</script>
