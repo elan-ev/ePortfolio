@@ -85,13 +85,10 @@ class SupervisorgroupController extends StudipController
         $this->redirect($this->url_for('showsupervisor/supervisorgroup/' . $group->eportfolio_group->seminar_id), ['cid' => $group->eportfolio_group->seminar_id]);
     }
     
-    public function deleteUser_action()
+    public function deleteUser_action($group_id, $user_id)
     {
-        $groupId = $_POST['groupId'];
-        $userId  = $_POST['userId'];
-        
-        $group = new Supervisorgroup($groupId);
-        $group->deleteUser($userId);
+        $group = new Supervisorgroup($group_id);
+        $group->deleteUser($user_id);
     }
     
     public function newGroup_action()
