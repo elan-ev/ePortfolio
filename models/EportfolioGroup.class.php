@@ -161,12 +161,15 @@ class EportfolioGroup extends SimpleORMap
     {
         $member     = $this->user;
         $portfolios = [];
-        if ($this->templates) {
+        //if ($this->templates) {
             
-            foreach ($member as $key) {
-                $portfolio = Eportfoliomodel::findBySQL('group_id = :groupid AND owner_id = :value', [':groupid' => $this->seminar_id, ':value' => $key->user_id]);
+        foreach ($member as $key) {
+            $portfolio = Eportfoliomodel::findBySQL('group_id = :groupid AND owner_id = :value', [':groupid' => $this->seminar_id, ':value' => $key->user_id]);
+            if ($portfolio){
                 array_push($portfolios, $portfolio[0]->Seminar_id);
             }
+        }
+        if(sizeof($portfolios) > 0){
             return $portfolios;
         } else return null;
     }
