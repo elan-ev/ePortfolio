@@ -1,6 +1,5 @@
 <?php
 require 'bootstrap.php';
-require 'models/Eportfoliomodel.class.php';
 
 
 /**
