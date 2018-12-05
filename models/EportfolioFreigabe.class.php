@@ -1,9 +1,4 @@
-<?php
-
-include_once __DIR__ . '/Eportfoliomodel.class.php';
-include_once __DIR__ . '/EportfolioGroup.class.php';
-include_once __DIR__ . '/SupervisorGroupUser.class.php';
-include_once __DIR__ . '/EportfolioActivity.class.php';
+<?
 
 /**
  * @author  <asudau@uos.de>

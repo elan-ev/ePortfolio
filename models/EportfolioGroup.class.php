@@ -1,8 +1,4 @@
-<?php
-
-include_once __DIR__ . '/SupervisorGroup.class.php';
-include_once __DIR__ . '/EportfolioActivity.class.php';
-include_once __DIR__ . '/EportfolioGroupTemplates.class.php';
+<?
 
 /**
  * @author  <asudau@uos.de>
@@ -162,14 +158,14 @@ class EportfolioGroup extends SimpleORMap
         $member     = $this->user;
         $portfolios = [];
         //if ($this->templates) {
-            
+        
         foreach ($member as $key) {
             $portfolio = Eportfoliomodel::findBySQL('group_id = :groupid AND owner_id = :value', [':groupid' => $this->seminar_id, ':value' => $key->user_id]);
-            if ($portfolio){
+            if ($portfolio) {
                 array_push($portfolios, $portfolio[0]->Seminar_id);
             }
         }
-        if(sizeof($portfolios) > 0){
+        if (sizeof($portfolios) > 0) {
             return $portfolios;
         } else return null;
     }

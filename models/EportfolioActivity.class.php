@@ -1,7 +1,4 @@
-<?php
-
-include_once __DIR__ . '/EportfolioGroup.class.php';
-include_once __DIR__ . '/Eportfoliomodel.class.php';
+<?
 
 /**
  * @author  <asudau@uos.de>
@@ -126,7 +123,7 @@ class EportfolioActivity extends SimpleORMap
     
     public function newActivities($seminar_id)
     {
-        $user_id = User::findCurrent()->id;
+        $user_id    = User::findCurrent()->id;
         $last_visit = object_get_visit($seminar_id, 'sem');
         return EportfolioActivity::findBySQL('group_id = :seminar_id  AND mk_date > :last_visit AND user_id != :user_id ORDER BY mk_date DESC',
             ['seminar_id' => $seminar_id, 'user_id' => $user_id, ':last_visit' => $last_visit]);
