@@ -10,18 +10,22 @@ class ShowsupervisorController extends StudipController
         parent::__construct($dispatcher);
         $this->plugin = $dispatcher->current_plugin;
         
-        $id        = $_GET["cid"];
-        $this->sem = Course::findById($id);
+        $this->course = Course::findCurrent();
+        $id           = $_GET["cid"];
+        $this->sem    = Course::findById($id);
+
         
-        if ($this->sem) {
-            $this->groupid = $id;
-            $this->userid  = $GLOBALS["user"]->id;
-            $this->ownerid = $GLOBALS["user"]->id;
+        if ($this->course) {
+            $this->groupid = $this->course->id;
+            $this->userid  = $GLOBALS['user']->id;
+            $this->ownerid = $GLOBALS['user']->id;
             
-            $this->groupTemplates = EportfolioGroupTemplates::getGroupTemplates($id);
-            $this->templistid     = $this->groupTemplates;
+            $this->groupTemplates = EportfolioGroupTemplates::getGroupTemplates($this->course->id);
             
-            $group                   = EportfolioGroup::findbySQL('seminar_id = :id', [':id' => $this->groupid]);
+            $this->templistid = $this->groupTemplates;
+            
+            $group = EportfolioGroup::findbySQL('seminar_id = :id', [':id' => $this->course->id]);
+            
             $this->supervisorGroupId = $group[0]->supervisor_group_id;
         }
         
@@ -38,12 +42,12 @@ class ShowsupervisorController extends StudipController
         //sidebar
         $sidebar = Sidebar::Get();
         
-        if ($this->groupid) {
+        if ($this->course->id) {
             $navcreate = new LinksWidget();
             $navcreate->setTitle(_('Gruppen-Aktionen'));
             $navcreate->addLink(
                 _('Supervisoren verwalten'),
-                URLHelper::getLink("plugins.php/eportfolioplugin/showsupervisor/supervisorgroup/" . $id, ['cid' => $id]),
+                $this->url_for('showsupervisor/supervisorgroup/' . $this->course->id, ['cid' => $this->course->id]),
                 Icon::create('edit', 'clickable')
             );
             $sidebar->addWidget($navcreate);
@@ -54,20 +58,15 @@ class ShowsupervisorController extends StudipController
     public function before_filter(&$action, &$args)
     {
         parent::before_filter($action, $args);
-        
-        if (Course::findCurrent()) {
-            Navigation::activateItem("course/eportfolioplugin");
-        }
+    
+        Navigation::activateItem('course/eportfolioplugin');
         
     }
     
     public function index_action()
     {
         Navigation::activateItem('/course/eportfolioplugin/supervision');
-        
-        $course = Course::findCurrent();
-        $id     = $course->id;
-        
+      
         //berechtigung prüfen (group-owner TODO:refactoring //ggf das hier nur für Supervisor,
         //das würde dann aber schon in der Pluginklasse passieren
         /**
@@ -84,17 +83,17 @@ class ShowsupervisorController extends StudipController
          *}
          */
         
-        $this->id     = $id;
+        $this->id     = $this->course->id;
         $this->userid = $GLOBALS["user"]->id;
-        $this->group  = EportfolioGroup::find($id);
+        $this->group  = EportfolioGroup::find($this->course->id);
         
         //noch kein Portfoliogruppeneintrag für dieses Seminar vorhanden: Gruppe erstellen
         if (!$this->group) {
-            EportfolioGroup::newGroup($this->userid, $course->id);
+            EportfolioGroup::newGroup($this->userid, $this->course->id);
         }
-        $this->courseName = $course->name;
-        $this->member     = EportfolioGroup::getGroupMember($course->id);
-        
+        $this->courseName = $this->course->name;
+        $this->member     = EportfolioGroup::getGroupMember($this->course->id);
+        $this->portfolios = Eportfoliomodel::getPortfolioVorlagen();
     }
     
     public function countViewer($cid)
@@ -220,7 +219,7 @@ class ShowsupervisorController extends StudipController
         $groupId         = Course::findCurrent()->id;
         $sem             = new Seminar($groupId);
         $this->groupName = $sem->getName();
-        
+        PageLayout::setTitle(sprintf('%s - Supervisoren verwalten', $sem->getName()));
         $supervisorgroupid = Eportfoliogroup::getSupervisorGroupId($groupId);
         
         $group         = new SupervisorGroup($supervisorgroupid);

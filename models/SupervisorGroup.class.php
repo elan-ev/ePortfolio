@@ -10,9 +10,6 @@
  */
 class SupervisorGroup extends SimpleORMap
 {
-    
-    public $errors = [];
-    
     protected static function configure($config = [])
     {
         $config['db_table'] = 'supervisor_group';
@@ -33,18 +30,6 @@ class SupervisorGroup extends SimpleORMap
         parent::configure($config);
     }
     
-    /**
-     * Give primary key of record as param to fetch
-     * corresponding record from db if available, if not preset primary key
-     * with given value. Give null to create new record
-     *
-     * @param mixed $id primary key of table
-     */
-    public function __construct($id = null)
-    {
-        parent::__construct($id);
-    }
-    
     public function addUser($user_id)
     {
         $user                      = new SupervisorGroupUser();
@@ -63,9 +48,6 @@ class SupervisorGroup extends SimpleORMap
                 $seminar->store();
             }
         }
-        //Supervisoren werden nur noch aus der Gruppe der Dozenten hinzugefügt
-        //$seminar = new Seminar($this->eportfolio_group->seminar_id);
-        //$seminar->addMember($user_id, 'dozent');
         
     }
     
@@ -83,10 +65,6 @@ class SupervisorGroup extends SimpleORMap
             $seminar->deleteMember($user_id);
             $seminar->store();
         }
-        //aus Portfoliogruppen-veranstaltung austragen
-        //$seminar = new Seminar($this->eportfolio_group);
-        //$seminar->deleteMember($user_id);
-        //$sem->store();
     }
     
     public static function newGroup($name)

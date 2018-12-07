@@ -16,9 +16,6 @@
  */
 class Eportfoliomodel extends SimpleORMap
 {
-    
-    public $errors = [];
-    
     protected static function configure($config = [])
     {
         $config['db_table'] = 'eportfolio';
@@ -34,21 +31,6 @@ class Eportfoliomodel extends SimpleORMap
         
         parent::configure($config);
     }
-    
-    /**
-     * Give primary key of record as param to fetch
-     * corresponding record from db if available, if not preset primary key
-     * with given value. Give null to create new record
-     *
-     * @param mixed $id primary key of table
-     */
-    public function __construct($id = null)
-    {
-        
-        parent::__construct($id);
-        
-    }
-    
     
     public static function getAllSupervisors($cid)
     {
@@ -69,24 +51,13 @@ class Eportfoliomodel extends SimpleORMap
     
     public static function getPortfolioVorlagen()
     {
-        
-        global $perm;
-        $seminare = [];
-        
-        $semId = Config::get()->getValue('SEM_CLASS_PORTFOLIO_VORLAGE');
-        
-        $db        = DBManager::get();
-        $query     = "SELECT Seminar_id FROM seminare WHERE status = :semId";
-        $statement = $db->prepare($query);
-        $statement->execute([':semId' => $semId]);
-        foreach ($statement->fetchAll() as $key) {
-            if ($perm->have_studip_perm('autor', $key[Seminar_id])) {
-                array_push($seminare, $key[Seminar_id]);
-            }
-        }
-        
-        return $seminare;
-        
+        $query = "
+            SELECT  DISTINCT `seminare`.*
+            FROM `seminare`
+            JOIN `seminar_user` USING(`Seminar_id`)
+            WHERE `seminare`.`status` = ? AND `seminar_user`.`status` IN ('autor', 'tutor', 'dozent')
+        ";
+        return DBManager::get()->fetchAll($query, [Config::get()->SEM_CLASS_PORTFOLIO_VORLAGE], 'Course::buildExisting');
     }
     
     public static function findBySeminarId($sem_id)
@@ -104,7 +75,6 @@ class Eportfoliomodel extends SimpleORMap
     
     public static function getMyPortfolios()
     {
-        
         $userid       = $GLOBALS["user"]->id;
         $myportfolios = [];
         
@@ -127,20 +97,10 @@ class Eportfoliomodel extends SimpleORMap
      **/
     public static function getChapters($id)
     {
-        $db        = DBManager::get();
-        $query     = "SELECT * FROM mooc_blocks WHERE seminar_id = :id AND type = 'Chapter' AND parent_id != '0' ORDER BY position ASC";
-        $statement = $db->prepare($query);
+        $query     = "SELECT `title`, `id` FROM `mooc_blocks` WHERE `seminar_id` = :id AND `type` = 'Chapter' AND `parent_id` != '0' ORDER BY `position` ASC";
+        $statement = DBManager::get()->prepare($query);
         $statement->execute([':id' => $id]);
-        $result = $statement->fetchAll();
-        $return = [];
-        foreach ($result as $key) {
-            $tmp = [
-                'title' => $key[title],
-                'id'    => $key[id]
-            ];
-            array_push($return, $tmp);
-        }
-        return $return;
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
     
     /**
@@ -148,19 +108,10 @@ class Eportfoliomodel extends SimpleORMap
      **/
     public static function getSubChapters($chapter_id)
     {
-        $query     = "SELECT title, id FROM mooc_blocks WHERE parent_id = :parent_id AND type = 'Subchapter' ORDER BY position ASC";
+        $query     = "SELECT `title`, `id`  FROM `mooc_blocks` WHERE `parent_id` = :parent_id AND `type` = 'Subchapter' ORDER BY `position` ASC";
         $statement = DBManager::get()->prepare($query);
         $statement->execute([':parent_id' => $chapter_id]);
-        $result = $statement->fetchAll();
-        $return = [];
-        foreach ($result as $key) {
-            $tmp = [
-                'title' => $key[title],
-                'id'    => $key[id]
-            ];
-            array_push($return, $tmp);
-        }
-        return $return;
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
     
     /**
@@ -173,8 +124,11 @@ class Eportfoliomodel extends SimpleORMap
         $statement = DBManager::get()->prepare($query);
         $statement->execute([':id' => $chapter_id]);
         $subchapters = $statement->fetchAll(PDO::FETCH_ASSOC);
+        
         foreach ($subchapters as $subchapter) {
-            if (Eportfoliomodel::checkSupervisorResonanzInSubchapter($subchapter['id'])) return true;
+            if (Eportfoliomodel::checkSupervisorResonanzInSubchapter($subchapter['id'])) {
+                return true;
+            }
         }
     }
     
@@ -188,17 +142,22 @@ class Eportfoliomodel extends SimpleORMap
         $statement = DBManager::get()->prepare($query);
         $statement->execute([':value' => $subchapter_id]);
         $sections = $statement->fetchAll(PDO::FETCH_ASSOC);
+        
+        $query = "SELECT id FROM mooc_blocks WHERE parent_id = :valueSub AND type ='PortfolioBlockSupervisor' ";
+        $stm   = DBManager::get()->prepare($query);
+        
+        $query = "SELECT json_data FROM mooc_fields WHERE block_id = :block_id AND name = 'supervisorcontent'";
+        $stm2  = DBManager::get()->prepare($query);
+        
         foreach ($sections as $section) {
-            $query     = "SELECT id FROM mooc_blocks WHERE parent_id = :valueSub AND type ='PortfolioBlockSupervisor' ";
-            $statement = DBManager::get()->prepare($query);
-            $statement->execute([':valueSub' => $section['id']]);
-            $supervisorNotizBloecke = $statement->fetchAll(PDO::FETCH_ASSOC);
+            
+            $stm->execute([':valueSub' => $section['id']]);
+            $supervisorNotizBloecke = $stm->fetchAll(PDO::FETCH_ASSOC);
             foreach ($supervisorNotizBloecke as $block) {
-                $query     = "SELECT json_data FROM mooc_fields WHERE block_id = :block_id AND name = 'supervisorcontent'";
-                $statement = DBManager::get()->prepare($query);
-                $statement->execute([':block_id' => $block['id']]);
-                $supervisorFeedback = $statement->fetchAll();
-                if ($supervisorFeedback[0][json_data] != '""') {
+                
+                $stm2->execute([':block_id' => $block['id']]);
+                $supervisorFeedback = $stm2->fetchAll();
+                if ($supervisorFeedback[0]['json_data'] != '""') {
                     return true;
                 }
             }
@@ -210,11 +169,7 @@ class Eportfoliomodel extends SimpleORMap
      **/
     public static function checkKapitelFreigabe($chapter_id)
     {
-        $query     = "SELECT * FROM eportfolio_freigaben WHERE block_id = :block_id";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute([':block_id' => $chapter_id]);
-        $result = $statement->fetchAll();
-        if (!empty($result)) return true;
+        return (int)DBManager::get()->fetchColumn("SELECT COUNT(*) FROM eportfolio_freigaben WHERE block_id = :block_id", [':block_id' => $chapter_id]) > 0;
     }
     
     /**
@@ -228,7 +183,9 @@ class Eportfoliomodel extends SimpleORMap
         $statement->execute([':id' => $id]);
         $subchapters = $statement->fetchAll(PDO::FETCH_ASSOC);
         foreach ($subchapters as $subchapter) {
-            if (Eportfoliomodel::checkSupervisorNotizInUnterKapitel($subchapter['id'])) return true;
+            if (Eportfoliomodel::checkSupervisorNotizInUnterKapitel($subchapter['id'])) {
+                return true;
+            }
         }
     }
     
@@ -238,11 +195,9 @@ class Eportfoliomodel extends SimpleORMap
      **/
     public static function getUserPortfilioBlockId($seminar_id, $block_id)
     {
-        $query     = "SELECT block_id FROM eportfolio_block_infos WHERE seminar_id = :seminar_id AND vorlagen_block_id = :block_id";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute([':seminar_id' => $seminar_id, ':block_id' => $block_id]);
-        $result = $statement->fetchAll();
-        return $result[0][0];
+        return DBManager::get()->fetchColumn(
+            "SELECT `block_id` FROM `eportfolio_block_infos` WHERE `seminar_id` = :seminar_id AND `vorlagen_block_id` = :block_id"
+            , [':seminar_id' => $seminar_id, ':block_id' => $block_id]);
     }
     
     /**
@@ -250,13 +205,9 @@ class Eportfoliomodel extends SimpleORMap
      **/
     public static function isEigenesKapitel($seminar_id, $group_id, $chapter_id)
     {
-        $query     = "SELECT vorlagen_block_id FROM eportfolio_block_infos WHERE block_id = :block_id AND Seminar_id = :seminar_id";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute([':block_id' => $chapter_id, ':seminar_id' => $seminar_id]);
-        $result = $statement->fetchAll();
-        if (empty($result)) {
-            return true;
-        }
+        return (int)DBManager::get()->fetchColumn(
+                "SELECT COUNT(`vorlagen_block_id`) FROM `eportfolio_block_infos` WHERE `block_id` = :block_id AND `Seminar_id` = :seminar_id",
+                [':block_id' => $chapter_id, ':seminar_id' => $seminar_id]) > 0;
     }
     
     /**
@@ -275,11 +226,10 @@ class Eportfoliomodel extends SimpleORMap
      **/
     public static function getTimestampOfChapter($block_id)
     {
-        $query     = "SELECT mkdate FROM mooc_blocks WHERE id = :block_id";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute([':block_id' => $block_id]);
-        $result = $statement->fetchAll();
-        return $result[0][0];
+        return DBManager::get()->fetchColumn(
+            "SELECT mkdate FROM mooc_blocks WHERE id = :block_id",
+            [':block_id' => $block_id]
+        );
     }
     
     /**
@@ -288,11 +238,10 @@ class Eportfoliomodel extends SimpleORMap
      **/
     public static function getNewestTemplateTimestamp($group_id)
     {
-        $query     = "SELECT mkdate FROM eportfolio_group_templates WHERE group_id = :group_id ORDER BY mkdate DESC";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute([':group_id' => $group_id]);
-        $result = $statement->fetchAll();
-        return $result[0][0];
+        return DBManager::get()->fetchColumn(
+            "SELECT mkdate FROM eportfolio_group_templates WHERE group_id = :group_id ORDER BY mkdate DESC",
+            [':group_id' => $group_id]
+        );
     }
     
     /**
@@ -300,11 +249,10 @@ class Eportfoliomodel extends SimpleORMap
      **/
     public static function getTimestampOfTemplate($group_id, $seminar_id)
     {
-        $query     = "SELECT mkdate FROM eportfolio_group_templates WHERE group_id = :group_id AND seminar_id = :seminar_id";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute([':group_id' => $group_id, ':seminar_id' => $seminar_id]);
-        $result = $statement->fetchAll();
-        return $result[0][0];
+        return DBManager::get()->fetchColumn(
+            "SELECT mkdate FROM eportfolio_group_templates WHERE group_id = :group_id AND seminar_id = :seminar_id",
+            [':group_id' => $group_id, ':seminar_id' => $seminar_id]
+        );
     }
     
     /**
@@ -312,30 +260,33 @@ class Eportfoliomodel extends SimpleORMap
      **/
     public static function getParentId($block_id)
     {
-        $query     = "SELECT parent_id FROM mooc_blocks WHERE id = :id";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute([':id' => $block_id]);
-        $result = $statement->fetchAll();
-        return $result[0][0];
+        return DBManager::get()->fetchColumn(
+            "SELECT parent_id FROM mooc_blocks WHERE id = :id",
+            [':id' => $block_id]
+        );
     }
     
     public static function checkSupervisorNotizInUnterKapitel($subchapter_id)
     {
-        $query     = "SELECT id FROM mooc_blocks WHERE parent_id = :value";
+        $query     = "SELECT `id` FROM mooc_blocks WHERE parent_id = :value";
         $statement = DBManager::get()->prepare($query);
         $statement->execute([':value' => $subchapter_id]);
         $sections = $statement->fetchAll(PDO::FETCH_ASSOC);
+        
+        $query = "SELECT `id` FROM mooc_blocks WHERE parent_id = :valueSub AND type ='PortfolioBlockSupervisor' ";
+        $stm   = DBManager::get()->prepare($query);
+        
+        $query = "SELECT `json_data` FROM mooc_fields WHERE block_id = :block_id AND name = 'content'";
+        $stm2  = DBManager::get()->prepare($query);
         foreach ($sections as $section) {
-            $query     = "SELECT id FROM mooc_blocks WHERE parent_id = :valueSub AND type ='PortfolioBlockSupervisor' ";
-            $statement = DBManager::get()->prepare($query);
-            $statement->execute([':valueSub' => $section['id']]);
-            $supervisorNotizBloecke = $statement->fetchAll(PDO::FETCH_ASSOC);
+            
+            $stm->execute([':valueSub' => $section['id']]);
+            $supervisorNotizBloecke = $stm->fetchAll(PDO::FETCH_ASSOC);
             foreach ($supervisorNotizBloecke as $block) {
-                $query     = "SELECT json_data FROM mooc_fields WHERE block_id = :block_id AND name = 'content'";
-                $statement = DBManager::get()->prepare($query);
-                $statement->execute([':block_id' => $block['id']]);
-                $supervisorFeedback = $statement->fetchAll();
-                if (!empty($supervisorFeedback[0][json_data])) {
+                
+                $stm2->execute([':block_id' => $block['id']]);
+                $supervisorFeedback = $stm2->fetchAll();
+                if (!empty($supervisorFeedback[0]['json_data'])) {
                     return true;
                 }
             }
@@ -347,10 +298,14 @@ class Eportfoliomodel extends SimpleORMap
         if (Course::findById($id)) {
             $seminar = Seminar::getInstance($id);
             $status  = $seminar->getStatus();
-            if ($status == Config::get()->getValue('SEM_CLASS_PORTFOLIO_VORLAGE')) {
+            if ($status == Config::get()->SEM_CLASS_PORTFOLIO_VORLAGE) {
                 return true;
-            } else return false;
-        } else return false;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
     
     public static function getAllBlocksInOrder($id)
@@ -390,8 +345,6 @@ class Eportfoliomodel extends SimpleORMap
         $portfolio = Eportfoliomodel::findBySeminarId($portfolio_id);
         $owner     = $portfolio->getOwnerFullname();
         $link      = $GLOBALS['ABSOLUTE_URI_STUDIP'] . 'plugins.php/courseware/courseware?cid=' . $portfolio_id . '&selected=' . $block_id;
-        $group     = Course::find($portfolio->group_id)->name;
-        
         switch ($case) {
             default:
             case 'supervisornotiz':
@@ -440,7 +393,6 @@ class Eportfoliomodel extends SimpleORMap
             'normal',
             trim(Request::get("message_tags")) ?: null
         );
-        //StudipMail::sendMessage($mail, sprintf(_('Neues aus Ihrer Supervisionsgruppe "%s"'), $course->name), $mail_msg);
     }
     
     
@@ -467,11 +419,10 @@ class Eportfoliomodel extends SimpleORMap
      **/
     public static function getNumberOfChaptersFromTemplate($template_id)
     {
-        $query     = "SELECT COUNT(id) FROM mooc_blocks WHERE type = 'Chapter' AND Seminar_id = :template_id";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute([':template_id' => $template_id]);
-        $result = $statement->fetchAll();
-        return $result[0][0];
+        return DBManager::get()->fetchColumn(
+            "SELECT COUNT(id) FROM mooc_blocks WHERE type = 'Chapter' AND Seminar_id = :template_id",
+            [':template_id' => $template_id]
+        );
     }
     
     /**
@@ -484,7 +435,9 @@ class Eportfoliomodel extends SimpleORMap
         $templateChapters = Eportfoliomodel::getChapters($template_id);
         foreach ($templateChapters as $chapter) {
             $block_id = Eportfoliomodel::getUserPortfilioBlockId($user_template_id, $chapter[id]);
-            if (Eportfoliomodel::checkKapitelFreigabe($block_id)) $return++;
+            if (Eportfoliomodel::checkKapitelFreigabe($block_id)) {
+                $return++;
+            }
         }
         return $return;
     }
@@ -507,7 +460,9 @@ class Eportfoliomodel extends SimpleORMap
         $templateChapters = Eportfoliomodel::getChapters($template_id);
         foreach ($templateChapters as $chapter) {
             $block_id = Eportfoliomodel::getUserPortfilioBlockId($user_template_id, $chapter[id]);
-            if (Eportfoliomodel::checkSupervisorNotiz($block_id)) $return++;
+            if (Eportfoliomodel::checkSupervisorNotiz($block_id)) {
+                $return++;
+            }
         }
         return $return;
     }
@@ -519,18 +474,18 @@ class Eportfoliomodel extends SimpleORMap
     {
         $templateChapters   = Eportfoliomodel::getChapters($template_id);
         $vorlagenchapter    = $templateChapters[0]['id'];
-        $portfolio_block_id = BlockInfo::findOneBySQL('vorlagen_block_id = :vorlagenchapter AND Seminar_id = :cid',
+        $portfolio_block_id = BlockInfo::findOneBySQL(
+            'vorlagen_block_id = :vorlagenchapter AND Seminar_id = :cid',
             [':cid' => $seminar_id, ':vorlagenchapter' => $vorlagenchapter]);
         return URLHelper::getURL('plugins.php/courseware/courseware', ['cid' => $seminar_id, 'selected' => $portfolio_block_id->block_id]);
     }
     
     public static function getLastOwnerEdit($sem_id)
     {
-        $query     = "SELECT chdate FROM mooc_blocks WHERE Seminar_id = :id ORDER BY chdate DESC";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute([':id' => $sem_id]);
-        $result    = $statement->fetchAll();
-        $last_edit = $result[0][0];;
+        $last_edit     = DBManager::get()->fetchColumn(
+            "SELECT chdate FROM mooc_blocks WHERE Seminar_id = :id ORDER BY chdate DESC",
+            [':id' => $sem_id]
+        );
         $last_freigabe = EportfolioActivity::getLastFreigabeOfPortfolio($sem_id);
         
         return max([$last_edit, $last_freigabe]);
@@ -543,7 +498,6 @@ class Eportfoliomodel extends SimpleORMap
      * **/
     public static function createPortfolioForUser($group_id, $user_id)
     {
-        
         $db          = DBManager::get();
         $groupname   = new Seminar($group_id);
         $groupid     = Course::findCurrent()->id;
@@ -563,8 +517,6 @@ class Eportfoliomodel extends SimpleORMap
         $sem->status      = $sem_type_id;
         $sem->read_level  = 1;
         $sem->write_level = 1;
-        //$sem->setEndSemester(-1);
-        //$sem->setStartSemester($current_semester->beginn);
         $sem->institut_id = Config::Get()->STUDYGROUP_DEFAULT_INST;
         $sem->visible     = 0;
         $sem_id           = $sem->Seminar_id;
@@ -590,8 +542,6 @@ class Eportfoliomodel extends SimpleORMap
         
         $sem->store();
         
-        $user = new User($user_id);
-        
         $eportfolio    = new Seminar();
         $eportfolio_id = $eportfolio->createId();
         $query         = "INSERT INTO eportfolio (Seminar_id, eportfolio_id, group_id, owner_id, template_id, supervisor_id) VALUES (:sem_id, :eportfolio_id, :groupid , :userid, :masterid, :groupowner)";
@@ -615,7 +565,6 @@ class Eportfoliomodel extends SimpleORMap
      **/
     public static function getNotSharedTemplatesOfUserInGroup($group_id, $user_id, $portfolio_id)
     {
-        
         $return = [];
         
         $template_list = EportfolioGroupTemplates::getGroupTemplates($group_id);
@@ -629,7 +578,6 @@ class Eportfoliomodel extends SimpleORMap
         }
         
         return array_unique($return);
-        
     }
     
     public static function getPortfolioSemId()

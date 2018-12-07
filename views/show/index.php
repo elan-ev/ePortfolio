@@ -1,9 +1,9 @@
 <h1 id="headline_uebersicht">
     <?= Avatar::getAvatar($user->id, $userInfo['username'])->getImageTag(Avatar::MEDIUM,
         ['style' => 'margin-right: 5px;border-radius: 35px; height:36px; width:36px; border: 1px solid #28497c;', 'title' => htmlReady($userInfo['Vorname'] . " " . $userInfo['Nachname'])]); ?>
-    <?= ngettext('Mein Portfolio', 'Meine Portfolios', $countPortfolios);?>
+    <?= ngettext('Mein Portfolio', 'Meine Portfolios', $countPortfolios); ?>
     <span>
-        <?= _('Hier finden Sie alle ePortfolios, die Sie angelegt haben oder die andere f&uuml;r Sie freigegeben haben.')?>
+        <?= _('Hier finden Sie alle ePortfolios, die Sie angelegt haben oder die andere f&uuml;r Sie freigegeben haben.') ?>
     </span>
 </h1>
 
@@ -32,17 +32,13 @@
             </tr>
         </thead>
         <tbody>
-            <?php $temps = Eportfoliomodel::getPortfolioVorlagen();
-            
-            foreach ($temps as $key):?>
-                
-                <?php $thisPortfolio = new Seminar($key); ?>
-
+            <?php $courses = Eportfoliomodel::getPortfolioVorlagen();
+            foreach ($courses as $thisPortfolio):?>
                 <tr>
                     <td><?= $thisPortfolio->getName(); ?></td>
-                    <td><?= ShowController::getCourseBeschreibung($key); ?></td>
+                    <td><?= ShowController::getCourseBeschreibung($portfolio->id); ?></td>
                     <td class="actions">
-                        <a href="<?= URLHelper::getLink('plugins.php/courseware/courseware', ['cid' => $key]); ?>"
+                        <a href="<?= URLHelper::getLink('plugins.php/courseware/courseware', ['cid' => $portfolio->id]); ?>"
                            title="<?= _('Portfolio-Vorlage bearbeiten') ?>">
                             <?= Icon::create('edit', 'clickable') ?>
                         </a>

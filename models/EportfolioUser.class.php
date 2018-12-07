@@ -14,21 +14,10 @@
 class EportfolioUser extends SimpleORMap
 {
     
-    public $errors = [];
-    
-    /**
-     * Give primary key of record as param to fetch
-     * corresponding record from db if available, if not preset primary key
-     * with given value. Give null to create new record
-     *
-     * @param mixed $id primary key of table
-     */
-    public function __construct($id = null)
+    protected static function configure($config = [])
     {
-        
-        $this->db_table = 'eportfolio_user';
-        
-        parent::__construct($id);
+        $config['db_table'] = 'eportfolio_user';
+        parent::configure($config);
     }
     
     /**
@@ -41,7 +30,9 @@ class EportfolioUser extends SimpleORMap
     public static function getStatusOfUserInTemplate($template_id, $group_id, $seminar_id)
     {
         $deadline = EportfolioGroupTemplates::getDeadline($group_id, $template_id);
-        if ($deadline == 0) return 2;
+        if ($deadline == 0) {
+            return 2;
+        }
         
         $timestampXTageVorher = strtotime('-4 day', $deadline);
         $now                  = time();

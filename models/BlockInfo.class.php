@@ -13,21 +13,10 @@
 class BlockInfo extends SimpleORMap
 {
     
-    public $errors = [];
-    
-    /**
-     * Give primary key of record as param to fetch
-     * corresponding record from db if available, if not preset primary key
-     * with given value. Give null to create new record
-     *
-     * @param mixed $id primary key of table
-     */
-    public function __construct($id = null)
+    protected static function configure($config = [])
     {
-        
-        $this->db_table = 'eportfolio_block_infos';
-        
-        parent::__construct($id);
+        $config['db_table'] = 'eportfolio_block_infos';
+        parent::configure($config);
     }
     
     /**
@@ -43,10 +32,7 @@ class BlockInfo extends SimpleORMap
         $entry                    = new self($block_id);
         $entry->vorlagen_block_id = $vorlagen_block_id;
         $entry->Seminar_id        = $portfolio_id;
-        $entry->mkdate            = time();
-        if ($entry->store()) {
-            return true;
-        } else return false;
+        return $entry->store();
     }
     
     /**
@@ -59,21 +45,8 @@ class BlockInfo extends SimpleORMap
         $entry = self::findById($block_id);
         if ($entry->blocked) {
             return true;
-        } else return false;
-    }
-    
-    /**
-     * get corresponding Mooc-Block for a PortfolioVorlage in a students portfolio
-     *
-     * @param string $portfolio_id
-     * @param string $block_id
-     * @param string $vorlagen_block_id
-     */
-    public static function getPortfolioBlockByVorlagenID($block_id, $portfolio_id)
-    {
-        $entry = self::findBySQL('block_id = :block_id AND Seminar_id = :portfolio_id', [':block_id' => $block_id, 'portfolio_id' => $portfolio_id]);
-        if ($entry && $entry->block_id) {
-            return $entry->block_id;
-        } else return false;
+        } else {
+            return false;
+        }
     }
 }

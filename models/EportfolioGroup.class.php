@@ -11,9 +11,6 @@
  */
 class EportfolioGroup extends SimpleORMap
 {
-    
-    public $errors = [];
-    
     //testen
     protected static function configure($config = [])
     {
@@ -32,41 +29,16 @@ class EportfolioGroup extends SimpleORMap
         parent::configure($config);
     }
     
-    /**
-     * Give primary key of record as param to fetch
-     * corresponding record from db if available, if not preset primary key
-     * with given value. Give null to create new record
-     *
-     * @param mixed $id primary key of table
-     */
-    public function __construct($id = null)
-    {
-        
-        parent::__construct($id);
-    }
-    
-    //TODO: ich glaube diese Funktion hier wird garnicht benutzt
-    public static function getFavotitenDerGruppe($id)
-    {
-        $templates    = EportfolioGroup::findBySQL('Seminar_id = :cid', [':cid' => $id]);
-        $templateList = json_decode($templates[0]->templates);
-        
-        foreach ($templateList as $temp) {
-            $query     = "SELECT Seminar_id FROM eportfolio WHERE group_id = :id AND favorite = 1";
-            $statement = DBManager::get()->prepare($query);
-            $statement->execute([':id' => $temp]);
-            $check = $statement->fetchAll();
-        }
-    }
     
     public static function getGroupMember($id)
     {
-        $group = EportfolioGroup::find($id);
-        $array = [];
-        foreach ($group->user as $user) {
-            ($user->status == 'autor') ? array_push($array, $user->user_id) : '';
-        }
-        return $array;
+        $users = [];
+        EportfolioGroup::find($id)->user->filter(function ($a) use (&$users) {
+            if ($a->status === 'autor') {
+                $users[$a->user_id] = $a->user;
+            }
+        });
+        return $users;
     }
     
     public static function getAllSupervisors($id)
@@ -90,7 +62,6 @@ class EportfolioGroup extends SimpleORMap
         $supervisorgroup->name = $course->name;
         $supervisorgroup->store();
         
-        //var_dump($id);
         $group                      = new EportfolioGroup($sem_id);
         $group->supervisor_group_id = $supervisorgroup->id;
         $group->owner_id            = $owner;
@@ -102,25 +73,17 @@ class EportfolioGroup extends SimpleORMap
         
     }
     
-    public static function getOwner($id)
+    public static function getOwner($course_id)
     {
-        $query     = "SELECT owner_id FROM eportfolio_groups WHERE seminar_id = :id";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute([':id' => $id]);
-        return $statement->fetchAll()[0][0];
+        return DBManager::get()->fetchColumn("SELECT owner_id FROM eportfolio_groups WHERE seminar_id = ?", [$course_id]);
     }
     
-    public static function getFirstGroupOfuser($userId)
+    public static function getAllGroupsOfUser($user_id)
     {
-        return self::getAllGroupsOfSupervisor($userId)[0];
-    }
-    
-    public static function getAllGroupsOfUser($userId)
-    {
-        $query     = "SELECT seminar_id FROM eportfolio_groups_user WHERE user_id = :user_id";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute([':user_id' => $userId]);
-        return $statement->fetchAll();
+        return DBManager::get()->fetchAll(
+            "SELECT seminar_id FROM eportfolio_groups_user WHERE user_id = ?",
+            [$user_id]
+        );
     }
     
     //brauchen wir auf jeden Fall
@@ -133,6 +96,7 @@ class EportfolioGroup extends SimpleORMap
         foreach ($ownGroups as $group) {
             array_push($array, $group->seminar_id);
         }
+        
         foreach ($addedGroups as $group) {
             if ($group->eportfolio_group->seminar_id) {
                 array_push($array, $group->eportfolio_group->seminar_id);
@@ -140,11 +104,6 @@ class EportfolioGroup extends SimpleORMap
         }
         
         return array_unique($array);
-    }
-    
-    public function getGroupId()
-    {
-        return $this->seminar_id;
     }
     
     public static function getSupervisorGroupId($id)
@@ -157,7 +116,6 @@ class EportfolioGroup extends SimpleORMap
     {
         $member     = $this->user;
         $portfolios = [];
-        //if ($this->templates) {
         
         foreach ($member as $key) {
             $portfolio = Eportfoliomodel::findBySQL('group_id = :groupid AND owner_id = :value', [':groupid' => $this->seminar_id, ':value' => $key->user_id]);
@@ -165,6 +123,7 @@ class EportfolioGroup extends SimpleORMap
                 array_push($portfolios, $portfolio[0]->Seminar_id);
             }
         }
+        
         if (sizeof($portfolios) > 0) {
             return $portfolios;
         } else return null;
@@ -172,7 +131,6 @@ class EportfolioGroup extends SimpleORMap
     
     public static function deleteGroup($cid)
     {
-        
         #supervisorgroup holen
         $supervisor_group_id = self::findById($cid)->supervisor_group_id;
         
@@ -195,9 +153,6 @@ class EportfolioGroup extends SimpleORMap
         #eportfolio mit group_id löschen
         $eportfolio = new Eportfoliomodel($cid);
         $eportfolio->delete();
-        
-        #eportfolio_user
-        
     }
     
     /**
@@ -213,7 +168,6 @@ class EportfolioGroup extends SimpleORMap
         $template_entry->Seminar_id     = $template_id;
         $template_entry->favorite       = 1;
         $template_entry->verteilt_durch = $user_id;
-        $template_entry->mkdate         = time();
         $template_entry->store();
     }
     
@@ -242,15 +196,10 @@ class EportfolioGroup extends SimpleORMap
      **/
     public static function checkIfMarkedAsFav($group_id, $template_id)
     {
-        $query     = "SELECT favorite FROM eportfolio_group_templates WHERE group_id = :group_id AND Seminar_id = :template_id AND favorite = 1";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute([':group_id' => $group_id, ':template_id' => $template_id]);
-        $result = $statement->fetchAll();
-        if ($result[0][0] == 1) {
-            return 1;
-        } else {
-            return 0;
-        }
+        return (int)DBManager::get()->fetchColumn(
+            "SELECT favorite FROM eportfolio_group_templates WHERE group_id = ? AND Seminar_id = ? AND favorite = 1",
+            [$group_id, $template_id]
+        ) === 1 ? 1 : 0;
     }
     
     /**
@@ -258,15 +207,10 @@ class EportfolioGroup extends SimpleORMap
      **/
     public static function getAllMarkedAsFav($group_id)
     {
-        $query     = "SELECT Seminar_id FROM eportfolio_group_templates WHERE group_id = :group_id AND favorite = 1";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute([':group_id' => $group_id]);
-        $result = $statement->fetchAll();
-        $return = [];
-        foreach ($result as $key) {
-            array_push($return, $key[0]);
-        }
-        return $return;
+        return DBManager::get()->fetchFirst(
+            "SELECT `Seminar_id` FROM `eportfolio_group_templates` WHERE `group_id` = :group_id AND `favorite` = 1",
+            [':group_id' => $group_id]
+        );
     }
     
     /**
@@ -274,22 +218,17 @@ class EportfolioGroup extends SimpleORMap
      **/
     public static function getAnzahlAllerKapitel($group_id)
     {
-        $anzahl         = 0;
-        $GroupTemplates = EportfolioGroupTemplates::findBySQL('group_id = :id', [':id' => $group_id]);
-        foreach ($GroupTemplates as $temp) {
-            $query     = "SELECT COUNT(type) FROM mooc_blocks WHERE seminar_id = :id AND type = 'Chapter'";
-            $statement = DBManager::get()->prepare($query);
-            $statement->execute([':id' => $temp->Seminar_id]);
-            $result = $statement->fetchAll();
-            $anzahl += $result[0][0];
-        }
-        return $anzahl;
+        return (int)DBManager::get()->fetchColumn(
+            "SELECT COUNT(`type`)
+                FROM `mooc_blocks`
+                WHERE `seminar_id` IN (SELECT `Seminar_id` FROM `eportfolio_group_templates` WHERE `group_id` = ?) AND `type` = 'Chapter'",
+            [$group_id]
+        );
     }
     
     //all activities in Group ($user can be used to check if activity is a new one for given user)
     public function getActivities($user = null)
     {
-        //$activities = EportfolioActivity::getDummyActivitiesForGroup($this->seminar_id);
         $activities = EportfolioActivity::getActivitiesForGroup($this->seminar_id);
         return $activities;
     }
@@ -314,15 +253,10 @@ class EportfolioGroup extends SimpleORMap
      **/
     public static function getPortfolioIDsFromUserinGroup($group_id, $user_id)
     {
-        $query     = "SELECT * FROM eportfolio WHERE owner_id = :owner_id AND group_id = :group_id";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute([':owner_id' => $user_id, ':group_id' => $group_id]);
-        $result = $statement->fetchAll();
-        $return = [];
-        foreach ($result as $key) {
-            array_push($return, $key[0]);
-        }
-        return $return;
+        return DBManager::get()->fetchFirst(
+            "SELECT `Seminar_id` FROM `eportfolio` WHERE `owner_id` = :owner_id AND `group_id` = :group_id",
+            [':owner_id' => $user_id, ':group_id' => $group_id]
+        );
     }
     
     /**
@@ -330,19 +264,13 @@ class EportfolioGroup extends SimpleORMap
      **/
     public static function getAnzahlFreigegebenerKapitel($user_id, $group_id)
     {
-        $anzahl    = 0;
-        $templates = EportfolioGroup::getPortfolioIDsFromUserinGroup($group_id, $user_id);
-        foreach ($templates as $temp) {
-            $query = "SELECT COUNT(e1.Seminar_id) FROM eportfolio e1
+        $query = "SELECT COUNT(e1.Seminar_id) FROM eportfolio e1
                   JOIN eportfolio_freigaben e2 ON e1.Seminar_id = e2.Seminar_id
-                  WHERE e1.Seminar_id = :id";
-            
-            $statement = DBManager::get()->prepare($query);
-            $statement->execute([':id' => $temp]);
-            $result = $statement->fetchAll();
-            $anzahl += $result[0][0];
-        }
-        return $anzahl;
+                  WHERE e1.Seminar_id IN (?)";
+        return DBManager::get()->fetchColumn(
+            $query,
+            [EportfolioGroup::getPortfolioIDsFromUserinGroup($group_id, $user_id)]
+        );
     }
     
     /**
@@ -363,16 +291,10 @@ class EportfolioGroup extends SimpleORMap
      **/
     public static function getAnzahlNotizen($user_id, $group_id)
     {
-        $anzahl = 0;
-        $temps  = EportfolioGroup::getPortfolioIDsFromUserinGroup($group_id, $user_id);
-        foreach ($temps as $temp) {
-            $query     = "SELECT COUNT(type) FROM mooc_blocks WHERE Seminar_id = :seminar_id AND type = 'PortfolioBlockSupervisor'";
-            $statement = DBManager::get()->prepare($query);
-            $statement->execute([':seminar_id' => $temp]);
-            $result = $statement->fetchAll();
-            $anzahl += $result[0][0];
-        }
-        return $anzahl;
+        return DBManager::get()->fetchColumn(
+            "SELECT COUNT(`type`) FROM `mooc_blocks` WHERE `Seminar_id` IN(:seminar_id) AND `type` = 'PortfolioBlockSupervisor'",
+            [':seminar_id' => EportfolioGroup::getPortfolioIDsFromUserinGroup($group_id, $user_id)]
+        );
     }
     
     /**
@@ -380,11 +302,10 @@ class EportfolioGroup extends SimpleORMap
      **/
     public static function getPortfolioIdOfUserInGroup($user_id, $group_id)
     {
-        $query     = "SELECT Seminar_id FROM eportfolio WHERE owner_id = :owner_id AND group_id = :group_id";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute([':owner_id' => $user_id, ':group_id' => $group_id]);
-        $result = $statement->fetchAll();
-        return $result[0][0];
+        return DBManager::get()->fetchColumn(
+            "SELECT Seminar_id FROM eportfolio WHERE owner_id = :owner_id AND group_id = :group_id",
+            [':owner_id' => $user_id, ':group_id' => $group_id]
+        );
     }
     
     /**

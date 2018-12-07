@@ -9,48 +9,22 @@
  */
 class LastVisited extends SimpleORMap
 {
-    
-    public $errors = [];
-    
-    /**
-     * Give primary key of record as param to fetch
-     * corresponding record from db if available, if not preset primary key
-     * with given value. Give null to create new record
-     *
-     * @param mixed $id primary key of table
-     */
-    public function __construct($id = null)
+    protected static function configure($config = [])
     {
-        
-        $this->db_table = 'eportfolio_last_visited';
-        
-        parent::__construct($id);
+        $config['db_table'] = 'eportfolio_last_visited';
+        parent::configure($config);
     }
-    
-    //TODO belongs to user ondelete -> delete
     
     public static function getLastVisited($object_id, $user_id)
     {
-        $entry = self::findBySQL('object_id = :object_id AND user_id = :user_id');
+        $entry = self::findBySQL('object_id = ? AND user_id = ?', [$object_id, $user_id]);
         if ($entry) {
             return $entry->time;
-        } else return false;
-    }
-    
-    public static function setVisited($object_id, $user_id)
-    {
-        $entry = self::getLastVisited($object_id, $user_id);
-        if ($entry) {
-            $entry->time = time();
-            $entry->store();
         } else {
-            $entry            = new LastVisited();
-            $entry->object_id = $object_id;
-            $entry->user_id   = $user_id;
-            $entry->time      = time();
-            $entry->store();
+            return false;
         }
     }
+    
     
     public static function chapter_last_visited($block_id, $user_id)
     {
@@ -70,71 +44,45 @@ class LastVisited extends SimpleORMap
     
     public static function cwblock_last_visited($block_id, $user_id)
     {
-        $db   = DBManager::get();
-        $stmt = $db->prepare('SELECT * FROM mooc_userprogress WHERE block_id = :block_id AND user_id = :user_id');
-        $stmt->execute([':block_id' => $block_id, ':user_id' => $user_id]);
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        if (!$row) {
-            return 0;
-        } else {
-            $time = new DateTime($row['chdate']);
-            return $time->getTimestamp();
-        }
-    }
-    
-    public static function chapter_changed_since_last_visit($block_id, $user_id)
-    {
-        $content_changed = true;
-        
-        //block get children
-        $blocks = self::getAllChildBlocks($block_id);
-        //foreach block id get userprogress 
-        foreach ($blocks as $block) {
-            //if any userprogress > last changed -> content changed = false
-            if (self::cwblock_last_changed($block) < self::cwblock_last_visited($block, $user_id)) {
-                $content_changed = false;
-            }
-        }
-        return $content_changed;
+        return DBManager::get()->fetchColumn(
+            'SELECT UNIX_TIMESTAMP(`chdate`) FROM `mooc_userprogress` WHERE `block_id` = ? AND `user_id` = ?',
+            [$block_id, $user_id]);
     }
     
     public static function cwblock_last_changed($block_id)
     {
-        $db   = DBManager::get();
-        $stmt = $db->prepare('SELECT * FROM mooc_blocks WHERE id = :block_id');
-        $stmt->execute([':block_id' => $block_id]);
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        if (!$row) {
-            return false;
-        } else {
-            return $row['chdate'];
-        }
+        return DBManager::get()->fetchColumn(
+            'SELECT UNIX_TIMESTAMP(`chdate`) FROM `mooc_blocks` WHERE `block_id` = ?',
+            [$block_id]);
     }
     
     private static function getAllChildBlocks($chapter_id)
     {
         $db        = DBManager::get();
         $blocks    = [];
-        $query     = "SELECT title, id FROM mooc_blocks WHERE parent_id = :id ORDER BY position ASC";
+        $query     = "SELECT `id` FROM `mooc_blocks` WHERE `parent_id` = :id ORDER BY `position` ASC";
         $statement = $db->prepare($query);
         $statement->execute([':id' => $chapter_id]);
+        
+        
+        $query = "SELECT `id` FROM `mooc_blocks` WHERE `parent_id` = :id ORDER BY `position` ASC";
+        $stm2  = $db->prepare($query);
+        
+        $query = "SELECT title, id FROM mooc_blocks WHERE parent_id = :id ORDER BY position ASC";
+        $stm3  = $db->prepare($query);
+        
         foreach ($statement->fetchAll() as $subchapter) {
-            array_push($blocks, $subchapter[id]);
-            $query     = "SELECT title, id FROM mooc_blocks WHERE parent_id = :id ORDER BY position ASC";
-            $statement = $db->prepare($query);
-            $statement->execute([':id' => $subchapter[id]]);
+            $blocks[] = $subchapter['id'];
+            $stm2->execute([':id' => $subchapter['id']]);
             foreach ($statement->fetchAll() as $section) {
-                array_push($blocks, $section[id]);
-                $query     = "SELECT title, id FROM mooc_blocks WHERE parent_id = :id ORDER BY position ASC";
-                $statement = $db->prepare($query);
-                $statement->execute([':id' => $section[id]]);
+                $blocks[] = $section['id'];
+                $stm3->execute([':id' => $section['id']]);
                 foreach ($statement->fetchAll() as $block) {
-                    array_push($blocks, $block[id]);
+                    $blocks[] = $block['id'];
                 }
             }
         }
+        
         return $blocks;
     }
 }

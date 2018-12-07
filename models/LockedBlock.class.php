@@ -11,21 +11,10 @@
 class LockedBlock extends SimpleORMap
 {
     
-    public $errors = [];
-    
-    /**
-     * Give primary key of record as param to fetch
-     * corresponding record from db if available, if not preset primary key
-     * with given value. Give null to create new record
-     *
-     * @param mixed $id primary key of table
-     */
-    public function __construct($id = null)
+    protected static function configure($config = [])
     {
-        
-        $this->db_table = 'eportfolio_locked_blocks';
-        
-        parent::__construct($id);
+        $config['db_table'] = 'eportfolio_locked_blocks';
+        parent::configure($config);
     }
     
     public static function isLocked($block_id)
@@ -33,7 +22,9 @@ class LockedBlock extends SimpleORMap
         $entry = self::findById($block_id);
         if ($entry) {
             return true;
-        } else return false;
+        } else {
+            return false;
+        }
     }
     
     public static function lockBlock($Seminar_id, $block_id, $lock)
@@ -41,8 +32,6 @@ class LockedBlock extends SimpleORMap
         if (($lock == 'true') && !self::findById($block_id)) {
             $lockedBlock             = new self($block_id);
             $lockedBlock->Seminar_id = $Seminar_id;
-            $lockedBlock->mkdate     = time();
-            $lockedBlock->chdate     = time();
             $lockedBlock->store();
         } else if (($lock == 'false') && self::findById($block_id)) {
             self::deleteBySQL('block_id = :block_id',

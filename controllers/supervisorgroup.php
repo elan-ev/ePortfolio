@@ -39,7 +39,7 @@ class SupervisorgroupController extends StudipController
     private function createSidebar()
     {
         $sidebar = Sidebar::Get();
-        Sidebar::Get()->setTitle('Supervisorgruppen');
+        $sidebar->setTitle('Supervisorgruppen');
         
         $navcreate = new LinksWidget();
         $navcreate->setTitle('Supervisorgruppen');
@@ -70,7 +70,7 @@ class SupervisorgroupController extends StudipController
     
     private function getFirstGroupId()
     {
-        $query = DBManager::get()->query("SELECT id FROM supervisor_group")->fetchAll();
+        $query = DBManager::get()->fetch("SELECT id FROM supervisor_group")->fetchAll();
         return $query[0]['id'];
     }
     

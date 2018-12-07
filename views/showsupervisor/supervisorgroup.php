@@ -1,32 +1,31 @@
-<h1>"<?php echo $groupName; ?>" - Supervisoren verwalten</h1>
-
 <table class="default">
-  <colgroup>
-    <col width="30%">
-    <col width="60%">
-  </colgroup>
-  <tr>
-    <th>Name</th>
-    <th></th>
-    <th>Aktionen</th>
-  </tr>
-  <?php foreach ($usersOfGroup  as $user):?>
+    <colgroup>
+        <col width="30%">
+        <col width="60%">
+    </colgroup>
     <tr>
-      <td>
-           <?php $userInfo = User::find($user[user_id]);?>
-         <a href="<?= URLHelper::getLink('dispatch.php/profile?username=' . $userInfo['username']) ?>" >
-                        <?= Avatar::getAvatar($user['user_id'], $userInfo['username'])->getImageTag(Avatar::SMALL,
-                                array('style' => 'margin-right: 5px;border-radius: 30px; width: 25px; border: 1px solid #28497c;', 'title' => htmlReady($userInfo['Vorname']." ".$userInfo['Nachname']))); ?>
-                        <?= htmlReady($userInfo['Vorname']." ".$userInfo['Nachname']) ?>         
-                    </a>
-
-      </td>
-      <td></td>
-      <td style="text-align:center;">
-          <a onclick="return confirm('Nutzer aus Supervisorengruppe löschen?')" href = '<?= $this->controller->url_for('supervisorgroup/deleteUser/' . $groupId .'/' . $user[user_id])?>'><?php echo  Icon::create('trash', 'clickable'); ?></a>
-      </td>
+        <th>Name</th>
+        <th></th>
+        <th>Aktionen</th>
     </tr>
-  <?php endforeach; ?>
+    <?php foreach ($usersOfGroup as $user): ?>
+        <tr>
+            <td>
+                <?php $userInfo = User::find($user[user_id]); ?>
+                <a href="<?= URLHelper::getLink('dispatch.php/profile?username=' . $userInfo['username']) ?>">
+                    <?= Avatar::getAvatar($user['user_id'], $userInfo['username'])->getImageTag(Avatar::SMALL,
+                        ['style' => 'margin-right: 5px;border-radius: 30px; width: 25px; border: 1px solid #28497c;', 'title' => htmlReady($userInfo['Vorname'] . " " . $userInfo['Nachname'])]); ?>
+                    <?= htmlReady($userInfo['Vorname'] . " " . $userInfo['Nachname']) ?>
+                </a>
+
+            </td>
+            <td></td>
+            <td style="text-align:center;">
+                <a onclick="return confirm('Nutzer aus Supervisorengruppe löschen?')"
+                   href='<?= $this->controller->url_for('supervisorgroup/deleteUser/' . $groupId . '/' . $user[user_id]) ?>'><?php echo Icon::create('trash', 'clickable'); ?></a>
+            </td>
+        </tr>
+    <?php endforeach; ?>
 </table>
 
 <?php echo $mp; ?>

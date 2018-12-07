@@ -12,24 +12,12 @@
 class EportfolioFreigabe extends SimpleORMap
 {
     
-    public $errors = [];
-    
-    /**
-     * Give primary key of record as param to fetch
-     * corresponding record from db if available, if not preset primary key
-     * with given value. Give null to create new record
-     *
-     * @param mixed $id primary key of table
-     */
-    public function __construct($id = null)
+    protected static function configure($config = [])
     {
-        
-        $this->db_table = 'eportfolio_freigaben';
-        
-        parent::__construct($id);
+        $config['db_table'] = 'eportfolio_freigaben';
+        parent::configure($config);
     }
     
-    //EportfolioFreigabe::hasAccess($user_id, $seminar_id, $chapter_id)
     public static function hasAccess($user_id, $seminar_id, $chapter_id)
     {
         
@@ -56,7 +44,9 @@ class EportfolioFreigabe extends SimpleORMap
         
         if ($hasAccess || $isOwner) {
             return true;
-        } else return false;
+        } else {
+            return false;
+        }
     }
     
     /**
@@ -90,11 +80,6 @@ class EportfolioFreigabe extends SimpleORMap
                 EportfolioActivity::addActivity($seminar_id, $chapter_id, 'freigabe-entfernt');
             }
         }
-    }
-    
-    public static function getUserWithAccess($seminar_id, $chapter_id)
-    {
-        return self::findBySQL('Seminar_id = :seminar_id AND block_id = :chapter_id', [':seminar_id' => $seminar_id, ':chapter_id' => $chapter_id]);
     }
     
     public static function hasAccessSince($user_id, $chapter_id)
