@@ -33,12 +33,12 @@
         </thead>
         <tbody>
             <?php $courses = Eportfoliomodel::getPortfolioVorlagen();
-            foreach ($courses as $thisPortfolio):?>
+            foreach ($courses as $portfolio):?>
                 <tr>
-                    <td><?= $thisPortfolio->getFullName(); ?></td>
+                    <td><?= $portfolio->getFullName(); ?></td>
                     <td><?= ShowController::getCourseBeschreibung($portfolio->id); ?></td>
                     <td class="actions">
-                        <a href="<?= URLHelper::getLink('plugins.php/courseware/courseware', ['cid' => $portfolio->id]); ?>"
+                        <a href="<?= URLHelper::getUrl('plugins.php/courseware/courseware', ['cid' => $portfolio->id]); ?>"
                            title="<?= _('Portfolio-Vorlage bearbeiten') ?>">
                             <?= Icon::create('edit', 'clickable') ?>
                         </a>
