@@ -35,7 +35,7 @@
             <?php $courses = Eportfoliomodel::getPortfolioVorlagen();
             foreach ($courses as $thisPortfolio):?>
                 <tr>
-                    <td><?= $thisPortfolio->getName(); ?></td>
+                    <td><?= $thisPortfolio->getFullName(); ?></td>
                     <td><?= ShowController::getCourseBeschreibung($portfolio->id); ?></td>
                     <td class="actions">
                         <a href="<?= URLHelper::getLink('plugins.php/courseware/courseware', ['cid' => $portfolio->id]); ?>"
