@@ -16,14 +16,14 @@ class blocksettingsController extends StudipController
     public function index_action($cid = null)
     {
         // set vars
+        $this->course  = Course::findCurrent();
         $userid        = $GLOBALS["user"]->id;
         $this->cid     = Request::option('cid');
         $this->vorlage = Eportfoliomodel::findBySeminarId($this->cid);
         
-        $seminar = new Seminar($this->cid);
         
         # Aktuelle Seite
-        PageLayout::setTitle('ePortfolio-Vorlage - Einstellungen: ' . $seminar->getName());
+        PageLayout::setTitle('ePortfolio-Vorlage - Einstellungen: ' . $this->course->getFullname());
         
         //autonavigation
         Navigation::activateItem("course/blocksettings");
@@ -37,15 +37,15 @@ class blocksettingsController extends StudipController
         Sidebar::get()->addWidget($views);
         
         //get list chapters
-        $chapters = Eportfoliomodel::getChapters($this->cid);
+        $chapters = Eportfoliomodel::getChapters($this->course->id);
         
         //get viewer information
-        $viewers = $seminar->getMembers('autor');
+        $viewers = $this->course->getMembersWithStatus('autor');
         
         
         //push to template
         $this->userid        = $userid;
-        $this->title         = $seminar->name;
+        $this->title         = $this->course->getFullname();
         $this->chapterList   = $chapters; //$arrayList;
         $this->viewerList    = $viewers; //$return_arr;
         $this->numberChapter = count($chapters);

@@ -6,17 +6,17 @@
     </tr>
     <tbody>
         <? foreach ($chapterList as $chapter): ?>
-            <?= $this->render_partial('blocksettings/_block.php', ['chapter' => $chapter, 'cid' => $cid]); ?>
+            <?= $this->render_partial('blocksettings/_block.php', ['chapter' => $chapter, 'cid' => $course->id]); ?>
         <? endforeach; ?>
     </tbody>
 </table>
 
 
 <script type="text/javascript"
-        src="<?php echo $GLOBALS['ABSOLUTE_URI_STUDIP'] . 'plugins_packages/uos/EportfolioPlugin/assets/js/eportfolio.js'; ?>"></script>
+        src="<?= $GLOBALS['ABSOLUTE_URI_STUDIP'] . 'plugins_packages/uos/EportfolioPlugin/assets/js/eportfolio.js'; ?>"></script>
 <script type="text/javascript">
 
-    var cid = '<?php echo $cid; ?>';
+    var cid = '<?php echo $course->id; ?>';
 
     function setLockBlock(blockid, obj, cid) {
         var status = $(obj).children('span').hasClass('glyphicon-ok');
@@ -26,9 +26,9 @@
             url: url,
             success: function (data) {
                 if (status === false) {
-                    $(obj).empty().append('<span class="glyphicon glyphicon-ok"><?php echo Icon::create('accept', 'clickable'); ?></span>');
+                    $(obj).empty().append('<span class="glyphicon glyphicon-ok"><?= Icon::create('accept', Icon::ROLE_CLICKABLE); ?></span>');
                 } else {
-                    $(obj).empty().append('<span class="glyphicon glyphicon-remove"><?php echo Icon::create('decline', 'clickable'); ?></span>');
+                    $(obj).empty().append('<span class="glyphicon glyphicon-remove"><?= Icon::create('decline', Icon::ROLE_CLICKABLE); ?></span>');
                 }
 
             }

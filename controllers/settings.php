@@ -30,16 +30,16 @@ class settingsController extends StudipController
     {
         
         $userid          = $GLOBALS["user"]->id;
-        $cid             = Course::findCurrent()->id;
-        $this->isVorlage = Eportfoliomodel::isVorlage($cid);
-        $eportfolio      = Eportfoliomodel::findBySeminarId($cid);
+        $course          = Course::findCurrent();
+        $this->isVorlage = Eportfoliomodel::isVorlage($course->id);
+        $eportfolio      = Eportfoliomodel::findBySeminarId($course->id);
         
-        $seminar = new Seminar($cid);
+        $seminar = new Seminar($course->id);
         
         # Aktuelle Seite
-        PageLayout::setTitle('ePortfolio - Zugriffsrechte: ' . $seminar->getName());
+        PageLayout::setTitle('ePortfolio - Zugriffsrechte: ' . $course->getFullname());
         if ($this->isVorlage) {
-            PageLayout::setTitle('ePortfolio-Vorlage - Zugriffsrechte: ' . $seminar->getName());
+            PageLayout::setTitle('ePortfolio-Vorlage - Zugriffsrechte: ' . $course->getFullname());
         }
         
         //autonavigation
@@ -53,31 +53,37 @@ class settingsController extends StudipController
         $views->addLink(_('Rechteverwaltung'), '#')->setActive(true);
         Sidebar::get()->addWidget($views);
         
-        $chapters      = Eportfoliomodel::getChapters($cid);
-        $viewers       = $seminar->getMembers('autor');
-        $supervisor_id = $this->getSupervisorGroupOfPortfolio($cid);
+        $chapters      = Eportfoliomodel::getChapters($course->id);
+        $viewers       = $course->getMembersWithStatus('autor');
+        $supervisor_id = $this->getSupervisorGroupOfPortfolio($course->id);
         
-        if ($_POST["setSupervisor"]) {
+        if (Request::get('setSupervisor')) {
             $supervisorId           = $_POST["supervisorId"];
             $access_array           = ['viewer' => 0];
             $access_array_serialize = serialize($access_array);
             
-            
             $query     = "UPDATE eportfolio SET supervisor_id = :supervisorId WHERE Seminar_id = :cid";
             $statement = DBManager::get()->prepare($query);
-            $statement->execute([':supervisorId' => $supervisorId, ':cid' => $cid]);
-            $query     = "INSERT INTO seminar_user (seminar_id, user_id, status, visible, eportfolio_access) VALUES (:cid, :supervisorId, 'dozent', 1, :access_array_serialize)";
+            $statement->execute([
+                ':supervisorId' => $supervisorId,
+                ':cid'          => $course->id
+            ]);
+            $query     = "INSERT INTO seminar_user (seminar_id, user_id, status, visible, eportfolio_access)
+                    VALUES (:cid, :supervisorId, 'dozent', 1, :access_array_serialize)";
             $statement = DBManager::get()->prepare($query);
-            $statement->execute([':supervisorId' => $supervisorId, ':cid' => $cid, ':access_array_serialize' => $access_array_serialize]);
+            $statement->execute([
+                ':supervisorId'           => $supervisorId,
+                ':cid'                    => $course->id,
+                ':access_array_serialize' => $access_array_serialize
+            ]);
         }
         
         
-        if ($_POST["setViewer"]) {
-            $viewerId               = $_POST["viewerId"];
-            $access_array_serialize = serialize($access_array);
+        if (Request::get('setViewer')) {
+            $viewerId               = Request::get('viewerId');
             $eportfolio_access      = [];
             
-            $list = $this->getCurrentChapter($cid);
+            $list = $this->getCurrentChapter($course->id);
             
             foreach ($list as $key => $value) {
                 $eportfolio_access[$value] = 1;
@@ -87,12 +93,12 @@ class settingsController extends StudipController
             
             $query     = "INSERT INTO seminar_user (seminar_id, user_id, status, visible) VALUES (:cid, :viewerId, 'autor', 1)";
             $statement = DBManager::get()->prepare($query);
-            $statement->execute([':viewerId' => $viewerId, ':cid' => $cid]);
+            $statement->execute([':viewerId' => $viewerId, ':cid' => $course->id]);
             
             $query     = "INSERT INTO eportfolio_user (user_id, Seminar_id, eportfolio_id, status, eportfolio_access, owner)
                     VALUES (:viewerId, :cid, :eportfolio_id, 'autor', :json, 0)";
             $statement = DBManager::get()->prepare($query);
-            $statement->execute([':viewerId' => $viewerId, ':cid' => $cid, ':eportfolio_id' => $eportfolio->eportfolio_id, ':json' => $json]);
+            $statement->execute([':viewerId' => $viewerId, ':cid' => $course->id, ':eportfolio_id' => $eportfolio->eportfolio_id, ':json' => $json]);
         }
         
         if (Request::get('saveChanges')) {
@@ -105,7 +111,7 @@ class settingsController extends StudipController
             . "OR CONCAT(auth_user_md5.Nachname, \" \", auth_user_md5.Vorname) LIKE :input "
             . "OR auth_user_md5.username LIKE :input)"
             . "AND auth_user_md5.user_id NOT IN "
-            . "(SELECT eportfolio_user.user_id FROM eportfolio_user WHERE eportfolio_user.Seminar_id = '" . $cid . "')  "
+            . "(SELECT eportfolio_user.user_id FROM eportfolio_user WHERE eportfolio_user.Seminar_id = '" . $course->id . "')  "
             . "ORDER BY Vorname, Nachname ",
             _("NUtzer suchen"), "username");
         
@@ -113,17 +119,16 @@ class settingsController extends StudipController
             ->setLinkText(_('Zugriffsrechte vergeben'))
             ->setTitle(_('NutzerInnen zur Verwaltung von Zugriffsrechten hinzufügen'))
             ->setSearchObject($search_obj)
-            ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/settings/addZugriff/' . $cid))
+            ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/settings/addZugriff/' . $course->id))
             ->render();
         
-        $this->cid           = $cid;
+        $this->cid           = $course->id;
         $this->userid        = $userid;
-        $this->title         = $seminar->name;
+        $this->title         = $course->getFullname();
         $this->chapterList   = $chapters;
         $this->viewerList    = $viewers;
         $this->numberChapter = count($chapters);
         $this->supervisorId  = $supervisor_id;
-        $this->access        = $access;
     }
     
     public function setAccess_action($user_id, $seminar_id, $chapter_id, $status)
@@ -181,9 +186,10 @@ class settingsController extends StudipController
         $eportfolio    = Eportfoliomodel::findBySeminarId($id);
         $eportfolio_id = $eportfolio->eportfolio_id;
         $userRole      = 'autor';
-    
+        
         $db        = DBManager::get();
-        $query     = "INSERT INTO eportfolio_user (user_id, Seminar_id, eportfolio_id, status, owner) VALUES (:userId, :id, :eportfolio_id, 'autor', 0)";
+        $query     = "INSERT INTO eportfolio_user (user_id, Seminar_id, eportfolio_id, status, owner)
+                    VALUES (:userId, :id, :eportfolio_id, 'autor', 0)";
         $statement = $db->prepare($query);
         
         

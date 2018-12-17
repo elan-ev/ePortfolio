@@ -58,7 +58,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     
     public function getTabNavigation($course_id)
     {
-        $tabs = [];
+        $tabs     = [];
         $isDozent = $GLOBALS['perm']->have_studip_perm('dozent', $course_id);
         
         //Veranstaltungsreiter in Vorlesung
@@ -81,20 +81,23 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
             
         } else if ($this->isPortfolio() || $this->isVorlage()) {
             if ($isDozent) {
-                $navigation = new Navigation('Übersicht', PluginEngine::getURL($this, compact('cid'), 'eportfolioplugin', true));
+                $navigation = new Navigation(
+                    _('Übersicht'),
+                    PluginEngine::getURL($this, ['cid' => $course_id], 'eportfolioplugin', true)
+                );
                 $navigation->setImage(Icon::create('group4', 'info_alt'));
                 $navigation->setActiveImage(Icon::create('group4', 'info'));
             }
         }
         
         $owner = Eportfoliomodel::isOwner($course_id, $GLOBALS['user']->id);
-        
-        if ($this->isPortfolio() && $owner) {
+        $isDozent = true;
+        if (!$this->isPortfolio() && $owner) {
             $navigationSettings = new Navigation('Zugriffsrechte', PluginEngine::getURL($this, compact('cid'), 'settings', true));
             $navigationSettings->setImage(Icon::create('admin', 'info_alt'));
             $navigationSettings->setActiveImage(Icon::create('admin', 'info'));
             $tabs['settings'] = $navigationSettings;
-        } else if ($isDozent == true && $this->isVorlage()) {
+        } else if ($isDozent == true && !$this->isVorlage()) {
             $navigationSettings = new Navigation('Einstellungen', PluginEngine::getURL($this, compact('cid'), 'blocksettings', true));
             $navigationSettings->setImage(Icon::create('admin', 'info_alt'));
             $navigationSettings->setActiveImage(Icon::create('admin', 'info'));
@@ -243,9 +246,9 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     {
         if (($this->isPortfolio() || $this->isVorlage()) && Navigation::hasItem('/course/mooc_courseware')) {
             if ($this->isVorlage()) {
-                Navigation::getItem('/course/mooc_courseware')->setTitle(Vorlage);
+                Navigation::getItem('/course/mooc_courseware')->setTitle('Vorlage');
             } else {
-                Navigation::getItem('/course/mooc_courseware')->setTitle(ePortfolio);
+                Navigation::getItem('/course/mooc_courseware')->setTitle('ePortfolio');
             }
             
             //default Courseware-Hilfe ersetzen
