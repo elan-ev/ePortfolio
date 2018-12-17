@@ -91,13 +91,13 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         }
         
         $owner = Eportfoliomodel::isOwner($course_id, $GLOBALS['user']->id);
-        $isDozent = true;
-        if (!$this->isPortfolio() && $owner) {
+        
+        if ($this->isPortfolio() && $owner) {
             $navigationSettings = new Navigation('Zugriffsrechte', PluginEngine::getURL($this, compact('cid'), 'settings', true));
             $navigationSettings->setImage(Icon::create('admin', 'info_alt'));
             $navigationSettings->setActiveImage(Icon::create('admin', 'info'));
             $tabs['settings'] = $navigationSettings;
-        } else if ($isDozent == true && !$this->isVorlage()) {
+        } else if ($isDozent == true && $this->isVorlage()) {
             $navigationSettings = new Navigation('Einstellungen', PluginEngine::getURL($this, compact('cid'), 'blocksettings', true));
             $navigationSettings->setImage(Icon::create('admin', 'info_alt'));
             $navigationSettings->setActiveImage(Icon::create('admin', 'info'));
