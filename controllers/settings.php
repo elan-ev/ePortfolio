@@ -149,15 +149,10 @@ class settingsController extends StudipController
     
     public function getCurrentChapter($id)
     {
-        $arrayChapter = [];
-        $query        = "SELECT id FROM mooc_blocks WHERE seminar_id = :id AND type = 'Chapter'";
-        $statement    = DBManager::get()->prepare($query);
-        $statement->execute([':id' => $id]);
-        foreach ($statement->fetchAll() as $key) {
-            array_push($arrayChapter, $key[id]);
-        }
-        
-        return $arrayChapter;
+        return DBManager::get()->fetchAll(
+            "SELECT id FROM mooc_blocks WHERE seminar_id = :id AND type = 'Chapter'",
+            [':id' => $id]
+        );
     }
     
     /**
@@ -186,18 +181,18 @@ class settingsController extends StudipController
         $eportfolio    = Eportfoliomodel::findBySeminarId($id);
         $eportfolio_id = $eportfolio->eportfolio_id;
         $userRole      = 'autor';
+    
+        $db        = DBManager::get();
+        $query     = "INSERT INTO eportfolio_user (user_id, Seminar_id, eportfolio_id, status, owner) VALUES (:userId, :id, :eportfolio_id, 'autor', 0)";
+        $statement = $db->prepare($query);
+        
         
         foreach ($mp->getAddedUsers() as $userId) {
             $seminar->addMember($userId, $userRole);
-            
-            $db        = DBManager::get();
-            $query     = "INSERT INTO eportfolio_user (user_id, Seminar_id, eportfolio_id, status, owner) VALUES (:userId, :id, :eportfolio_id, 'autor', 0)";
-            $statement = $db->prepare($query);
             $statement->execute([':id' => $id, ':userId' => $userId, ':eportfolio_id' => $eportfolio_id]);
         }
         
         $this->redirect('settings/index/' . $id);
-        
     }
     
     public function deleteUserAccess($userId, $cid)

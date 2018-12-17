@@ -499,7 +499,7 @@ class Eportfoliomodel extends SimpleORMap
     public static function createPortfolioForUser($group_id, $user_id)
     {
         $db          = DBManager::get();
-        $groupname   = new Seminar($group_id);
+        $groupname   = Seminar::GetInstance($group_id);
         $groupid     = Course::findCurrent()->id;
         $group       = EportfolioGroup::find($group_id);
         $sem_type_id = Eportfoliomodel::getPortfolioSemId();

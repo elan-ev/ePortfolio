@@ -1,5 +1,10 @@
 <?
 
+/**
+ * Class ajaxsupervisorController
+ * @deprecated
+ * Ich glaub, der Code wird nicht mehr genutzt
+ */
 class ajaxsupervisorController extends StudipController
 {
     public function __construct($dispatcher)

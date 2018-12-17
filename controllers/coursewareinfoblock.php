@@ -19,7 +19,6 @@ class CoursewareinfoblockController extends StudipController
         PageLayout::setTitle('ePortfolio');
     }
     
-    
     public function index_action()
     {
     }
@@ -54,8 +53,8 @@ class CoursewareinfoblockController extends StudipController
                 $newarray["access"] = $key["eportfolio_access"];
                 
                 $userinfo              = User::find($key["user_id"]);
-                $newarray['firstname'] = $userinfo[Vorname];
-                $newarray['lastname']  = $userinfo[Nachname];
+                $newarray['firstname'] = $userinfo['Vorname'];
+                $newarray['lastname']  = $userinfo['Nachname'];
                 
                 // $userAccess = json_decode($key["eportfolio_access"]);
                 // print_r($userAccess);
@@ -105,8 +104,8 @@ class CoursewareinfoblockController extends StudipController
             $statement->execute([':cid' => $cid]);
             $userId                    = $statement->fetchAll()[0][0];
             $supervisor                = User::find($userId);
-            $infoboxArray['firstname'] = $supervisor[Vorname];
-            $infoboxArray['lastname']  = $supervisor[Nachname];
+            $infoboxArray['firstname'] = $supervisor['Vorname'];
+            $infoboxArray['lastname']  = $supervisor['Nachname'];
             $infoboxArray['userid']    = $userId;
             $infoboxArray['cid']       = $cid;
             

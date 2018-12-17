@@ -20,11 +20,11 @@ class livesearchController extends StudipController
         $return_arr = [];
         
         // set vars
-        $cid    = $_POST["cid"];
+        $cid = Request::get('cid');
         
         //set ajax vars
-        $user_status = $_POST["status"];
-        $val         = $_POST["val"];
+        $user_status = Request::get('status');
+        $val         = Request::get('val');
         
         // empty input
         if ($val == "") {
@@ -45,18 +45,20 @@ class livesearchController extends StudipController
             $search_query = $statement->fetchAll();
         }
         
+        $query     = "SELECT * FROM seminar_user WHERE Seminar_id = :cid AND user_id = :user_id_viewer";
+        $statement = DBManager::get()->prepare($query);
+        
         foreach ($search_query as $key) {
             
-            $user_id_viewer = $key[user_id];
-            $query          = "SELECT * FROM seminar_user WHERE Seminar_id = :cid AND user_id = :user_id_viewer";
-            $statement      = DBManager::get()->prepare($query);
+            $user_id_viewer = $key['user_id'];
+            
             $statement->execute([':cid' => $cid, ':user_id_viewer' => $user_id_viewer]);
             
             if (empty($statement->fetchAll())) {
                 $arrayOne             = [];
-                $arrayOne["Vorname"]  = $key[Vorname];
-                $arrayOne["Nachname"] = $key[Nachname];
-                $arrayOne["userid"]   = $key[user_id];
+                $arrayOne["Vorname"]  = $key['Vorname'];
+                $arrayOne["Nachname"] = $key['Nachname'];
+                $arrayOne["userid"]   = $key['user_id'];
                 
                 array_push($return_arr, $arrayOne);
             }

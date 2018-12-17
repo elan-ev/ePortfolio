@@ -62,10 +62,7 @@ class EportfoliopluginController extends StudipController
     
     public function index_action()
     {
-        
-        //set AutoNavigation/////
         Navigation::activateItem("course/eportfolioplugin");
-        ////////////////////////
         
         $userid          = $GLOBALS["user"]->id;
         $cid             = Course::findCurrent()->id;
@@ -96,7 +93,7 @@ class EportfoliopluginController extends StudipController
         $this->owner        = $owner;
         
         $this->group_id  = $eportfolio->group_id;
-        $this->templates = EportfolioGroupTemplates::getGroupTemplates($eportfolio->group_id);
+        $this->templates = array_map('Seminar::GetInstance',EportfolioGroupTemplates::getGroupTemplates($eportfolio->group_id));
         
     }
     
@@ -126,10 +123,10 @@ class EportfoliopluginController extends StudipController
     
     public function checkIfTemplate($id)
     {
-        $query     = "SELECT template_id FROM eportfolio WHERE seminar_id = :id";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute([':id' => $id]);
-        return $statement->fetchAll()[0][0];
+        return DBManager::get()->fetchColumn(
+            "SELECT template_id FROM eportfolio WHERE seminar_id = ?",
+            [$id]
+        );
     }
     
     public function changeTitle()
@@ -143,16 +140,19 @@ class EportfoliopluginController extends StudipController
     {
         $sem = Course::findCurrent();
         $sem->delete();
-        PageLayout::postMessage(MessageBox::success());
+        PageLayout::postSuccess(_('Das Portfolio wurde erfolgreich gelöscht'));
         
-        $this->redirect(PluginEngine::GetURL($this->plugin, [], "show"));
+        $this->redirect('show/index');
     }
     
     public function infobox($cid, $owner_id, $selected)
     {
         $infoboxArray = [];
-      
-        if ($this->isOwner($cid, $owner_id) == true) {
+        
+        if (Eportfoliomodel::isOwner($cid, $owner_id) == true) {
+            /**
+             * Funktioniert dieser Block überhaupt?
+             */
             $infoboxArray["owner"] = true;
             $infoboxArray["users"] = [];
             
@@ -166,8 +166,8 @@ class EportfoliopluginController extends StudipController
                 $newarray["access"] = $key["eportfolio_access"];
                 
                 $userinfo              = User::find($key["user_id"]);
-                $newarray['firstname'] = $userinfo[Vorname];
-                $newarray['lastname']  = $userinfo[Nachname];
+                $newarray['firstname'] = $userinfo['Vorname'];
+                $newarray['lastname']  = $userinfo['Nachname'];
                 
                 $access = unserialize($newarray["access"]);
                 
@@ -183,14 +183,14 @@ class EportfoliopluginController extends StudipController
             }
             
         } else {
-            //get owner Id
-            $query     = "SELECT owner_id FROM eportfolio WHERE Seminar_id = :cid";
-            $statement = DBManager::get()->prepare($query);
-            $statement->execute([':cid' => $cid]);
-            $userId                    = $statement->fetchAll()[0][0];
-            $supervisor                = User::find($userId);
-            $infoboxArray['firstname'] = $supervisor[Vorname];
-            $infoboxArray['lastname']  = $supervisor[Nachname];
+            $sql = "
+            SELECT
+                auth_user_md5.Vorname as firstname,
+                auth_user_md5.Nachname as lastname
+            FROM auth_user_md5
+            JOIN eportfolio ON eportfolio.owner_id = auth_user_md5.user_id
+            WHERE eportfolio.Seminar_id = ?";
+            $infoboxArray = DBManager::get()->fetchOne($sql, [$cid]);
         }
         
         print_r(json_encode($infoboxArray));

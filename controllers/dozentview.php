@@ -1,5 +1,11 @@
 <?
 
+/**
+ * Class dozentviewController
+ * @deprecated
+ *
+ * Ich glaube, der Code wird nirgends genutzt
+ */
 class dozentviewController extends StudipController
 {
     public function __construct($dispatcher)
