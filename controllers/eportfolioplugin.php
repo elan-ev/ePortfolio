@@ -62,7 +62,9 @@ class EportfoliopluginController extends StudipController
     
     public function index_action()
     {
-        Navigation::activateItem("course/eportfolioplugin");
+        if(Navigation::hasItem('course/eportfolioplugin')) {
+            Navigation::activateItem('course/eportfolioplugin');
+        }
         
         $userid          = $GLOBALS["user"]->id;
         $cid             = Course::findCurrent()->id;
