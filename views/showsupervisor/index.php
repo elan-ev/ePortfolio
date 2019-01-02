@@ -197,15 +197,15 @@
                                                 <?php $x = 0; ?>
                                                 <? foreach ($favVorlagen as $vorlage): ?>
                                                     <? foreach (Eportfoliomodel::getChapters($vorlage) as $chapter): ?>
-                                                        <?php $current_block_id = Eportfoliomodel::getUserPortfilioBlockId($userPortfolioId, $chapter[id]); ?>
+                                                        <?php $current_block_id = Eportfoliomodel::getUserPortfilioBlockId($userPortfolioId, $chapter['id']); ?>
                                                         
                                                         <? if ($current_block_id): ?>
-                                                            <div class="col-sm-4 member-kapitelname"><?php echo $chapter[title] ?></div>
+                                                            <div class="col-sm-4 member-kapitelname"><?= $chapter['title'] ?></div>
                                                             <div class="col-sm-8">
                                                                 <div class="row member-icons">
                                                                     <div class="col-sm-4">
                                                                         <? if (Eportfoliomodel::checkKapitelFreigabe($current_block_id)): ?>
-                                                                            <?php $new_freigabe = LastVisited::chapter_last_visited($current_block_id, $user) < EportfolioFreigabe::hasAccessSince($supervisorGroupId, $current_block_id); ?>
+                                                                            <? $new_freigabe = LastVisited::chapter_last_visited($current_block_id, $user->id) < EportfolioFreigabe::hasAccessSince($supervisorGroupId, $current_block_id); ?>
                                                                             <? if ($new_freigabe): ?>
                                                                                 <?= Icon::create('accept+new', 'clickable'); ?>
                                                                             <? else: ?>
