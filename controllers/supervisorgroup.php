@@ -70,8 +70,7 @@ class SupervisorgroupController extends StudipController
     
     private function getFirstGroupId()
     {
-        $query = DBManager::get()->fetch("SELECT id FROM supervisor_group")->fetchAll();
-        return $query[0]['id'];
+        return DBManager::get()->fetchFirst("SELECT id FROM supervisor_group");
     }
     
     public function addUser_action($group)
