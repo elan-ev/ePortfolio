@@ -38,6 +38,7 @@ class EportfolioGroup extends SimpleORMap
                 $users[$a->user_id] = $a->user;
             }
         });
+        
         return $users;
     }
     
@@ -254,8 +255,8 @@ class EportfolioGroup extends SimpleORMap
     public static function getPortfolioIDsFromUserinGroup($group_id, $user_id)
     {
         return DBManager::get()->fetchFirst(
-            "SELECT `Seminar_id` FROM `eportfolio` WHERE `owner_id` = :owner_id AND `group_id` = :group_id",
-            [':owner_id' => $user_id, ':group_id' => $group_id]
+            "SELECT `Seminar_id` FROM `eportfolio` WHERE `owner_id` = ? AND `group_id` = ?",
+            [$user_id, $group_id]
         );
     }
     

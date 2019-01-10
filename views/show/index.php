@@ -36,7 +36,7 @@
             foreach ($courses as $portfolio):?>
                 <tr>
                     <td><?= $portfolio->getFullName(); ?></td>
-                    <td><?= ShowController::getCourseBeschreibung($portfolio->id); ?></td>
+                    <td><?= htmlReady($portfolio->beschreibung)?></td>
                     <td class="actions">
                         <a href="<?= URLHelper::getUrl('plugins.php/courseware/courseware', ['cid' => $portfolio->id]); ?>"
                            title="<?= _('Portfolio-Vorlage bearbeiten') ?>">
@@ -73,21 +73,21 @@
         </tr>
     </thead>
     <tbody>
-        <?php $countPortfolios = 0; ?>
+        
         <?php $myportfolios = Eportfoliomodel::getMyPortfolios(); ?>
         <?php foreach ($myportfolios as $portfolio): ?>
-            <?php $thisPortfolio = new Seminar($portfolio);
-            $countPortfolios++; ?>
             <tr>
                 <td>
-                    <a href="<?= URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', ['cid' => $portfolio]); ?>">
-                        <?= $thisPortfolio->getName(); ?>
+                    <a href="<?= URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', ['cid' => $portfolio->id]); ?>">
+                        <?= $portfolio->name; ?>
                     </a>
                 </td>
-                <td><?= ShowController::getCourseBeschreibung($portfolio); ?></td>
-                <td style="text-align: center;"><?= ShowController::countViewer($portfolio); ?></td>
+                <td><?= htmlReady($portfolio->beschreibung); ?></td>
+                <td style="text-align: center;">
+                    <?= ShowController::countViewer($portfolio->id); ?>
+                </td>
                 <td class="actions">
-                    <a href="<?= URLHelper::getLink('plugins.php/courseware/courseware', ['cid' => $portfolio]); ?>"
+                    <a href="<?= URLHelper::getLink('plugins.php/courseware/courseware', ['cid' => $portfolio->id]); ?>"
                        title="<?= _('Portfolio bearbeiten') ?>">
                         <?= Icon::create('edit', 'clickable') ?>
                     </a>
@@ -115,15 +115,15 @@
     <tbody>
         <? $myAccess = ShowController::getAccessPortfolio(); ?>
         <? foreach ($myAccess as $portfolio): ?>
-            <? $thisPortfolio = new Seminar($portfolio); ?>
-            <tr class='insert_tr'>
+            <tr class="insert_tr">
                 <td>
-                    <a href="<?= URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', ['cid' => $portfolio]); ?>">
-                        <?= $thisPortfolio->getName(); ?></a>
+                    <a href="<?= URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', ['cid' => $portfolio->id]); ?>">
+                        <?= $portfolio->name; ?>
+                    </a>
                 </td>
                 <td></td>
                 <td>
-                    <?= ShowController::getOwnerName($thisPortfolio->getId()); ?>
+                    <?= ShowController::getOwnerName($portfolio->id); ?>
                 </td>
             </tr>
         <? endforeach; ?>

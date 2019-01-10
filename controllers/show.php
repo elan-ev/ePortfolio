@@ -39,7 +39,6 @@ class ShowController extends StudipController
         Navigation::activateItem('/profile/eportfolioplugin');
     }
     
-    
     public function index_action()
     {
         $this->user = $GLOBALS['user'];
@@ -47,45 +46,28 @@ class ShowController extends StudipController
     
     public function getAccessPortfolio()
     {
-        $query     = "SELECT Seminar_id FROM eportfolio_user WHERE user_id = :userid AND owner = '0'";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute([':userid' => $GLOBALS["user"]->id]);
-        
-        return $statement->fetchAll();
+        return Course::findBySQL(
+            'INNER JOIN `eportfolio_user` ON `eportfolio_user`.`Seminar_id` = `seminare`.`Seminar_id`
+            WHERE `eportfolio_user`.`user_id` = ? AND `eportfolio_user`.`owner`= "0"',
+            [$GLOBALS['user']->id]
+        );
     }
-    
-    public function getCourseBeschreibung($cid)
-    {
-        
-        $query     = "SELECT Beschreibung FROM seminare WHERE Seminar_id = :cid";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute([':cid' => $cid]);
-        return $statement->fetchAll()[0]['Beschreibung'];
-        
-    }
-    
+
     public function getOwnerName($cid)
     {
-        $query     = "SELECT * FROM eportfolio WHERE Seminar_id = :cid";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute([':cid' => $cid]);
-        $ownerid = $statement->fetchAll()[0]["owner_id"];
+        $sql = "SELECT CONCAT(a.Vorname, ' ', a.Nachname)
+            FROM eportfolio e
+            JOIN auth_user_md5 a ON a.user_id = e.owner_id
+            WHERE e.Seminar_id = ?
+        ";
         
-        $query     = "SELECT * FROM auth_user_md5 WHERE user_id = :ownerid";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute([':ownerid' => $ownerid]);
-        $result = $statement->fetchAll();
-        $name   = $result[0]["Vorname"] . " " . $result[0]["Nachname"];
-        return $name;
+        return DBManager::get()->fetchColumn($sql, [$cid]);
     }
     
     //TODO refactoring gehrt zu ePortfoliomodel
     public function countViewer($cid)
     {
-        $query     = "SELECT COUNT(Seminar_id) FROM eportfolio_user WHERE Seminar_id = :cid AND owner = 0";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute([':cid' => $cid]);
-        echo $statement->fetchAll()[0][0];
+        return  DBManager::get()->fetchColumn("SELECT COUNT(Seminar_id) FROM eportfolio_user WHERE Seminar_id = ? AND owner = 0", [$cid]);
     }
     
     public function createvorlage_action()
@@ -125,9 +107,10 @@ class ShowController extends StudipController
         $eportfolio    = new Seminar();
         $eportfolio_id = $eportfolio->createId();
         
-        $query         = "INSERT INTO eportfolio (Seminar_id, eportfolio_id, owner_id) VALUES (:sem_id, :eportfolio_id, :userid)";
-        $statement     = DBManager::get()->prepare($query);
+        $query     = "INSERT INTO eportfolio (Seminar_id, eportfolio_id, owner_id, group_id) VALUES (:sem_id, :eportfolio_id, :userid, '')";
+        $statement = DBManager::get()->prepare($query);
         $statement->execute([':sem_id' => $sem_id, ':eportfolio_id' => $eportfolio_id, ':userid' => $userid]); //table eportfolio
+        
         $query     = "INSERT INTO eportfolio_user(user_id, Seminar_id, eportfolio_id, owner) VALUES (:userid, :Seminar_id , :eportfolio_id, 1)";
         $statement = DBManager::get()->prepare($query);
         $statement->execute([':Seminar_id' => $sem_id, ':eportfolio_id' => $eportfolio_id, ':userid' => $userid]); //table eportfollio_user
@@ -173,7 +156,7 @@ class ShowController extends StudipController
         
         //table eportfolio
         $values    = ['sem_id' => $sem_id, 'eportfolio_id' => $eportfolio_id, 'userid' => $userid];
-        $query     = "INSERT INTO eportfolio (Seminar_id, eportfolio_id, owner_id) VALUES (:sem_id, :eportfolio_id, :userid)";
+        $query     = "INSERT INTO eportfolio (Seminar_id, eportfolio_id, owner_id, group_id) VALUES (:sem_id, :eportfolio_id, :userid, '')";
         $statement = DBManager::get()->prepare($query);
         $statement->execute($values);
         

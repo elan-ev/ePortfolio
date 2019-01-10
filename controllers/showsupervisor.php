@@ -93,6 +93,7 @@ class ShowsupervisorController extends StudipController
         }
         $this->courseName = $this->course->name;
         $this->member     = EportfolioGroup::getGroupMember($this->course->id);
+        
         $this->portfolios = Eportfoliomodel::getPortfolioVorlagen();
     }
     
@@ -148,13 +149,12 @@ class ShowsupervisorController extends StudipController
     
     public function createportfolio_action($master)
     {
-        
         $this->seminar_list = [];
         $masterid           = $master;
         $groupid            = Course::findCurrent()->id;
         $group              = EportfolioGroup::find($groupid);
         
-        $member = EportfolioGroup::getGroupMember($groupid);;
+        $members = EportfolioGroup::getGroupMember($groupid);
         $groupowner        = $group->owner_id;
         $groupname         = new Seminar($groupid);
         $supervisorgroupid = EportfolioGroup::getSupervisorGroupId($groupid);
@@ -163,13 +163,13 @@ class ShowsupervisorController extends StudipController
          * Jeden User in der Gruppe einzeln behandeln
          * **/
         
-        foreach ($member as $user_id) {
+        foreach ($members as $member) {
             
             /**
              * Überprüfen ob es für den Nutzer schon ein Portfolio-Seminar gibt
              * **/
             
-            $portfolio_id = EportfolioGroup::getPortfolioIDsFromUserinGroup($groupid, $user_id);
+            $portfolio_id = EportfolioGroup::getPortfolioIDsFromUserinGroup($groupid, $member->id);
             
             if (!empty($portfolio_id)) {
                 
@@ -188,7 +188,7 @@ class ShowsupervisorController extends StudipController
                  * in seminar_list anfügen
                  * **/
                 
-                $portfolio_id_add = EportfolioModel::createPortfolioForUser($groupid, $user_id);
+                $portfolio_id_add = EportfolioModel::createPortfolioForUser($groupid, $member->id);
                 array_push($this->seminar_list, $portfolio_id_add);
                 
             }
@@ -202,9 +202,8 @@ class ShowsupervisorController extends StudipController
         
         VorlagenCopy::copyCourseware(new Seminar($masterid), $this->seminar_list);
         EportfolioActivity::addVorlagenActivity($groupid, User::findCurrent()->id);
-        
+        die;
         $this->redirect('showsupervisor?cid=' . $groupid);
-        
     }
     
     public function delete_action($cid)

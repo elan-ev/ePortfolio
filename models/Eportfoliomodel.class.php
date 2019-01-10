@@ -51,6 +51,7 @@ class Eportfoliomodel extends SimpleORMap
     
     public static function getPortfolioVorlagen()
     {
+        
         $query = "
             SELECT  DISTINCT `seminare`.*
             FROM `seminare`
@@ -75,21 +76,11 @@ class Eportfoliomodel extends SimpleORMap
     
     public static function getMyPortfolios()
     {
-        $userid       = $GLOBALS["user"]->id;
-        $myportfolios = [];
-        
-        $semClass  = Config::get()->getValue('SEM_CLASS_PORTFOLIO');
-        $db        = DBManager::get();
-        $query     = "SELECT Seminar_id FROM eportfolio WHERE owner_id = :userid";
-        $statement = $db->prepare($query);
-        $statement->execute([':userid' => $userid]);
-        
-        foreach ($statement->fetchAll() as $key) {
-            if (Course::find($key[Seminar_id])->status == $semClass) {
-                array_push($myportfolios, $key[Seminar_id]);
-            }
-        }
-        return $myportfolios;
+        return Course::findBySQL(
+            'INNER JOIN `eportfolio` ON `eportfolio`.`Seminar_id` = `seminare`.`Seminar_id`
+            WHERE `eportfolio`.`owner_id` = ? AND `seminare`.`status` = ?',
+            [$GLOBALS["user"]->id, Config::get()->getValue('SEM_CLASS_PORTFOLIO')]
+        );
     }
     
     /**

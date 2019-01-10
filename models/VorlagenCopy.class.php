@@ -25,7 +25,9 @@ class VorlagenCopy
             
             $destination = $tempDir . '/' . $file['id'];
             mkdir($destination);
-            copy($file['path'], $destination . '/' . $file['filename']);
+            if(file_exists($file['path'])) {
+                copy($file['path'], $destination . '/' . $file['filename']);
+            }
         }
         
         //write export xml-data file

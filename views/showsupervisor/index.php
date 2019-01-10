@@ -2,7 +2,8 @@
     <div id="wrapper_table_tamplates" style="margin-top: 30px;">
 
         <table id="table_templates" class="default">
-            <caption>Portfolio Vorlagen
+            <caption>
+                <?= _('Portfolio Vorlagen')?>
                 <span class="actions">
                     <a data-dialog="size=auto;reload-on-close" href="<?= $controller->url_for('show/createvorlage') ?>">
                     <?= Icon::create('add', 'clickable')->asImg(20, tooltip2(_('Neue Vorlage erstellen')) + ['style' => 'cusros: pointer']) ?>
@@ -61,10 +62,11 @@
                             <? endif ?>
                         </td>
                         <td style="text-align: center;">
-                            <?php $groupHasTemplate = EportfolioGroupTemplates::checkIfGroupHasTemplate($id, $portfolio->id) === false ?>
+                            <?php $groupHasTemplate = EportfolioGroupTemplates::checkIfGroupHasTemplate($id, $portfolio->id)?>
                             <a href="<?= URLHelper::getLink('plugins.php/courseware/courseware', ['cid' => $portfolio->id]); ?>">
                                 <?= Icon::create('edit', Icon::ROLE_CLICKABLE, ['title' => sprintf(_('Portfolio-Vorlage bearbeiten.'))]) ?>
                             </a>
+                           
                             <? if ($member && !$groupHasTemplate): ?>
                                 <a data-confirm="<?= _('Vorlage an Teilnehmende verteilen') ?>"
                                    href="<?= $controller->url_for('showsupervisor/createportfolio/' . $portfolio->id) ?>">

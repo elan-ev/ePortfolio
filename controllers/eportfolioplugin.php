@@ -96,7 +96,6 @@ class EportfoliopluginController extends StudipController
         
         $this->group_id  = $eportfolio->group_id;
         $this->templates = array_map('Seminar::GetInstance',EportfolioGroupTemplates::getGroupTemplates($eportfolio->group_id));
-        
     }
     
     public function getCardInfos($cid)
