@@ -13,6 +13,7 @@
             <colgroup>
                 <col width="30%">
                 <col width="30%">
+                <col width="10%">
                 <col width="30%">
                 <col width="10%">
                 <col width="5%">
@@ -21,6 +22,7 @@
                 <tr class="sortable">
                     <th><?= _('Titel der Vorlage') ?></th>
                     <th><?= _('Beschreibung') ?></th>
+                    <th><?= _('Erstellt') ?></th>
                     <th><?= _('Details') ?></th>
                     <th><?= _('Aktionen') ?></th>
                     <th><?= _('Anzeigen') ?></th>
@@ -32,6 +34,7 @@
                     <tr>
                         <td><?= htmlReady($portfolio->getFullName()) ?></td>
                         <td><?= htmlReady($portfolio->beschreibung) ?></td>
+                        <td><?= htmlReady(date('d.m.Y', $portfolio->mkdate)) ?></td>
                         <td>
                             <?php if (EportfolioGroupTemplates::checkIfGroupHasTemplate($id, $portfolio->id)): ?>
                                 <div title="<?= _('Verteilt von') ?>">
