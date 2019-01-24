@@ -224,9 +224,7 @@
                                                                             <?= Icon::create('file', 'inactive'); ?>
                                                                     </div>
                                                                     <div class="col-sm-4">
-                                                                        <? if (Eportfoliomodel::checkSupervisorResonanz($current_block_id) == true): ?>
-                                                                            <?= Icon::create('forum', 'clickable'); ?>
-                                                                        <? endif ?>
+                                                                        
                                                                     </div>
                                                                 </div>
                                                             </div>
