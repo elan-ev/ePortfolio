@@ -56,7 +56,8 @@ class Eportfoliomodel extends SimpleORMap
             SELECT  DISTINCT `seminare`.*
             FROM `seminare`
             JOIN `seminar_user` USING(`Seminar_id`)
-            WHERE `seminare`.`status` = ? AND `seminar_user`.`status` IN ('autor', 'tutor', 'dozent')
+            WHERE `seminare`.`status` = ? AND `seminar_user`.`status` IN ('autor', 'tutor', 'dozent') 
+            ORDER BY `mkdate` DESC
         ";
         return DBManager::get()->fetchAll($query, [Config::get()->SEM_CLASS_PORTFOLIO_VORLAGE], 'Course::buildExisting');
     }
