@@ -180,7 +180,7 @@
                                                     $icon = Icon::ROLE_STATUS_YELLOW;
                                                     break;
                                                 case -1:
-                                                    $icon = Icon::ROLE_STATUS_REDOLE;
+                                                    $icon = Icon::ROLE_STATUS_RED;
                                                     break;
                                             }
                                             ?>
