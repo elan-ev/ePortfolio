@@ -51,15 +51,15 @@ class Eportfoliomodel extends SimpleORMap
     
     public static function getPortfolioVorlagen()
     {
-        
         $query = "
             SELECT  DISTINCT `seminare`.*
             FROM `seminare`
             JOIN `seminar_user` USING(`Seminar_id`)
-            WHERE `seminare`.`status` = ? AND `seminar_user`.`status` IN ('autor', 'tutor', 'dozent') 
+            WHERE `seminare`.`status` = ? AND `seminar_user`.`status` IN ('autor', 'tutor', 'dozent')
+            AND `seminar_user`.`user_id` = ?
             ORDER BY `mkdate` DESC
         ";
-        return DBManager::get()->fetchAll($query, [Config::get()->SEM_CLASS_PORTFOLIO_VORLAGE], 'Course::buildExisting');
+        return DBManager::get()->fetchAll($query, [Config::get()->SEM_CLASS_PORTFOLIO_VORLAGE, User::findCurrent()->id], 'Course::buildExisting');
     }
     
     public static function findBySeminarId($sem_id)
