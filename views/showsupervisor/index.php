@@ -218,11 +218,7 @@
                                                                         <? endif ?>
                                                                     </div>
                                                                     <div class="col-sm-4">
-                                                                        <? if (Eportfoliomodel::checkSupervisorNotiz($current_block_id) == true): ?>
-                                                                            <?= Icon::create('file', 'clickable'); ?>
-                                                                        <? else: ?>
                                                                             <?= Icon::create('file', 'inactive'); ?>
-                                                                        <? endif ?>
                                                                     </div>
                                                                     <div class="col-sm-4">
                                                                         <? if (Eportfoliomodel::checkSupervisorResonanz($current_block_id) == true): ?>
