@@ -114,7 +114,7 @@
                 <div class="row" style="text-align: center;">
                     <div class="col-sm-2">
                         <?php if (!$statusKapitel = Eportfoliomodel::checkKapitelFreigabe($kapitel['id'])): ?>
-                            <?php $new_freigabe = LastVisited::chapter_last_visited($kapitel['id'], $user_id) < EportfolioFreigabe::hasAccessSince($supervisorGroupId, $kapitel['id']); ?>
+                            <?php $new_freigabe = object_get_visit($portfolio_id, 'sem', 'last', false, $user_id) < EportfolioFreigabe::hasAccessSince($supervisorGroupId, $kapitel['id']); ?>
                             <?php if ($new_freigabe): ?>
                                 <?= Icon::create('accept+new', 'clickable'); ?>
                             <?php else: ?>
@@ -125,17 +125,9 @@
                         <?php endif; ?>
                     </div>
                     <div class="col-sm-2">
-                        <?php if (Eportfoliomodel::checkSupervisorNotiz($kapitel['id']) == true): ?>
-                            <?= Icon::create('file', 'clickable'); ?>
-                        <?php else: ?>
-                            <?= Icon::create('file', 'inactive'); ?>
-                        <?php endif; ?>
+                        <?= Icon::create('file', 'inactive'); ?>
                     </div>
                     <div class="col-sm-2">
-                        <?php if (Eportfoliomodel::checkSupervisorResonanz($kapitel['id'])): ?>
-                            <?= Icon::create('forum'); ?>
-                        <?php else: ?>
-                        <?php endif; ?>
                     </div>
                     <div class="col member-aktionen-detail">
                         <a href="<?php echo URLHelper::getLink("plugins.php/courseware/courseware?cid=" . $portfolio_id . "&selected=" . $kapitel['id']); ?>">Anschauen</a>
