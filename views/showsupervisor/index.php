@@ -80,7 +80,7 @@
                             <? endif ?>
                         </td>
                         <td style="text-align: center;">
-                            <? if ($member && !$groupHasTemplate): ?>
+                            <? if ($member && $groupHasTemplate): ?>
                                 <? if (EportfolioGroup::checkIfMarkedAsFav($id, $portfolio->id) == 0): ?>
                                     <a href="<?= $controller->url_for('showsupervisor/addAsFav/' . $id . '/' . $portfolio->id); ?>">
                                         <?= Icon::create('visibility-invisible', Icon::ROLE_CLICKABLE) ?>
