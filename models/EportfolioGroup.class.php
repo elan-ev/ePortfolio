@@ -209,7 +209,7 @@ class EportfolioGroup extends SimpleORMap
     public static function getAllMarkedAsFav($group_id)
     {
         return DBManager::get()->fetchFirst(
-            "SELECT `Seminar_id` FROM `eportfolio_group_templates` WHERE `group_id` = :group_id AND `favorite` = 1",
+            "SELECT `Seminar_id` FROM `eportfolio_group_templates` WHERE `group_id` = :group_id AND `favorite` = 1 ORDER BY `mkdate` ASC",
             [':group_id' => $group_id]
         );
     }
