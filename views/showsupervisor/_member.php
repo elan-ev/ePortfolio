@@ -54,7 +54,7 @@
                             <?php $x = 0; ?>
                             <? foreach ($favVorlagen as $vorlage): ?>
                                 <? foreach (Eportfoliomodel::getChapters($vorlage) as $chapter): ?>
-                                    <?php $current_block_id = Eportfoliomodel::getUserPortfilioBlockId($userPortfolioId, $chapter['id']); ?>
+                                    <?php $current_block_id = Eportfoliomodel::getUserPortfolioBlockId($userPortfolioId, $chapter['id']); ?>
 
                                     <? if ($current_block_id): ?>
                                         <div class="col-sm-4 member-kapitelname"><?= $chapter['title'] ?></div>

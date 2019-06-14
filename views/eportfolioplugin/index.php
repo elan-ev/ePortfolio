@@ -79,7 +79,7 @@
 
                         <div class="row template-kapitel-info">
                             <?php foreach (Eportfoliomodel::getChapters($template->id) as $chapter): ?>
-                                <?php $current_block_id = Eportfoliomodel::getUserPortfilioBlockId($cid, $chapter['id']); ?>
+                                <?php $current_block_id = Eportfoliomodel::getUserPortfolioBlockId($cid, $chapter['id']); ?>
                                 <div class="col-sm-4 member-kapitelname"><?php echo $chapter['title'] ?></div>
                                 <div class="col-sm-8">
                                     <div class="row member-icons">

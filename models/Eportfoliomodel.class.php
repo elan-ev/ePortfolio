@@ -19,19 +19,19 @@ class Eportfoliomodel extends SimpleORMap
     protected static function configure($config = [])
     {
         $config['db_table'] = 'eportfolio';
-        
+
         $config['belongs_to']['seminar'] = [
             'class_name'  => 'Seminar',
             'foreign_key' => 'Seminar_id',
             'on_delete'   => 'delete',];
-        
+
         $config['belongs_to']['owner'] = [
             'class_name'  => 'User',
             'foreign_key' => 'owner_id',];
-        
+
         parent::configure($config);
     }
-    
+
     public static function getAllSupervisors($cid)
     {
         $supervisoren = [];
@@ -41,14 +41,14 @@ class Eportfoliomodel extends SimpleORMap
         }
         return $supervisoren[0];
     }
-    
+
     public function getOwnerFullname()
     {
         $user     = $this->owner;
         $fullname = $user->vorname . ' ' . $user->nachname;
         return $fullname;
     }
-    
+
     public static function getPortfolioVorlagen()
     {
         $query = "
@@ -61,20 +61,20 @@ class Eportfoliomodel extends SimpleORMap
         ";
         return DBManager::get()->fetchAll($query, [Config::get()->SEM_CLASS_PORTFOLIO_VORLAGE, User::findCurrent()->id], 'Course::buildExisting');
     }
-    
+
     public static function findBySeminarId($sem_id)
     {
         $eportfolio = Eportfoliomodel::findOneBySQL('seminar_id = :id', [':id' => $sem_id]);
         return $eportfolio;
     }
-    
+
     public static function isOwner($sem_id, $user_id)
     {
         $eportfolio = Eportfoliomodel::findBySeminarId($sem_id);
         return $eportfolio->owner_id == $user_id;
     }
-    
-    
+
+
     public static function getMyPortfolios()
     {
         return Course::findBySQL(
@@ -83,29 +83,33 @@ class Eportfoliomodel extends SimpleORMap
             [$GLOBALS["user"]->id, Config::get()->getValue('SEM_CLASS_PORTFOLIO')]
         );
     }
-    
+
     /**
      * Gibt ein Array(title, id) mit allen Oberkapiteln einer Veranstaltung aus
      **/
     public static function getChapters($id)
     {
-        $query     = "SELECT `title`, `id` FROM `mooc_blocks` WHERE `seminar_id` = :id AND `type` = 'Chapter' AND `parent_id` != '0' ORDER BY `position` ASC";
+        $query     = "SELECT `title`, `id` FROM `mooc_blocks`
+            WHERE `seminar_id` = :id AND `type` = 'Chapter' AND `parent_id` != '0'
+            ORDER BY `position` ASC";
         $statement = DBManager::get()->prepare($query);
         $statement->execute([':id' => $id]);
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
-    
+
     /**
      * Gibt ein Array(title, id) mit allen Unterkapiteln eines Oberkapitels aus
      **/
     public static function getSubChapters($chapter_id)
     {
-        $query     = "SELECT `title`, `id`  FROM `mooc_blocks` WHERE `parent_id` = :parent_id AND `type` = 'Subchapter' ORDER BY `position` ASC";
+        $query     = "SELECT `title`, `id`  FROM `mooc_blocks`
+            WHERE `parent_id` = :parent_id AND `type` = 'Subchapter'
+            ORDER BY `position` ASC";
         $statement = DBManager::get()->prepare($query);
         $statement->execute([':parent_id' => $chapter_id]);
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
-    
+
     /**
      * Prüft ob in in einem Kaptiel einer Courseware eine Resonanz auf
      * eine Supervisorennotiz gegeben wurde
@@ -116,14 +120,14 @@ class Eportfoliomodel extends SimpleORMap
         $statement = DBManager::get()->prepare($query);
         $statement->execute([':id' => $chapter_id]);
         $subchapters = $statement->fetchAll(PDO::FETCH_ASSOC);
-        
+
         foreach ($subchapters as $subchapter) {
             if (Eportfoliomodel::checkSupervisorResonanzInSubchapter($subchapter['id'])) {
                 return true;
             }
         }
     }
-    
+
     /**
      * Prüft ob in in einem Unterkaptiel einer Courseware eine Resonanz auf
      * eine Supervisorennotiz gegeben wurde
@@ -134,19 +138,19 @@ class Eportfoliomodel extends SimpleORMap
         $statement = DBManager::get()->prepare($query);
         $statement->execute([':value' => $subchapter_id]);
         $sections = $statement->fetchAll(PDO::FETCH_ASSOC);
-        
+
         $query = "SELECT id FROM mooc_blocks WHERE parent_id = :valueSub AND type ='PortfolioBlockSupervisor' ";
         $stm   = DBManager::get()->prepare($query);
-        
+
         $query = "SELECT json_data FROM mooc_fields WHERE block_id = :block_id AND name = 'supervisorcontent'";
         $stm2  = DBManager::get()->prepare($query);
-        
+
         foreach ($sections as $section) {
-            
+
             $stm->execute([':valueSub' => $section['id']]);
             $supervisorNotizBloecke = $stm->fetchAll(PDO::FETCH_ASSOC);
             foreach ($supervisorNotizBloecke as $block) {
-                
+
                 $stm2->execute([':block_id' => $block['id']]);
                 $supervisorFeedback = $stm2->fetchAll();
                 if ($supervisorFeedback[0]['json_data'] != '""') {
@@ -155,7 +159,7 @@ class Eportfoliomodel extends SimpleORMap
             }
         }
     }
-    
+
     /**
      * Prüft ob einn Kapitel freigeschaltet wurde
      **/
@@ -163,7 +167,7 @@ class Eportfoliomodel extends SimpleORMap
     {
         return (int)DBManager::get()->fetchColumn("SELECT COUNT(*) FROM eportfolio_freigaben WHERE block_id = :block_id", [':block_id' => $chapter_id]) > 0;
     }
-    
+
     /**
      * Prüft ob es eine SupervisorNotiz in einem Kapitel gibt
      **/
@@ -180,18 +184,18 @@ class Eportfoliomodel extends SimpleORMap
             }
         }
     }
-    
+
     /**
      * Gibt die passende BlockId des EPortfolios anhand der VorlagenblockID zurück
      * $seminar_id ist hier die seminar_id des Portfolios des Users
      **/
-    public static function getUserPortfilioBlockId($seminar_id, $block_id)
+    public static function getUserPortfolioBlockId($seminar_id, $block_id)
     {
         return DBManager::get()->fetchColumn(
             "SELECT `block_id` FROM `eportfolio_block_infos` WHERE `seminar_id` = :seminar_id AND `vorlagen_block_id` = :block_id"
             , [':seminar_id' => $seminar_id, ':block_id' => $block_id]);
     }
-    
+
     /**
      * Prüft ob ein Kapitel vom Nutzer selber erstellt wurde
      **/
@@ -201,7 +205,7 @@ class Eportfoliomodel extends SimpleORMap
                 "SELECT COUNT(`vorlagen_block_id`) FROM `eportfolio_block_infos` WHERE `block_id` = :block_id AND `Seminar_id` = :seminar_id",
                 [':block_id' => $chapter_id, ':seminar_id' => $seminar_id]) > 0;
     }
-    
+
     /**
      * Prüft ob ein Unterkapitel vom Nutzer selber erstellt wurde
      **/
@@ -212,7 +216,7 @@ class Eportfoliomodel extends SimpleORMap
             return true;
         }
     }
-    
+
     /**
      * Liefert Timestamp eines Kapitels
      **/
@@ -223,7 +227,7 @@ class Eportfoliomodel extends SimpleORMap
             [':block_id' => $block_id]
         );
     }
-    
+
     /**
      * Liefert den Timestamp des als letzt hinzugefügtes Templates
      * in einer Gruppe
@@ -235,7 +239,7 @@ class Eportfoliomodel extends SimpleORMap
             [':group_id' => $group_id]
         );
     }
-    
+
     /**
      * Liefert mkdate des Templates
      **/
@@ -246,7 +250,7 @@ class Eportfoliomodel extends SimpleORMap
             [':group_id' => $group_id, ':seminar_id' => $seminar_id]
         );
     }
-    
+
     /**
      * liefert ParentId eines Blocks
      **/
@@ -257,25 +261,25 @@ class Eportfoliomodel extends SimpleORMap
             [':id' => $block_id]
         );
     }
-    
+
     public static function checkSupervisorNotizInUnterKapitel($subchapter_id)
     {
         $query     = "SELECT `id` FROM mooc_blocks WHERE parent_id = :value";
         $statement = DBManager::get()->prepare($query);
         $statement->execute([':value' => $subchapter_id]);
         $sections = $statement->fetchAll(PDO::FETCH_ASSOC);
-        
+
         $query = "SELECT `id` FROM mooc_blocks WHERE parent_id = :valueSub AND type ='PortfolioBlockSupervisor' ";
         $stm   = DBManager::get()->prepare($query);
-        
+
         $query = "SELECT `json_data` FROM mooc_fields WHERE block_id = :block_id AND name = 'content'";
         $stm2  = DBManager::get()->prepare($query);
         foreach ($sections as $section) {
-            
+
             $stm->execute([':valueSub' => $section['id']]);
             $supervisorNotizBloecke = $stm->fetchAll(PDO::FETCH_ASSOC);
             foreach ($supervisorNotizBloecke as $block) {
-                
+
                 $stm2->execute([':block_id' => $block['id']]);
                 $supervisorFeedback = $stm2->fetchAll();
                 if (!empty($supervisorFeedback[0]['json_data'])) {
@@ -284,7 +288,7 @@ class Eportfoliomodel extends SimpleORMap
             }
         }
     }
-    
+
     public static function isVorlage($id)
     {
         if (Course::findById($id)) {
@@ -299,7 +303,7 @@ class Eportfoliomodel extends SimpleORMap
             return false;
         }
     }
-    
+
     public static function getAllBlocksInOrder($id)
     {
         $db        = DBManager::get();
@@ -330,10 +334,10 @@ class Eportfoliomodel extends SimpleORMap
         }
         return $blocks;
     }
-    
+
     public static function sendNotificationToUser($case, $portfolio_id, $block_id, $user_id)
     {
-        
+
         $portfolio = Eportfoliomodel::findBySeminarId($portfolio_id);
         $owner     = $portfolio->getOwnerFullname();
         $link      = $GLOBALS['ABSOLUTE_URI_STUDIP'] . 'plugins.php/courseware/courseware?cid=' . $portfolio_id . '&selected=' . $block_id;
@@ -358,18 +362,18 @@ class Eportfoliomodel extends SimpleORMap
                 );
                 break;
         }
-        
-        
+
+
         $rec_uname = [];
         //id ist kein user sondern supervisorgruppe
         if (!User::find($user_id)) {
             $supervisor_group_user = SupervisorGroup::find($user_id)->user;
-            
+
             foreach ($supervisor_group_user as $group_user) {
                 $rec_uname[] = get_username($group_user->user_id);
             }
         } else $rec_uname[] = $user_id;
-        
+
         $messaging                = new messaging();
         $messaging->send_as_email = true;
         $messaging->insert_message(
@@ -386,8 +390,8 @@ class Eportfoliomodel extends SimpleORMap
             trim(Request::get("message_tags")) ?: null
         );
     }
-    
-    
+
+
     /**
      * Liefert die zuverbleibenden Tage (gerundet) zwischen
      * jetzt und Abgabetermin des passenden Templates
@@ -397,7 +401,7 @@ class Eportfoliomodel extends SimpleORMap
     {
         $deadline = EportfolioGroupTemplates::getDeadline($group_id, $template_id);
         $now      = time();
-        
+
         if ($now < $deadline) {
             $daysleft = abs($now - $deadline) / 60 / 60 / 24;
             return round($daysleft, 0);
@@ -405,7 +409,7 @@ class Eportfoliomodel extends SimpleORMap
             return 0;
         }
     }
-    
+
     /**
      * Liefert die Anzahl der Kapitel in einem Template
      **/
@@ -416,7 +420,7 @@ class Eportfoliomodel extends SimpleORMap
             [':template_id' => $template_id]
         );
     }
-    
+
     /**
      * Liefert die Anzahl der freigebenen Kapitel der Users
      * innerhalb eines verteilten Templates
@@ -426,14 +430,14 @@ class Eportfoliomodel extends SimpleORMap
         $return           = 0;
         $templateChapters = Eportfoliomodel::getChapters($template_id);
         foreach ($templateChapters as $chapter) {
-            $block_id = Eportfoliomodel::getUserPortfilioBlockId($user_template_id, $chapter[id]);
+            $block_id = Eportfoliomodel::getUserPortfolioBlockId($user_template_id, $chapter[id]);
             if (Eportfoliomodel::checkKapitelFreigabe($block_id)) {
                 $return++;
             }
         }
         return $return;
     }
-    
+
     /**
      * Liefert Fortschritt des Users in in einem Template
      **/
@@ -441,7 +445,7 @@ class Eportfoliomodel extends SimpleORMap
     {
         return round($shared / $all * 100, 0);
     }
-    
+
     /**
      * Liefert die Anzahl der Supervisornotizen innerhalb eines $templateStatus
      * einers Users
@@ -451,14 +455,14 @@ class Eportfoliomodel extends SimpleORMap
         $return           = 0;
         $templateChapters = Eportfoliomodel::getChapters($template_id);
         foreach ($templateChapters as $chapter) {
-            $block_id = Eportfoliomodel::getUserPortfilioBlockId($user_template_id, $chapter[id]);
+            $block_id = Eportfoliomodel::getUserPortfolioBlockId($user_template_id, $chapter[id]);
             if (Eportfoliomodel::checkSupervisorNotiz($block_id)) {
                 $return++;
             }
         }
         return $return;
     }
-    
+
     /**
      * Liefert einen CoursewareLink für das erste Kapitel eines Templates eines Users
      **/
@@ -471,7 +475,7 @@ class Eportfoliomodel extends SimpleORMap
             [':cid' => $seminar_id, ':vorlagenchapter' => $vorlagenchapter]);
         return URLHelper::getURL('plugins.php/courseware/courseware', ['cid' => $seminar_id, 'selected' => $portfolio_block_id->block_id]);
     }
-    
+
     public static function getLastOwnerEdit($sem_id)
     {
         $last_edit     = DBManager::get()->fetchColumn(
@@ -479,10 +483,10 @@ class Eportfoliomodel extends SimpleORMap
             [':id' => $sem_id]
         );
         $last_freigabe = EportfolioActivity::getLastFreigabeOfPortfolio($sem_id);
-        
+
         return max([$last_edit, $last_freigabe]);
     }
-    
+
     /**
      * TODO: Kann in createPortfolio_action evtl. eingebaut werden
      * Erstellt für einen User ein Portfolio
@@ -495,13 +499,13 @@ class Eportfoliomodel extends SimpleORMap
         $groupid     = Course::findCurrent()->id;
         $group       = EportfolioGroup::find($group_id);
         $sem_type_id = Eportfoliomodel::getPortfolioSemId();
-        
+
         $owner            = User::find($user_id);
         $owner_fullname   = $owner['Vorname'] . ' ' . $owner['Nachname'];
         $sem_name         = "Gruppenportfolio: " . $groupname->getName() . " (" . $owner_fullname . ")";
         $sem_description  = "Dieses Portfolio wurde Ihnen von einem Supervisor zugeteilt";
         $current_semester = Semester::findCurrent();
-        
+
         $sem              = new Seminar();
         $sem->Seminar_id  = $sem->createId();
         $sem->name        = $sem_name;
@@ -512,18 +516,18 @@ class Eportfoliomodel extends SimpleORMap
         $sem->institut_id = Config::Get()->STUDYGROUP_DEFAULT_INST;
         $sem->visible     = 0;
         $sem_id           = $sem->Seminar_id;
-        
+
         /**
          * TODO: Fehler beim $this->
          * andere Möglichkeit suchen den PluginPath zu bekommen
          * **/
-        
+
         //$avatar = CourseAvatar::getAvatar($sem_id);
         //$filename = sprintf('%s/%s',$this->plugin->getpluginPath(),'assets/images/avatare/eportfolio.png');
         //$avatar->createFrom($filename);
-        
+
         $sem->addMember($user_id, 'dozent'); // add user to his to seminar
-        
+
         /**
          * Alle Supervisoren hinzufügen
          * **/
@@ -531,9 +535,9 @@ class Eportfoliomodel extends SimpleORMap
         foreach ($supervisors as $supervisor) {
             $sem->addMember($supervisor, 'autor');
         }
-        
+
         $sem->store();
-        
+
         $eportfolio    = new Seminar();
         $eportfolio_id = $eportfolio->createId();
         $query         = "INSERT INTO eportfolio (Seminar_id, eportfolio_id, group_id, owner_id, template_id, supervisor_id) VALUES (:sem_id, :eportfolio_id, :groupid , :userid, :masterid, :groupowner)";
@@ -546,10 +550,10 @@ class Eportfoliomodel extends SimpleORMap
         $query     = "DELETE FROM mooc_blocks WHERE seminar_id = :sem_id AND type NOT LIKE 'Courseware'";
         $statement = $db->prepare($query);
         $statement->execute([':sem_id' => $sem_id]);
-        
+
         return $sem->Seminar_id;
     }
-    
+
     /**
      * Gibt eine Liste mit den Template_ids zurück
      * die einem Nutzer noch nicht verteilt wurden
@@ -558,20 +562,20 @@ class Eportfoliomodel extends SimpleORMap
     public static function getNotSharedTemplatesOfUserInGroup($group_id, $user_id, $portfolio_id)
     {
         $return = [];
-        
+
         $template_list = EportfolioGroupTemplates::getGroupTemplates($group_id);
         foreach ($template_list as $template) {
             $template_chapters = Eportfoliomodel::getChapters($template);
             foreach ($template_chapters as $chapter) {
-                if (!Eportfoliomodel::getUserPortfilioBlockId($portfolio_id, $chapter['id'])) {
+                if (!Eportfoliomodel::getUserPortfolioBlockId($portfolio_id, $chapter['id'])) {
                     array_push($return, $template);
                 }
             }
         }
-        
+
         return array_unique($return);
     }
-    
+
     public static function getPortfolioSemId()
     {
         foreach ($GLOBALS['SEM_TYPE'] as $id => $sem_type) { //get the id of ePortfolio Seminarclass
@@ -580,5 +584,5 @@ class Eportfoliomodel extends SimpleORMap
             }
         }
     }
-    
+
 }

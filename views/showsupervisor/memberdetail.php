@@ -137,7 +137,13 @@
                     <div class="col-sm-2">
                     </div>
                     <div class="col member-aktionen-detail">
-                        <a href="<?php echo URLHelper::getLink("plugins.php/courseware/courseware?cid=" . $portfolio_id . "&selected=" . $kapitel['id']); ?>">Anschauen</a>
+                        <? if (Eportfoliomodel::checkKapitelFreigabe($kapitel['id'])) : ?>
+                            <a href="<?php echo URLHelper::getLink("plugins.php/courseware/courseware?cid=" . $portfolio_id . "&selected=" . $kapitel['id']); ?>">Anschauen</a>
+                        <? else : ?>
+                            Nicht freigegeben
+                            <?= tooltipIcon("Anschauen nicht möglich, da Nutzer dieses Kapitel nicht freigegeben hat") ?>
+                        <? endif ?>
+
                         <?php if (Eportfoliomodel::checkSupervisorNotiz($kapitel['id'])): ?>
                             <a href="<?php echo URLHelper::getLink("plugins.php/courseware/courseware?cid=" . $portfolio_id . "&selected=" . $kapitel['id']); ?>">Feedback
                                 geben</a>
