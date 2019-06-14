@@ -11,7 +11,7 @@ class SetupPortfolioActivitiesTable extends Migration
 
     public function up () {
         $db = DBManager::get();
-        $db->exec("CREATE TABLE `eportfolio_activities` (
+        $db->exec("CREATE TABLE IF NOT EXISTS `eportfolio_activities` (
           `id` INT NOT NULL AUTO_INCREMENT,
           `group_id` varchar(32) NULL,
           `eportfolio_id` varchar(32) NULL,
@@ -30,7 +30,7 @@ class SetupPortfolioActivitiesTable extends Migration
 
 
         $db = DBManager::get();
-        $db->exec("DROP TABLE eportfolio_activities");
+        $db->exec("DROP TABLE IF EXISTS eportfolio_activities");
         SimpleORMap::expireTableScheme();
 
     }

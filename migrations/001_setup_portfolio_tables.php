@@ -8,11 +8,11 @@ class SetupPortfolioTables extends Migration
     {
         return 'add tables for portfolio plugin';
     }
-    
+
     public function up()
     {
         $db = DBManager::get();
-        $db->exec("CREATE TABLE `eportfolio` (
+        $db->exec("CREATE TABLE IF NOT EXISTS `eportfolio` (
           `Seminar_id` varchar(32) NOT NULL,
           `eportfolio_id` varchar(32) NOT NULL,
           `templateStatus` int(11) NOT NULL DEFAULT '0',
@@ -22,12 +22,12 @@ class SetupPortfolioTables extends Migration
           `settings` text,
           PRIMARY KEY (eportfolio_id)
         ) ");
-        $db->exec("CREATE TABLE `eportfolio_groups` (
+        $db->exec("CREATE TABLE IF NOT EXISTS `eportfolio_groups` (
           `seminar_id` varchar(32) NOT NULL,
           `owner_id` varchar(32) NOT NULL,
           PRIMARY KEY (seminar_id)
           )");
-        $db->exec("CREATE TABLE `eportfolio_user` (
+        $db->exec("CREATE TABLE IF NOT EXISTS `eportfolio_user` (
           `user_id` varchar(32) NOT NULL,
           `Seminar_id` varchar(32) NOT NULL,
           `eportfolio_id` varchar(32) NOT NULL,
@@ -35,18 +35,18 @@ class SetupPortfolioTables extends Migration
           `owner` int(11) NOT NULL,
           PRIMARY KEY (eportfolio_id, user_id)
           )");
-        $db->exec("CREATE TABLE `supervisor_group` (
+        $db->exec("CREATE TABLE IF NOT EXISTS `supervisor_group` (
           `id` varchar(32) NOT NULL,
           `supervisor_group_id` varchar(32) NOT NULL,
           `name` varchar(100) NOT NULL,
           PRIMARY KEY (id)
           )");
-        $db->exec("CREATE TABLE `supervisor_group_user` (
+        $db->exec("CREATE TABLE IF NOT EXISTS `supervisor_group_user` (
           `supervisor_group_id` varchar(32) NOT NULL,
           `user_id` varchar(32) NOT NULL,
           PRIMARY KEY (supervisor_group_id, user_id)
           )");
-        $db->exec("CREATE TABLE `eportfolio_group_templates` (
+        $db->exec("CREATE TABLE IF NOT EXISTS `eportfolio_group_templates` (
          `group_id` varchar(32) NOT NULL,
          `Seminar_id` varchar(32) NOT NULL,
          `favorite` int,
@@ -55,26 +55,26 @@ class SetupPortfolioTables extends Migration
          `verteilt_durch` varchar(32),
          PRIMARY KEY (group_id, Seminar_id)
          )");
-        
+
         SimpleORMap::expireTableScheme();
     }
-    
-    
+
+
     public function down()
     {
-        
-        
+
+
         $db = DBManager::get();
-        $db->exec("DROP TABLE eportfolio");
-        $db->exec("DROP TABLE eportfolio_user");
-        $db->exec("DROP TABLE eportfolio_groups");
-        $db->exec("DROP TABLE eportfolio_user");
-        $db->exec("DROP TABLE supervisor_group");
-        $db->exec("DROP TABLE supervisor_group_user");
-        $db->exec("DROP TABLE eportfolio_group_templates");
+        $db->exec("DROP TABLE IF EXISTS eportfolio");
+        $db->exec("DROP TABLE IF EXISTS eportfolio_user");
+        $db->exec("DROP TABLE IF EXISTS eportfolio_groups");
+        $db->exec("DROP TABLE IF EXISTS eportfolio_user");
+        $db->exec("DROP TABLE IF EXISTS supervisor_group");
+        $db->exec("DROP TABLE IF EXISTS supervisor_group_user");
+        $db->exec("DROP TABLE IF EXISTS eportfolio_group_templates");
         SimpleORMap::expireTableScheme();
-        
+
     }
-    
-    
+
+
 }

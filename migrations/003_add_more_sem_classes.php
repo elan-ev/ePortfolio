@@ -22,7 +22,7 @@ class AddMoreSemClasses extends Migration
 
         $db = DBManager::get();
 
-       
+
         //remove entry in sem_classes
         $name = "ePortfolio-Vorlage";
         $statement = $db->prepare("DELETE FROM sem_classes WHERE name = ?");
@@ -32,8 +32,10 @@ class AddMoreSemClasses extends Migration
         $nameType = "ePortfolio-Vorlage";
         $statement = $db->prepare("DELETE FROM sem_types WHERE name = ?");
         $statement->execute(array($nameType));
+
+        $db->exec("DELETE FROM config WHERE field = 'SEM_CLASS_PORTFOLIO_VORLAGE'");
     }
-  
+
     private function insertPortfolioVorlageSemClass()
     {
         $db = DBManager::get();
@@ -55,7 +57,7 @@ class AddMoreSemClasses extends Migration
             $statementSemTypes = $db->prepare("INSERT INTO sem_types SET name = ?, class = $id, mkdate = UNIX_TIMESTAMP(), chdate = UNIX_TIMESTAMP()");
             $statementSemTypes->execute(array($nameType));
             $type_id = $db->lastInsertId();
-            
+
             Config::get()->create('SEM_CLASS_PORTFOLIO_VORLAGE', array(
             'value'       => $type_id,
             'is_default'  => 0,
@@ -89,23 +91,23 @@ class AddMoreSemClasses extends Migration
         // Setting Mooc-courses default datafields: mooc should not to be disabled, courseware and mooc should be active
         $current_modules = $sem_class->getModules(); // get modules
         $current_modules['EportfolioPlugin']['activated'] = '1';
-        $current_modules['EportfolioPlugin']['sticky'] = '1'; 
+        $current_modules['EportfolioPlugin']['sticky'] = '1';
         $current_modules['Courseware']['activated'] = '1';   // set values
         $current_modules['Courseware']['sticky'] = '1'; // sticky = 1 -> can't be chosen in "more"-field of course
         $current_modules['CoreParticipants']['activated'] = '1';
-        $current_modules['CoreParticipants']['sticky'] = '0'; 
+        $current_modules['CoreParticipants']['sticky'] = '0';
         $current_modules['CoreDocuments']['activated'] = '0';
-        $current_modules['CoreDocuments']['sticky'] = '0'; 
+        $current_modules['CoreDocuments']['sticky'] = '0';
         $current_modules['CoreForum']['activated'] = '0';
-        $current_modules['CoreForum']['sticky'] = '1'; 
+        $current_modules['CoreForum']['sticky'] = '1';
         $current_modules['CoreOverview']['activated'] = '0';
-        $current_modules['CoreOverview']['sticky'] = '1'; 
+        $current_modules['CoreOverview']['sticky'] = '1';
         $current_modules['CoreAdmin']['activated'] = '0';
         $current_modules['CoreAdmin']['sticky'] = '1';
         $current_modules['CoreSchedule']['activated'] = '0';
-        $current_modules['CoreSchedule']['sticky'] = '1'; 
+        $current_modules['CoreSchedule']['sticky'] = '1';
         $current_modules['CoreWiki']['activated'] = '0';
-        $current_modules['CoreWiki']['sticky'] = '1'; 
+        $current_modules['CoreWiki']['sticky'] = '1';
         $current_modules['CoreElearningInterface']['activated'] = '0';
         $current_modules['CoreElearningInterface']['sticky'] = '1';
         $current_modules['CoreResources']['activated'] = '0';
@@ -122,7 +124,7 @@ class AddMoreSemClasses extends Migration
 
         return $id;
     }
-    
+
 
     private function validateUniqueness($name)
     {

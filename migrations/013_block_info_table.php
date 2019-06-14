@@ -11,7 +11,7 @@ class BlockInfoTable extends Migration
 
     public function up () {
         $db = DBManager::get();
-        $db->exec("CREATE TABLE `eportfolio_block_infos` (
+        $db->exec("CREATE TABLE IF NOT EXISTS `eportfolio_block_infos` (
           `block_id` int(11) NOT NULL,
           `Seminar_id` varchar(32) NOT NULL DEFAULT '0',
           `vorlagen_block_id` int(11) NOT NULL DEFAULT '0',
@@ -20,16 +20,16 @@ class BlockInfoTable extends Migration
           `chdate` int(11) NOT NULL,
           PRIMARY KEY (block_id)
         ) ");
-       
+
         SimpleORMap::expireTableScheme();
     }
 
 
     public function down () {
-        
+
 
         $db = DBManager::get();
-        $db->exec("DROP TABLE eportfolio_block_infos");    
+        $db->exec("DROP TABLE IF EXISTS eportfolio_block_infos");
         SimpleORMap::expireTableScheme();
 
     }
