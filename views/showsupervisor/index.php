@@ -88,7 +88,7 @@
                             <? if ($member && !$groupHasTemplate): ?>
                                 <a data-confirm="<?= _('Vorlage an Teilnehmende verteilen') ?>"
                                    href="<?= $controller->url_for('showsupervisor/createportfolio/' . $portfolio->id) ?>">
-                                    <?= Icon::create('add', Icon::ROLE_CLICKABLE, tooltip2(_('Portfolio-Vorlage an Gruppenmitglieder verteilen.')) + ['cursor' => 'pointer']) ?>
+                                    <?= Icon::create('share', Icon::ROLE_CLICKABLE, tooltip2(_('Portfolio-Vorlage an Gruppenmitglieder verteilen.')) + ['cursor' => 'pointer']) ?>
                                 </a>
                             <? else: ?>
                                 <?= Icon::create('check-circle', Icon::ROLE_CLICKABLE, tooltip2(_('Vorlage wurde in dieser Gruppe bereits verteilt.'))) ?>
