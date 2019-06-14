@@ -120,15 +120,15 @@
             <div class="col-sm-8">
                 <div class="row" style="text-align: center;">
                     <div class="col-sm-2">
-                        <?php if (!$statusKapitel = Eportfoliomodel::checkKapitelFreigabe($kapitel['id'])): ?>
+                        <?php if ($statusKapitel = Eportfoliomodel::checkKapitelFreigabe($kapitel['id'])): ?>
                             <?php $new_freigabe = object_get_visit($portfolio_id, 'sem', 'last', false, $user_id) < EportfolioFreigabe::hasAccessSince($supervisorGroupId, $kapitel['id']); ?>
                             <?php if ($new_freigabe): ?>
-                                <?= Icon::create('accept+new', 'clickable'); ?>
+                                <?= Icon::create('accept+new', 'status-green'); ?>
                             <?php else: ?>
-                                <?= Icon::create('accept', 'clickable'); ?>
+                                <?= Icon::create('accept', 'status-green'); ?>
                             <?php endif; ?>
                         <?php else: ?>
-                            <?= Icon::create('decline', 'inactive'); ?>
+                            <?= Icon::create('decline', 'status-red'); ?>
                         <?php endif; ?>
                     </div>
                     <div class="col-sm-2">

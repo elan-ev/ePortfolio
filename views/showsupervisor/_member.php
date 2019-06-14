@@ -64,12 +64,12 @@
                                                     <? if (Eportfoliomodel::checkKapitelFreigabe($current_block_id)): ?>
                                                         <? $new_freigabe = object_get_visit($userPortfolioId, 'sem', 'last', false, $user->id) < EportfolioFreigabe::hasAccessSince($supervisorGroupId, $current_block_id); ?>
                                                         <? if ($new_freigabe): ?>
-                                                            <?= Icon::create('accept+new', 'clickable'); ?>
+                                                            <?= Icon::create('accept+new', 'status-green'); ?>
                                                         <? else: ?>
-                                                            <?= Icon::create('accept', 'clickable'); ?>
+                                                            <?= Icon::create('accept', 'status-green'); ?>
                                                         <? endif ?>
                                                     <? else: ?>
-                                                        <?= Icon::create('decline', 'inactive'); ?>
+                                                        <?= Icon::create('decline', 'status-red'); ?>
                                                     <? endif ?>
                                                 </div>
                                                 <div class="col-sm-4">
