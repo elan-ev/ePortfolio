@@ -325,7 +325,16 @@
         </li>
         <li><?php echo Icon::create('file', 'inactive'); ?> keine Supervisionsanliegen freigeschaltet</li>
         <li><?php echo Icon::create('file', 'clickable'); ?> Supervisionsanliegen freigeschaltet</li>
-        <li><?php echo Icon::create('forum', 'clickable'); ?> Resonanz gegeben</li>
+        <li><?php echo Icon::create('forum', 'clickable'); ?> Feedback gegeben</li>
+
+        <li>
+            <?= Icon::create('span-full', Icon::ROLE_STATUS_GREEN); ?>
+            <?= Icon::create('span-full', Icon::ROLE_STATUS_YELLOW); ?>
+            <?= Icon::create('span-full', Icon::ROLE_STATUS_RED); ?>
+
+            Diese Status-Icons geben an, wie gut die Person in der Zeit liegt (bei Abgabeterminen)
+            <br> und ob alle Aufgaben bearbeitet wurden.
+        </li>
     </ul>
 </div>
 
