@@ -27,6 +27,3 @@
         </tr>
     <?php endforeach; ?>
 </table>
-
-<?php echo $mp; ?>
-

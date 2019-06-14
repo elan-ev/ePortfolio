@@ -41,22 +41,8 @@ class ShowsupervisorController extends StudipController
         }
 
 
-        # Aktuelle Seite
+        // Aktuelle Seite
         PageLayout::setTitle(Context::getHeaderLine() . '- ePortfolio Administration');
-
-        //sidebar
-        $sidebar = Sidebar::Get();
-
-        if ($this->course->id) {
-            $navcreate = new LinksWidget();
-            $navcreate->setTitle(_('Gruppen-Aktionen'));
-            $navcreate->addLink(
-                _('Supervisoren verwalten'),
-                $this->url_for('showsupervisor/supervisorgroup/' . $this->course->id, ['cid' => $this->course->id]),
-                Icon::create('edit', 'clickable')
-            );
-            $sidebar->addWidget($navcreate);
-        }
 
         Navigation::activateItem('course/eportfolioplugin');
 
@@ -214,12 +200,14 @@ class ShowsupervisorController extends StudipController
         $this->redirect(URLHelper::getLink("plugins.php/eportfolioplugin/showsupervisor", ['cid' => '']));
     }
 
-    public function supervisorgroup_action($group_Id)
+    public function supervisorgroup_action()
     {
+        Navigation::activateItem('/course/eportfolioplugin/supervisorgroup');
+
         $groupId         = Course::findCurrent()->id;
         $sem             = new Seminar($groupId);
         $this->groupName = $sem->getName();
-        PageLayout::setTitle(Context::getHeaderLine() . ' - Supervisoren verwalten');
+        PageLayout::setTitle(Context::getHeaderLine() . ' - Berechtigungen Portfolioarbeit');
         $supervisorgroupid = Eportfoliogroup::getSupervisorGroupId($groupId);
 
         $group         = new SupervisorGroup($supervisorgroupid);
@@ -239,13 +227,24 @@ class ShowsupervisorController extends StudipController
             _("Teilnehmer suchen"), "username");
 
         $this->mp = MultiPersonSearch::get('supervisorgroupSelectUsers')
-            ->setLinkText(_('Supervisoren hinzufügen'))
-            ->setTitle(_('Personen zur Supervisorgruppe hinzufügen'))
+            ->setLinkText(_('Weitere Zugriffsrechte vergeben'))
+            ->setLinkIconPath('')
+            ->setTitle(_('Personen Zugriffsrechte gewähren'))
             ->setSearchObject($search_obj)
             ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/supervisorgroup/addUser/' . $group->id, ['id' => $group_id, 'redirect' => $this->url_for('showsupervisor/supervisorgroup/' . $this->linkId)]))
             ->render();
 
         $this->usersOfGroup = $group->user;
+
+        // Sidebar
+        $sidebar = Sidebar::Get();
+
+        if ($this->course->id) {
+            $navcreate = new LinksWidget();
+            $navcreate->setTitle(_('Aktionen'));
+            $navcreate->addLinkFromHTML($this->mp, new Icon('community+add'));
+            $sidebar->addWidget($navcreate);
+        }
     }
 
     public function url_for($to = '')

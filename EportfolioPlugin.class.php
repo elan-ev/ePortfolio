@@ -73,6 +73,9 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
 
                 $item = new Navigation(_('Activity Feed'), PluginEngine::getURL($this, compact('cid'), 'showsupervisor/activityfeed', true));
                 $navigation->addSubNavigation('portfoliofeed', $item);
+
+                $item = new Navigation(_('Berechtigungen Portfolioarbeit'), PluginEngine::getURL($this, compact('cid'), 'showsupervisor/supervisorgroup', true));
+                $navigation->addSubNavigation('supervisorgroup', $item);
             } else {
                 $navigation = new Navigation('Portfolio-Arbeit', PluginEngine::getURL($this, compact('cid'), 'showstudent', true));
                 $navigation->setImage(Icon::create('group4', 'info_alt'));
