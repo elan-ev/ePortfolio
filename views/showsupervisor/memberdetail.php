@@ -1,6 +1,10 @@
 <div class="row">
     <div class="col-sm-2 member-avatar">
-        <?= Avatar::getAvatar($user_id, $userInfo['username'])->getImageTag(Avatar::MEDIUM, ['style' => 'margin-right: 0px; border-radius: 75px; height: 75px; width: 75px; border: 1px solid #28497c;', 'title' => htmlReady($userInfo['Vorname'] . " " . $userInfo['Nachname'])]); ?>
+        <?= Avatar::getAvatar($user_id, $user->username)
+            ->getImageTag(Avatar::MEDIUM, [
+                'style' => 'margin-right: 0px; border-radius: 75px; height: 75px; width: 75px; border: 1px solid #28497c;',
+                'title' => htmlReady($user->Vorname . " " . $user->Nachname)
+        ]); ?>
     </div>
     <div class="col-sm-5">
         <div class="member-name-detail">
@@ -10,6 +14,9 @@
             Portfoliogruppe: <?= $group_title ?><br>
             Letzte Änderung: <?= date('d.m.Y', Eportfoliomodel::getLastOwnerEdit($portfolio_id)) ?>
         </div>
+        <a href="<?= URLHelper::getURL('dispatch.php/messages/write?rec_uname=' .$user->username) ?>" target="_blank">
+            Nachricht schicken
+        </a>
     </div>
     <div class="col-sm-5">
         <div class="row row member-footer-box-detail">
@@ -94,7 +101,7 @@
             <div class="row member-content-icons">
                 <div class="col-sm-2">Freigabe</div>
                 <div class="col-sm-2">Notiz</div>
-                <div class="col-sm-2">Resonanz</div>
+                <div class="col-sm-2">Feedback</div>
                 <div class="col">Aktionen</div>
             </div>
         </div>
@@ -170,5 +177,5 @@
         </div>
     <?php endforeach; ?>
     <!-- <span class="label-selber">Eigenes</span -->
-
+    </div>
 </div>
