@@ -42,7 +42,7 @@ class ShowsupervisorController extends StudipController
 
 
         # Aktuelle Seite
-        PageLayout::setTitle('ePortfolio Administration');
+        PageLayout::setTitle(Context::getHeaderLine() . '- ePortfolio Administration');
 
         //sidebar
         $sidebar = Sidebar::Get();
@@ -219,7 +219,7 @@ class ShowsupervisorController extends StudipController
         $groupId         = Course::findCurrent()->id;
         $sem             = new Seminar($groupId);
         $this->groupName = $sem->getName();
-        PageLayout::setTitle(sprintf('%s - Supervisoren verwalten', $sem->getName()));
+        PageLayout::setTitle(Context::getHeaderLine() . ' - Supervisoren verwalten');
         $supervisorgroupid = Eportfoliogroup::getSupervisorGroupId($groupId);
 
         $group         = new SupervisorGroup($supervisorgroupid);
