@@ -52,7 +52,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
 
     public function initialize()
     {
-        PageLayout::addStylesheet($this->getPluginURL() . '/assets/style.css');
+        $this->addStylesheet('assets/style.less');
         PageLayout::addStylesheet($this->getPluginURL() . '/assets/flexboxgrid.min.css');
     }
 
