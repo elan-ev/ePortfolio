@@ -145,8 +145,9 @@
                         <? endif ?>
 
                         <?php if (Eportfoliomodel::checkSupervisorNotiz($kapitel['id'])): ?>
-                            <a href="<?php echo URLHelper::getLink("plugins.php/courseware/courseware?cid=" . $portfolio_id . "&selected=" . $kapitel['id']); ?>">Feedback
-                                geben</a>
+                            <a href="<?php echo URLHelper::getLink("plugins.php/courseware/courseware?cid=" . $portfolio_id . "&selected=" . $kapitel['id']); ?>">
+                                Notiz beantworten
+                            </a>
                         <?php endif; ?>
                     </div>
                 </div>
