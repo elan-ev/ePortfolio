@@ -44,10 +44,10 @@
 <div class="status-area">
     <h3>Status des Studenten</h3>
     <?php foreach ($templates
-    
+
     as $template_id): ?>
     <?php
-    $template = Course::findById($template_id);
+    $template = reset(Course::findById($template_id));
     $deadline = EportfolioGroupTemplates::getDeadline($group_id, $template_id);
     if ($deadline == 0) {
         $deadlineOutput = 'Kein Abgabedatum';
@@ -70,13 +70,13 @@
                 $icon = 'status-red';
                 break;
         }
-        
+
         if ($deadline == 0) {
             $icon = "inactive";
         }
         ?>
         <?php echo Icon::create('span-full', $icon); ?>
-        <b><?php echo $template->name ?></b> <?php echo $deadlineOutput ?>
+        <b><?= $template->name ?></b> <?php echo $deadlineOutput ?>
         <span class="template-infos-days-left">
       <?php if (!$deadline == 0) {
           echo "(noch " . Eportfoliomodel::getDaysLeft($group_id, $template_id) . " Tage)";
@@ -99,7 +99,7 @@
             </div>
         </div>
     </div>
-    
+
     <?php foreach ($chapters as $kapitel): ?>
         <?php $subchapter = Eportfoliomodel::getSubChapters($kapitel['id']); ?>
 
@@ -138,7 +138,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <?php foreach ($subchapter as $unterkapitel): ?>
                 <div class="col-sm-4 member-content-unterkapitel">
                     <?php echo $unterkapitel['title']; ?>
