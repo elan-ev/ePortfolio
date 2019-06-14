@@ -311,7 +311,7 @@ class ShowsupervisorController extends StudipController
         $this->template_id = $template_id;
 
         $timestamp    = EportfolioGroupTemplates::getDeadline($group_id, $template_id);
-        $this->abgabe = date('d.m.Y', $timestamp);
+        $this->abgabe = date('d.m.Y', $timestamp ?: time());
     }
 
     public function settemplatedates_action($group_id, $template_id)

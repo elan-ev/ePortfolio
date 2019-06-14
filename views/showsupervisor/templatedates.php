@@ -2,9 +2,10 @@
 
     <label>
       Abgabedatum:
-      <input required type="text" id="beginn" name="begin" data-date-picker='' value="<?php echo $abgabe; ?>"></input><br>
+      <input required type="text" id="beginn" name="begin" data-date-picker='' value="<?= $abgabe ?>"></input><br>
     </label>
 
-    <?= \Studip\Button::createAccept(_("Speichern")) ?>
-
+    <footer data-dialog-button>
+        <?= \Studip\Button::createAccept(_("Speichern")) ?>
+    </footer>
 </form>
