@@ -1,7 +1,7 @@
 <div>
     <div id="wrapper_table_tamplates" style="margin-top: 30px;">
 
-        <table id="table_templates" class="default">
+        <table id="table_templates" class="default collapsable tablesorter">
             <caption>
                 <?= _('Portfolio Vorlagen')?>
                 <span class="actions">
@@ -69,7 +69,7 @@
                             <a href="<?= URLHelper::getLink('plugins.php/courseware/courseware', ['cid' => $portfolio->id]); ?>">
                                 <?= Icon::create('edit', Icon::ROLE_CLICKABLE, ['title' => sprintf(_('Portfolio-Vorlage bearbeiten.'))]) ?>
                             </a>
-                           
+
                             <? if ($member && !$groupHasTemplate): ?>
                                 <a data-confirm="<?= _('Vorlage an Teilnehmende verteilen') ?>"
                                    href="<?= $controller->url_for('showsupervisor/createportfolio/' . $portfolio->id) ?>">
@@ -97,10 +97,10 @@
             </tbody>
         </table>
     </div>
-    
+
     <? if (empty($groupTemplates)): ?>
         <h4><?= _('Gruppenmitglieder') ?></h4>
-        
+
         <? if (!$member): ?>
             <?= MessageBox::info('Es sind noch keine Nutzer in der der Gruppe eingetragen'); ?>
         <? else: ?>
@@ -134,9 +134,9 @@
                     </tr>
                 <? endforeach; ?>
             </table>
-        
+
         <? endif; ?>
-    
+
     <? else: ?>
         <div class="grid-container">
             <div class="row member-container">
@@ -187,7 +187,7 @@
                                                     break;
                                             }
                                             ?>
-                                            
+
                                             <?= Icon::create('span-full', $icon);
                                             ?><br>
                                             <?= _('Studiengang etc') ?>
@@ -195,7 +195,7 @@
                                         </div>
                                     </div>
                                     <div class="col-sm-12">
-                                        
+
                                         <?php $favVorlagen = EportfolioGroup::getAllMarkedAsFav($id); ?>
                                         <div class="member-content">
                                             <div class="row">
@@ -203,7 +203,7 @@
                                                 <? foreach ($favVorlagen as $vorlage): ?>
                                                     <? foreach (Eportfoliomodel::getChapters($vorlage) as $chapter): ?>
                                                         <?php $current_block_id = Eportfoliomodel::getUserPortfilioBlockId($userPortfolioId, $chapter['id']); ?>
-                                                        
+
                                                         <? if ($current_block_id): ?>
                                                             <div class="col-sm-4 member-kapitelname"><?= $chapter['title'] ?></div>
                                                             <div class="col-sm-8">
@@ -224,18 +224,18 @@
                                                                             <?= Icon::create('file', 'inactive'); ?>
                                                                     </div>
                                                                     <div class="col-sm-4">
-                                                                        
+
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         <? else: ?>
                                                             <?php $x++; ?>
                                                         <? endif; ?>
-                                                        
+
                                                         <? if ($x == 1): ?>
                                                             <div class="verteilen-bandage">
                                                                 <p><?= _('Es wurden noch nicht alle Vorlagen verteilt. ') ?></p>
-                                                                
+
                                                                 <?php
                                                                 /**
                                                                  * wegen CSS problemen bei einem Link im Link, vorerst die Lösung über onClick via js
@@ -312,6 +312,14 @@
 
 
 <script type="text/javascript">
+
+        jQuery(function () {
+            jQuery("#table_templates").tablesorter({
+                sortList: [[0,0]],
+                cssAsc: 'sortasc',
+                cssDesc: 'sortdesc'
+            });
+        });
 
     function deleteUserFromGroup(userid, obj) {
         var deleteThis = $(obj).parents('tr');
