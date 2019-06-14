@@ -34,7 +34,11 @@
             <tbody>
                 <? foreach ($portfolios as $portfolio): ?>
                     <tr>
-                        <td><?= htmlReady($portfolio->getFullName()) ?></td>
+                        <td>
+                            <a href="<?= URLHelper::getLink('plugins.php/courseware/courseware', ['cid' => $portfolio->id]); ?>">
+                                <?= htmlReady($portfolio->getFullName()) ?>
+                            </a>
+                        </td>
                         <td><?= htmlReady($portfolio->beschreibung) ?></td>
                         <td>
                             <span style="display:none"><?= $portfolio->mkdate ?></span>
