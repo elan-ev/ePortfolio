@@ -69,22 +69,11 @@
   font-weight: bold;
 }
 
-tr:hover {
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
 tr:hover a {
   transition: all 0.2s;
 }
 
 .tr-head {
-  background-color: #e7ebf1;
-}
-
-.tr-head:hover {
-  color: #000;
-  cursor: default;
   background-color: #e7ebf1;
 }
 
@@ -704,7 +693,7 @@ td, th {
   border: 1px solid rgba(214,0,0,1);
   width: 100%;
   background: rgba(214,0,0,0.05);
-  color: rgba(214,0,0,1); 
+  color: rgba(214,0,0,1);
 }
 
 .btn-verteilen > button {
