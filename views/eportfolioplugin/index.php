@@ -3,7 +3,7 @@
 
         <div class="row member-container">
             <?php foreach ($templates as $template): ?>
-                
+
                 <?php
                 $avatar    = CourseAvatar::getAvatar($template->id);
                 $avatarUrl = $avatar->getCustomAvatarUrl(Avatar::MEDIUM);
@@ -25,28 +25,31 @@
                                     </div>
                                 <? endif ?>
                                 <div class="col-sm-6 template-infos">
+                                    <?php
+                                    $icon;
+                                    switch (EportfolioUser::getStatusOfUserInTemplate($template->id, $group_id, $cid)) {
+                                        case 1:
+                                            $icon = 'status-green';
+                                            $title = _('Die Deadline ist noch nicht überschritten.');
+                                            break;
+                                        case 0:
+                                            $icon = 'status-yellow';
+                                            $title = _('Die Deadline nähert sich.');
+                                            break;
+                                        case -1:
+                                            $icon = 'status-red';
+                                            $title = _('Die Deadline ist überschritten!');
+                                            break;
+                                    }
 
-                                    <div class="template-infos-single">
-                                        <?php
-                                        $icon;
-                                        switch (EportfolioUser::getStatusOfUserInTemplate($template->id, $group_id, $cid)) {
-                                            case 1:
-                                                $icon = 'status-green';
-                                                break;
-                                            case 0:
-                                                $icon = 'status-yellow';
-                                                break;
-                                            case -1:
-                                                $icon = 'status-red';
-                                                break;
-                                        }
-                                        
-                                        if ($timestamp == 0) {
-                                            $icon = 'inactive';
-                                        }
-                                        ?>
-                                        <?php echo Icon::create('span-full', $icon); ?> Status
-
+                                    if ($timestamp == 0) {
+                                        $icon = 'inactive';
+                                        $title = _('Keine Deadline vorhanden.');
+                                    }
+                                    ?>
+                                    <div class="template-infos-single" title="<?= $title ?>">
+                                        <?php echo Icon::create('span-full', $icon); ?>
+                                        <?= _('Status') ?>
                                     </div>
 
                                     <div class="template-infos-single">
@@ -57,7 +60,7 @@
                                         } else {
                                             echo "kein Abgabedatum";
                                         }
-                                        
+
                                         ?>
                                         <span style="margin-left: 20px;" class="template-infos-days-left"><br>
                       <?php if (!$timestamp == 0) {
