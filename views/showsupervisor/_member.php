@@ -46,67 +46,41 @@
                         <br><?= sprintf(_('Letzte Änderung: %s'), date('d.m.Y', Eportfoliomodel::getLastOwnerEdit($userPortfolioId))) ?>
                     </div>
                 </div>
-                <div class="col-sm-12">
 
-                    <?php $favVorlagen = EportfolioGroup::getAllMarkedAsFav($id); ?>
+                <? $missing_vorlage = false; ?>
+                <? foreach (EportfolioGroup::getAllMarkedAsFav($id) as $vorlage): ?>
+                    <? foreach (Eportfoliomodel::getChapters($vorlage) as $chapter): ?>
+                        <? if (!Eportfoliomodel::getUserPortfolioBlockId($userPortfolioId, $chapter['id'])): ?>
+                            <? $missing_vorlage = true; break 2 ?>
+                        <? endif; ?>
+                    <? endforeach; ?>
+                <? endforeach; ?>
+
+                <? if ($missing_vorlage) : ?>
+                <div class="col-sm-12">
                     <div class="member-content">
                         <div class="row">
-                            <?php $x = 0; ?>
-                            <? foreach ($favVorlagen as $vorlage): ?>
-                                <? foreach (Eportfoliomodel::getChapters($vorlage) as $chapter): ?>
-                                    <?php $current_block_id = Eportfoliomodel::getUserPortfolioBlockId($userPortfolioId, $chapter['id']); ?>
+                            <div class="verteilen-bandage">
+                                <p><?= _('Es wurden noch nicht alle Vorlagen verteilt. ') ?></p>
 
-                                    <? if ($current_block_id): ?>
-                                        <div class="col-sm-4 member-kapitelname"><?= $chapter['title'] ?></div>
-                                        <div class="col-sm-8">
-                                            <div class="row member-icons">
-                                                <div class="col-sm-4">
-                                                    <? if (Eportfoliomodel::checkKapitelFreigabe($current_block_id)): ?>
-                                                        <? $new_freigabe = object_get_visit($userPortfolioId, 'sem', 'last', false, $user->id) < EportfolioFreigabe::hasAccessSince($supervisorGroupId, $current_block_id); ?>
-                                                        <? if ($new_freigabe): ?>
-                                                            <?= Icon::create('accept+new', 'status-green'); ?>
-                                                        <? else: ?>
-                                                            <?= Icon::create('accept', 'status-green'); ?>
-                                                        <? endif ?>
-                                                    <? else: ?>
-                                                        <?= Icon::create('decline', 'status-red'); ?>
-                                                    <? endif ?>
-                                                </div>
-                                                <div class="col-sm-4">
-                                                        <?= Icon::create('file', 'inactive'); ?>
-                                                </div>
-                                                <div class="col-sm-4">
+                                <?php
+                                /**
+                                 * wegen CSS problemen bei einem Link im Link, vorerst die Lösung über onClick via js
+                                 * **/
+                                $link = URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/createlateportfolio/' . $id . '/' . $user->id, []);
+                                ?>
 
-                                                </div>
-                                            </div>
-                                        </div>
-                                    <? else: ?>
-                                        <?php $x++; ?>
-                                    <? endif; ?>
-
-                                    <? if ($x == 1): ?>
-                                        <div class="verteilen-bandage">
-                                            <p><?= _('Es wurden noch nicht alle Vorlagen verteilt. ') ?></p>
-
-                                            <?php
-                                            /**
-                                             * wegen CSS problemen bei einem Link im Link, vorerst die Lösung über onClick via js
-                                             * **/
-                                            $link = URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/createlateportfolio/' . $id . '/' . $user->id, []);
-                                            ?>
-
-                                            <div class="btn-verteilen"
-                                                 onclick="window.location = '<?php echo $link; ?>'">
-                                                <?= \Studip\Button::create(_('Jetzt verteilen!'), 'verteilen', []); ?>
-                                            </div>
-
-                                        </div>
-                                    <? endif; ?>
-                                <? endforeach; ?>
-                            <? endforeach; ?>
+                                <div class="btn-verteilen"
+                                     onclick="window.location = '<?php echo $link; ?>'">
+                                    <?= \Studip\Button::create(_('Jetzt verteilen!'), 'verteilen', []); ?>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <? endif ?>
+
+
                 <div class="col-sm-12">
                     <div class="row member-footer-box">
                         <div class="col-sm-4">
