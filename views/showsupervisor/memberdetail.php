@@ -49,7 +49,7 @@
 </div>
 
 <div class="status-area">
-    <h3>Status des Studenten</h3>
+    <h3>Status</h3>
     <?php foreach ($templates
 
     as $template_id): ?>
