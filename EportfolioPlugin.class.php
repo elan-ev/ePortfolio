@@ -131,11 +131,6 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
             PluginEngine::getURL($this, ['cid' => $course_id, 'iconnav' => 'true'], $url, true)
         );
 
-        $icon_student = new AutoNavigation(
-            'Portfolio-Arbeit',
-            PluginEngine::getURL($this, ['cid' => $course_id, 'iconnav' => 'true'], $url, true)
-        );
-
         $group = EportfolioGroup::find($course_id);
         if ($group) {
             $new_ones = sizeof($group->getActivities());
@@ -143,7 +138,10 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
             if ($new_ones) {
                 if ($perm->have_studip_perm('dozent', $course_id)) {
                     $title = $new_ones > 1 ? sprintf(_('%s neue Ereignisse in Studierenden-Portfolios'), $new_ones) : _('1 neues Ereignisse in Studierenden-Portfolio');
-                } else $title = '';
+                } else {
+                    $title = _('Keine neuen Ereignisse.');
+                }
+
                 $icon->setImage(Icon::create('eportfolio', 'attention', ['title' => $title]));
                 $icon->setBadgeNumber($new_ones);
             } else {
