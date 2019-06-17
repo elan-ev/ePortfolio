@@ -121,13 +121,16 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     {
         global $perm;
         if ($perm->have_studip_perm('dozent', $course_id)) {
-            $url = 'eportfolioplugin/portfoliofeed';
-        } else $url = 'showstudent';
+            $url = 'showsupervisor/activityfeed';
+        } else {
+            $url = 'showstudent';
+        }
 
         $icon         = new AutoNavigation(
             'Portfolio-Arbeit',
             PluginEngine::getURL($this, ['cid' => $course_id, 'iconnav' => 'true'], $url, true)
         );
+
         $icon_student = new AutoNavigation(
             'Portfolio-Arbeit',
             PluginEngine::getURL($this, ['cid' => $course_id, 'iconnav' => 'true'], $url, true)
@@ -141,10 +144,10 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
                 if ($perm->have_studip_perm('dozent', $course_id)) {
                     $title = $new_ones > 1 ? sprintf(_('%s neue Ereignisse in Studierenden-Portfolios'), $new_ones) : _('1 neues Ereignisse in Studierenden-Portfolio');
                 } else $title = '';
-                $icon->setImage(Icon::create('group3', 'attention', ['title' => $title]));
+                $icon->setImage(Icon::create('eportfolio', 'attention', ['title' => $title]));
                 $icon->setBadgeNumber($new_ones);
             } else {
-                $icon->setImage(Icon::create('group3', 'inactive', ['title' => 'Supervision']));
+                $icon->setImage(Icon::create('eportfolio', 'inactive', ['title' => 'Supervision']));
             }
         }
 
