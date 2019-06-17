@@ -157,22 +157,6 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         // ...
     }
 
-    public function perform($unconsumed_path)
-    {
-        if (Request::get('type') == "freigeben") {
-            $this->freigeben(Request::get('selected'), Request::get('cid'));
-            exit;
-        }
-
-        if (Request::get('action') == "getsettingsColor") {
-            $this->getsettingsColor(Request::get('cid'));
-            exit;
-        }
-
-        parent::perform($unconsumed_path);
-    }
-
-
     private function getSemClass()
     {
         global $SEM_CLASS, $SEM_TYPE, $SessSemName;
@@ -186,15 +170,6 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         }
 
         return $this->getSemClass()->isSlotModule(get_class($this));
-    }
-
-    public function getsettingsColor($cid)
-    {
-        $query     = "SELECT settings FROM eportfolio WHERE seminar_id = :cid";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute([':cid' => $cid]);
-        $color = json_decode($statement->fetchAll()[0][0]);
-        echo $color->color;
     }
 
     //aktuelle cid/seminarid
