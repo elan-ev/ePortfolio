@@ -193,60 +193,6 @@ class ShowsupervisorController extends StudipController
         $this->redirect('showsupervisor?cid=' . $groupid);
     }
 
-    public function delete_action($cid)
-    {
-        EportfolioGroup::deleteGroup(Request::get('cid'));
-        PageLayout::postMessage(MessageBox::success(_('Die Gruppe wurde gel�scht.')));
-        $this->redirect(URLHelper::getLink("plugins.php/eportfolioplugin/showsupervisor", ['cid' => '']));
-    }
-
-    public function supervisorgroup_action()
-    {
-        Navigation::activateItem('/course/eportfolioplugin/supervisorgroup');
-
-        $groupId         = Course::findCurrent()->id;
-        $sem             = new Seminar($groupId);
-        $this->groupName = $sem->getName();
-        PageLayout::setTitle(Context::getHeaderLine() . ' - Berechtigungen Portfolioarbeit');
-        $supervisorgroupid = Eportfoliogroup::getSupervisorGroupId($groupId);
-
-        $group         = new SupervisorGroup($supervisorgroupid);
-        $this->title   = $group->name;
-        $this->groupId = $group->id;
-        $this->linkId  = $groupId;
-
-        $search_obj = new SQLSearch("SELECT auth_user_md5.user_id, CONCAT(auth_user_md5.nachname, ', ', auth_user_md5.vorname, ' (' , auth_user_md5.email, ')' ) as fullname, username, perms "
-            . "FROM auth_user_md5 "
-            . "WHERE (CONCAT(auth_user_md5.Vorname, \" \", auth_user_md5.Nachname) LIKE :input "
-            . "OR CONCAT(auth_user_md5.Nachname, \" \", auth_user_md5.Vorname) LIKE :input "
-            . "OR auth_user_md5.username LIKE :input)"
-            . "AND auth_user_md5.perms LIKE 'dozent'"
-            . "AND auth_user_md5.user_id NOT IN "
-            . "(SELECT supervisor_group_user.user_id FROM supervisor_group_user WHERE supervisor_group_user.supervisor_group_id = '" . $supervisorgroupid . "')  "
-            . "ORDER BY Vorname, Nachname ",
-            _("Teilnehmer suchen"), "username");
-
-        $this->mp = MultiPersonSearch::get('supervisorgroupSelectUsers')
-            ->setLinkText(_('Weitere Zugriffsrechte vergeben'))
-            ->setLinkIconPath('')
-            ->setTitle(_('Personen Zugriffsrechte gewähren'))
-            ->setSearchObject($search_obj)
-            ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/supervisorgroup/addUser/' . $group->id, ['id' => $group_id, 'redirect' => $this->url_for('showsupervisor/supervisorgroup/' . $this->linkId)]))
-            ->render();
-
-        $this->usersOfGroup = $group->user;
-
-        // Sidebar
-        $sidebar = Sidebar::Get();
-
-        if ($this->course->id) {
-            $navcreate = new LinksWidget();
-            $navcreate->setTitle(_('Aktionen'));
-            $navcreate->addLinkFromHTML($this->mp, new Icon('community+add'));
-            $sidebar->addWidget($navcreate);
-        }
-    }
-
     public function url_for($to = '')
     {
         $args = func_get_args();
