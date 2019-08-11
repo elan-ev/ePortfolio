@@ -89,13 +89,13 @@
 
 <script type="text/javascript">
 
-        jQuery(function () {
-            jQuery("table.tablesorter").tablesorter({
-                sortList: [[0,0]],
-                cssAsc: 'sortasc',
-                cssDesc: 'sortdesc'
-            });
+    jQuery(function () {
+        jQuery("table.tablesorter").tablesorter({
+            sortList: [[0,0]],
+            cssAsc: 'sortasc',
+            cssDesc: 'sortdesc'
         });
+    });
 
     function deleteUserFromGroup(userid, obj) {
         var deleteThis = $(obj).parents('tr');
