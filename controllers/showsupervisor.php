@@ -253,13 +253,17 @@ class ShowsupervisorController extends StudipController
         $this->template_id = $template_id;
 
         $timestamp    = EportfolioGroupTemplates::getDeadline($group_id, $template_id);
-        $this->abgabe = date('d.m.Y', $timestamp ?: time());
+        $this->abgabe = date('Y-m-d', $timestamp ?: time());
     }
 
     public function settemplatedates_action($group_id, $template_id)
     {
-        $dtime     = DateTime::createFromFormat("d.m.Y", $_POST['begin']);
-        $timestamp = $dtime->getTimestamp();
+        if (!Request::get('begin')) {
+            $timestamp = 0;
+        } else {
+            $dtime     = DateTime::createFromFormat("Y-m-d", Request::get('begin'));
+            $timestamp = $dtime->getTimestamp();
+        }
         EportfolioGroupTemplates::setDeadline($group_id, $template_id, $timestamp);
         $this->redirect('showsupervisor?cid=' . $group_id);
     }

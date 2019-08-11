@@ -2,7 +2,7 @@
 
     <label>
       Abgabedatum:
-      <input required type="text" id="beginn" name="begin" data-date-picker='' value="<?= $abgabe ?>"></input><br>
+      <input type="date" id="beginn" name="begin" value="<?= $abgabe ?>" class="size-l"></input><br>
     </label>
 
     <footer data-dialog-button>
