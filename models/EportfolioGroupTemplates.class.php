@@ -17,7 +17,7 @@ class EportfolioGroupTemplates extends SimpleORMap
         $config['db_table'] = 'eportfolio_group_templates';
         parent::configure($config);
     }
-    
+
     /**
      * Setzt Abgabedatum für eine verteiltes Template als timestamp
      **/
@@ -27,7 +27,7 @@ class EportfolioGroupTemplates extends SimpleORMap
         $statement = DBManager::get()->prepare($query);
         $statement->execute([':datum' => $date, ':group_id' => $group_id, ':template_id' => $template_id]);
     }
-    
+
     /**
      * Liefert Abgabedatum für eine verteiltes Template als timestamp
      **/
@@ -35,15 +35,18 @@ class EportfolioGroupTemplates extends SimpleORMap
     {
         return DBManager::get()->fetchColumn('SELECT `abgabe_datum` FROM `eportfolio_group_templates` WHERE `Seminar_id` = ? AND `group_id` = ?', [$template_id, $group_id]);
     }
-    
+
     /**EportfolioGroupTemplates::getGroupTemplates
      * Liefert alle verteilten Templates einer Gruppe
      **/
     public static function getGroupTemplates($group_id)
     {
-        return DBManager::get()->fetchFirst("SELECT DISTINCT Seminar_id FROM eportfolio_group_templates WHERE group_id = ?", [$group_id]);
+        return DBManager::get()->fetchFirst("SELECT DISTINCT Seminar_id
+            FROM eportfolio_group_templates
+            WHERE group_id = ?
+            ORDER BY mkdate DESC", [$group_id]);
     }
-    
+
     /**
      * Liefert die Anzahl der verteilten Templates einer Gruppe
      **/
@@ -54,7 +57,7 @@ class EportfolioGroupTemplates extends SimpleORMap
             [':group_id' => $group_id]
         );
     }
-    
+
     /**
      * Prüft ob ein Template schon verteilt wurde
      **/
@@ -63,12 +66,12 @@ class EportfolioGroupTemplates extends SimpleORMap
         return EportfolioGroupTemplates::countBySql("Seminar_id = :template_id AND group_id = :group_id",
                 [':template_id' => $template_id, ':group_id' => $group_id]) > 0;
     }
-    
+
     public static function getWannWurdeVerteilt($group_id, $template_id)
     {
         return DBManager::get()->fetchColumn('SELECT `mkdate` FROM `eportfolio_group_templates` WHERE `Seminar_id` = ? AND `group_id` = ?', [$template_id, $group_id]);
     }
-    
+
     /**
      * Liefert den Names des Users der das Template verteilt hat als String
      * **/
