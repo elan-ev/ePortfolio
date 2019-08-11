@@ -1,17 +1,14 @@
 <div class="activity-feed-container">
 
-  <div class="activity-feed-header">
-    <span class="activity-feed-label">
+    <h1>
+        <? if($countActivities >= 1) : ?>
+            <?= $countActivities ?>
+        <? else : ?>
+            <?= 'Keine' ?>
+        <? endif ?>
 
-      <?php if($countActivities >= 1){
-          echo $countActivities;
-      } else {
-        echo "Keine";
-      } ?>
-
-    Neue Aktivitäten</span>
-    <div class="activity-feed-line"></div>
-  </div>
+        Neue Aktivitäten
+    </h1>
 
   <?php foreach ($activities as $activity): ?>
     <?php if ($activity->is_new):?>
@@ -56,10 +53,10 @@
   <?php endforeach; ?>
 
 
-  <div class="activity-feed-header" style="margin-top: 20px;">
-    <span class="activity-feed-label-alt">Alte Aktivitäten</span>
-    <div class="activity-feed-line"></div>
-  </div>
+<br>
+  <h1>
+      Alte Aktivitäten
+  </h1>
 
   <?php foreach ($activities as $activity): ?>
     <?php if (!$activity->is_new):?>
