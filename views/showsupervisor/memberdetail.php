@@ -144,18 +144,18 @@
                             </a>
                             <? else: ?>
                                 Freigegeben aber kein Zugriff!
-                                <?= tooltipIcon("Nutzer hat dieses Kapitel freigegeben, Sie sind jedoch nicht in der Supervisionsgruppe und können deshalb nicht darauf zugreifen!"); ?>
+                                <?= tooltipIcon("Nutzer hat dieses Kapitel freigegeben, Sie sind jedoch eventuell nicht in der Supervisionsgruppe und können deshalb nicht darauf zugreifen!"); ?>
                             <? endif ?>
                         <? else : ?>
                             Nicht freigegeben
                             <?= tooltipIcon("Anschauen nicht möglich, da Nutzer dieses Kapitel nicht freigegeben hat") ?>
                         <? endif ?>
 
-                        <?php if (Eportfoliomodel::checkSupervisorNotiz($kapitel['id'])): ?>
-                            <a href="<?php echo URLHelper::getLink("plugins.php/courseware/courseware?cid=" . $portfolio_id . "&selected=" . $kapitel['id']); ?>">
+                        <? if (Eportfoliomodel::checkSupervisorNotiz($kapitel['id'])): ?>
+                            <a href="<?php echo URLHelper::getLink("plugins.php/courseware/courseware?cid=" . $portfolio_id . "&selected=" . $kapitel['id'] . '&return_to=' . Context::getId()); ?>">
                                 Notiz beantworten
                             </a>
-                        <?php endif; ?>
+                        <? endif; ?>
                     </div>
                 </div>
             </div>
