@@ -45,9 +45,6 @@ class ShowsupervisorController extends StudipController
         PageLayout::setTitle(Context::getHeaderLine() . '- ePortfolio Administration');
 
         Navigation::activateItem('course/eportfolioplugin');
-
-        PageLayout::addSqueezePackage('tablesorter');
-
     }
 
     public function index_action()
