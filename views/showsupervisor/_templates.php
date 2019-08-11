@@ -95,6 +95,7 @@
                         <?= Icon::create('check-circle', Icon::ROLE_CLICKABLE, tooltip2(_('Vorlage wurde in dieser Gruppe bereits verteilt.'))) ?>
                     <? endif ?>
                 </td>
+                <!--
                 <td style="text-align: center;">
                     <? if ($member && $groupHasTemplate): ?>
                         <? if (EportfolioGroup::checkIfMarkedAsFav($id, $portfolio->id) == 0): ?>
@@ -107,7 +108,7 @@
                             </a>
                         <? endif ?>
                     <? endif ?>
-                </td>
+                </td>-->
             </tr>
         <? endforeach; ?>
     </tbody>
