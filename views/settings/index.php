@@ -29,11 +29,11 @@
                             <? if ($hasAccess): ?>
                                 <span id="icon-<?= $supervisorId . '-' . $chapter['id']; ?>"
                                       class="glyphicon glyphicon-ok"
-                                      title='Zugriff sperren'><?= Icon::create('accept', Icon::ROLE_CLICKABLE); ?></span>
+                                      title='Klick, um Kapitel nicht mehr feizugeben'><?= Icon::create('accept', Icon::ROLE_CLICKABLE); ?></span>
                             <? else : ?>
                                 <span id="icon-<?= $supervisorId . '-' . $chapter['id']; ?>"
                                       class="glyphicon glyphicon-remove"
-                                      title='Zugriff erlauben'><?= Icon::create('decline', Icon::ROLE_CLICKABLE); ?></span>
+                                      title='Klick, um Kapitel freizugeben'><?= Icon::create('decline', Icon::ROLE_CLICKABLE); ?></span>
                             <? endif; ?>
                         </td>
                     <? endforeach; ?>
@@ -62,11 +62,11 @@
                             <? if ($hasAccess): ?>
                                 <span id="icon-<?= $acc->user_id . '-' . $chapter['id']; ?>"
                                       class="glyphicon glyphicon-ok"
-                                      title='Zugriff sperren'><?= Icon::create('accept', Icon::ROLE_CLICKABLE); ?></span>
+                                      title='Klick, um Kapitel nicht mehr feizugeben'><?= Icon::create('accept', Icon::ROLE_CLICKABLE); ?></span>
                             <? else : ?>
                                 <span id="icon-<?= $acc->user_id . '-' . $chapter['id']; ?>"
                                       class="glyphicon glyphicon-remove"
-                                      title='Zugriff erlauben'><?= Icon::create('decline', Icon::ROLE_CLICKABLE); ?></span>
+                                      title='Klick, um Kapitel freizugeben'><?= Icon::create('decline', Icon::ROLE_CLICKABLE); ?></span>
                             <? endif; ?>
                         </td>
                     <? endforeach; ?>
