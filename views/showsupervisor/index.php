@@ -17,7 +17,7 @@
         <h4><?= _('Gruppenmitglieder') ?></h4>
 
         <? if (!$member): ?>
-            <?= MessageBox::info('Es sind noch keine Nutzer in der der Gruppe eingetragen'); ?>
+            <?= MessageBox::info('Es sind noch keine Nutzer in der Gruppe eingetragen'); ?>
         <? else: ?>
             <table class="default">
                 <colgroup>
@@ -53,6 +53,9 @@
         <? endif; ?>
 
     <? else: ?>
+        <span style="color: #3c434e;font-size: 1.4em;">
+            Teilnehmende
+        </span>
         <div class="grid-container">
             <div class="row member-container">
                 <?php foreach ($member as $user): ?>

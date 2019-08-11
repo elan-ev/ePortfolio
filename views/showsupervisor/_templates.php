@@ -113,3 +113,10 @@
         <? endforeach; ?>
     </tbody>
 </table>
+
+
+<? if (empty($portfolios)) : ?>
+    <?= MessageBox::info('Keine '. $title . ' vorhanden.'); ?>
+<? endif ?>
+
+<br><br>
