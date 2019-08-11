@@ -4,6 +4,7 @@
     <table class="default">
         <tr class="sortable">
             <th><?= _('Name') ?></th>
+            <th></th>
             <? foreach ($chapterList as $chapter): ?>
                 <th>
                     <?= htmlReady($chapter['title']) ?>
@@ -19,7 +20,8 @@
                              'title' => _('Gruppen-Supervisoren')]); ?>
                         <?= _('Gruppen-Supervisoren') ?>
                     </td>
-                    
+                    <td></td>
+
                     <? foreach ($chapterList as $chapter): ?>
                         <?php $hasAccess = EportfolioFreigabe::hasAccess($supervisorId, $cid, $chapter['id']); ?>
                         <td onClick="setAccess('<?= $chapter['id'] ?>', '<?= $supervisorId ?>', this, '<?= $cid ?>');"
@@ -37,12 +39,54 @@
                     <? endforeach; ?>
                 </tr>
             <? endif; ?>
-            <? $i = 1; ?>
+
+            <? foreach (EportfolioUser::findBySQL('seminar_id = ?', [$cid]) as $acc): ?>
+                <? $user = User::find($acc->user_id); ?>
+                <tr style="background-color: lightblue;">
+                    <td>
+                        <?= Avatar::getAvatar($acc->user_id)->getImageTag(Avatar::SMALL,
+                            ['style' => 'margin-right: 5px;border-radius: 30px; width: 25px; border: 1px solid #28497c;',
+                             'title' => _('Gruppen-Supervisoren')]); ?>
+                        <?= $user->getFullname() ?>
+                    </td>
+                    <td>
+                        <a href="<?= $controller->url_for('settings/deleteUserAccess/' . $acc->user_id) ?>">
+                            <?= Icon::create('trash', 'clickable') ?>
+                        </a>
+                    </td>
+
+                    <? foreach ($chapterList as $chapter): ?>
+                        <?php $hasAccess = EportfolioFreigabe::hasAccess($acc->user_id, $cid, $chapter['id']); ?>
+                        <td onClick="setAccess('<?= $chapter['id'] ?>', '<?= $acc->user_id ?>', this, '<?= $cid ?>');"
+                            class="righttable-inner">
+                            <? if ($hasAccess): ?>
+                                <span id="icon-<?= $acc->user_id . '-' . $chapter['id']; ?>"
+                                      class="glyphicon glyphicon-ok"
+                                      title='Zugriff sperren'><?= Icon::create('accept', Icon::ROLE_CLICKABLE); ?></span>
+                            <? else : ?>
+                                <span id="icon-<?= $acc->user_id . '-' . $chapter['id']; ?>"
+                                      class="glyphicon glyphicon-remove"
+                                      title='Zugriff erlauben'><?= Icon::create('decline', Icon::ROLE_CLICKABLE); ?></span>
+                            <? endif; ?>
+                        </td>
+                    <? endforeach; ?>
+                </tr>
+            <? endforeach; ?>
         </tbody>
     </table>
-    
-    
-    <?= $mp ?>
+
+    <!-- Legende -->
+    <div class="legend">
+        <ul>
+            <li>
+                <?= Icon::create('accept', 'clickable'); ?>  Person / Rechtegruppe hat Zugriff auf das Kapitel
+            </li>
+            <li>
+                <?= Icon::create('decline', 'clickable'); ?> Person / Rechtegruppe hat keinen Zugriff auf das Kapitel
+            </li>
+
+        </ul>
+    </div>
 
     <script type="text/javascript"
             src="<?= $GLOBALS['ABSOLUTE_URI_STUDIP'] . 'plugins_packages/uos/EportfolioPlugin/assets/js/eportfolio.js'; ?>"></script>
