@@ -22,7 +22,7 @@
             <th><?= _('Beschreibung') ?></th>
             <th><?= _('Anlagedatum') ?></th>
             <th data-sorter="false"><?= _('Details') ?></th>
-            <th><?= _('Abgabedatum') ?></th>
+            <th class="sorter-text"><?= _('Abgabedatum') ?></th>
             <th data-sorter="false"><?= _('Aktionen') ?></th>
             <th data-sorter="false"><?= _('Anzeigen') ?></th>
         </tr>
