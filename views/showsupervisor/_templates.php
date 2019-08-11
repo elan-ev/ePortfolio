@@ -24,7 +24,7 @@
             <th data-sorter="false"><?= _('Details') ?></th>
             <th class="sorter-text"><?= _('Abgabedatum') ?></th>
             <th data-sorter="false"><?= _('Aktionen') ?></th>
-            <th data-sorter="false"><?= _('Anzeigen') ?></th>
+            <!--<th data-sorter="false"><?= _('Anzeigen') ?></th>-->
         </tr>
     </thead>
 
