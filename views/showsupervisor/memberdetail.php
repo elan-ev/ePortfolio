@@ -139,7 +139,7 @@
                     <div class="col member-aktionen-detail">
                         <? if (Eportfoliomodel::checkKapitelFreigabe($kapitel['id'])) : ?>
                             <? if (EportfolioFreigabe::hasAccess($GLOBALS['user']->id, $portfolio_id, $kapitel['id'])): ?>
-                            <a href="<?= URLHelper::getLink("plugins.php/courseware/courseware?cid=" . $portfolio_id . "&selected=" . $kapitel['id']); ?>">
+                            <a href="<?= URLHelper::getLink("plugins.php/courseware/courseware?cid=" . $portfolio_id . "&selected=" . $kapitel['id'] . '&return_to=' . Context::getId()); ?>">
                                 Anschauen
                             </a>
                             <? else: ?>

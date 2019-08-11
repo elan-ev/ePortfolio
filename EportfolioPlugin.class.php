@@ -54,7 +54,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     {
         $this->addStylesheet('assets/style.less');
         PageLayout::addStylesheet($this->getPluginURL() . '/assets/flexboxgrid.min.css');
-        PageLayout::addScript($this->getPluginURL() . '/assets/js/jquery.tablesorter.min.js'); 
+        PageLayout::addScript($this->getPluginURL() . '/assets/js/jquery.tablesorter.min.js');
     }
 
     public function getTabNavigation($course_id)
@@ -92,6 +92,18 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
                 $navigation->setImage(Icon::create('group4', 'info_alt'));
                 $navigation->setActiveImage(Icon::create('group4', 'info'));
             }
+
+            if (Request::option('return_to')) {
+                $_SESSION['return_to'] = Request::option('return_to');
+            }
+
+            if ($_SESSION['return_to']) {
+                $tabs['return'] = new Navigation(
+                    _('Zurück zur Veranstaltung'),
+                    PluginEngine::getURL($this, ['cid' => $_SESSION['return_to']],
+                        $this->isVorlage() ? 'showsupervisor' : 'showstudent', true)
+                );
+            }
         }
 
         $owner = Eportfoliomodel::isOwner($course_id, $GLOBALS['user']->id);
@@ -109,6 +121,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         }
 
         $tabs['eportfolioplugin'] = $navigation;
+
         return array_reverse($tabs);
 
     }
