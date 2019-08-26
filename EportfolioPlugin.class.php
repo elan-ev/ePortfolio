@@ -25,6 +25,8 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         NotificationCenter::addObserver($this, "store_activity", "UserDidPostSupervisorNotiz");
         NotificationCenter::addObserver($this, "store_activity", "SupervisorDidPostAnswer");
         NotificationCenter::addObserver($this, "store_activity", "UserDidPostNotiz");
+
+        NotificationCenter::addObserver($this, "prevent_settings_access", "NavigationDidActivateItem");
     }
 
     public function getCardInfos($cid)
@@ -254,8 +256,19 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     {
         if (($this->isPortfolio() || $this->isVorlage()) && Navigation::hasItem('/course/mooc_courseware')) {
             if ($this->isVorlage()) {
+                $stmt = DBManager::get()->prepare("UPDATE mooc_blocks
+                    SET title = 'Vorlage'
+                    WHERE type = 'Courseware'
+                        AND seminar_id = ?");
+                $stmt->execute([Context::getId()]);
+
                 Navigation::getItem('/course/mooc_courseware')->setTitle('Vorlage');
             } else {
+                $stmt = DBManager::get()->prepare("UPDATE mooc_blocks
+                    SET title = 'Vorlage'
+                    WHERE type = 'Courseware'
+                        AND seminar_id = ?");
+                $stmt->execute([Context::getId()]);
                 Navigation::getItem('/course/mooc_courseware')->setTitle('ePortfolio');
             }
 
@@ -286,6 +299,15 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
                 Helpbar::get()->addPlainText(_(''), $tip, '');
                 Helpbar::get()->addPlainText(_('Tip zum Bearbeiten'), $bearbeiten, Icon::create('doctoral-cap', 'info_alt'));
             }
+        }
+    }
+
+    function prevent_settings_access($event, $path)
+    {
+        if (($this->isPortfolio() || $this->isVorlage())
+            && $path == '/course/mooc_courseware/settings')
+        {
+            throw new AccessDeniedException();
         }
     }
 
