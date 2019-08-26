@@ -98,16 +98,24 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
             }
 
             if ($_SESSION['return_to']) {
-                if ($GLOBALS['perm']->have_studip_perm('tutor', $_SESSION['return_to'])) {
-                    $return_to = 'showsupervisor';
-                } else {
-                    $return_to = 'showstudent';
-                }
 
-                $tabs['return'] = new Navigation(
-                    _('Zurück zur Veranstaltung'),
-                    PluginEngine::getURL($this, ['cid' => $_SESSION['return_to']], $return_to, true)
-                );
+                if ($_SESSION['return_to'] == 'overview') {
+                    $tabs['return'] = new Navigation(
+                        _('Zurück zum Profil'),
+                        PluginEngine::getURL($this, [], 'show', true)
+                    );
+                } else {
+                    if ($GLOBALS['perm']->have_studip_perm('tutor', $_SESSION['return_to'])) {
+                        $return_to = 'showsupervisor';
+                    } else {
+                        $return_to = 'showstudent';
+                    }
+
+                    $tabs['return'] = new Navigation(
+                        _('Zurück zur Veranstaltung'),
+                        PluginEngine::getURL($this, ['cid' => $_SESSION['return_to']], $return_to, true)
+                    );
+                }
             }
         }
 

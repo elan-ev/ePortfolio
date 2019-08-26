@@ -35,10 +35,21 @@
             <?php $courses = Eportfoliomodel::getPortfolioVorlagen();
             foreach ($courses as $portfolio):?>
                 <tr>
-                    <td><?= $portfolio->getFullName(); ?></td>
+                    <td>
+                        <a href="<?= URLHelper::getUrl('plugins.php/courseware/courseware', [
+                            'cid'         => $portfolio->id,
+                            'return_to'   => 'overview'
+                        ]); ?>"
+                           title="<?= _('Portfolio-Vorlage bearbeiten') ?>">
+                           <?= $portfolio->getFullName(); ?>
+                        </a>
+                    </td>
                     <td><?= htmlReady($portfolio->beschreibung)?></td>
                     <td class="actions">
-                        <a href="<?= URLHelper::getUrl('plugins.php/courseware/courseware', ['cid' => $portfolio->id]); ?>"
+                        <a href="<?= URLHelper::getUrl('plugins.php/courseware/courseware', [
+                            'cid'         => $portfolio->id,
+                            'return_to'   => 'overview'
+                        ]); ?>"
                            title="<?= _('Portfolio-Vorlage bearbeiten') ?>">
                             <?= Icon::create('edit', 'clickable') ?>
                         </a>
@@ -73,12 +84,15 @@
         </tr>
     </thead>
     <tbody>
-        
+
         <?php $myportfolios = Eportfoliomodel::getMyPortfolios(); ?>
         <?php foreach ($myportfolios as $portfolio): ?>
             <tr>
                 <td>
-                    <a href="<?= URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', ['cid' => $portfolio->id]); ?>">
+                    <a href="<?= URLHelper::getUrl('plugins.php/courseware/courseware', [
+                        'cid'         => $portfolio->id,
+                        'return_to'   => 'overview'
+                    ]); ?>">
                         <?= $portfolio->name; ?>
                     </a>
                 </td>
@@ -87,7 +101,10 @@
                     <?= ShowController::countViewer($portfolio->id); ?>
                 </td>
                 <td class="actions">
-                    <a href="<?= URLHelper::getLink('plugins.php/courseware/courseware', ['cid' => $portfolio->id]); ?>"
+                    <a href="<?= URLHelper::getUrl('plugins.php/courseware/courseware', [
+                        'cid'         => $portfolio->id,
+                        'return_to'   => 'overview'
+                    ]); ?>">
                        title="<?= _('Portfolio bearbeiten') ?>">
                         <?= Icon::create('edit', 'clickable') ?>
                     </a>
@@ -117,7 +134,10 @@
         <? foreach ($myAccess as $portfolio): ?>
             <tr class="insert_tr">
                 <td>
-                    <a href="<?= URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', ['cid' => $portfolio->id]); ?>">
+                    <a href="<?= URLHelper::getUrl('plugins.php/courseware/courseware', [
+                        'cid'         => $portfolio->id,
+                        'return_to'   => 'overview'
+                    ]); ?>">
                         <?= $portfolio->name; ?>
                     </a>
                 </td>
@@ -129,5 +149,3 @@
         <? endforeach; ?>
     </tbody>
 </table>
-
-
