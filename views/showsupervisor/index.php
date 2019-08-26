@@ -1,14 +1,16 @@
 <div>
     <?= $this->render_partial('showsupervisor/_templates', [
-        'title'      => _('Verwendete Portfoliovorlagen'),
-        'portfolios' => array_filter($portfolios, function($portfolio) use ($id) {
+        'title'        => _('Verteilte Vorlagen'),
+        'missing_text' => _('Es werden bisher keine der vorhandenen Vorlagen verwendet.'),
+        'portfolios'   => array_filter($portfolios, function($portfolio) use ($id) {
             return EportfolioGroupTemplates::checkIfGroupHasTemplate($id, $portfolio->id);
         })
     ]) ?>
 
     <?= $this->render_partial('showsupervisor/_templates', [
-        'title' => _('Verfügbare Portfoliovorlagen'),
-        'portfolios' => array_filter($portfolios, function($portfolio) use ($id) {
+        'title'        => _('Verfügbare Vorlagen'),
+        'missing_text' => _('Keine Vorlagen vorhanden oder alle Vorlagen sind archiviert.'),
+        'portfolios'   => array_filter($portfolios, function($portfolio) use ($id) {
             return !EportfolioGroupTemplates::checkIfGroupHasTemplate($id, $portfolio->id);
         })
     ]) ?>

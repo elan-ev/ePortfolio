@@ -91,8 +91,6 @@
                            href="<?= $controller->url_for('showsupervisor/createportfolio/' . $portfolio->id) ?>">
                             <?= Icon::create('share', Icon::ROLE_CLICKABLE, tooltip2(_('Portfolio-Vorlage an Gruppenmitglieder verteilen.')) + ['cursor' => 'pointer']) ?>
                         </a>
-                    <? else: ?>
-                        <?= Icon::create('check-circle', Icon::ROLE_CLICKABLE, tooltip2(_('Vorlage wurde in dieser Gruppe bereits verteilt.'))) ?>
                     <? endif ?>
                 </td>
                 <!--
@@ -116,7 +114,7 @@
 
 
 <? if (empty($portfolios)) : ?>
-    <?= MessageBox::info('Keine '. $title . ' vorhanden.'); ?>
+    <?= MessageBox::info($missing_text); ?>
 <? endif ?>
 
 <br><br>
