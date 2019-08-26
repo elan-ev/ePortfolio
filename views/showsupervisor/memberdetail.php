@@ -165,7 +165,7 @@
                     <?php echo $unterkapitel['title']; ?>
                     <?php if (!$statusKapitel): ?>
                         <?php if (Eportfoliomodel::isEigenesUnterkapitel($unterkapitel['id'])): ?>
-                            <span class="label-selber">Eigenes</span>
+                            <span class="label-selber">Eigenes Kapitel</span>
                         <?php endif; ?>
                     <?php endif; ?>
                 </div>
