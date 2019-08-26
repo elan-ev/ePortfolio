@@ -187,6 +187,8 @@ class ShowsupervisorController extends StudipController
         VorlagenCopy::copyCourseware(new Seminar($masterid), $this->seminar_list);
         EportfolioActivity::addVorlagenActivity($groupid, User::findCurrent()->id);
 
+        PageLayout::postMessage(MessageBox::success('Vorlage wurde verteilt.'));
+
         $this->redirect('showsupervisor?cid=' . $groupid);
     }
 
