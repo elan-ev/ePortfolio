@@ -32,7 +32,10 @@
         <? foreach ($portfolios as $portfolio): ?>
             <tr>
                 <td>
-                    <a href="<?= URLHelper::getLink('plugins.php/courseware/courseware', ['cid' => $portfolio->id]); ?>">
+                    <a href="<?= URLHelper::getLink('plugins.php/courseware/courseware', [
+                        'cid'       => $portfolio->id,
+                        'return_to' => Context::getId()
+                    ]); ?>">
                         <?= htmlReady($portfolio->getFullName()) ?>
                     </a>
                 </td>
@@ -82,7 +85,10 @@
                 </td>
                 <td style="text-align: center;">
                     <?php $groupHasTemplate = EportfolioGroupTemplates::checkIfGroupHasTemplate($id, $portfolio->id)?>
-                    <a href="<?= URLHelper::getLink('plugins.php/courseware/courseware', ['cid' => $portfolio->id, 'return_to' => Context::getId()]); ?>">
+                    <a href="<?= URLHelper::getLink('plugins.php/courseware/courseware', [
+                            'cid'       => $portfolio->id,
+                            'return_to' => Context::getId()
+                    ]); ?>">
                         <?= Icon::create('edit', Icon::ROLE_CLICKABLE, ['title' => sprintf(_('Portfolio-Vorlage bearbeiten.'))]) ?>
                     </a>
 
