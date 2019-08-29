@@ -132,7 +132,7 @@
                         <?php endif; ?>
                     </div>
                     <div class="col-sm-2">
-                        <?= Icon::create('file', 'inactive'); ?>
+
                     </div>
                     <div class="col-sm-2">
                     </div>
@@ -142,6 +142,12 @@
                             <a href="<?= URLHelper::getLink("plugins.php/courseware/courseware?cid=" . $portfolio_id . "&selected=" . $kapitel['id'] . '&return_to=' . Context::getId()); ?>">
                                 Anschauen
                             </a>
+
+                                <? if (Eportfoliomodel::checkSupervisorNotiz($kapitel['id'])): ?>
+                                    <a href="<?php echo URLHelper::getLink("plugins.php/courseware/courseware?cid=" . $portfolio_id . "&selected=" . $kapitel['id'] . '&return_to=' . Context::getId()); ?>">
+                                        Notiz beantworten
+                                    </a>
+                                <? endif; ?>
                             <? else: ?>
                                 Freigegeben aber kein Zugriff!
                                 <?= tooltipIcon("Nutzer hat dieses Kapitel freigegeben, Sie sind jedoch eventuell nicht in der Supervisionsgruppe und können deshalb nicht darauf zugreifen!"); ?>
@@ -151,11 +157,7 @@
                             <?= tooltipIcon("Anschauen nicht möglich, da Nutzer dieses Kapitel nicht freigegeben hat") ?>
                         <? endif ?>
 
-                        <? if (Eportfoliomodel::checkSupervisorNotiz($kapitel['id'])): ?>
-                            <a href="<?php echo URLHelper::getLink("plugins.php/courseware/courseware?cid=" . $portfolio_id . "&selected=" . $kapitel['id'] . '&return_to=' . Context::getId()); ?>">
-                                Notiz beantworten
-                            </a>
-                        <? endif; ?>
+
                     </div>
                 </div>
             </div>
@@ -174,9 +176,13 @@
                         <div class="col-sm-2"></div>
                         <div class="col-sm-2">
                             <?php if (Eportfoliomodel::checkSupervisorNotizInUnterKapitel($unterkapitel['id'])): ?>
-                                <?= Icon::create('file', 'clickable'); ?>
+                                <?= Icon::create('file', 'clickable', [
+                                    'title' => 'Supervisornotiz vorhanden'
+                                ]); ?>
                             <?php else: ?>
-                                <?= Icon::create('file', 'inactive'); ?>
+                                <?= Icon::create('file', 'inactive', [
+                                    'title' => 'Keine Supervisornotiz hinterlegt'
+                                ]); ?>
                             <?php endif; ?>
                         </div>
                         <div class="col-sm-2">
