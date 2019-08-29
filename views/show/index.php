@@ -104,8 +104,9 @@
                     <a href="<?= URLHelper::getUrl('plugins.php/courseware/courseware', [
                         'cid'         => $portfolio->id,
                         'return_to'   => 'overview'
-                    ]); ?>">
-                       title="<?= _('Portfolio bearbeiten') ?>">
+                    ]); ?>"
+                        title="<?= _('Portfolio bearbeiten') ?>"
+                    >
                         <?= Icon::create('edit', 'clickable') ?>
                     </a>
                 </td>
