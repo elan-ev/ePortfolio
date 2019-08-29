@@ -41,7 +41,7 @@
             <? endif; ?>
 
             <? foreach (EportfolioUser::findBySQL('seminar_id = ?', [$cid]) as $acc): ?>
-                <? if ($acc->user_id = $GLOBALS['user']->id) continue; ?>
+                <? if ($acc->user_id == $GLOBALS['user']->id) continue; ?>
                 <? $user = User::find($acc->user_id); ?>
                 <tr style="background-color: lightblue;">
                     <td>
