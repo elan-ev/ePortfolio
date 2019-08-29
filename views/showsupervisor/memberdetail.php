@@ -114,7 +114,7 @@
             <div class="col-sm-4 member-content-single-line-ober">
                 <?php echo $kapitel['title'] ?>
                 <?php if (Eportfoliomodel::isEigenesKapitel($portfolio_id, $group_id, $kapitel['id'])): ?>
-                    <span class="label-selber">Eigenes</span>
+                    <span class="label-selber">Eigenes Kapitel</span>
                 <?php endif; ?>
             </div>
             <div class="col-sm-8">

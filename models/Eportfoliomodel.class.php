@@ -201,7 +201,7 @@ class Eportfoliomodel extends SimpleORMap
      **/
     public static function isEigenesKapitel($seminar_id, $group_id, $chapter_id)
     {
-        return (int)DBManager::get()->fetchColumn(
+        return !(int)DBManager::get()->fetchColumn(
                 "SELECT COUNT(`vorlagen_block_id`) FROM `eportfolio_block_infos` WHERE `block_id` = :block_id AND `Seminar_id` = :seminar_id",
                 [':block_id' => $chapter_id, ':seminar_id' => $seminar_id]) > 0;
     }
