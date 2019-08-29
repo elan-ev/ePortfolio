@@ -21,17 +21,6 @@ class EportfoliopluginController extends StudipController
         $cid        = Course::findCurrent()->id;
         $eportfolio = Eportfoliomodel::findBySeminarId($cid);
 
-        $sidebar = Sidebar::Get();
-        Sidebar::Get()->setTitle(_('Übersicht'));
-
-        $navOverview = new LinksWidget();
-        $navOverview->setTitle('Übersicht');
-        $navOverview->addLink(
-            _('Übersicht'),
-            URLHelper::getLink('plugins.php/eportfolioplugin/eportfolioplugin', ['portfolioid' => $portfolioid]), null, ['class' => 'active-link']
-        );
-        $sidebar->addWidget($navOverview);
-
         if ($eportfolio->group_id) {
             $action = $GLOBALS['perm']->have_studip_perm('tutor', $eportfolio->group_id) ? 'showsupervisor' : 'showstudent';
 
