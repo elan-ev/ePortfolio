@@ -492,7 +492,7 @@ class Eportfoliomodel extends SimpleORMap
      * Erstellt für einen User ein Portfolio
      * Gibt die Seminar_id des Portfolios zurück
      * **/
-    public static function createPortfolioForUser($group_id, $user_id)
+    public static function createPortfolioForUser($group_id, $user_id, $plugin)
     {
         $db          = DBManager::get();
         $groupname   = Seminar::GetInstance($group_id);
@@ -517,14 +517,9 @@ class Eportfoliomodel extends SimpleORMap
         $sem->visible     = 0;
         $sem_id           = $sem->Seminar_id;
 
-        /**
-         * TODO: Fehler beim $this->
-         * andere Möglichkeit suchen den PluginPath zu bekommen
-         * **/
-
-        //$avatar = CourseAvatar::getAvatar($sem_id);
-        //$filename = sprintf('%s/%s',$this->plugin->getpluginPath(),'assets/images/avatare/eportfolio.png');
-        //$avatar->createFrom($filename);
+        // set portfolio icon as as course avatar
+        $avatar = CourseAvatar::getAvatar($sem_id);
+        $avatar->createFrom($plugin->getpluginPath() . '/assets/images/avatare/eportfolio.png');
 
         $sem->addMember($user_id, 'dozent'); // add user to his to seminar
 
@@ -540,16 +535,40 @@ class Eportfoliomodel extends SimpleORMap
 
         $eportfolio    = new Seminar();
         $eportfolio_id = $eportfolio->createId();
-        $query         = "INSERT INTO eportfolio (Seminar_id, eportfolio_id, group_id, owner_id, template_id, supervisor_id) VALUES (:sem_id, :eportfolio_id, :groupid , :userid, :masterid, :groupowner)";
-        $statement     = $db->prepare($query);
-        $statement->execute([':groupid' => $group_id, ':sem_id' => $sem_id, ':eportfolio_id' => $eportfolio_id, ':userid' => $user_id, ':masterid' => $masterid, ':groupowner' => $groupowner]);
-        $query     = "INSERT INTO eportfolio_user(user_id, Seminar_id, eportfolio_id, owner) VALUES (:userid, :Seminar_id , :eportfolio_id, 1)";
-        $statement = $db->prepare($query);
-        $statement->execute([':Seminar_id' => $sem_id, ':eportfolio_id' => $eportfolio_id, ':userid' => $user_id]);
-        //delete dummy courseware chapters //TODO funktionier noch nicht
-        $query     = "DELETE FROM mooc_blocks WHERE seminar_id = :sem_id AND type NOT LIKE 'Courseware'";
-        $statement = $db->prepare($query);
-        $statement->execute([':sem_id' => $sem_id]);
+
+        $statement = $db->prepare("INSERT INTO eportfolio
+            (Seminar_id, eportfolio_id, group_id, owner_id, template_id, supervisor_id)
+            VALUES (:sem_id, :eportfolio_id, :groupid, :userid, :masterid, :groupowner)");
+        $statement->execute([
+            ':groupid'       => $group_id,
+            ':sem_id'        => $sem_id,
+            ':eportfolio_id' => $eportfolio_id,
+            ':userid'        => $user_id,
+            ':masterid'      => $masterid,
+            ':groupowner'    => $groupowner
+        ]);
+
+        $statement = $db->prepare("INSERT INTO
+            eportfolio_user(user_id, Seminar_id, eportfolio_id, owner)
+            VALUES (:userid, :Seminar_id, :eportfolio_id, 1)");
+        $statement->execute([
+            ':Seminar_id'    => $sem_id,
+            ':eportfolio_id' => $eportfolio_id,
+            ':userid'        => $user_id
+        ]);
+
+        // create basic courseware block, prevents creation of dummy blocks by courseware
+        $block = new Mooc\DB\Block();
+
+        $block->setData(array(
+            'seminar_id' => $sem_id,
+            'parent_id'  => null,
+            'type'       => 'Courseware',
+            'title'      => 'Courseware',
+            'position'   => 0
+        ));
+
+        $block->store();
 
         return $sem->Seminar_id;
     }

@@ -172,7 +172,7 @@ class ShowsupervisorController extends StudipController
                  * in seminar_list anfügen
                  * **/
 
-                $portfolio_id_add = EportfolioModel::createPortfolioForUser($groupid, $member->id);
+                $portfolio_id_add = EportfolioModel::createPortfolioForUser($groupid, $member->id, $this->dispatcher->current_plugin);
                 array_push($this->seminar_list, $portfolio_id_add);
 
             }
@@ -286,7 +286,7 @@ class ShowsupervisorController extends StudipController
              * Der User hat noch kein Portfilio
              * in die das Template importiert werden kann
              * **/
-            $portfolio_id = EportfolioModel::createPortfolioForUser($group_id, $user_id);
+            $portfolio_id = EportfolioModel::createPortfolioForUser($group_id, $user_id, $this->dispatcher->current_plugin);
             $portfolio_id = $portfolio_id;
 
             $template_list_not_shared = EportfolioGroupTemplates::getGroupTemplates($group_id);
