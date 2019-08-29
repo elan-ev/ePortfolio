@@ -1,11 +1,14 @@
 <table id="table_templates" class="default collapsable tablesorter">
     <caption>
         <?= $title ?>
+
+        <? if (!$hide_add) : ?>
         <span class="actions">
             <a data-dialog="size=auto;reload-on-close" href="<?= $controller->url_for('show/createvorlage') ?>">
             <?= Icon::create('add', 'clickable')->asImg(20, tooltip2(_('Neue Vorlage erstellen')) + ['style' => 'cusros: pointer']) ?>
                 </a>
         </span>
+        <? endif ?>
     </caption>
     <colgroup>
         <col width="30%">

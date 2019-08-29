@@ -2,6 +2,7 @@
     <?= $this->render_partial('showsupervisor/_templates', [
         'title'        => _('Verteilte Vorlagen'),
         'missing_text' => _('Es werden bisher keine der vorhandenen Vorlagen verwendet.'),
+        'hide_add'     => true,
         'portfolios'   => array_filter($portfolios, function($portfolio) use ($id) {
             return EportfolioGroupTemplates::checkIfGroupHasTemplate($id, $portfolio->id);
         })
