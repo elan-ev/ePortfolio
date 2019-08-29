@@ -10,7 +10,7 @@
 
     <?= $this->render_partial('showsupervisor/_templates', [
         'title'        => _('Verfügbare Vorlagen'),
-        'missing_text' => _('Keine Vorlagen vorhanden oder alle Vorlagen sind archiviert.'),
+        'missing_text' => _('Keine Vorlagen vorhanden oder alle Vorlagen sind verteilt oder archiviert.'),
         'portfolios'   => array_filter($portfolios, function($portfolio) use ($id) {
             return !EportfolioGroupTemplates::checkIfGroupHasTemplate($id, $portfolio->id);
         })
