@@ -188,7 +188,7 @@ class settingsController extends StudipController
     {
         $mp            = MultiPersonSearch::load('selectFreigabeUser');
         $seminar       = new Seminar(Context::getId());
-        $eportfolio    = Eportfoliomodel::findBySeminarId($id);
+        $eportfolio    = Eportfoliomodel::findBySeminarId(Context::getId());
         $eportfolio_id = $eportfolio->eportfolio_id;
         $userRole      = 'autor';
 
@@ -200,10 +200,10 @@ class settingsController extends StudipController
 
         foreach ($mp->getAddedUsers() as $userId) {
             $seminar->addMember($userId, $userRole);
-            $statement->execute([':id' => $id, ':userId' => $userId, ':eportfolio_id' => $eportfolio_id]);
+            $statement->execute([':id' => Context::getId(), ':userId' => $userId, ':eportfolio_id' => $eportfolio_id]);
         }
 
-        $this->redirect('settings/index/' . $id);
+        $this->redirect('settings/index/' . Context::getId());
     }
 
     public function deleteUserAccess_action($userId)
