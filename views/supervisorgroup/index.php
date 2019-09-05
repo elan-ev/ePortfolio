@@ -23,7 +23,7 @@
             </td>
             <td></td>
             <td style="text-align:center;">
-                <a onclick="return confirm('Nutzer aus Supervisorengruppe löschen?')"
+                <a onclick="return confirm('Nutzer Berechtigungen entziehen?')"
                    href='<?= $this->controller->url_for('supervisorgroup/deleteUser/' . $groupId . '/' . $user[user_id]) ?>'><?php echo Icon::create('trash', 'clickable'); ?></a>
             </td>
         </tr>

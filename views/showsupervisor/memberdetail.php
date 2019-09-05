@@ -177,11 +177,11 @@
                         <div class="col-sm-2">
                             <?php if (Eportfoliomodel::checkSupervisorNotizInUnterKapitel($unterkapitel['id'])): ?>
                                 <?= Icon::create('file', 'clickable', [
-                                    'title' => 'Supervisornotiz vorhanden'
+                                    'title' => 'Notiz vorhanden'
                                 ]); ?>
                             <?php else: ?>
                                 <?= Icon::create('file', 'inactive', [
-                                    'title' => 'Keine Supervisornotiz hinterlegt'
+                                    'title' => 'Keine Notiz hinterlegt'
                                 ]); ?>
                             <?php endif; ?>
                         </div>

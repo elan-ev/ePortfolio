@@ -17,8 +17,8 @@
                     <td>
                         <?= Avatar::getNobody()->getImageTag(Avatar::SMALL,
                             ['style' => 'margin-right: 5px;border-radius: 30px; width: 25px; border: 1px solid #28497c;',
-                             'title' => _('Gruppen-Supervisoren')]); ?>
-                        <?= _('Gruppen-Supervisoren') ?>
+                             'title' => _('Berechtigte für Portfolioarbeit')]); ?>
+                        <?= _('Berechtigte für Portfolioarbeit') ?>
                     </td>
                     <td></td>
 
