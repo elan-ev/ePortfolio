@@ -7,12 +7,6 @@ class settingsController extends StudipController
     {
         parent::__construct($dispatcher);
         $this->plugin = $dispatcher->current_plugin;
-
-        if ($_POST['action'] == 'setsettingsColor') {
-            $this->setsettingsColor($_POST['cid'], $_POST['color']);
-            exit();
-        }
-
     }
 
     public function before_filter(&$action, &$args)
@@ -52,7 +46,7 @@ class settingsController extends StudipController
         $supervisor_id = $this->getSupervisorGroupOfPortfolio($course->id);
 
         if (Request::get('setSupervisor')) {
-            $supervisorId           = $_POST["supervisorId"];
+            $supervisorId           = Request::option('supervisorId');
             $access_array           = ['viewer' => 0];
             $access_array_serialize = serialize($access_array);
 
@@ -219,26 +213,6 @@ class settingsController extends StudipController
         $statement->execute([':cid' => Context::getId(), ':userId' => $userId, ':eportfolio_id' => $eportfolio_id]);
 
         $this->redirect('settings/index');
-    }
-
-
-    public function setsettingsColor($cid, $color)
-    {
-        $newArray          = [];
-        $newArray['color'] = $color;
-        $newArray          = json_encode($newArray);
-        $query             = "UPDATE eportfolio SET settings = :newArray WHERE seminar_id = :cid";
-        $statement         = DBManager::get()->prepare($query);
-        $statement->execute([':cid' => Context::getId(), ':newArray' => $newArray]);
-    }
-
-    public function getsettingsColor()
-    {
-        $query     = "SELECT settings FROM eportfolio WHERE seminar_id = :cid";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute([':cid' => Request::get('cid')]);
-        $color = json_decode($statement->fetchAll()[0][0]);
-        return $color->color;
     }
 
     public function eigenesPortfolio($cid)

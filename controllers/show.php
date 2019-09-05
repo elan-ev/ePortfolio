@@ -121,8 +121,8 @@ class ShowController extends StudipController
         $current_semester = Semester::findCurrent();
 
         $userid          = $GLOBALS["user"]->id; //get userid
-        $sem_name        = strip_tags($_POST['name']);
-        $sem_description = strip_tags($_POST['beschreibung']);
+        $sem_name        = Request::get('name');
+        $sem_description = Request::get('beschreibung');
 
         $sem              = new Seminar();
         $sem->Seminar_id  = $sem->createId();
