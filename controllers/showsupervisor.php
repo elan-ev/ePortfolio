@@ -34,13 +34,6 @@ class ShowsupervisorController extends StudipController
             $this->supervisorGroupId = $group[0]->supervisor_group_id;
         }
 
-
-        if (Request::get('type') == 'delete') {
-            $this->deletePortfolio();
-            exit();
-        }
-
-
         // Aktuelle Seite
         PageLayout::setTitle(Context::getHeaderLine() . '- ePortfolio Administration');
 
@@ -107,28 +100,6 @@ class ShowsupervisorController extends StudipController
             $randomString .= $characters[rand(0, $charactersLength - 1)];
         }
         return $randomString;
-    }
-
-    //brauchen wir die hier wirklich?
-    public function deletePortfolio()
-    {
-        //delete templateid in eportfolio_groups-table
-        $query     = "SELECT templates FROM eportfolio_groups WHERE seminar_id = :groupid";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute([':groupid' => Request::get('groupid')]);
-        $templates = json_decode($statement->fetchAll()[0][0]);
-        $templates = array_diff($templates, [Request::get('tempid')]);
-        $templates = json_encode($templates);
-        $query     = "UPDATE eportfolio_groups SET templates = :templates WHERE  seminar_id = :groupid";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute([':groupid' => Request::get('groupid'), ':templates' => $templates]);
-
-        //get all seminar ids
-        $query     = "SELECT * FROM eportfolio WHERE template_id = :tempid";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute([':tempid' => Request::get('tempid')]);
-        $q = $statement->fetchAll();
-
     }
 
     public function createportfolio_action($master)

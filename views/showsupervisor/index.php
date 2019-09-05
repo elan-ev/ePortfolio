@@ -17,20 +17,13 @@
     ]) ?>
 
     <? if (empty($groupTemplates)): ?>
-        <h4><?= _('Gruppenmitglieder') ?></h4>
-
         <? if (!$member): ?>
-            <?= MessageBox::info('Es sind noch keine Nutzer in der Gruppe eingetragen'); ?>
+            <?= MessageBox::info('Es sind noch keine Nutzer in der Veranstaltung eingetragen'); ?>
         <? else: ?>
             <table class="default">
-                <colgroup>
-                    <col width="30%">
-                    <col width="60%">
-                </colgroup>
+                <caption><?= _('Gruppenmitglieder') ?></caption>
                 <tr>
                     <th>Name</th>
-                    <th></th>
-                    <th>Aktionen</th>
                 </tr>
                 <?php foreach ($member as $user): ?>
                     <tr>
@@ -44,11 +37,6 @@
                                 <?= htmlReady($user->getFullname()) ?>
                             </a>
                         </td>
-                        <td></td>
-                        <td style="text-align:center;">
-                            <a href="<?= $controller->url_for(sprintf('showsupervisor/deleteUserFromGroup/%s/%s', $user->id, $id)) ?>">
-                                <?= Icon::create('trash', 'clickable', ['title' => sprintf(_('Nutzer aus Gruppe austragen'))]) ?>
-                            </a>
                     </tr>
                 <? endforeach; ?>
             </table>
