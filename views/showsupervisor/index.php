@@ -12,8 +12,9 @@
         'title'        => _('Verfügbare Vorlagen'),
         'missing_text' => _('Keine Vorlagen vorhanden oder alle Vorlagen sind verteilt oder archiviert.'),
         'portfolios'   => array_filter($portfolios, function($portfolio) use ($id) {
-            return !EportfolioGroupTemplates::checkIfGroupHasTemplate($id, $portfolio->id);
-        })
+            return !EportfolioGroupTemplates::checkIfGroupHasTemplate($id, $portfolio->id)
+                && !sizeof(EportfolioArchive::find($portfolio->id));
+        }),
     ]) ?>
 
     <? if (empty($groupTemplates)): ?>

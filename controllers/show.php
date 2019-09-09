@@ -56,6 +56,40 @@ class ShowController extends StudipController
         asort($this->courses);
     }
 
+    public function archive_action($vorlage_id)
+    {
+        if (!$GLOBALS['perm']->have_studip_perm('dozent', $vorlage_id)) {
+            throw new Exception('Access denied');
+        }
+
+        $archive = new EportfolioArchive();
+        $archive->eportfolio_id = $vorlage_id;
+        $archive->store();
+
+        PageLayout::postMessage(MessageBox::success(
+            _('Vorlage wurde archiviert.')
+        ));
+
+        $this->redirect('show');
+    }
+
+    public function unarchive_action($vorlage_id)
+    {
+        if (!$GLOBALS['perm']->have_studip_perm('dozent', $vorlage_id)) {
+            throw new Exception('Access denied');
+        }
+
+        $archive = EportfolioArchive::find($vorlage_id);
+        if ($archive) {
+            $archive->delete();
+            PageLayout::postMessage(MessageBox::success(
+                _('Vorlage wurde wiederhergestellt.')
+            ));
+        }
+
+        $this->redirect('show');
+    }
+
     public function getAccessPortfolio()
     {
         return Course::findBySQL(
