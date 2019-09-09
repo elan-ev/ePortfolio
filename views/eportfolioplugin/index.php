@@ -88,7 +88,7 @@
                                     <div class="row member-icons">
                                         <div class="col-sm-4">
                                             <?php if (Eportfoliomodel::checkKapitelFreigabe($current_block_id)): ?>
-                                                <?= Icon::create('accept+new', 'clickable', [
+                                                <?= Icon::create('accept+new', 'inactive', [
                                                     'title' => 'Freigabe erteilt'
                                                 ]); ?>
                                             <?php else: ?>
@@ -99,9 +99,11 @@
                                         </div>
                                         <div class="col-sm-4">
                                             <?php if (Eportfoliomodel::checkSupervisorNotiz($current_block_id) == true): ?>
-                                                <?= Icon::create('file+new', 'clickable', [
-                                                    'title' => 'Notiz für Supvervisor vorhanden'
-                                                ]); ?>
+                                                <a href="<?= URLHelper::getLink('plugins.php/courseware/courseware?cid=' . $cid . '&selected=' . $current_block_id) ?>">
+                                                    <?= Icon::create('file+new', 'clickable', [
+                                                        'title' => 'Notiz für Supvervisor vorhanden'
+                                                    ]); ?>
+                                                </a>
                                             <?php else: ?>
                                                 <?= Icon::create('file', 'inactive', [
                                                     'title' => 'Notiz für Supvervisor nicht vorhanden'
@@ -110,9 +112,11 @@
                                         </div>
                                         <div class="col-sm-4">
                                             <?php if (Eportfoliomodel::checkSupervisorResonanz($current_block_id) == true): ?>
-                                                <?= Icon::create('forum+new', 'clickable', [
-                                                    'title' => 'Feedback von Supervisor vorhanden'
-                                                ]); ?>
+                                                <a href="<?= URLHelper::getLink('plugins.php/courseware/courseware?cid=' . $cid . '&selected=' . $current_block_id) ?>">
+                                                    <?= Icon::create('forum+new', 'clickable', [
+                                                        'title' => 'Feedback von Supervisor vorhanden'
+                                                    ]); ?>
+                                                </a>
                                             <?php else: ?>
                                                 <?= Icon::create('forum', 'inactive', [
                                                     'title' => 'Feedback von Supervisor nicht vorhanden'
