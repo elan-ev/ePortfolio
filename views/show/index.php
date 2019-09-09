@@ -59,7 +59,11 @@
         </tbody>
     </table>
 <? endif; ?>
+<? if (empty($courses)) : ?>
+    <?= MessageBox::info('Sie haben noch keine Portfolio Vorlagen.') ?>
+<? endif ?>
 
+<br>
 <table class="default">
     <caption><?= _('Meine Portfolios') ?>
         <span class="actions">
@@ -114,8 +118,11 @@
         <? endforeach; ?>
     </tbody>
 </table>
+<? if (empty($myportfolios)) : ?>
+    <?= MessageBox::info('Bisher sind keine eigenen Portfolios vorhanden.') ?>
+<? endif ?>
 
-
+<br>
 <table class="default">
     <caption><?= _('Für mich freigegebene Portfolios') ?></caption>
     <colgroup>
@@ -150,3 +157,7 @@
         <? endforeach; ?>
     </tbody>
 </table>
+
+<? if (empty($myAccess)) : ?>
+    <?= MessageBox::info('Bisher wurden keine Portfolios für Sie freigegeben.') ?>
+<? endif ?>
