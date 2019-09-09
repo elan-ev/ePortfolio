@@ -46,13 +46,27 @@
                     </td>
                     <td><?= htmlReady($portfolio->beschreibung)?></td>
                     <td class="actions">
-                        <a href="<?= URLHelper::getUrl('plugins.php/courseware/courseware', [
-                            'cid'         => $portfolio->id,
-                            'return_to'   => 'overview'
-                        ]); ?>"
-                           title="<?= _('Portfolio-Vorlage bearbeiten') ?>">
-                            <?= Icon::create('edit', 'clickable') ?>
-                        </a>
+                        <?php
+                            $actionMenu = ActionMenu::get();
+                            $actionMenu->addLink(
+                                URLHelper::getUrl('plugins.php/courseware/courseware', [
+                                   'cid'         => $portfolio->id,
+                                   'return_to'   => 'overview'
+                               ]),
+                                _('Portfolio-Vorlage bearbeiten'),
+                                Icon::create('edit', 'clickable')
+                            );
+
+                            if (sizeof(EportfolioGroupTemplates::findBySeminar_id($portfolio->id))) {
+                                $actionMenu->addLink(
+                                     PluginEngine::getLink($this->plugin, [], 'show/list_seminars/' . $portfolio->id),
+                                    _('Verteilt in Veranstaltungen'),
+                                    Icon::create('info', 'clickable'),
+                                    ['data-dialog' => '1']
+                                );
+                            }
+                        ?>
+                            <?= $actionMenu->render() ?>
                     </td>
                 </tr>
             <? endforeach; ?>

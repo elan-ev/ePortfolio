@@ -38,6 +38,24 @@ class ShowController extends StudipController
         $this->user = $GLOBALS['user'];
     }
 
+    public function list_seminars_action($vorlage_id)
+    {
+        if (!$GLOBALS['perm']->have_studip_perm('dozent', $vorlage_id)) {
+            throw new Exception('Access denied');
+        }
+
+        $this->courses = [];
+
+        foreach (EportfolioGroupTemplates::findBySeminar_id($vorlage_id) as $vorlage) {
+            $course = Course::find($vorlage->group_id);
+            $this->courses[$course->id] =
+                $course->getFullname('sem-duration-name') . ' - ' .
+                $course->getFullname();
+        }
+
+        asort($this->courses);
+    }
+
     public function getAccessPortfolio()
     {
         return Course::findBySQL(
