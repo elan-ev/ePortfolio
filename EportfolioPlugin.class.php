@@ -39,7 +39,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         $js = '';
 
         while ($semid = $stmt->fetchColumn()) {
-            $js .= "jQuery('.course-$semid').parent().parent().remove();\n";
+            $js .= "jQuery('#my_seminars .course-$semid').parent().parent().remove();\n";
         }
 
         $js .= 'jQuery("#my_seminars").show(); jQuery("#my_seminars .mycourses").each(function() {
