@@ -88,23 +88,35 @@
                                     <div class="row member-icons">
                                         <div class="col-sm-4">
                                             <?php if (Eportfoliomodel::checkKapitelFreigabe($current_block_id)): ?>
-                                                <?= Icon::create('accept', 'clickable'); ?>
+                                                <?= Icon::create('accept+new', 'clickable', [
+                                                    'title' => 'Freigabe erteilt'
+                                                ]); ?>
                                             <?php else: ?>
-                                                <?= Icon::create('accept', 'inactive'); ?>
+                                                <?= Icon::create('accept', 'inactive', [
+                                                    'title' => 'Freigabe nicht erteilt'
+                                                ]); ?>
                                             <?php endif; ?>
                                         </div>
                                         <div class="col-sm-4">
                                             <?php if (Eportfoliomodel::checkSupervisorNotiz($current_block_id) == true): ?>
-                                                <?= Icon::create('file', 'clickable'); ?>
+                                                <?= Icon::create('file+new', 'clickable', [
+                                                    'title' => 'Notiz für Supvervisor vorhanden'
+                                                ]); ?>
                                             <?php else: ?>
-                                                <?= Icon::create('file', 'inactive'); ?>
+                                                <?= Icon::create('file', 'inactive', [
+                                                    'title' => 'Notiz für Supvervisor nicht vorhanden'
+                                                ]); ?>
                                             <?php endif; ?>
                                         </div>
                                         <div class="col-sm-4">
                                             <?php if (Eportfoliomodel::checkSupervisorResonanz($current_block_id) == true): ?>
-                                                <?= Icon::create('forum', 'clickable'); ?>
+                                                <?= Icon::create('forum+new', 'clickable', [
+                                                    'title' => 'Feedback von Supervisor vorhanden'
+                                                ]); ?>
                                             <?php else: ?>
-                                                <?= Icon::create('forum', 'inactive'); ?>
+                                                <?= Icon::create('forum', 'inactive', [
+                                                    'title' => 'Feedback von Supervisor nicht vorhanden'
+                                                ]); ?>
                                             <?php endif; ?>
                                         </div>
                                     </div>
