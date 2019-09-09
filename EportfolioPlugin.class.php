@@ -27,6 +27,30 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         NotificationCenter::addObserver($this, "store_activity", "UserDidPostNotiz");
 
         NotificationCenter::addObserver($this, "prevent_settings_access", "NavigationDidActivateItem");
+
+        // generate css to hide all portfolio seminars on the my_realm page - DIRTY HACK, i know
+        PageLayout::addStyle('#my_seminars {display: none; }');
+
+        $stmt = DBManager::get()->prepare('SELECT Seminar_id FROM seminar_user
+            JOIN eportfolio_user USING (Seminar_id)
+            WHERE seminar_user.user_id = ?');
+        $stmt->execute([$GLOBALS['user']->id]);
+
+        $js = '';
+
+        while ($semid = $stmt->fetchColumn()) {
+            $js .= "jQuery('.course-$semid').parent().parent().remove();\n";
+        }
+
+        $js .= 'jQuery("#my_seminars").show(); jQuery("#my_seminars .mycourses").each(function() {
+            if (jQuery(this).find("tbody tr").length == 0) {
+                jQuery(this).remove();
+            }
+        })';
+
+        if ($js) {
+            PageLayout::addHeadElement('script', [], "jQuery(function() { $js })");
+        }
     }
 
     public function getCardInfos($cid)
