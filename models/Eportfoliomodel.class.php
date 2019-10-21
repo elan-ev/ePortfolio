@@ -430,7 +430,7 @@ class Eportfoliomodel extends SimpleORMap
         $return           = 0;
         $templateChapters = Eportfoliomodel::getChapters($template_id);
         foreach ($templateChapters as $chapter) {
-            $block_id = Eportfoliomodel::getUserPortfolioBlockId($user_template_id, $chapter[id]);
+            $block_id = Eportfoliomodel::getUserPortfolioBlockId($user_template_id, $chapter['id']);
             if (Eportfoliomodel::checkKapitelFreigabe($block_id)) {
                 $return++;
             }
@@ -455,7 +455,7 @@ class Eportfoliomodel extends SimpleORMap
         $return           = 0;
         $templateChapters = Eportfoliomodel::getChapters($template_id);
         foreach ($templateChapters as $chapter) {
-            $block_id = Eportfoliomodel::getUserPortfolioBlockId($user_template_id, $chapter[id]);
+            $block_id = Eportfoliomodel::getUserPortfolioBlockId($user_template_id, $chapter['id']);
             if (Eportfoliomodel::checkSupervisorNotiz($block_id)) {
                 $return++;
             }
