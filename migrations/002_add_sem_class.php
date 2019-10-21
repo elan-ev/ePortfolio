@@ -116,6 +116,9 @@ class AddSemClass extends Migration
 
         $sem_class->store();
 
+        $cache = StudipCacheFactory::getCache();
+        $cache->expire('DB_SEM_TYPES_ARRAY');
+
         return $id;
     }
 
