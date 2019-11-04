@@ -14,15 +14,11 @@ class SupervisorgroupController extends StudipController
     {
         parent::before_filter($action, $args);
 
-        $this->course = Course::findCurrent();
-        $id           = $_GET["cid"];
-        $this->sem    = Course::findById($id);
-
+        $this->course = Course::find(Context::getId());
 
         if ($this->course) {
             $this->groupid = $this->course->id;
             $this->userid  = $GLOBALS['user']->id;
-            $this->ownerid = $GLOBALS['user']->id;
 
             $this->groupTemplates = EportfolioGroupTemplates::getGroupTemplates($this->course->id);
 
@@ -38,16 +34,14 @@ class SupervisorgroupController extends StudipController
     {
         Navigation::activateItem('/course/eportfolioplugin/supervisorgroup');
 
-        $groupId         = Course::findCurrent()->id;
-        $sem             = new Seminar($groupId);
-        $this->groupName = $sem->getName();
+        $this->groupName = $this->course->getName();
         PageLayout::setTitle(Context::getHeaderLine() . ' - Berechtigungen Portfolioarbeit');
-        $supervisorgroupid = Eportfoliogroup::getSupervisorGroupId($groupId);
+        $supervisorgroupid = Eportfoliogroup::getSupervisorGroupId(Context::getId());
 
         $group         = new SupervisorGroup($supervisorgroupid);
         $this->title   = $group->name;
         $this->groupId = $group->id;
-        $this->linkId  = $groupId;
+        $this->linkId  = Context::getId();
 
         $search_obj = new SQLSearch("SELECT auth_user_md5.user_id, CONCAT(auth_user_md5.nachname, ', ', auth_user_md5.vorname, ' (' , auth_user_md5.email, ')' ) as fullname, username, perms "
             . "FROM auth_user_md5 "

@@ -15,15 +15,11 @@ class ShowsupervisorController extends StudipController
     {
         parent::before_filter($action, $args);
 
-        $this->course = Course::findCurrent();
-        $id           = $_GET["cid"];
-        $this->sem    = Course::findById($id);
-
+        $this->course = Course::find(Context::getId());
 
         if ($this->course) {
             $this->groupid = $this->course->id;
             $this->userid  = $GLOBALS['user']->id;
-            $this->ownerid = $GLOBALS['user']->id;
 
             $this->groupTemplates = EportfolioGroupTemplates::getGroupTemplates($this->course->id);
 
