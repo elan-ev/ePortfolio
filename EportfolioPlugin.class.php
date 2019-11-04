@@ -63,13 +63,13 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         $getCardInfos = $statement->fetchAll();
         foreach ($getCardInfos as $value) {
             $arrayOne          = [];
-            $arrayOne['id']    = $value[id];
-            $arrayOne['title'] = $value[title];
+            $arrayOne['id']    = $value['id'];
+            $arrayOne['title'] = $value['title'];
 
             // get sections of chapter
             $query     = "SELECT id, title FROM mooc_blocks WHERE parent_id = :id";
             $statement = $db->prepare($query);
-            $statement->execute([':id' => $value[id]]);
+            $statement->execute([':id' => $value['id']]);
             $arrayOne['section'] = $statement->fetchAll();
 
             array_push($return_arr, $arrayOne);

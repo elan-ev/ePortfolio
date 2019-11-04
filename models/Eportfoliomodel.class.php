@@ -312,22 +312,22 @@ class Eportfoliomodel extends SimpleORMap
         $statement = $db->prepare($query);
         $statement->execute([':id' => $id]);
         foreach ($statement->fetchAll() as $chapter) {
-            array_push($blocks, $chapter[id]);
+            array_push($blocks, $chapter['id']);
             $query     = "SELECT title, id FROM mooc_blocks WHERE parent_id = :id ORDER BY position ASC";
             $statement = $db->prepare($query);
-            $statement->execute([':id' => $chapter[id]]);
+            $statement->execute([':id' => $chapter['id']]);
             foreach ($statement->fetchAll() as $subchapter) {
-                array_push($blocks, $subchapter[id]);
+                array_push($blocks, $subchapter['id']);
                 $query     = "SELECT title, id FROM mooc_blocks WHERE parent_id = :id ORDER BY position ASC";
                 $statement = $db->prepare($query);
-                $statement->execute([':id' => $subchapter[id]]);
+                $statement->execute([':id' => $subchapter['id']]);
                 foreach ($statement->fetchAll() as $section) {
-                    array_push($blocks, $section[id]);
+                    array_push($blocks, $section['id']);
                     $query     = "SELECT title, id FROM mooc_blocks WHERE parent_id = :id ORDER BY position ASC";
                     $statement = $db->prepare($query);
-                    $statement->execute([':id' => $section[id]]);
+                    $statement->execute([':id' => $section['id']]);
                     foreach ($statement->fetchAll() as $block) {
-                        array_push($blocks, $block[id]);
+                        array_push($blocks, $block['id']);
                     }
                 }
             }

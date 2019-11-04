@@ -96,13 +96,13 @@ class EportfoliopluginController extends StudipController
         $statement->execute([':cid' => $cid]);
         foreach ($statement->fetchAll() as $value) {
             $arrayOne          = [];
-            $arrayOne['id']    = $value[id];
-            $arrayOne['title'] = $value[title];
+            $arrayOne['id']    = $value['id'];
+            $arrayOne['title'] = $value['title'];
 
             // get sections of chapter
             $query     = "SELECT id, title FROM mooc_blocks WHERE parent_id = :id ORDER BY position ASC";
             $statement = $db->prepare($query);
-            $statement->execute([':id' => $value[id]]);
+            $statement->execute([':id' => $value['id']]);
             $arrayOne['section'] = $statement->fetchAll();
 
             array_push($return_arr, $arrayOne);
