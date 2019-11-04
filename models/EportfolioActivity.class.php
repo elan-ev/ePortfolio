@@ -13,27 +13,27 @@
  */
 class EportfolioActivity extends SimpleORMap
 {
-    
+
     protected static function configure($config = [])
     {
         $config['db_table'] = 'eportfolio_activities';
-        
+
         $config['belongs_to']['user'] = [
             'class_name'  => 'User',
             'foreign_key' => 'user_id',];
-        
+
         $config['belongs_to']['group'] = [
             'class_name'  => 'EportfolioGroup',
             'foreign_key' => 'group_id',];
-        
+
         $config['belongs_to']['eportfolio'] = [
             'class_name'  => 'Eportfoliomodel',
             'foreign_key' => 'eportfolio_id',];
-        
+
         $config['additional_fields']['is_new']['get'] = function ($item) {
             if ($item->group_id && User::findCurrent()->id && (User::findCurrent()->id != $item->user_id)) {
                 $seminar_id = $item->group_id;
-                
+
                 $last_visit = object_get_visit($seminar_id, 'sem');
                 return $item->mk_date > $last_visit;
             } else {
@@ -57,7 +57,7 @@ class EportfolioActivity extends SimpleORMap
             }
             return $link;
         };
-        
+
         $config['additional_fields']['message']['get'] = function ($item) {
             switch ($item->type) {
                 case 'freigabe':
@@ -87,15 +87,15 @@ class EportfolioActivity extends SimpleORMap
             }
             return $message;
         };
-        
+
         parent::configure($config);
     }
-    
+
     public static function getActivitiesForGroup($seminar_id)
     {
-        return EportfolioActivity::findBySQL('group_id = ?  ORDER BY mk_date DESC', [$seminar_id]);
+        return EportfolioActivity::findBySQL('group_id = ? ORDER BY mk_date DESC LIMIT 100', [$seminar_id]);
     }
-    
+
     public function getActivitiesOfGroupUser($seminar_id, $user_id)
     {
         if (!$user_id) {
@@ -105,14 +105,14 @@ class EportfolioActivity extends SimpleORMap
             'group_id = ? AND user_id = ?',
             [$seminar_id, $user_id]);
     }
-    
+
     public function newActivities($seminar_id)
     {
         return EportfolioActivity::findBySQL(
             'group_id = ?  AND mk_date > ? AND user_id != ? ORDER BY mk_date DESC',
             [$seminar_id, object_get_visit($seminar_id, 'sem'), $GLOBALS['user']->id]);
     }
-    
+
     public function addVorlagenActivity($group_id, $user_id)
     {
         $activity           = new EportfolioActivity();
@@ -121,7 +121,7 @@ class EportfolioActivity extends SimpleORMap
         $activity->mk_date  = time();
         $activity->group_id = $group_id;
         $activity->store();
-        
+
         foreach (EportfolioGroup::find($group_id)->getRelatedStudentPortfolios() as $portfolio) {
             $activity                = new EportfolioActivity();
             $activity->type          = 'vorlage-erhalten';
@@ -132,11 +132,11 @@ class EportfolioActivity extends SimpleORMap
             $activity->store();
         }
     }
-    
+
     public function addActivity($portfolio_id, $block_id, $notification)
     {
         $activity = new EportfolioActivity();
-        
+
         switch ($notification) {
             case 'UserDidPostSupervisorNotiz':
                 $activity->type = 'supervisor-notiz';
@@ -148,7 +148,7 @@ class EportfolioActivity extends SimpleORMap
                 $activity->type = $notification;
                 break;
         }
-        
+
         $activity->user_id       = User::findCurrent()->id;
         $activity->mk_date       = time();
         $group_id                = Eportfoliomodel::findBySeminarId($portfolio_id)->group_id;
@@ -157,7 +157,7 @@ class EportfolioActivity extends SimpleORMap
         $activity->eportfolio_id = $portfolio_id;
         $activity->store();
     }
-    
+
     public static function getLastFreigabeOfPortfolio($portfolio_id)
     {
         $freigabe = self::findOneBySQL("eportfolio_id = ? AND type = 'freigabe' ORDER BY mk_date DESC", [$portfolio_id]);
