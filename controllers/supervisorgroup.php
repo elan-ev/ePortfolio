@@ -34,7 +34,6 @@ class SupervisorgroupController extends StudipController
     {
         Navigation::activateItem('/course/eportfolioplugin/supervisorgroup');
 
-        $this->groupName = $this->course->getName();
         PageLayout::setTitle(Context::getHeaderLine() . ' - Berechtigungen Portfolioarbeit');
         $supervisorgroupid = Eportfoliogroup::getSupervisorGroupId(Context::getId());
 
