@@ -25,10 +25,7 @@ class settingsController extends StudipController
         $seminar = new Seminar($course->id);
 
         # Aktuelle Seite
-        PageLayout::setTitle('ePortfolio - Zugriffsrechte: ' . $course->getFullname());
-        if ($this->isVorlage) {
-            PageLayout::setTitle('ePortfolio-Vorlage - Zugriffsrechte: ' . $course->getFullname());
-        }
+        PageLayout::setTitle($course->getFullname());
 
         //autonavigation
         Navigation::activateItem("course/settings");
@@ -200,17 +197,26 @@ class settingsController extends StudipController
         $this->redirect('settings/index/' . Context::getId());
     }
 
-    public function deleteUserAccess_action($userId)
+    public function deleteUserAccess_action($user_id)
     {
         $seminar       = new Seminar(Context::getId());
         $eportfolio    = Eportfoliomodel::findBySeminarId(Context::getId());
         $eportfolio_id = $eportfolio->eportfolio_id;
 
-        $seminar->deleteMember($userId);
+        $course        = Course::findCurrent();
+        $chapters      = Eportfoliomodel::getChapters($course->id);
+        
+        foreach ($chapters as $chapter) {
+            if(EportfolioFreigabe::hasAccess($user_id, Context::getId(), $chapter['id'])) {
+                EportfolioFreigabe::setAccess($user_id, Context::getId(), $chapter['id'], FALSE);
+            }
+        }
+
+        $seminar->deleteMember($user_id);
 
         $query     = "DELETE FROM eportfolio_user WHERE user_id = :userId AND seminar_id = :cid AND eportfolio_id = :eportfolio_id";
         $statement = DBManager::get()->prepare($query);
-        $statement->execute([':cid' => Context::getId(), ':userId' => $userId, ':eportfolio_id' => $eportfolio_id]);
+        $statement->execute([':cid' => Context::getId(), ':userId' => $user_id, ':eportfolio_id' => $eportfolio_id]);
 
         $this->redirect('settings/index');
     }
