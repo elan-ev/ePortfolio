@@ -88,118 +88,7 @@
         </ul>
     </div>
 
-    <div id="ajaxTest">
-    - hier soll etwas eingefuegt werden -
-    </div>
-
-    <script type="text/javascript"
-            src="<?= $GLOBALS['ABSOLUTE_URI_STUDIP'] . 'plugins_packages/uos/EportfolioPlugin/assets/js/eportfolio.js'; ?>"></script>
     <script type="text/javascript">
-
-        var cid = '<?php echo $cid; ?>';
-
-        $(document).ready(function () {
-
-
-            $('#deleteModal').on('shown.bs.modal', function () {
-                $('#deleteModal').focus()
-            })
-
-            // Portfolio Informationen ï¿½ndern
-            $('#portfolio-info-trigger').click(function () {
-                $(this).toggleClass('show-info-not');
-                $('#portfolio-info-saver').toggleClass('show-info');
-                $('.portfolio-info-wrapper').toggleClass('show-info');
-                $('.portfolio-info-wrapper-current').toggleClass('show-info-not');
-            })
-
-            $('#portfolio-info-saver').click(function () {
-                $(this).toggleClass('show-info');
-                $('#portfolio-info-trigger').toggleClass('show-info-not');
-                $('.portfolio-info-wrapper').toggleClass('show-info');
-                $('.portfolio-info-wrapper-current').toggleClass('show-info-not');
-
-                var valName = $("#name-input").val();
-                var valBeschreibung = $("#beschreibung-input").val();
-
-                $.ajax({
-                    type: "POST",
-                    url: "/studip/plugins.php/eportfolioplugin/settings?cid=" + cid,
-                    data: {'saveChanges': 1, 'Name': valName, 'Beschreibung': valBeschreibung},
-                    success: function (data) {
-                        $('.wrapper-name').empty().append('<span>' + valName + '</span>');
-                        $('.wrapper-beschreibung').empty().append('<span>' + valBeschreibung + '</span>');
-                    }
-                });
-
-            })
-
-            //Search Supervisor
-            $('#inputSearchSupervisor').keyup(function () {
-                var val = $("#inputSearchSupervisor").val();
-                var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/livesearch');
-
-                $.ajax({
-                    type: "POST",
-                    url: url,
-                    dataType: "json",
-                    data: {
-                        'val': val,
-                        'status': 'dozent',
-                        'searchSupervisor': 1,
-                    },
-                    success: function (json) {
-                        $('#searchResult').empty();
-                        _.map(json, output);
-                        console.log(json);
-
-                        function output(n) {
-                            $('#searchResult').append('<div onClick="setSupervisor(&apos;' + n.userid + '&apos;)" class="searchResultItem">' + n.Vorname + ' ' + n.Nachname + '<span class="pull-right glyphicon glyphicon-plus" aria-hidden="true"></span></div>');
-                        }
-                    }
-                });
-            });
-
-            //Search Viewer
-            $('#inputSearchViewer').keyup(function () {
-                var val = $("#inputSearchViewer").val();
-                var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/livesearch');
-
-                var values = _.words(val);
-
-                $.ajax({
-                    type: "POST",
-                    url: url,
-                    dataType: "json",
-                    data: {
-                        'val': values,
-                        'searchViewer': 1,
-                        'cid': cid,
-                    },
-                    success: function (json) {
-                        $('#searchResultViewer').empty();
-                        _.map(json, output);
-                        console.log(json);
-
-                        function output(n) {
-                            console.log(n.userid);
-                            $('#searchResultViewer').append('<div onClick="setViewer(&apos;' + n.userid + '&apos;)" class="searchResultItem">' + n.Vorname + ' ' + n.Nachname + '<span class="pull-right glyphicon glyphicon-plus" aria-hidden="true"></span></div>');
-                        }
-                    },
-                    error: function (json) {
-                        console.log(json.responsetext);
-                        $('#searchResultViewer').empty();
-                        _.map(json, output);
-
-                        function output(n) {
-                            $('#searchResultViewer').append('<div onClick="setViewer(&apos;' + n.userid + '&apos;)" class="searchResultItem">' + n.Vorname + ' ' + n.Nachname + '<span class="pull-right glyphicon glyphicon-plus" aria-hidden="true"></span></div>');
-                        }
-                    }
-                });
-            });
-
-        });
-
         function deleteUserAccess(userId, seminar_id, obj) {
             $.ajax({
                 type: "POST",
@@ -231,6 +120,5 @@
                 }
             });
         }
-
     </script>
 <? endif ?>
