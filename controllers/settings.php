@@ -42,54 +42,6 @@ class settingsController extends StudipController
         $viewers       = $course->getMembersWithStatus('autor');
         $supervisor_id = $this->getSupervisorGroupOfPortfolio($course->id);
 
-        if (Request::get('setSupervisor')) {
-            $supervisorId           = Request::option('supervisorId');
-            $access_array           = ['viewer' => 0];
-            $access_array_serialize = serialize($access_array);
-
-            $query     = "UPDATE eportfolio SET supervisor_id = :supervisorId WHERE Seminar_id = :cid";
-            $statement = DBManager::get()->prepare($query);
-            $statement->execute([
-                ':supervisorId' => $supervisorId,
-                ':cid'          => $course->id
-            ]);
-            $query     = "INSERT INTO seminar_user (seminar_id, user_id, status, visible, eportfolio_access)
-                    VALUES (:cid, :supervisorId, 'dozent', 1, :access_array_serialize)";
-            $statement = DBManager::get()->prepare($query);
-            $statement->execute([
-                ':supervisorId'           => $supervisorId,
-                ':cid'                    => $course->id,
-                ':access_array_serialize' => $access_array_serialize
-            ]);
-        }
-
-
-        if (Request::get('setViewer')) {
-            $viewerId               = Request::get('viewerId');
-            $eportfolio_access      = [];
-
-            $list = $this->getCurrentChapter($course->id);
-
-            foreach ($list as $key => $value) {
-                $eportfolio_access[$value] = 1;
-            }
-
-            $json = serialize($eportfolio_access);
-
-            $query     = "INSERT INTO seminar_user (seminar_id, user_id, status, visible) VALUES (:cid, :viewerId, 'autor', 1)";
-            $statement = DBManager::get()->prepare($query);
-            $statement->execute([':viewerId' => $viewerId, ':cid' => $course->id]);
-
-            $query     = "INSERT INTO eportfolio_user (user_id, Seminar_id, eportfolio_id, status, eportfolio_access, owner)
-                    VALUES (:viewerId, :cid, :eportfolio_id, 'autor', :json, 0)";
-            $statement = DBManager::get()->prepare($query);
-            $statement->execute([':viewerId' => $viewerId, ':cid' => $course->id, ':eportfolio_id' => $eportfolio->eportfolio_id, ':json' => $json]);
-        }
-
-        if (Request::get('saveChanges')) {
-            $this->saveChanges();
-        }
-
         $search_obj = new SQLSearch("SELECT auth_user_md5.user_id, CONCAT(auth_user_md5.nachname, ', ', auth_user_md5.vorname, ' (' , auth_user_md5.email, ')' ) as fullname, username, perms "
             . "FROM auth_user_md5 "
             . "WHERE (CONCAT(auth_user_md5.Vorname, \" \", auth_user_md5.Nachname) LIKE :input "
@@ -133,28 +85,6 @@ class settingsController extends StudipController
         $freigabe::setAccess(Request::get("user_id"), Request::get("seminar_id"), Request::get("chapter_id"), Request::get("status"));
         echo json_encode(studip_utf8encode($freigabe::hasAccess(Request::get("user_id"), Request::get("seminar_id"), Request::get("chapter_id"))));
         $this->render_nothing();
-    }
-
-    /**
-     * name und beschreibung speichern
-     */
-    public function saveChanges()
-    {
-        $query     = "UPDATE seminare SET Name = :change_name, Beschreibung = :change_beschreibung WHERE Seminar_id = :cid";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute(
-            [':change_name'         => Request::get('name'),
-             ':cid'                 => Context::getId(),
-             ':change_beschreibung' => Request::get('Beschreibung')
-            ]);
-    }
-
-    public function getCurrentChapter($id)
-    {
-        return DBManager::get()->fetchAll(
-            "SELECT id FROM mooc_blocks WHERE seminar_id = :id AND type = 'Chapter'",
-            [':id' => $id]
-        );
     }
 
     /**
@@ -222,31 +152,6 @@ class settingsController extends StudipController
 
         $this->render_nothing();
     }
-
-    public function eigenesPortfolio($cid)
-    {
-        $query     = "SELECT template_id FROM eportfolio WHERE seminar_id = :cid";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute([':cid' => Context::getId()]);
-        if (empty($statement->fetchAll()[0][0])) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public function checkIfOwner($userId, $cid)
-    {
-        $query     = "SELECT status FROM seminar_user WHERE user_id = :userId AND seminar_id = :cid";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute([':cid' => Context::getId(), ':userId' => $userId]);
-        if ($statement->fetchAll()[0][0] == "dozent") {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
 
     public function url_for($to = '')
     {
