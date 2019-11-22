@@ -25,7 +25,10 @@ class settingsController extends StudipController
         $seminar = new Seminar($course->id);
 
         # Aktuelle Seite
-        PageLayout::setTitle($course->getFullname());
+        PageLayout::setTitle('ePortfolio - Zugriffsrechte: ' . $course->getFullname());
+        if ($this->isVorlage) {
+            PageLayout::setTitle('ePortfolio-Vorlage - Zugriffsrechte: ' . $course->getFullname());
+        }
 
         //autonavigation
         Navigation::activateItem("course/settings");
