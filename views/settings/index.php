@@ -50,10 +50,9 @@
                              'title' => _('Gruppen-Supervisoren')]); ?>
                         <?= $user->getFullname() ?>
                     </td>
-                    <td>
-                        <a href="<?= $controller->url_for('settings/deleteUserAccess/' . $acc->user_id) ?>">
-                            <?= Icon::create('trash', 'clickable') ?>
-                        </a>
+                    
+                    <td onClick="deleteUserAccess('<?= $acc->user_id ?>', '<?= $cid ?>', this);" class="righttable-inner">
+                        <span><?= Icon::create('trash', 'clickable') ?></span>
                     </td>
 
                     <? foreach ($chapterList as $chapter): ?>
@@ -202,19 +201,13 @@
         });
 
         function deleteUserAccess(userId, seminar_id, obj) {
-            $(obj).empty().append('<i style="color: #24437c;" class="fa fa-circle-o-notch fa-spin fa-fw"></i>');
-            var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/settings');
-            console.log(userId);
             $.ajax({
                 type: "POST",
-                url: url,
+                url: STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/settings/deleteUserAccess'),
                 data: {
-                    'action': 'deleteUserAccess',
-                    'userId': userId,
-                    'seminar_id': seminar_id,
+                    'userId': userId
                 },
-                success: function (data) {
-                    console.log(data);
+                success: function () {
                     $(obj).parents('tr').fadeOut();
                 }
             });

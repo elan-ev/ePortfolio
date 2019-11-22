@@ -201,8 +201,9 @@ class settingsController extends StudipController
         $this->redirect('settings/index/' . Context::getId());
     }
 
-    public function deleteUserAccess_action($user_id)
+    public function deleteUserAccess_action()
     {
+        $user_id       = Request::get('userId');
         $seminar       = new Seminar(Context::getId());
         $eportfolio    = Eportfoliomodel::findBySeminarId(Context::getId());
         $eportfolio_id = $eportfolio->eportfolio_id;
@@ -222,7 +223,7 @@ class settingsController extends StudipController
         $statement = DBManager::get()->prepare($query);
         $statement->execute([':cid' => Context::getId(), ':userId' => $user_id, ':eportfolio_id' => $eportfolio_id]);
 
-        $this->redirect('settings/index');
+        $this->render_nothing();
     }
 
     public function eigenesPortfolio($cid)
