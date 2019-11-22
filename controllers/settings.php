@@ -50,7 +50,7 @@ class settingsController extends StudipController
             . "AND auth_user_md5.user_id NOT IN "
             . "(SELECT eportfolio_user.user_id FROM eportfolio_user WHERE eportfolio_user.Seminar_id = '" . $course->id . "')  "
             . "ORDER BY Vorname, Nachname ",
-            _("NUtzer suchen"), "username");
+            _("Nutzer suchen"), "username");
 
         $this->mp = MultiPersonSearch::get('selectFreigabeUser')
             ->setLinkText(_('Zugriffsrechte vergeben'))
