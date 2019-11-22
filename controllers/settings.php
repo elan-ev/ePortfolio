@@ -130,10 +130,11 @@ class settingsController extends StudipController
         $this->supervisorId  = $supervisor_id;
     }
 
-    public function setAccess_action($user_id, $seminar_id, $chapter_id, $status)
+    public function setAccess_action()
     {
         $freigabe = new EportfolioFreigabe();
-        $freigabe::setAccess($user_id, Context::getId(), $chapter_id, $status);
+        $freigabe::setAccess(Request::get("user_id"), Request::get("seminar_id"), Request::get("chapter_id"), Request::get("status"));
+        echo json_encode(studip_utf8encode($freigabe::hasAccess(Request::get("user_id"), Request::get("seminar_id"), Request::get("chapter_id"))));
         $this->render_nothing();
     }
 

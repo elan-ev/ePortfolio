@@ -89,6 +89,10 @@
         </ul>
     </div>
 
+    <div id="ajaxTest">
+    - hier soll etwas eingefuegt werden -
+    </div>
+
     <script type="text/javascript"
             src="<?= $GLOBALS['ABSOLUTE_URI_STUDIP'] . 'plugins_packages/uos/EportfolioPlugin/assets/js/eportfolio.js'; ?>"></script>
     <script type="text/javascript">
@@ -217,18 +221,20 @@
         }
 
         function setAccess(id, viewerId, obj, cid) {
-            var status = $(obj).children('span').hasClass('glyphicon-ok');
-            var url = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/settings/setAccess/' + viewerId + '/' + cid + '/' + id + '/' + !status);
             $.ajax({
                 type: "POST",
-                url: url,
-                success: function (data) {
-                    if (status === false) {
-                        $(obj).empty().append('<span class="glyphicon glyphicon-ok"><?= Icon::create('accept', Icon::ROLE_CLICKABLE); ?></span>');
-                    } else {
-                        $(obj).empty().append('<span class="glyphicon glyphicon-remove"><?=Icon::create('decline', Icon::ROLE_CLICKABLE); ?></span>');
-                    }
-
+                url: STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/settings/setAccess'),
+                data: {
+                    user_id: viewerId,
+                    seminar_id: cid, 
+                    chapter_id: id, 
+                    status: !$(obj).children('span').hasClass('glyphicon-ok')
+                }
+            }).done(function(data) {
+                if (data === "true") {
+                    $(obj).empty().append('<span class="glyphicon glyphicon-ok"><?= Icon::create('accept', Icon::ROLE_CLICKABLE); ?></span>');
+                } else {
+                    $(obj).empty().append('<span class="glyphicon glyphicon-remove"><?=Icon::create('decline', Icon::ROLE_CLICKABLE); ?></span>');
                 }
             });
         }
