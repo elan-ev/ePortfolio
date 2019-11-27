@@ -90,7 +90,7 @@ class ShowController extends StudipController
         $this->redirect('show');
     }
 
-    public function getAccessPortfolio()
+    public static function getAccessPortfolio()
     {
         return Course::findBySQL(
             'INNER JOIN `eportfolio_user` ON `eportfolio_user`.`Seminar_id` = `seminare`.`Seminar_id`

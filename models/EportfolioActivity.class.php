@@ -106,7 +106,7 @@ class EportfolioActivity extends SimpleORMap
             [$seminar_id, $user_id]);
     }
 
-    public function newActivities($seminar_id)
+    public static function newActivities($seminar_id)
     {
         return EportfolioActivity::findBySQL(
             'group_id = ?  AND mk_date > ? AND user_id != ? ORDER BY mk_date DESC',
