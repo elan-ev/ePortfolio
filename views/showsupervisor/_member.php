@@ -50,7 +50,7 @@
                 <? $missing_vorlage = false; ?>
                 <? foreach (EportfolioGroup::getAllMarkedAsFav($id) as $vorlage): ?>
                     <? foreach (Eportfoliomodel::getChapters($vorlage) as $chapter): ?>
-                        <? if (!Eportfoliomodel::getUserPortfolioBlockId($userPortfolioId, $chapter['id'])): ?>
+                        <? if (!$userPortfolioId || !Eportfoliomodel::getUserPortfolioBlockId($userPortfolioId, $chapter['id'])): ?>
                             <? $missing_vorlage = true; break 2 ?>
                         <? endif; ?>
                     <? endforeach; ?>
