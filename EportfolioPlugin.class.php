@@ -324,6 +324,11 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
                 Helpbar::get()->addPlainText(_('Tip zum Bearbeiten'), $bearbeiten, Icon::create('doctoral-cap', 'info_alt'));
             }
         }
+        
+        //rename Dateien to Meine Portfoliodateien
+        if($this->isPortfolio() && Navigation::hasItem('/course/files')) {
+            Navigation::getItem('/course/files')->setTitle('Meine Portfoliodateien');
+        }
     }
 
     function prevent_settings_access($event, $path)
