@@ -14,7 +14,7 @@
         <tbody>
             <?php if (Eportfoliomodel::findBySeminarId($cid)->group_id): ?>
                 <tr style="background-color: lightblue;">
-                    <td>
+                    <td class="supervisor" onMouseOver="displaySupervisorGroup('<?= $supervisorId ?>')" title="">
                         <?= Avatar::getNobody()->getImageTag(Avatar::SMALL,
                             ['style' => 'margin-right: 5px;border-radius: 30px; width: 25px; border: 1px solid #28497c;',
                              'title' => _('Berechtigte für Portfolioarbeit')]); ?>
@@ -89,6 +89,26 @@
     </div>
 
     <script type="text/javascript">
+        function displaySupervisorGroup(superId) {
+            $.ajax({
+                type: "GET",
+                url: STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/settings/displaySupervisorGroup'),
+                data: {
+                    'superId': superId
+                },
+                success: function(data) {
+                    supervisorList = "";
+                    supervisors = $.parseJSON(data);
+                    
+                    supervisors.forEach(function(user) {
+                        supervisorList += user['Vorname'] + " " + user['Nachname'] + "\n";
+                    })
+                    
+                    $('.supervisor').attr('title', supervisorList);
+                }
+            });
+        }
+
         function deleteUserAccess(userId, seminar_id, obj) {
             $.ajax({
                 type: "POST",

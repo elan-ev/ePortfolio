@@ -105,6 +105,27 @@ class settingsController extends StudipController
         }
     }
 
+    public function displaySupervisorGroup_action()
+    {
+        $supervisorList = [];
+        $db        = DBManager::get();
+        $query     = "SELECT user_id FROM supervisor_group_user
+                    WHERE supervisor_group_id = ?";
+        $statement = $db->prepare($query);
+        $statement->execute([Request::get('superId')]);
+
+        $supervisor = $statement->fetchAll();
+
+        foreach ($supervisor as $user) {
+            $query = "SELECT Vorname, Nachname FROM auth_user_md5 WHERE user_id = ?";
+            $statement = $db->prepare($query);
+            $statement->execute([$user[0]]);
+            array_push($supervisorList, $statement->fetch());
+        }
+
+        echo json_encode($supervisorList);
+        $this->render_nothing();
+    }
 
     public function addZugriff_action()
     {
