@@ -159,6 +159,33 @@ class ShowsupervisorController extends StudipController
         $this->redirect('showsupervisor?cid=' . $groupid);
     }
 
+    public function updatevorlage_action($vorlage_id)
+    {
+        if (!$GLOBALS['perm']->have_studip_perm('dozent', $vorlage_id)) {
+            throw new Exception('Access denied');
+        }
+        
+        $seminar = Seminar::getInstance($vorlage_id);
+
+        if(Request::submitted('updatevorlage')) {
+            $sem_name        = strip_tags(Request::get('name'));
+            $sem_description = strip_tags(Request::get('description'));
+            
+            $seminar->name = $sem_name;
+            $seminar->description = $sem_description;
+
+            $seminar->store();
+
+            PageLayout::postMessage(MessageBox::success(sprintf(_('Vorlage "%s" wurde angelegt.'), $sem_name)));
+
+            $this->response->add_header('X-Dialog-Close', '1');
+            $this->render_nothing();
+        } else {
+            $this->template_name = $seminar->name;
+            $this->template_description = $seminar->description;
+        }
+    }
+
     public function url_for($to = '')
     {
         $args = func_get_args();

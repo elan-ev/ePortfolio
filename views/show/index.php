@@ -52,6 +52,12 @@
                         <?php
                             $actionMenu = ActionMenu::get();
                             $actionMenu->addLink(
+                                PluginEngine::getLink($this->plugin, [], 'show/updatevorlage/' . $portfolio->id),
+                                _('Portfolio-Titel und Beschreibung bearbeiten'),
+                                Icon::create('edit', 'clickable'),
+                                ['data-dialog' => 'size=auto;reload-on-close']
+                            );
+                            $actionMenu->addLink(
                                 URLHelper::getUrl('plugins.php/courseware/courseware', [
                                    'cid'         => $portfolio->id,
                                    'return_to'   => 'overview'

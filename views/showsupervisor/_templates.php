@@ -87,35 +87,52 @@
                 <? endif ?>
                 </td>
                 <td style="text-align: center;">
-                    <?php $groupHasTemplate = EportfolioGroupTemplates::checkIfGroupHasTemplate($id, $portfolio->id)?>
-                    <a href="<?= URLHelper::getLink('plugins.php/courseware/courseware', [
-                            'cid'       => $portfolio->id,
-                            'return_to' => Context::getId()
-                    ]); ?>">
-                        <?= Icon::create('edit', Icon::ROLE_CLICKABLE, ['title' => sprintf(_('Portfolio-Vorlage bearbeiten.'))]) ?>
-                    </a>
+                    <?php
+                        $actionMenu = ActionMenu::get();
+                        $actionMenu->addLink(
+                            PluginEngine::getLink($this->plugin, [], 'showsupervisor/updatevorlage/' . $portfolio->id),
+                            _('Portfolio-Titel und Beschreibung bearbeiten'),
+                            Icon::create('edit', 'clickable'),
+                            ['data-dialog' => 'size=auto;reload-on-close']
+                        );
+                        $actionMenu->addLink(
+                            URLHelper::getUrl('plugins.php/courseware/courseware', [
+                               'cid'         => $portfolio->id,
+                               'return_to'   => 'overview'
+                           ]),
+                            _('Portfolio-Vorlage bearbeiten'),
+                            Icon::create('edit', 'clickable')
+                        );
+                        if ($member && !$groupHasTemplate) {
+                            $actionMenu->addLink(
+                                PluginEngine::getLink($this->plugin, [], 'showsupervisor/createportfolio/' . $portfolio->id),
+                                _('Portfolio-Vorlage an Gruppenmitglieder verteilen.'),
+                                Icon::create('share', 'clickable'),
+                                ['data-confirm' => _('Vorlage an Teilnehmende verteilen')]
+                            );
+                        }
+                        /* favs not yet supported
+                        if ($member && $groupHasTemplate){
+                            if (EportfolioGroup::checkIfMarkedAsFav($id, $portfolio->id) == 0){
+                                $actionMenu->addLink(
+                                    PluginEngine::getLink($this->plugin, [], 'showsupervisor/addAsFav/' . $id . '/' . $portfolio->id),
+                                    _('Portfolio-Vorlage als Favorit markieren),
+                                    Icon::create('visibility-invisible', 'clickable')
 
-                    <? if ($member && !$groupHasTemplate): ?>
-                        <a data-confirm="<?= _('Vorlage an Teilnehmende verteilen') ?>"
-                           href="<?= $controller->url_for('showsupervisor/createportfolio/' . $portfolio->id) ?>">
-                            <?= Icon::create('share', Icon::ROLE_CLICKABLE, tooltip2(_('Portfolio-Vorlage an Gruppenmitglieder verteilen.')) + ['cursor' => 'pointer']) ?>
-                        </a>
-                    <? endif ?>
+                                );
+                            } else {
+                                $actionMenu->addLink(
+                                    PluginEngine::getLink($this->plugin, [], 'showsupervisor/deleteAsFav/' . $id . '/' . $portfolio->id),
+                                    _('Portfolio-Vorlage als Favorit markieren),
+                                    Icon::create('visibility-invisible', 'attention')
+
+                                );
+                            }
+                        }
+                         */
+                    ?>
+                    <?= $actionMenu->render() ?>
                 </td>
-                <!--
-                <td style="text-align: center;">
-                    <? if ($member && $groupHasTemplate): ?>
-                        <? if (EportfolioGroup::checkIfMarkedAsFav($id, $portfolio->id) == 0): ?>
-                            <a href="<?= $controller->url_for('showsupervisor/addAsFav/' . $id . '/' . $portfolio->id); ?>">
-                                <?= Icon::create('visibility-invisible', Icon::ROLE_CLICKABLE) ?>
-                            </a>
-                        <? else: ?>
-                            <a href="<?= $controller->url_for('showsupervisor/deleteAsFav/' . $id . '/' . $portfolio->id); ?>">
-                                <?= Icon::create('visibility-visible', Icon::ROLE_ATTENTION) ?>
-                            </a>
-                        <? endif ?>
-                    <? endif ?>
-                </td>-->
             </tr>
         <? endforeach; ?>
     </tbody>
