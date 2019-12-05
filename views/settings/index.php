@@ -1,5 +1,5 @@
 <? if (empty($viewerList) && ($supervisorId == null)) : ?>
-    <?= MessageBox::info('Es sind derzeit keine Zugriffsrechte in Ihrem Portfolio vergeben.'); ?>
+    <?= MessageBox::info(_('Es sind derzeit keine Zugriffsrechte in Ihrem Portfolio vergeben.')); ?>
 <? else : ?>
     <table class="default">
         <tr class="sortable">
@@ -103,6 +103,8 @@
         }
 
         function setAccess(id, viewerId, obj, cid) {
+            var status = !$(obj).children('span').hasClass('glyphicon-ok');
+            
             $.ajax({
                 type: "POST",
                 url: STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/settings/setAccess'),
@@ -110,15 +112,38 @@
                     user_id: viewerId,
                     seminar_id: cid, 
                     chapter_id: id, 
-                    status: !$(obj).children('span').hasClass('glyphicon-ok')
+                    status: status
                 }
             }).done(function(data) {
-                if (data === "true") {
-                    $(obj).empty().append('<span class="glyphicon glyphicon-ok"><?= Icon::create('accept', Icon::ROLE_CLICKABLE); ?></span>');
+                // check, if a MessageBox is already displayed
+                if($("#layout_content > *:first").hasClass("messagebox")) {
+                    $("#layout_content > *:first").remove();
+                }
+                // display MessageBox
+                $("#layout_content").prepend(data);
+                //only change access_icon if succeded
+                if($("#layout_content > *:first").hasClass("messagebox_success")) {
+                    change_access_icon(obj, id, cid, status);
                 } else {
-                    $(obj).empty().append('<span class="glyphicon glyphicon-remove"><?=Icon::create('decline', Icon::ROLE_CLICKABLE); ?></span>');
+                    change_access_icon(obj, id, cid, !status);
                 }
             });
+            // show Ajax Indicator while waiting for response
+            $(obj).empty().append('<?=Assets::img("ajax_indicator_small.gif")?>')
+        }
+
+        function change_access_icon(obj, id, cid, status) {
+            if (status) {
+                $(obj).empty().append('<span id="icon-' + id + '-' + cid + '" \
+                                        class="glyphicon glyphicon-ok" \
+                                        title="Klick, um Kapitel nicht mehr feizugeben"> \
+                                        <?= Icon::create('accept', Icon::ROLE_CLICKABLE); ?></span>');
+            } else {
+                $(obj).empty().append('<span id="icon-' + id + '-' + cid + '" \
+                                        class="glyphicon glyphicon-remove" \
+                                        title="Klick, um Kapitel feizugeben"> \
+                                        <?= Icon::create('decline', Icon::ROLE_CLICKABLE); ?></span>');
+            }
         }
     </script>
 <? endif ?>

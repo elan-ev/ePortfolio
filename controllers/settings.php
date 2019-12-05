@@ -83,7 +83,14 @@ class settingsController extends StudipController
     {
         $freigabe = new EportfolioFreigabe();
         $freigabe::setAccess(Request::get("user_id"), Request::get("seminar_id"), Request::get("chapter_id"), Request::get("status"));
-        echo json_encode(studip_utf8encode($freigabe::hasAccess(Request::get("user_id"), Request::get("seminar_id"), Request::get("chapter_id"))));
+        $status = $freigabe::hasAccess(Request::get("user_id"), Request::get("seminar_id"), Request::get("chapter_id"));
+
+        //check, if setAccess changed accessibility according to request
+        if($status == filter_var(Request::get("status"), FILTER_VALIDATE_BOOLEAN)) {
+            echo MessageBox::success(_("Die Zugriffsrechte wurden geändert."));
+        } else {
+            echo MessageBox::error(_("Die Zugriffsrechte konnten nicht geändert werden!"));
+        }
         $this->render_nothing();
     }
 
