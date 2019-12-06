@@ -120,7 +120,7 @@
             <div class="col-sm-8">
                 <div class="row" style="text-align: center;">
                     <div class="col-sm-2">
-                        <?php if ($statusKapitel = Eportfoliomodel::checkKapitelFreigabe($kapitel['id'])): ?>
+                        <?php if ($statusKapitel = Eportfoliomodel::checkKapitelFreigabe($kapitel['id']) && EportfolioFreigabe::hasAccess($GLOBALS['user']->id, $portfolio_id, $kapitel['id'])): ?>
                             <?php $new_freigabe = object_get_visit($portfolio_id, 'sem', 'last', false, $user_id) < EportfolioFreigabe::hasAccessSince($supervisorGroupId, $kapitel['id']); ?>
                             <?php if ($new_freigabe): ?>
                                 <?= Icon::create('accept+new', 'status-green'); ?>
@@ -149,15 +149,13 @@
                                     </a>
                                 <? endif; ?>
                             <? else: ?>
-                                Freigegeben aber kein Zugriff!
-                                <?= tooltipIcon("Nutzer hat dieses Kapitel freigegeben, Sie sind jedoch eventuell nicht in der Supervisionsgruppe und können deshalb nicht darauf zugreifen!"); ?>
+                                Nicht für die Berechtigtengruppe freigegeben
+                                <?= tooltipIcon("Das Kapitel ist nur für folgende Personen freigegeben: " . EportfolioFreigabe::userList($portfolio_id, $kapitel['id'])); ?>
                             <? endif ?>
                         <? else : ?>
                             Nicht freigegeben
-                            <?= tooltipIcon("Anschauen nicht möglich, da Nutzer dieses Kapitel nicht freigegeben hat") ?>
+                            <?= tooltipIcon("Das Anschauen ist nicht möglich, da der Nutzer dieses Kapitel noch nicht freigegeben hat") ?>
                         <? endif ?>
-
-
                     </div>
                 </div>
             </div>
