@@ -14,11 +14,15 @@
         <tbody>
             <?php if (Eportfoliomodel::findBySeminarId($cid)->group_id): ?>
                 <tr style="background-color: lightblue;">
-                    <td class="supervisor" onMouseOver="displaySupervisorGroup('<?= $supervisorId ?>')" title="">
+                    <td class="supervisor">
                         <?= Avatar::getNobody()->getImageTag(Avatar::SMALL,
                             ['style' => 'margin-right: 5px;border-radius: 30px; width: 25px; border: 1px solid #28497c;',
                              'title' => _('Berechtigte für Portfolioarbeit')]); ?>
                         <?= _('Berechtigte für Portfolioarbeit') ?>
+                        <?= tooltipHtmlIcon(
+                            _('Folgende Personen befinden sich in dieser Gruppe:') .'<br/><ul><li>'.
+                            nl2br(implode("</li><li>", $supervisor_list)) .'</li>'
+                        ) ?>
                     </td>
                     <td></td>
 
@@ -50,7 +54,7 @@
                              'title' => _('Gruppen-Supervisoren')]); ?>
                         <?= $user->getFullname() ?>
                     </td>
-                    
+
                     <td onClick="deleteUserAccess('<?= $acc->user_id ?>', '<?= $cid ?>', this);" class="righttable-inner">
                         <span><?= Icon::create('trash', 'clickable') ?></span>
                     </td>
@@ -89,26 +93,6 @@
     </div>
 
     <script type="text/javascript">
-        function displaySupervisorGroup(superId) {
-            $.ajax({
-                type: "GET",
-                url: STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/settings/displaySupervisorGroup'),
-                data: {
-                    'superId': superId
-                },
-                success: function(data) {
-                    supervisorList = "";
-                    supervisors = $.parseJSON(data);
-                    
-                    supervisors.forEach(function(user) {
-                        supervisorList += user['Vorname'] + " " + user['Nachname'] + "\n";
-                    })
-                    
-                    $('.supervisor').attr('title', supervisorList);
-                }
-            });
-        }
-
         function deleteUserAccess(userId, seminar_id, obj) {
             $.ajax({
                 type: "POST",
@@ -128,8 +112,8 @@
                 url: STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/settings/setAccess'),
                 data: {
                     user_id: viewerId,
-                    seminar_id: cid, 
-                    chapter_id: id, 
+                    seminar_id: cid,
+                    chapter_id: id,
                     status: !$(obj).children('span').hasClass('glyphicon-ok')
                 }
             }).done(function(data) {

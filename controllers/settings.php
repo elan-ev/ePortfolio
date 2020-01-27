@@ -77,6 +77,15 @@ class settingsController extends StudipController
         $this->viewerList    = $viewers;
         $this->numberChapter = count($chapters);
         $this->supervisorId  = $supervisor_id;
+
+        // get list of users with access to this portfolio
+        $supervisorList = [];
+
+        $supervisors = SupervisorGroupUser::findBySupervisorGroupId($supervisor_id);
+
+        foreach ($supervisors as $supervisor) {
+            $this->supervisor_list[] = htmlReady($supervisor->user->getFullname());
+        }
     }
 
     public function setAccess_action()
@@ -103,28 +112,6 @@ class settingsController extends StudipController
         } else {
             return false;
         }
-    }
-
-    public function displaySupervisorGroup_action()
-    {
-        $supervisorList = [];
-        $db        = DBManager::get();
-        $query     = "SELECT user_id FROM supervisor_group_user
-                    WHERE supervisor_group_id = ?";
-        $statement = $db->prepare($query);
-        $statement->execute([Request::get('superId')]);
-
-        $supervisor = $statement->fetchAll();
-
-        foreach ($supervisor as $user) {
-            $query = "SELECT Vorname, Nachname FROM auth_user_md5 WHERE user_id = ?";
-            $statement = $db->prepare($query);
-            $statement->execute([$user[0]]);
-            array_push($supervisorList, $statement->fetch());
-        }
-
-        echo json_encode($supervisorList);
-        $this->render_nothing();
     }
 
     public function addZugriff_action()
@@ -158,7 +145,7 @@ class settingsController extends StudipController
 
         $course        = Course::findCurrent();
         $chapters      = Eportfoliomodel::getChapters($course->id);
-        
+
         foreach ($chapters as $chapter) {
             if(EportfolioFreigabe::hasAccess($user_id, Context::getId(), $chapter['id'])) {
                 EportfolioFreigabe::setAccess($user_id, Context::getId(), $chapter['id'], FALSE);
