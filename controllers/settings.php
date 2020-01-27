@@ -77,6 +77,15 @@ class settingsController extends StudipController
         $this->viewerList    = $viewers;
         $this->numberChapter = count($chapters);
         $this->supervisorId  = $supervisor_id;
+
+        // get list of users with access to this portfolio
+        $supervisorList = [];
+
+        $supervisors = SupervisorGroupUser::findBySupervisorGroupId($supervisor_id);
+
+        foreach ($supervisors as $supervisor) {
+            $this->supervisor_list[] = htmlReady($supervisor->user->getFullname());
+        }
     }
 
     public function setAccess_action()
@@ -112,7 +121,6 @@ class settingsController extends StudipController
         }
     }
 
-
     public function addZugriff_action()
     {
         $mp            = MultiPersonSearch::load('selectFreigabeUser');
@@ -144,7 +152,7 @@ class settingsController extends StudipController
 
         $course        = Course::findCurrent();
         $chapters      = Eportfoliomodel::getChapters($course->id);
-        
+
         foreach ($chapters as $chapter) {
             if(EportfolioFreigabe::hasAccess($user_id, Context::getId(), $chapter['id'])) {
                 EportfolioFreigabe::setAccess($user_id, Context::getId(), $chapter['id'], FALSE);
