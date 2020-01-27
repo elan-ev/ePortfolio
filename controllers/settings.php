@@ -95,7 +95,7 @@ class settingsController extends StudipController
         $status = $freigabe::hasAccess(Request::get("user_id"), Request::get("seminar_id"), Request::get("chapter_id"));
 
         //check, if setAccess changed accessibility according to request
-        if($status == filter_var(Request::get("status"), FILTER_VALIDATE_BOOLEAN)) {
+        if ($status == filter_var(Request::get("status"), FILTER_VALIDATE_BOOLEAN)) {
             echo MessageBox::success(_("Die Zugriffsrechte wurden geändert."));
         } else {
             echo MessageBox::error(_("Die Zugriffsrechte konnten nicht geändert werden!"));
@@ -154,7 +154,7 @@ class settingsController extends StudipController
         $chapters      = Eportfoliomodel::getChapters($course->id);
 
         foreach ($chapters as $chapter) {
-            if(EportfolioFreigabe::hasAccess($user_id, Context::getId(), $chapter['id'])) {
+            if (EportfolioFreigabe::hasAccess($user_id, Context::getId(), $chapter['id'])) {
                 EportfolioFreigabe::setAccess($user_id, Context::getId(), $chapter['id'], FALSE);
             }
         }
