@@ -14,11 +14,15 @@
         <tbody>
             <?php if (Eportfoliomodel::findBySeminarId($cid)->group_id): ?>
                 <tr style="background-color: lightblue;">
-                    <td>
+                    <td class="supervisor">
                         <?= Avatar::getNobody()->getImageTag(Avatar::SMALL,
                             ['style' => 'margin-right: 5px;border-radius: 30px; width: 25px; border: 1px solid #28497c;',
                              'title' => _('Berechtigte für Portfolioarbeit')]); ?>
                         <?= _('Berechtigte für Portfolioarbeit') ?>
+                        <?= tooltipHtmlIcon(
+                            _('Folgende Personen befinden sich in dieser Gruppe:') .'<br/><ul><li>'.
+                            nl2br(implode("</li><li>", $supervisor_list)) .'</li>'
+                        ) ?>
                     </td>
                     <td></td>
 
@@ -50,7 +54,7 @@
                              'title' => _('Gruppen-Supervisoren')]); ?>
                         <?= $user->getFullname() ?>
                     </td>
-                    
+
                     <td onClick="deleteUserAccess('<?= $acc->user_id ?>', '<?= $cid ?>', this);" class="righttable-inner">
                         <span><?= Icon::create('trash', 'clickable') ?></span>
                     </td>
@@ -108,8 +112,8 @@
                 url: STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/settings/setAccess'),
                 data: {
                     user_id: viewerId,
-                    seminar_id: cid, 
-                    chapter_id: id, 
+                    seminar_id: cid,
+                    chapter_id: id,
                     status: !$(obj).children('span').hasClass('glyphicon-ok')
                 }
             }).done(function(data) {
