@@ -55,7 +55,8 @@ class EportfolioFreigabe extends SimpleORMap
      * @param string $seminar_id id of seminar(eportfolio)
      * @param int $chapter_id of courseware_chapter (Mooc\block)
      */
-    public static function userList($seminar_id, $chapter_id) {
+    public static function userList($seminar_id, $chapter_id)
+    {
         $accessList = EportfolioFreigabe::findBySQL('Seminar_id = :seminar_id AND block_id = :block_id',
             [':seminar_id' => $seminar_id, ':block_id' => $chapter_id]);
         
