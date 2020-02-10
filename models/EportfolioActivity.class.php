@@ -133,7 +133,7 @@ class EportfolioActivity extends SimpleORMap
         }
     }
 
-    public function addActivity($portfolio_id, $block_id, $notification)
+    public static function addActivity($portfolio_id, $block_id, $notification)
     {
         $activity = new EportfolioActivity();
 
