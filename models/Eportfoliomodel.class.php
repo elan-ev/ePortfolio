@@ -171,7 +171,7 @@ class Eportfoliomodel extends SimpleORMap
     /**
      * Prüft ob es eine SupervisorNotiz in einem Kapitel gibt
      **/
-    public function checkSupervisorNotiz($id)
+    public static function checkSupervisorNotiz($id)
     {
         $db        = DBManager::get();
         $query     = "SELECT id FROM mooc_blocks WHERE parent_id = :id";
