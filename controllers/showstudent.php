@@ -9,74 +9,57 @@ class ShowstudentController extends StudipController
     {
         parent::__construct($dispatcher);
         $this->plugin = $dispatcher->current_plugin;
-
-        $this->course = Course::find(Context::getId());
-
-        if ($this->sem) {
-            $this->groupid = Request::get('cid');
-            $this->userid  = $GLOBALS["user"]->id;
-
-            $this->groupTemplates = EportfolioGroupTemplates::getGroupTemplates(Request::get('cid'));
-            $this->templistid     = $this->groupTemplates;
-
-            $group                   = EportfolioGroup::findbySQL('seminar_id = :id', [':id' => $this->groupid]);
-            $this->supervisorGroupId = $group[0]->supervisor_group_id;
-        }
-
-        PageLayout::setTitle(_('ePortfolio - Übersicht'));
     }
 
     public function before_filter(&$action, &$args)
     {
         parent::before_filter($action, $args);
 
-        if (Course::findCurrent()) {
-            Navigation::activateItem("course/eportfolioplugin");
-        }
+        PageLayout::setTitle(_(Context::getHeaderLine() . ' - Übersicht'));
 
+        Navigation::activateItem("course/eportfolioplugin");
     }
 
     public function index_action()
     {
-        $course = Course::findCurrent();
-        $id     = $course->id;
+        $this->group_id = Context::getId();
+        $this->userid = $GLOBALS["user"]->id;
 
-        //berechtigung prüfen (group-owner TODO:refactoring //ggf das hier nur für Supervisor,
-        //das würde dann aber schon in der Pluginklasse passieren
-        /**
-         *if(!$id == ''){
-         *    $query = "SELECT owner_id FROM eportfolio_groups WHERE seminar_id = :id";
-         *    $statement = DBManager::get()->prepare($query);
-         *    $statement->execute(array(':id'=> $id));
-         *    $check = $statement->fetchAll();
-         *
-         *    //check permission
-         *    if(!$check[0][0] == $GLOBALS["user"]->id){
-         *      throw new AccessDeniedException(_("Sie haben keine Berechtigung"));
-         *    }
-         *}
-         */
+        $this->portfolio_id   = EportfolioGroup::getPortfolioIDsFromUserinGroup($this->group_id, $this->userid);
+        $this->groupTemplates = EportfolioGroupTemplates::getGroupTemplates($this->group_id);
+    }
 
-        $this->id               = $id;
-        $this->userid           = $GLOBALS["user"]->id;
-        $this->group            = EportfolioGroup::find($id);
-        $this->link_eportfolios = URLHelper::getLink('plugins.php/eportfolioplugin/show');
-        $this->link_courseware  = URLHelper::getLink('plugins.php/courseware/courseware', ['cid' => EportfolioGroup::getPortfolioIdOfUserInGroup($this->userid, $this->id)]);
+    public function createlateportfolio_action($group_id, $user_id)
+    {
+        $portfolio_id = EportfolioGroup::getPortfolioIDsFromUserinGroup($group_id, $user_id);
+        if (!$portfolio_id) {
+            /**
+             * Der User hat noch kein Portfilio
+             * in die das Template importiert werden kann
+             * **/
+            $portfolio_id = EportfolioModel::createPortfolioForUser($group_id, $user_id, $this->dispatcher->current_plugin);
+            $portfolio_id = $portfolio_id;
 
-        //Wenn noch keine POrtfolios verteilt wurden oder nicht mal eine Gruppe existiert:
-        //Hinweis an student dass noch keine inhalte verteilt wurden
-        if (!$this->group) {
-            echo "Es wurden noch keine Portfolios...";
-            //Wenn noch keine POrtfolios verteilt wurden oder nicht mal eine Gruppe existiert Hinweis an student dass noch keine inhalte verteilt wurden
+            $template_list_not_shared = EportfolioGroupTemplates::getGroupTemplates($group_id);
+
         } else {
-            $this->portfolio_id   = EportfolioGroup::getPortfolioIdOfUserInGroup($this->userid, $id);
-            $this->groupTemplates = EportfolioGroupTemplates::getGroupTemplates($id);
-            if (!$this->groupTemplates) {
-                $this->isThereAnyTemplate = false;
-            } else {
-                $this->isThereAnyTemplate = true;
-            }
+
+            $portfolio_id = $portfolio_id[0];
+            /**
+             * Welche Templates wurden dem Nutzer noch nicht Verteilt?
+             * **/
+            $template_list_not_shared = EportfolioModel::getNotSharedTemplatesOfUserInGroup($group_id, $user_id, $portfolio_id);
         }
-        //andernfalls auflisten welche vorlagen wann verteilt wurden und direktlink ins portfolio des aktuellen studierenden
+
+        /**
+         * Jedes Template in der Liste verteilen
+         * **/
+        foreach ($template_list_not_shared as $current_template_id) {
+            VorlagenCopy::copyCourseware(new Seminar($current_template_id), [$user_id => $portfolio_id]);
+            EportfolioActivity::addVorlagenActivity($group_id, User::findCurrent()->id);
+        }
+
+        PageLayout::postMessage(MessageBox::success('Portfolio wurde erstellt'));
+        $this->redirect('showstudent?cid=' . $group_id);
     }
 }
