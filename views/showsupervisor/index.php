@@ -1,23 +1,27 @@
 <div>
     <?= $this->render_partial('showsupervisor/_templates', [
-        'title'        => _('Verteilte Vorlagen'),
-        'missing_text' => _('Es werden bisher keine der vorhandenen Vorlagen verwendet.'),
-        'hide_add'     => true,
-        'portfolios'   => array_filter($portfolios, function($portfolio) use ($id) {
-            return EportfolioGroupTemplates::checkIfGroupHasTemplate($id, $portfolio->id);
-        })
+        'title'             => _('Verteilte Vorlagen'),
+        'missing_text'      => _('Es werden bisher keine der vorhandenen Vorlagen verwendet.'),
+        'hide_add'          => true,
+        'portfolios'        => $distributedPortfolios,
+        'hasTemplate'  => true
     ]) ?>
 
     <?= $this->render_partial('showsupervisor/_templates', [
         'title'        => _('Verfügbare Vorlagen'),
         'missing_text' => _('Keine Vorlagen vorhanden oder alle Vorlagen sind verteilt oder archiviert.'),
-        'portfolios'   => array_filter($portfolios, function($portfolio) use ($id) {
-            return !EportfolioGroupTemplates::checkIfGroupHasTemplate($id, $portfolio->id)
-                && empty(EportfolioArchive::find($portfolio->id));
-        }),
+        'portfolios'   => array_udiff($portfolios, $distributedPortfolios, function($portfolio, $distributedPortfolio) {;
+            if($portfolio->id === $distributedPortfolio->id) {
+                return 0;
+            } elseif($portfolio->id > $distributedPortfolio->id) {
+                return 1;
+            } else {
+                return -1;
+            }
+        })
     ]) ?>
-
-    <? if (empty($groupTemplates)): ?>
+    
+    <? if (empty($distributedPortfolios)): ?>
         <? if (!$member): ?>
             <?= MessageBox::info('Es sind noch keine Nutzer in der Veranstaltung eingetragen'); ?>
         <? else: ?>
@@ -41,7 +45,6 @@
                     </tr>
                 <? endforeach; ?>
             </table>
-
         <? endif; ?>
 
     <? else: ?>
@@ -51,7 +54,7 @@
         <div class="grid-container">
             <div class="row member-container">
                 <?php foreach ($member as $user): ?>
-                    <?= $this->render_partial('showsupervisor/_member', compact('user', 'id')) ?>
+                    <?= $this->render_partial('showsupervisor/_member', compact('user', 'groupId', 'portfolioChapters')) ?>
                 <? endforeach; ?>
             </div>
         </div>
@@ -61,29 +64,25 @@
 <!-- Legende -->
 <div class="legend">
     <ul>
-        <li><?php echo Icon::create('decline', 'inactive'); ?> Kapitel/Impuls noch nicht freigeschaltet</li>
-        <li><?php echo Icon::create('accept', 'clickable'); ?> Kapitel/Impuls freigeschaltet</li>
-        <li><?php echo Icon::create('accept+new', 'clickable'); ?></i>  Kapitel freigeschaltet und Änderungen seit ich
-            das letzte mal reingeschaut habe
-        </li>
-        <li><?php echo Icon::create('file', 'inactive'); ?> keine Supervisionsanliegen freigeschaltet</li>
-        <li><?php echo Icon::create('file', 'clickable'); ?> Supervisionsanliegen freigeschaltet</li>
-        <li><?php echo Icon::create('forum', 'clickable'); ?> Feedback gegeben</li>
+        <li><?= Icon::create('decline', 'inactive'); ?> Kapitel/Impuls noch nicht freigeschaltet</li>
+        <li><?= Icon::create('accept', 'clickable'); ?> Kapitel/Impuls freigeschaltet</li>
+        <li><?= Icon::create('accept+new', 'clickable'); ?></i>  Kapitel/Impuls freigeschaltet und Änderungen seit Ihrem letzten Besuch</li>
+        <li><?= Icon::create('file', 'inactive'); ?> keine Supervisionsanliegen freigeschaltet</li>
+        <li><?= Icon::create('file', 'clickable'); ?> Supervisionsanliegen freigeschaltet</li>
+        <li><?= Icon::create('forum', 'clickable'); ?> Feedback gegeben</li>
 
         <li>
             <?= Icon::create('span-full', Icon::ROLE_STATUS_GREEN); ?>
             <?= Icon::create('span-full', Icon::ROLE_STATUS_YELLOW); ?>
             <?= Icon::create('span-full', Icon::ROLE_STATUS_RED); ?>
-
-            Diese Status-Icons geben an, wie gut die Person in der Zeit liegt (bei Abgabeterminen)
-            <br> und ob alle Aufgaben bearbeitet wurden.
+            Diese Status-Icons geben an, wie gut der Lernende bei Abgabeterminen in der Zeit liegt.
+            Wenn für keine Vorlage eine Deadline gesetzt wurde, wird das Status-Icon immer grün anzeigen.
         </li>
     </ul>
 </div>
 
 
 <script type="text/javascript">
-
     jQuery(function () {
         jQuery("table.tablesorter").tablesorter({
             sortList: [[0,0]],
@@ -91,28 +90,4 @@
             cssDesc: 'sortdesc'
         });
     });
-
-    function deleteUserFromGroup(userid, obj) {
-        var deleteThis = $(obj).parents('tr');
-        var tdParent = $(obj).parents('td');
-        var urlDeleteUser = STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/showsupervisor');
-
-        $(obj).parents('td').append('<i style="color: #24437c;" class="fa fa-circle-o-notch fa-spin fa-fw"></i>');
-        $(obj).remove();
-
-
-        $.ajax({
-            type: "POST",
-            url: urlDeleteUser,
-            data: {
-                action: 'deleteUserFromGroup',
-                userId: userid,
-                seminar_id: '<?php echo $id ?>',
-            },
-            success: function (data) {
-                $(deleteThis).fadeOut();
-            }
-        });
-    }
-
 </script>

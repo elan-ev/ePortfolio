@@ -12,7 +12,6 @@
  * @property json $freigaben_kapitel //deprecated
  * @property varchar $template_id
  * @property json $settings //deprecated?
- * @property int $favorite
  */
 class Eportfoliomodel extends SimpleORMap
 {
@@ -110,12 +109,23 @@ class Eportfoliomodel extends SimpleORMap
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public static function getChapterInformation($portfolio_id)
+    {
+        $chapters = DBManager::get()->fetchAll("SELECT mooc_blocks.title, mooc_blocks.id
+        FROM mooc_blocks
+        WHERE mooc_blocks.seminar_id = :portfolio_id AND mooc_blocks.type = 'Chapter' AND mooc_blocks.parent_id != '0'
+        ORDER BY mooc_blocks.id ASC",
+        ["portfolio_id" => $portfolio_id]);
+        return $chapters;
+    }
+
     /**
      * Prüft ob in in einem Kaptiel einer Courseware eine Resonanz auf
      * eine Supervisorennotiz gegeben wurde
      **/
     public static function checkSupervisorResonanz($chapter_id)
     {
+        return true;
         $query     = "SELECT id FROM mooc_blocks WHERE parent_id = :id";
         $statement = DBManager::get()->prepare($query);
         $statement->execute([':id' => $chapter_id]);
@@ -132,32 +142,27 @@ class Eportfoliomodel extends SimpleORMap
      * Prüft ob in in einem Unterkaptiel einer Courseware eine Resonanz auf
      * eine Supervisorennotiz gegeben wurde
      **/
-    public static function checkSupervisorResonanzInSubchapter($subchapter_id)
+    public static function checkSupervisorResonanzInSubchapter($subchapter_ids)
     {
-        $query     = "SELECT id FROM mooc_blocks WHERE parent_id = :value";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute([':value' => $subchapter_id]);
-        $sections = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $supervisorResponses = DBManager::get()->fetchAll(
+            "SELECT json_data
+            FROM mooc_fields
+            JOIN mooc_blocks ON mooc_blocks.id = mooc_fields.block_id
+            JOIN mooc_blocks AS mcb ON mcb.id = mooc_blocks.parent_id
+            WHERE mooc_fields.name = 'supervisorcontent' AND mooc_blocks.type = 'PortfolioBlockSupervisor' AND mcb.parent_id IN (:subchapter_ids)",
+            [':subchapter_ids' => $subchapter_ids]
+        );
 
-        $query = "SELECT id FROM mooc_blocks WHERE parent_id = :valueSub AND type ='PortfolioBlockSupervisor' ";
-        $stm   = DBManager::get()->prepare($query);
+        if(empty($supervisorResponses)) {
+            return false;
+        }
 
-        $query = "SELECT json_data FROM mooc_fields WHERE block_id = :block_id AND name = 'supervisorcontent'";
-        $stm2  = DBManager::get()->prepare($query);
-
-        foreach ($sections as $section) {
-
-            $stm->execute([':valueSub' => $section['id']]);
-            $supervisorNotizBloecke = $stm->fetchAll(PDO::FETCH_ASSOC);
-            foreach ($supervisorNotizBloecke as $block) {
-
-                $stm2->execute([':block_id' => $block['id']]);
-                $supervisorFeedback = $stm2->fetchAll();
-                if ($supervisorFeedback[0]['json_data'] != '""') {
-                    return true;
-                }
+        foreach($supervisorResponses as $response) {
+            if($response['json_data'] === '""') {
+                return false;
             }
         }
+        return true;
     }
 
     /**
@@ -178,11 +183,10 @@ class Eportfoliomodel extends SimpleORMap
         $statement = $db->prepare($query);
         $statement->execute([':id' => $id]);
         $subchapters = $statement->fetchAll(PDO::FETCH_ASSOC);
-        foreach ($subchapters as $subchapter) {
-            if (Eportfoliomodel::checkSupervisorNotizInUnterKapitel($subchapter['id'])) {
-                return true;
-            }
+        if(EportfolioModel::checkSupervisorNoteInSubchapter($subchapters)) {
+            return true;
         }
+        return false;
     }
 
     /**
@@ -262,31 +266,16 @@ class Eportfoliomodel extends SimpleORMap
         );
     }
 
-    public static function checkSupervisorNotizInUnterKapitel($subchapter_id)
+    public static function checkSupervisorNoteInSubchapter($subchapter_ids)
     {
-        $query     = "SELECT `id` FROM mooc_blocks WHERE parent_id = :value";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute([':value' => $subchapter_id]);
-        $sections = $statement->fetchAll(PDO::FETCH_ASSOC);
-
-        $query = "SELECT `id` FROM mooc_blocks WHERE parent_id = :valueSub AND type ='PortfolioBlockSupervisor' ";
-        $stm   = DBManager::get()->prepare($query);
-
-        $query = "SELECT `json_data` FROM mooc_fields WHERE block_id = :block_id AND name = 'content'";
-        $stm2  = DBManager::get()->prepare($query);
-        foreach ($sections as $section) {
-
-            $stm->execute([':valueSub' => $section['id']]);
-            $supervisorNotizBloecke = $stm->fetchAll(PDO::FETCH_ASSOC);
-            foreach ($supervisorNotizBloecke as $block) {
-
-                $stm2->execute([':block_id' => $block['id']]);
-                $supervisorFeedback = $stm2->fetchAll();
-                if (!empty($supervisorFeedback[0]['json_data'])) {
-                    return true;
-                }
-            }
-        }
+        return DBManager::get()->fetchAll(
+            "SELECT json_data
+            FROM mooc_fields
+            JOIN mooc_blocks ON mooc_blocks.id = mooc_fields.block_id
+            JOIN mooc_blocks AS mcb ON mcb.id = mooc_blocks.parent_id
+            WHERE mooc_fields.name = 'content' AND mooc_blocks.type = 'PortfolioBlockSupervisor' AND mcb.parent_id IN (:subchapter_ids)",
+            [':subchapter_ids' => $subchapter_ids]
+        );
     }
 
     public static function isVorlage($id)
@@ -397,9 +386,8 @@ class Eportfoliomodel extends SimpleORMap
      * jetzt und Abgabetermin des passenden Templates
      * der Gruppe. Liefert 0 wenn das Abgabedatum überschritten wurde
      **/
-    public static function getDaysLeft($group_id, $template_id)
+    public static function getDaysLeft($deadline)
     {
-        $deadline = EportfolioGroupTemplates::getDeadline($group_id, $template_id);
         $now      = time();
 
         if ($now < $deadline) {

@@ -113,7 +113,7 @@ class VorlagenCopy
             }
             //Mapping von neuen Blöcken auf Vorlagen-Blöcke
             for ($i = 0; $i < count($masterBlocks); $i++) {
-                BlockInfo::createEntry($cid, $newBlocks[$i], $masterBlocks[$i]);
+                BlockInfo::createEntry($cid, $newBlocks[$i], $masterBlocks[$i], $master->id);
             }
         }
     }

@@ -133,9 +133,10 @@
                                 <div class="row member-footer-box">
                                     <div class="col-sm-4">
                                         <div class="member-footer-box-big">
-                                            <?= $sharedChapters = Eportfoliomodel::getNumberOfSharedChaptersOfTemplateFromUser($template->id, $cid); ?>
+                                            <? $chapters = Eportfoliomodel::getChapters($template_id) ?>
+                                            <?= $sharedChapters = Eportfoliomodel::getNumberOfSharedChaptersOfTemplateFromUser($chapters->id, $cid); ?>
                                             /
-                                            <?= $allChapters = Eportfoliomodel::getNumberOfChaptersFromTemplate($template->id); ?>
+                                            <?= $allChapters = count($chapters) ?>
                                         </div>
                                         <div class="member-footer-box-head">
                                             freigegeben

@@ -66,7 +66,7 @@ class EportfoliopluginController extends StudipController
         $seminar         = new Seminar($this->cid);
 
         # Aktuelle Seite
-        PageLayout::setTitle('ePortfolio von ' . $owner['Vorname'] . ' ' . $owner['Nachname'] . ' - Übersicht: ' . $seminar->getName());
+        PageLayout::setTitle('ePortfolio von ' . $owner['Vorname'] . ' ' . $owner['Nachname'] . ' - : ' . $seminar->getName());
         if ($this->isVorlage) {
             PageLayout::setTitle('ePortfolio-Vorlage - Übersicht: ' . $seminar->getName());
             $this->render_action('index_vorlage');

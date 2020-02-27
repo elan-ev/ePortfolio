@@ -30,15 +30,14 @@ class EportfolioGroup extends SimpleORMap
     }
     
     
-    public static function getGroupMember($id)
+    public static function getGroupMember($group)
     {
         $users = [];
-        EportfolioGroup::find($id)->user->filter(function ($a) use (&$users) {
-            if ($a->status === 'autor') {
-                $users[$a->user_id] = $a->user;
-            }
-        });
-        
+        $userIds = $group->user->filter(function ($a) {
+            return $a['status'] === 'autor';
+        })->pluck('user_id');
+        $users = User::findMany($userIds, "ORDER BY Nachname, Vorname");
+
         return $users;
     }
     
@@ -167,51 +166,8 @@ class EportfolioGroup extends SimpleORMap
         $template_entry                 = new EportfolioGroupTemplates();
         $template_entry->group_id       = $group_id;
         $template_entry->Seminar_id     = $template_id;
-        $template_entry->favorite       = 1;
         $template_entry->verteilt_durch = $user_id;
         $template_entry->store();
-    }
-    
-    /**
-     * Makiert ein Template als Favorit
-     **/
-    public static function markTemplateAsFav($group_id, $template_id)
-    {
-        $query     = "UPDATE eportfolio_group_templates SET favorite = 1 WHERE group_id = :group_id AND Seminar_id = :template_id";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute([':group_id' => $group_id, ':template_id' => $template_id]);
-    }
-    
-    /**
-     * Löscht ein Template als Favorit
-     **/
-    public static function deletetemplateAsFav($group_id, $template_id)
-    {
-        $query     = "UPDATE eportfolio_group_templates SET favorite = 0 WHERE group_id = :group_id AND Seminar_id = :template_id";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute([':group_id' => $group_id, ':template_id' => $template_id]);
-    }
-    
-    /**
-     * Gibt den Wert 1 zurück wenn Template in der Gruppe als Favorit makiert ist
-     **/
-    public static function checkIfMarkedAsFav($group_id, $template_id)
-    {
-        return (int)DBManager::get()->fetchColumn(
-            "SELECT favorite FROM eportfolio_group_templates WHERE group_id = ? AND Seminar_id = ? AND favorite = 1",
-            [$group_id, $template_id]
-        ) === 1 ? 1 : 0;
-    }
-    
-    /**
-     * Gibt ein Array mit den ID's den als Favorit makierten Templates zurück
-     **/
-    public static function getAllMarkedAsFav($group_id)
-    {
-        return DBManager::get()->fetchFirst(
-            "SELECT `Seminar_id` FROM `eportfolio_group_templates` WHERE `group_id` = :group_id AND `favorite` = 1 ORDER BY `mkdate` ASC",
-            [':group_id' => $group_id]
-        );
     }
     
     /**
@@ -246,56 +202,6 @@ class EportfolioGroup extends SimpleORMap
     public function getNumberOfNewActivities()
     {
         return sizeof(EportfolioActivity::newActivities($this->seminar_id));
-    }
-    
-    /**
-     * Gibt ein Array mit den Portfolio ID's eines Users
-     * innerhalb einer Gruppe wieder
-     **/
-    public static function getPortfolioIDsFromUserinGroup($group_id, $user_id)
-    {
-        return DBManager::get()->fetchFirst(
-            "SELECT `Seminar_id` FROM `eportfolio` WHERE `owner_id` = ? AND `group_id` = ?",
-            [$user_id, $group_id]
-        );
-    }
-    
-    /**
-     * Gibt die Anzahl der freigegeben Kapitel zurück
-     **/
-    public static function getAnzahlFreigegebenerKapitel($user_id, $group_id)
-    {
-        $query = "SELECT COUNT(e1.Seminar_id) FROM eportfolio e1
-                  JOIN eportfolio_freigaben e2 ON e1.Seminar_id = e2.Seminar_id
-                  WHERE e1.Seminar_id IN (?)";
-        return DBManager::get()->fetchColumn(
-            $query,
-            [EportfolioGroup::getPortfolioIDsFromUserinGroup($group_id, $user_id)]
-        );
-    }
-    
-    /**
-     * Gibt die Verhältnis freigeben/gesamt in Prozent wieder
-     **/
-    public static function getGesamtfortschrittInProzent($user_id, $group_id)
-    {
-        $oben  = EportfolioGroup::getAnzahlFreigegebenerKapitel($user_id, $group_id);
-        $unten = EportfolioGroup::getAnzahlAllerKapitel($group_id);
-        $zahl  = $oben / $unten * 100;
-        $zahl  = round($zahl, 1);
-        return $zahl;
-    }
-    
-    /**
-     * Gibt die Anzahl der Notizen für den Supervisor eines users
-     * innerhalb einer Gruppe wieder
-     **/
-    public static function getAnzahlNotizen($user_id, $group_id)
-    {
-        return DBManager::get()->fetchColumn(
-            "SELECT COUNT(`type`) FROM `mooc_blocks` WHERE `Seminar_id` IN(:seminar_id) AND `type` = 'PortfolioBlockSupervisor'",
-            [':seminar_id' => EportfolioGroup::getPortfolioIDsFromUserinGroup($group_id, $user_id)]
-        );
     }
     
     /**

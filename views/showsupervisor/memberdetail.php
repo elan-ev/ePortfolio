@@ -1,3 +1,4 @@
+<!-- Header with Studentinformation and Portfolio Overview -->
 <div class="row">
     <div class="col-sm-2 member-avatar">
         <?= Avatar::getAvatar($user_id, $user->username)
@@ -8,11 +9,12 @@
     </div>
     <div class="col-sm-5">
         <div class="member-name-detail">
-            <?php echo $vorname . " " . $nachname; ?>
+            <?= htmlReady($user->getFullname()) ?>
         </div>
         <div class="member-subname">
-            Portfoliogruppe: <?= $group_title ?><br>
-            Letzte Änderung: <?= date('d.m.Y', Eportfoliomodel::getLastOwnerEdit($portfolio_id)) ?>
+            <?= _('Studiengang etc') ?>
+            <br>
+            <?= "Letzte Änderung: ".date('d.m.Y', Eportfoliomodel::getLastOwnerEdit($portfolio_id)) ?>
         </div>
         <a href="<?= URLHelper::getURL('dispatch.php/messages/write?rec_uname=' .$user->username) ?>" target="_blank">
             Nachricht schicken
@@ -22,7 +24,7 @@
         <div class="row row member-footer-box-detail">
             <div class="col-sm-4">
                 <div class="member-footer-box-big-detail">
-                    <?php echo $AnzahlFreigegebenerKapitel ?> / <?php echo $AnzahlAllerKapitel; ?>
+                    <?= $portfolioSharedChapters ?> / <?= $chapterCount; ?>
                 </div>
                 <div class="member-footer-box-head">
                     freigegeben
@@ -30,7 +32,7 @@
             </div>
             <div class="col-sm-4">
                 <div class="member-footer-box-big-detail">
-                    <?php echo $GesamtfortschrittInProzent; ?> %
+                    <?= EportfolioUser::getGesamtfortschrittInProzent($portfolioSharedChapters, $chapterCount); ?> %
                 </div>
                 <div class="member-footer-box-head">
                     bearbeitet
@@ -38,7 +40,7 @@
             </div>
             <div class="col-sm-4">
                 <div class="member-footer-box-big-detail">
-                    <?php echo $AnzahlNotizen; ?>
+                    <?= $notesCount; ?>
                 </div>
                 <div class="member-footer-box-head">
                     Notizen
@@ -48,57 +50,14 @@
     </div>
 </div>
 
-<div class="status-area">
-    <h3>Status</h3>
-    <?php foreach ($templates
-
-    as $template_id): ?>
-    <?php
-    $template = reset(Course::findById($template_id));
-    $deadline = EportfolioGroupTemplates::getDeadline($group_id, $template_id);
-    if ($deadline == 0) {
-        $deadlineOutput = 'Kein Abgabedatum';
-    } else {
-        $deadlineOutput = date('d.m.Y', $deadline);
-    }
-    ?>
-    <div class="status-area-single">
-        <?php
-        $icon;
-        $status = EportfolioUser::getStatusOfUserInTemplate($template_id, $group_id, $portfolio_id);
-        switch ($status) {
-            case 1:
-                $icon = 'status-green';
-                break;
-            case 0:
-                $icon = 'status-yellow';
-                break;
-            case -1:
-                $icon = 'status-red';
-                break;
-        }
-
-        if ($deadline == 0) {
-            $icon = "inactive";
-        }
-        ?>
-        <?php echo Icon::create('span-full', $icon); ?>
-        <b><?= $template->name ?></b> <?php echo $deadlineOutput ?>
-        <span class="template-infos-days-left">
-      <?php if (!$deadline == 0) {
-          echo "(noch " . Eportfoliomodel::getDaysLeft($group_id, $template_id) . " Tage)";
-      } ?>
-    </span>
-        <?php endforeach; ?>
-    </div>
-</div>
-
+<!-- list of all chapters displaying status, access, notes and feedback -->
 <div class="member-contant-detail">
-
+    <!-- table-header -->
     <div class="row member-containt-head-detail">
         <div class="col-sm-4">Kapitelname</div>
         <div class="col-sm-8">
             <div class="row member-content-icons">
+                <div class="col-sm-2">Status</div>
                 <div class="col-sm-2">Freigabe</div>
                 <div class="col-sm-2">Notiz</div>
                 <div class="col-sm-2">Feedback</div>
@@ -106,52 +65,53 @@
             </div>
         </div>
     </div>
-
-    <?php foreach ($chapters as $kapitel): ?>
-        <?php $subchapter = Eportfoliomodel::getSubChapters($kapitel['id']); ?>
-
+    
+    <!-- display information for every chapter and subchapter -->
+    <? foreach ($chapterInfos as $kapitel): ?>
         <div class="row member-content-single-line">
             <div class="col-sm-4 member-content-single-line-ober">
-                <?php echo $kapitel['title'] ?>
-                <?php if (Eportfoliomodel::isEigenesKapitel($portfolio_id, $group_id, $kapitel['id'])): ?>
-                    <span class="label-selber">Eigenes Kapitel</span>
-                <?php endif; ?>
+                <?= $kapitel['title'] ?>
             </div>
             <div class="col-sm-8">
                 <div class="row" style="text-align: center;">
                     <div class="col-sm-2">
-                        <?php if ($statusKapitel = Eportfoliomodel::checkKapitelFreigabe($kapitel['id']) && EportfolioFreigabe::hasAccess($GLOBALS['user']->id, $portfolio_id, $kapitel['id'])): ?>
-                            <?php $new_freigabe = object_get_visit($portfolio_id, 'sem', 'last', false, $user_id) < EportfolioFreigabe::hasAccessSince($supervisorGroupId, $kapitel['id']); ?>
-                            <?php if ($new_freigabe): ?>
+                        <?
+                        $status = EportfolioUser::getStatusOfChapter($kapitel);
+                        switch ($status) {
+                            case 2:
+                                $icon = "inactive";
+                                break;
+                            case 1:
+                                $icon = "status-green";
+                                break;
+                            case 0:
+                                $icon = "status-yellow";
+                                break;
+                            case -1:
+                                $icon = "status-red";
+                                break;
+                        }
+                        ?>
+                        <?= Icon::create('span-full', $icon); ?>
+                    </div>
+                    <div class="col-sm-2" style="text-align: center;">
+                        <? if ($kapitel['shareDate']): ?>
+                            <? if ($lastVisit  < $kapitel['shareDate']): ?>
                                 <?= Icon::create('accept+new', 'status-green'); ?>
-                            <?php else: ?>
+                            <? else: ?>
                                 <?= Icon::create('accept', 'status-green'); ?>
-                            <?php endif; ?>
-                        <?php else: ?>
+                            <? endif; ?>
+                        <? else: ?>
                             <?= Icon::create('decline', 'status-red'); ?>
-                        <?php endif; ?>
+                        <? endif; ?>
                     </div>
-                    <div class="col-sm-2">
-
-                    </div>
-                    <div class="col-sm-2">
-                    </div>
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-2"></div>
                     <div class="col member-aktionen-detail">
-                        <? if (Eportfoliomodel::checkKapitelFreigabe($kapitel['id'])) : ?>
-                            <? if (EportfolioFreigabe::hasAccess($GLOBALS['user']->id, $portfolio_id, $kapitel['id'])): ?>
+                        <? if ($kapitel['shareDate']) : ?>
                             <a href="<?= URLHelper::getLink("plugins.php/courseware/courseware?cid=" . $portfolio_id . "&selected=" . $kapitel['id'] . '&return_to=' . Context::getId()); ?>">
                                 Anschauen
                             </a>
-
-                                <? if (Eportfoliomodel::checkSupervisorNotiz($kapitel['id'])): ?>
-                                    <a href="<?php echo URLHelper::getLink("plugins.php/courseware/courseware?cid=" . $portfolio_id . "&selected=" . $kapitel['id'] . '&return_to=' . Context::getId()); ?>">
-                                        Notiz beantworten
-                                    </a>
-                                <? endif; ?>
-                            <? else: ?>
-                                Nicht für die Berechtigtengruppe freigegeben
-                                <?= tooltipIcon("Das Kapitel ist nur für folgende Personen freigegeben: " . EportfolioFreigabe::userList($portfolio_id, $kapitel['id'])); ?>
-                            <? endif ?>
                         <? else : ?>
                             Nicht freigegeben
                             <?= tooltipIcon("Das Anschauen ist nicht möglich, da der Nutzer dieses Kapitel noch nicht freigegeben hat") ?>
@@ -160,40 +120,44 @@
                 </div>
             </div>
 
-            <?php foreach ($subchapter as $unterkapitel): ?>
+            <!-- display information for subchapters | 76 queries-->
+            <? foreach (Eportfoliomodel::getSubChapters($kapitel['id']) as $unterkapitel): ?>
                 <div class="col-sm-4 member-content-unterkapitel">
-                    <?php echo $unterkapitel['title']; ?>
-                    <?php if (!$statusKapitel): ?>
-                        <?php if (Eportfoliomodel::isEigenesUnterkapitel($unterkapitel['id'])): ?>
-                            <span class="label-selber">Eigenes Kapitel</span>
-                        <?php endif; ?>
-                    <?php endif; ?>
+                    <?= $unterkapitel['title']; ?>
                 </div>
                 <div class="col-sm-8">
                     <div class="row member-content-icons">
                         <div class="col-sm-2"></div>
+                        <div class="col-sm-2"></div>
                         <div class="col-sm-2">
-                            <?php if (Eportfoliomodel::checkSupervisorNotizInUnterKapitel($unterkapitel['id'])): ?>
+                            <? if ($subchapterNotes = Eportfoliomodel::checkSupervisorNoteInSubchapter($unterkapitel['id'])): ?>
                                 <?= Icon::create('file', 'clickable', [
                                     'title' => 'Notiz vorhanden'
                                 ]); ?>
-                            <?php else: ?>
+                            <? else: ?>
                                 <?= Icon::create('file', 'inactive', [
                                     'title' => 'Keine Notiz hinterlegt'
                                 ]); ?>
-                            <?php endif; ?>
+                            <? endif; ?>
                         </div>
                         <div class="col-sm-2">
-                            <?php if (Eportfoliomodel::checkSupervisorResonanzInSubchapter($unterkapitel['id'])): ?>
+                            <? if (Eportfoliomodel::checkSupervisorResonanzInSubchapter($unterkapitel['id'])): ?>
                                 <?= Icon::create('forum'); ?>
-                            <?php else: ?>
-                            <?php endif; ?>
+                            <? else: ?>
+                                <?= Icon::create('forum', 'inactive'); ?>
+                            <? endif; ?>
+                        </div>
+                        <div class="col member-aktion-detail">
+                            <? if ($subchapterNotes): ?>
+                                <a href="<?= URLHelper::getLink("plugins.php/courseware/courseware?cid=" . $portfolio_id . "&selected=" . $unterkapitel['id'] . '&return_to=' . Context::getId()); ?>">
+                                    Notiz beantworten
+                                </a>
+                            <? endif; ?>
                         </div>
                     </div>
                 </div>
-            <?php endforeach; ?>
+            <? endforeach; ?>
         </div>
-    <?php endforeach; ?>
-    <!-- <span class="label-selber">Eigenes</span -->
+    <? endforeach; ?>
     </div>
 </div>
