@@ -34,12 +34,12 @@
             <th data-sorter="false"><?= _('Aktionen') ?></th>
         </tr>
     </thead>
-    
+
 <? if (empty($portfolios)) : ?>
 </table>
     <?= MessageBox::info($missing_text); ?>
 <? else: ?>
-    <? 
+    <?
     if($hasTemplate) {
         $portfolios = EportfolioGroupTemplates::getGroupTemplateInformation($groupId, $portfolios);
     }
@@ -110,7 +110,7 @@
                             $actionMenu->addLink(
                                 URLHelper::getUrl('plugins.php/courseware/courseware', [
                                    'cid'         => $hasTemplate ? $portfolio['portfolio']->id : $portfolio->id,
-                                   'return_to'   => 'overview'
+                                   'return_to'   => Context::getId()
                                ]),
                                 _('Portfolio-Vorlage bearbeiten'),
                                 Icon::create('edit', 'clickable')
