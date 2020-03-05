@@ -1,5 +1,4 @@
-<?
-
+<?php
 
 /**
  * @author  <asudau@uos.de>
@@ -12,24 +11,35 @@
  */
 class EportfolioUser extends SimpleORMap
 {
-    
+
     protected static function configure($config = [])
     {
         $config['db_table'] = 'eportfolio_user';
         parent::configure($config);
     }
-    
-    public static function getPortfolioInformationInGroup($group_id, $portfolio_id, $current_user_id) {        
-        return DBManager::get()->fetchAll(
-            "SELECT mooc_blocks.title, freigaben.mkdate as shareDate, info.block_id as id, eportfolio_group_templates.abgabe_datum
+
+    public static function getPortfolioInformationInGroup($group_id, $portfolio_id, $current_user_id)
+    {
+        return DBManager::get()->fetchAll("SELECT mooc_blocks.title, freigaben.mkdate as shareDate,
+                info.block_id as id, eportfolio_group_templates.abgabe_datum
             FROM mooc_blocks
-            JOIN eportfolio_block_infos info ON info.block_id = mooc_blocks.id
-            LEFT JOIN (SELECT block_id, mkdate FROM eportfolio_freigaben WHERE user_id IN (SELECT supervisor_group_id FROM supervisor_group_user WHERE user_id = :current_user_id)) 
+            JOIN eportfolio_block_infos AS info ON info.block_id = mooc_blocks.id
+            LEFT JOIN (
+                SELECT block_id, mkdate
+                FROM eportfolio_freigaben
+                WHERE user_id IN (
+                    SELECT supervisor_group_id
+                    FROM supervisor_group_user
+                     WHERE user_id = :current_user_id
+                )
+            )
             AS freigaben ON info.block_id = freigaben.block_id
             JOIN eportfolio_group_templates ON info.template_id = eportfolio_group_templates.seminar_id
-            WHERE mooc_blocks.type = 'Chapter' AND mooc_blocks.parent_id != '0' 
-            AND info.seminar_id = :portfolio_id AND eportfolio_group_templates.group_id = :group_id
-            ORDER BY info.block_id ASC", 
+            WHERE mooc_blocks.type = 'Chapter'
+                AND mooc_blocks.parent_id != '0'
+                AND info.seminar_id = :portfolio_id
+                AND eportfolio_group_templates.group_id = :group_id
+            ORDER BY info.block_id ASC",
             [':group_id' => $group_id, ':portfolio_id' => $portfolio_id, ':current_user_id' => $current_user_id]);
     }
 
@@ -47,13 +57,13 @@ class EportfolioUser extends SimpleORMap
         if ($deadline == 0) {
             return 2;
         }
-        
+
         // add one day to deadline so the day of the deadline is still ok
         $deadline = strtotime('+1 day', $deadline);
         // status Icon changes to orange on deadline+2 days
         $timestampXTageVorher = strtotime('-4 day', $deadline);
         $now                  = time();
-        
+
         if ($now < $timestampXTageVorher || $chapterInfo['shareDate'] != false) {
             return 1;
         } else {
@@ -64,7 +74,7 @@ class EportfolioUser extends SimpleORMap
             }
         }
     }
-    
+
     /**
      * Liefert den Status des Users in einer Gruppe
      * Status wird erzeugt aus den verteilten templates
@@ -81,14 +91,14 @@ class EportfolioUser extends SimpleORMap
 
         foreach ($portfolioInfo as $chapterInfo) {
             $status = EportfolioUser::getStatusOfChapter($chapterInfo);
-            
+
             if ($status < 2) {
                 array_push($results, $status);
             }
         }
         return (!empty($results)) ? min($results) : '1';
     }
-    
+
     /**
      * Gibt die Anzahl der freigegeben Kapitel zurück
      **/
@@ -102,7 +112,7 @@ class EportfolioUser extends SimpleORMap
             [$userPortfolioId]
         );
     }
-    
+
     /**
      * Gibt die Verhältnis freigeben/gesamt in Prozent wieder
      **/
@@ -111,7 +121,7 @@ class EportfolioUser extends SimpleORMap
         $progress  = $oben / $unten * 100;
         return round($progress, 1);
     }
-        
+
     /**
      * Gibt die Anzahl der Notizen für den Supervisor eines users
      * innerhalb einer Gruppe wieder
