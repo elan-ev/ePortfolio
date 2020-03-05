@@ -15,7 +15,6 @@ class BlockInfoTable extends Migration
           `block_id` int(11) NOT NULL,
           `Seminar_id` varchar(32) NOT NULL DEFAULT '0',
           `vorlagen_block_id` int(11) NOT NULL DEFAULT '0',
-          `template_id` varchar(32) NOT NULL DEFAULT '0',
           `blocked` boolean NOT NULL,
           `mkdate` int(11) NOT NULL,
           `chdate` int(11) NOT NULL,

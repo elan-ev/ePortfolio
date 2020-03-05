@@ -49,6 +49,7 @@ class SetupPortfolioTables extends Migration
         $db->exec("CREATE TABLE IF NOT EXISTS `eportfolio_group_templates` (
          `group_id` varchar(32) NOT NULL,
          `Seminar_id` varchar(32) NOT NULL,
+         `favorite` int,
          `mkdate` int(11),
          `abgabe_datum` int(11),
          `verteilt_durch` varchar(32),
