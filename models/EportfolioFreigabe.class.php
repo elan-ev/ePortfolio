@@ -108,4 +108,10 @@ class EportfolioFreigabe extends SimpleORMap
             [':block_id' => $chapter_id, ':user_id' => $user_id]);
         return $hasAccessSince->mkdate;
     }
+
+    public static function sharedChaptersInTemplate($cid, $chapters)
+    {
+        $chapterIds = array_keys(array_column($chapters, NULL, 'id'));
+        return count(EportfolioFreigabe::findBySql('block_id IN (:block_id)', [':block_id' => $chapterIds]));
+    }
 }

@@ -58,8 +58,6 @@ class EportfolioUser extends SimpleORMap
             return 2;
         }
 
-        // add one day to deadline so the day of the deadline is still ok
-        $deadline = strtotime('+1 day', $deadline);
         // status Icon changes to orange on deadline+2 days
         $timestampXTageVorher = strtotime('-4 day', $deadline);
         $now                  = time();
@@ -67,7 +65,7 @@ class EportfolioUser extends SimpleORMap
         if ($now < $timestampXTageVorher || $chapterInfo['shareDate'] != false) {
             return 1;
         } else {
-            if ($now > $timestampXTageVorher && $now <= $deadline) {
+            if ($now > $timestampXTageVorher && $now <= strtotime('+1 day', $deadline)) {
                 return 0;
             } else {
                 return -1;
@@ -132,5 +130,21 @@ class EportfolioUser extends SimpleORMap
             "SELECT COUNT(`type`) FROM `mooc_blocks` WHERE `Seminar_id` IN(:seminar_id) AND `type` = 'PortfolioBlockSupervisor'",
             [':seminar_id' => $userPortfolioId]
         );
+    }
+
+    public static function getStatusOfUserInTemplate($deadline, $sharedChapterCnt, $chapterCnt)
+    {
+        if ($deadline == 0) {
+            return 2;
+        }
+
+        $chapterInfo = array();
+        $chapterInfo['abgabe_datum'] = $deadline;
+        
+        if($sharedChapterCnt == $chapterCnt) {
+            $chapterInfo['shareDate'] = true;
+        }
+
+        return EportfolioUser::getStatusOfChapter($chapterInfo);
     }
 }

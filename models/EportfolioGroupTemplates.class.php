@@ -52,6 +52,17 @@ class EportfolioGroupTemplates extends SimpleORMap
         return DBManager::get()->fetchAll($query, [Config::get()->SEM_CLASS_PORTFOLIO_VORLAGE, User::findCurrent()->id, $groupId], 'Course::buildExisting');
     }
 
+        /**EportfolioGroupTemplates::getGroupTemplates
+     * Liefert alle verteilten Templates einer Gruppe
+     **/
+    public static function getGroupTemplatesUser($group_id)
+    {
+        return DBManager::get()->fetchFirst("SELECT DISTINCT Seminar_id
+            FROM eportfolio_group_templates
+            WHERE group_id = ?
+            ORDER BY mkdate DESC", [$group_id]);
+    }
+
     /**
      * Liefert alle Kapitel der verteilten Templates einer Gruppe zurück
      * deprecated
@@ -156,5 +167,30 @@ class EportfolioGroupTemplates extends SimpleORMap
         }
         
         return $portfoliosData;
+    }
+
+    public function getUserChapterInfos($group_id, $cid)
+    {
+        $vars = DBManager::get()->fetchAll(
+            "SELECT eportfolio_group_templates.Seminar_id, mooc_blocks.title, eportfolio_block_infos.block_id as id
+            FROM eportfolio_group_templates
+            JOIN mooc_blocks ON mooc_blocks.seminar_id = eportfolio_group_templates.Seminar_id
+            JOIN eportfolio_block_infos ON eportfolio_block_infos.vorlagen_block_id = mooc_blocks.id
+            WHERE eportfolio_group_templates.group_id = :group_id
+            AND mooc_blocks.parent_id != 0 AND mooc_blocks.type = 'Chapter'
+            AND eportfolio_block_infos.Seminar_id = :cid",
+            [":group_id" => $group_id, ":cid" => $cid]
+        );
+
+        $templates = array();
+
+        foreach ($vars as $var) {
+            if(!$templates[$var['Seminar_id']]) {
+                $templates[$var['Seminar_id']] = [];
+            }
+            array_push($templates[$var['Seminar_id']], $var);
+        }
+
+        return $templates;
     }
 }

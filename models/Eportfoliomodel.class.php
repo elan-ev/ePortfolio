@@ -125,17 +125,28 @@ class Eportfoliomodel extends SimpleORMap
      **/
     public static function checkSupervisorResonanz($chapter_id)
     {
-        return true;
-        $query     = "SELECT id FROM mooc_blocks WHERE parent_id = :id";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute([':id' => $chapter_id]);
-        $subchapters = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $supervisorResponses = DBManager::get()->fetchAll(
+            "SELECT mooc_fields.json_data
+            FROM mooc_fields
+            JOIN mooc_blocks ON mooc_blocks.id = mooc_fields.block_id
+            JOIN mooc_blocks AS mcb ON mcb.id = mooc_blocks.parent_id
+            WHERE mooc_fields.name = 'supervisorcontent' AND mooc_blocks.type = 'PortfolioBlockSupervisor' AND mcb.parent_id IN (
+                SELECT id
+                FROM mooc_blocks
+                WHERE parent_id = :parent_id)",
+            [':parent_id' => $chapter_id]
+        );
 
-        foreach ($subchapters as $subchapter) {
-            if (Eportfoliomodel::checkSupervisorResonanzInSubchapter($subchapter['id'])) {
-                return true;
+        if(empty($supervisorResponses)) {
+            return false;
+        }
+
+        foreach($supervisorResponses as $response) {
+            if($response['json_data'] === '""') {
+                return false;
             }
         }
+        return true;
     }
 
     /**
@@ -152,7 +163,7 @@ class Eportfoliomodel extends SimpleORMap
             WHERE mooc_fields.name = 'supervisorcontent' AND mooc_blocks.type = 'PortfolioBlockSupervisor' AND mcb.parent_id IN (:subchapter_ids)",
             [':subchapter_ids' => $subchapter_ids]
         );
-
+        
         if(empty($supervisorResponses)) {
             return false;
         }
@@ -178,15 +189,37 @@ class Eportfoliomodel extends SimpleORMap
      **/
     public static function checkSupervisorNotiz($id)
     {
-        $db        = DBManager::get();
-        $query     = "SELECT id FROM mooc_blocks WHERE parent_id = :id";
-        $statement = $db->prepare($query);
-        $statement->execute([':id' => $id]);
-        $subchapters = $statement->fetchAll(PDO::FETCH_ASSOC);
-        if(EportfolioModel::checkSupervisorNoteInSubchapter($subchapters)) {
-            return true;
-        }
-        return false;
+        return DBManager::get()->fetchAll(
+            "SELECT json_data
+            FROM mooc_fields
+            JOIN mooc_blocks ON mooc_blocks.id = mooc_fields.block_id
+            JOIN mooc_blocks AS mcb ON mcb.id = mooc_blocks.parent_id
+            WHERE mooc_fields.name = 'content' AND mooc_blocks.type = 'PortfolioBlockSupervisor' AND mcb.parent_id IN (
+                SELECT id
+                FROM mooc_blocks
+                WHERE parent_id = :parent_id
+            )",
+            [':parent_id' => $id]
+        );
+    }
+
+    /**
+     * Prüft ob es eine SupervisorNotiz in einem Kapitel gibt
+     **/
+    public static function countSupervisorNotiz($id)
+    {
+        return count(DBManager::get()->fetchAll(
+            "SELECT json_data
+            FROM mooc_fields
+            JOIN mooc_blocks ON mooc_blocks.id = mooc_fields.block_id
+            JOIN mooc_blocks AS mcb ON mcb.id = mooc_blocks.parent_id
+            WHERE mooc_fields.name = 'content' AND mooc_blocks.type = 'PortfolioBlockSupervisor' AND mcb.parent_id IN (
+                SELECT id
+                FROM mooc_blocks
+                WHERE parent_id IN (:parent_id)
+            )",
+            [':parent_id' => $id]
+        ));
     }
 
     /**
