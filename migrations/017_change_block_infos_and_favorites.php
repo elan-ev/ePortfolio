@@ -20,6 +20,21 @@ class ChangeBlockInfosAndFavorites extends Migration
             DROP COLUMN `favorite`");
 
         SimpleORMap::expireTableScheme();
+
+        
+        $blocks = DBManager::get()->fetchAll(
+            "SELECT DISTINCT vorlagen_block_id, mooc_blocks.seminar_id FROM eportfolio_block_infos
+            JOIN mooc_blocks ON mooc_blocks.id = eportfolio_block_infos.vorlagen_block_id"
+        );
+
+        $blocks = array_column($blocks, NULL, 'vorlagen_block_id');
+
+        foreach ($blocks as $block) {
+            $stmt = DBManager::get()->prepare("UPDATE eportfolio_block_infos
+                    SET template_id = :seminar_id
+                    WHERE vorlagen_block_id = :vorlagen_block_id");
+            $stmt->execute([":vorlagen_block_id" => $block["vorlagen_block_id"], ":seminar_id" => $block["seminar_id"]]);
+        }
     }
 
 
