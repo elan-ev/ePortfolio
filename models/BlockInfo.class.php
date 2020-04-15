@@ -7,6 +7,7 @@
  * @property string $block_id
  * @property string $vorlagen_block_id
  * @property boolean $blocked
+ * @property string $template_id
  * @property int $mkdate
  * @property int $chdate
  */
@@ -27,11 +28,12 @@ class BlockInfo extends SimpleORMap
      * @param string $block_id
      * @param string $vorlagen_block_id
      */
-    public static function createEntry($portfolio_id, $block_id, $vorlagen_block_id)
+    public static function createEntry($portfolio_id, $block_id, $vorlagen_block_id, $template_id)
     {
         $entry                    = new self($block_id);
         $entry->vorlagen_block_id = $vorlagen_block_id;
         $entry->Seminar_id        = $portfolio_id;
+        $entry->template_id       = $template_id;
         return $entry->store();
     }
     

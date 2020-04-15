@@ -1,19 +1,15 @@
-<?php $userPortfolioId = EportfolioGroup::getPortfolioIdOfUserInGroup($user->id, $id); ?>
+<? $userPortfolioId = EportfolioGroup::getPortfolioIdOfUserInGroup($user->id, $groupId); ?>
+
 <div class="col-sm-4 member-single-card">
-    <?php if ($userPortfolioId): ?>
+    <? if ($userPortfolioId): ?>
     <a class="member-link" data-dialog="size=1000px;"
-       href="<?= $controller->url_for('showsupervisor/memberdetail/' . $id . '/' . $user->id) ?>">
-        <?php endif; ?>
-        <div class="member-item">
-
-            <div class="member-notification">
-                <?php // echo EportfolioGroup::getAnzahlAnNeuerungen($user, $id);  ?>
-            </div>
-
+       href="<?= URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/memberdetail/' . $groupId . '/' . $user->id) ?>">
+    <? endif; ?>
+        <div class="member-item">            
             <div class="row">
                 <div class="col-sm-4">
                     <div class="member-avatar">
-                        <?= Avatar::getAvatar($user->id)->getImageTag(
+                        <?= Avatar::getAvatar($user->id, $user->getFullname())->getImageTag(
                             Avatar::MEDIUM,
                             ['style' => 'margin-right: 0px; border-radius: 75px; height: 75px; width: 75px; border: 1px solid #28497c;',
                              'title' => htmlReady($user->getFullname())
@@ -27,7 +23,7 @@
                     <div class="member-subname">
                         <?= _('Status:') ?>
                         <? $icon = "";
-                        switch (EportfolioUser::getStatusOfUserInGroup($user->id, $id, $userPortfiloId)) {
+                        switch (EportfolioUser::getStatusOfUserInGroup($groupId, $userPortfolioId, $GLOBALS['user']->id)) {
                             case 1:
                                 $icon = Icon::ROLE_STATUS_GREEN;
                                 break;
@@ -37,26 +33,15 @@
                             case -1:
                                 $icon = Icon::ROLE_STATUS_RED;
                                 break;
-                        }
-                        ?>
-
+                        } ?> 
                         <?= Icon::create('span-full', $icon);
                         ?><br>
                         <?= _('Studiengang etc') ?>
                         <br><?= sprintf(_('Letzte Änderung: %s'), date('d.m.Y', Eportfoliomodel::getLastOwnerEdit($userPortfolioId))) ?>
                     </div>
                 </div>
-
-                <? $missing_vorlage = false; ?>
-                <? foreach (EportfolioGroup::getAllMarkedAsFav($id) as $vorlage): ?>
-                    <? foreach (Eportfoliomodel::getChapters($vorlage) as $chapter): ?>
-                        <? if (!$userPortfolioId || !Eportfoliomodel::getUserPortfolioBlockId($userPortfolioId, $chapter['id'])): ?>
-                            <? $missing_vorlage = true; break 2 ?>
-                        <? endif; ?>
-                    <? endforeach; ?>
-                <? endforeach; ?>
-
-                <? if ($missing_vorlage) : ?>
+                
+                <? if (EportfolioGroupTemplates::checkMissingTemplate($groupId, $userPortfolioId, $portfolioChapters)) : ?>
                 <div class="col-sm-12">
                     <div class="member-content">
                         <div class="row">
@@ -67,27 +52,25 @@
                                 /**
                                  * wegen CSS problemen bei einem Link im Link, vorerst die Lösung über onClick via js
                                  * **/
-                                $link = URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/createlateportfolio/' . $id . '/' . $user->id, []);
+                                $link = URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/createlateportfolio/' . $groupId . '/' . $user->id . '/' . $userPortfolioId, []);
                                 ?>
 
                                 <div class="btn-verteilen"
-                                     onclick="window.location = '<?php echo $link; ?>'">
+                                     onclick="window.location = '<?= $link ?>'">
                                     <?= \Studip\Button::create(_('Jetzt verteilen!'), 'verteilen', []); ?>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <? endif ?>
-
-
+                <? else: ?>
                 <div class="col-sm-12">
                     <div class="row member-footer-box">
                         <div class="col-sm-4">
                             <div class="member-footer-box-big">
-                                <?= EportfolioGroup::getAnzahlFreigegebenerKapitel($user->id, $id); //id soll die gruppenid sein      ?>
+                                <?= $portfolioSharedChapters = EportfolioUser::portfolioSharedChapters($userPortfolioId); ?>
                                 /
-                                <?= EportfolioGroup::getAnzahlAllerKapitel($id); ?>
+                                <?= $portfolioChapters ?>
                             </div>
                             <div class="member-footer-box-head">
                                 freigegeben
@@ -95,7 +78,7 @@
                         </div>
                         <div class="col-sm-4">
                             <div class="member-footer-box-big">
-                                <?= EportfolioGroup::getGesamtfortschrittInProzent($user->id, $id); ?>
+                                <?= EportfolioUser::getGesamtfortschrittInProzent($portfolioSharedChapters, $portfolioChapters); ?>
                                 %
                             </div>
                             <div class="member-footer-box-head">
@@ -104,7 +87,7 @@
                         </div>
                         <div class="col-sm-4">
                             <div class="member-footer-box-big">
-                                <?= EportfolioGroup::getAnzahlNotizen($user->id, $id); ?>
+                                <?= EportfolioUser::getAnzahlNotizen($userPortfolioId); ?>
                             </div>
                             <div class="member-footer-box-head">
                                 <?= _('Notizen') ?>
@@ -112,6 +95,8 @@
                         </div>
                     </div>
                 </div>
+                <? endif ?>
+
             </div>
         </div>
     </a>

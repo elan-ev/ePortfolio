@@ -69,7 +69,7 @@ class ShowstudentController extends StudipController
             echo "Es wurden noch keine Portfolios...";
             //Wenn noch keine POrtfolios verteilt wurden oder nicht mal eine Gruppe existiert Hinweis an student dass noch keine inhalte verteilt wurden
         } else {
-            $this->portfolio_id   = EportfolioGroup::getPortfolioIDsFromUserinGroup($id, $this->userid);
+            $this->portfolio_id   = EportfolioGroup::getPortfolioIdOfUserInGroup($this->userid, $id);
             $this->groupTemplates = EportfolioGroupTemplates::getGroupTemplates($id);
             if (!$this->groupTemplates) {
                 $this->isThereAnyTemplate = false;
