@@ -21,7 +21,7 @@
             </div>
         <? else: ?>
             <div class="showstudent_textblock" style="margin:15px;">
-                <a style="float:left" title='Mein Portfolio' href ='<?= URLHelper::getLink('seminar_main.php?auswahl=' . $portfolio_id[0], ['return_to' => Context::getId()]) ?>'>
+                <a style="float:left" title='Mein Portfolio' href ='<?= URLHelper::getLink('seminar_main.php?auswahl=' . $portfolio_id, ['return_to' => Context::getId()]) ?>'>
                     <?=Icon::create('eportfolio', 'clickable', ['size' => 200])?>
                 </a>
 

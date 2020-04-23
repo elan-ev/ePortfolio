@@ -25,13 +25,13 @@ class ShowstudentController extends StudipController
         $this->group_id = Context::getId();
         $this->userid = $GLOBALS["user"]->id;
 
-        $this->portfolio_id   = EportfolioGroup::getPortfolioIDsFromUserinGroup($this->group_id, $this->userid);
+        $this->portfolio_id   = EportfolioGroup::getPortfolioIdOfUserInGroup($this->userid, $this->group_id);
         $this->groupTemplates = EportfolioGroupTemplates::getGroupTemplates($this->group_id);
     }
 
     public function createlateportfolio_action($group_id, $user_id)
     {
-        $portfolio_id = EportfolioGroup::getPortfolioIDsFromUserinGroup($group_id, $user_id);
+        $portfolio_id = EportfolioGroup::getPortfolioIdOfUserInGroup($user_id, $group_id);
         if (!$portfolio_id) {
             /**
              * Der User hat noch kein Portfilio
