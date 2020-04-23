@@ -22,7 +22,7 @@ class ShowsupervisorController extends StudipController
 
             $this->groupId = $this->course->id;
             $this->group = EportfolioGroup::findbySQL('seminar_id = :id', [':id' => $this->groupId])[0];
-            
+
             //noch kein Portfoliogruppeneintrag für dieses Seminar vorhanden: Gruppe erstellen
             if (!$this->group) {
                 EportfolioGroup::newGroup($this->userId, $this->groupId);
@@ -45,10 +45,10 @@ class ShowsupervisorController extends StudipController
 
         $this->member     = EportfolioGroup::getGroupMember($this->group);
         $this->portfolios = Eportfoliomodel::getPortfolioVorlagen();
-        
+
         /* remove archived portfolios from list */
         $this->portfolios = array_filter($this->portfolios, function($portfolios) use ($id) {
-            return !sizeof(EportfolioArchive::find($portfolios->id));
+            return @empty(EportfolioArchive::find($portfolios->id));
         });
 
         $this->portfolioChapters = EportfolioGroup::getAnzahlAllerKapitel($this->groupId);
@@ -148,17 +148,17 @@ class ShowsupervisorController extends StudipController
         $this->portfolioSharedChapters = EportfolioUser::portfolioSharedChapters($this->portfolio_id);
         $this->chapterCount = EportfolioGroup::getAnzahlAllerKapitel($this->groupId);
         $this->notesCount = EportfolioUser::getAnzahlNotizen($this->portfolio_id);
-        
+
         /**
-         * get all deadlines, shareDates from PortfolioInformation and titles and correct number of chapters from chapterInformation 
-         * reindex both arrays so both arrays can be combined 
+         * get all deadlines, shareDates from PortfolioInformation and titles and correct number of chapters from chapterInformation
+         * reindex both arrays so both arrays can be combined
          */
         $portfolioInformation = EportfolioUser::getPortfolioInformationInGroup($group_id, $this->portfolio_id, $GLOBALS['user']->id);
         $portfolioInformation = array_column($portfolioInformation, Null, 'id');
-        
+
         $chapters = EportfolioModel::getChapterInformation($this->portfolio_id);
         $chapters = array_column($chapters, Null, 'id');
-        
+
         $this->chapterInfos = array();
         foreach($chapters as $key => $val) {
             $this->chapterInfos[$key] = array_key_exists($key, $portfolioInformation) ? array_merge($val, $portfolioInformation[$key]) : $val;
@@ -166,7 +166,7 @@ class ShowsupervisorController extends StudipController
 
 
         $this->lastVisit = object_get_visit(Context::getId(), 'sem');
-        /* object_set_visit() has to be called twice, so the current time will be moved into last_visited 
+        /* object_set_visit() has to be called twice, so the current time will be moved into last_visited
         so that the red asteriks will only be shown on the first visit */
         object_set_visit(Context::getId(), 'sem');
         object_set_visit(Context::getId(), 'sem');
