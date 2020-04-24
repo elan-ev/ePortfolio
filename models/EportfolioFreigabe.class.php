@@ -47,11 +47,11 @@ class EportfolioFreigabe extends SimpleORMap
             return false;
         }
     }
-    
+
     /**
      * Given a Portfolio and a Block of said Portfolio
      * return a string of all users with access to the Block
-     * 
+     *
      * @param string $seminar_id id of seminar(eportfolio)
      * @param int $chapter_id of courseware_chapter (Mooc\block)
      */
@@ -59,7 +59,7 @@ class EportfolioFreigabe extends SimpleORMap
     {
         $accessList = EportfolioFreigabe::findBySQL('Seminar_id = :seminar_id AND block_id = :block_id',
             [':seminar_id' => $seminar_id, ':block_id' => $chapter_id]);
-        
+
         $users = array();
         foreach ($accessList as $user) {
             $users[] = User::find($user["user_id"])->getFullname();
@@ -112,6 +112,14 @@ class EportfolioFreigabe extends SimpleORMap
     public static function sharedChaptersInTemplate($cid, $chapters)
     {
         $chapterIds = array_keys(array_column($chapters, NULL, 'id'));
-        return count(EportfolioFreigabe::findBySql('block_id IN (:block_id)', [':block_id' => $chapterIds]));
+
+        $stmt = DBManager::get()->prepare("SELECT COUNT(DISTINCT block_id)
+            FROM eportfolio_freigaben
+            WHERE block_id IN (:block_id)");
+
+        $stmt->bindPAram(':block_id', $chapterIds, StudipPDO::PARAM_ARRAY);
+        $stmt->execute();
+
+        return $stmt->fetchColumn();
     }
 }
