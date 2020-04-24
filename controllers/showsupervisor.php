@@ -166,9 +166,11 @@ class ShowsupervisorController extends StudipController
         foreach($chapters as $key => $val) {
             $this->chapterInfos[$key] = array_key_exists($key, $portfolioInformation) ? array_merge($val, $portfolioInformation[$key]) : $val;
 
-            foreach ($this->templates[$this->chapterInfos[$key]['template_id']] as $template_chapter) {
-                if ($template_chapter['id'] == $key) {
-                    $this->chapterInfos[$key]['template_title'] = $template_chapter['title'];
+            if (is_array($this->templates[$this->chapterInfos[$key]['template_id']])) {
+                foreach ($this->templates[$this->chapterInfos[$key]['template_id']] as $template_chapter) {
+                    if ($template_chapter['id'] == $key) {
+                        $this->chapterInfos[$key]['template_title'] = $template_chapter['title'];
+                    }
                 }
             }
         }
