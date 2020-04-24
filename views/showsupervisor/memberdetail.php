@@ -70,6 +70,7 @@
 
     <!-- display information for every chapter and subchapter -->
     <? foreach ($chapterInfos as $kapitel): ?>
+        <? $hasAccess = EportfolioFreigabe::hasAccess($GLOBALS['user']->id, $portfolio_id, $kapitel['id']) ?>
         <div class="row member-content-single-line <?= $kapitel['template_title'] ? '' : 'unlinked' ?>">
             <div class="col-sm-4 member-content-single-line-ober">
                 <?= $kapitel['title'] ?>
@@ -114,7 +115,7 @@
                     <div class="col-sm-2"></div>
                     <div class="col-sm-2"></div>
                     <div class="col member-aktionen-detail">
-                        <? if ($kapitel['shareDate']) : ?>
+                        <? if ($hasAccess): ?>
                             <a href="<?= URLHelper::getLink("plugins.php/courseware/courseware?cid=" . $portfolio_id
                                     . "&selected=" . $kapitel['id'] . '&return_to=' . Context::getId()); ?>"
                                 target="_blank"

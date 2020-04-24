@@ -27,7 +27,7 @@
                     <td></td>
 
                     <? foreach ($chapterList as $chapter): ?>
-                        <?php $hasAccess = EportfolioFreigabe::hasAccess($supervisorId, $cid, $chapter['id']); ?>
+                        <?php $hasAccess = EportfolioFreigabe::getAccess($supervisorId, $cid, $chapter['id']); ?>
                         <td onClick="setAccess('<?= $chapter['id'] ?>', '<?= $supervisorId ?>', this, '<?= $cid ?>');"
                             class="righttable-inner">
                             <? if ($hasAccess): ?>
@@ -53,33 +53,36 @@
                             ['style' => 'margin-right: 5px;border-radius: 30px; width: 25px; border: 1px solid #28497c;',
                              'title' => _('Gruppen-Supervisoren')]); ?>
                         <?= $user->getFullname() ?>
+                        <? if (isset($supervisors[$acc->user_id])) : ?>
+                            <?= tooltipIcon('Nutzer/in ist in der Gruppe "Berechtigte für Portfolioarbeit" und hat immer mindestens die Zugriffsrechte dieser Gruppe.') ?>
+                        <? endif ?>
                     </td>
 
                     <td onClick="deleteUserAccess('<?= $acc->user_id ?>', '<?= $cid ?>', this);" class="righttable-inner">
                         <span><?= Icon::create('trash', 'clickable') ?></span>
                     </td>
 
-                    <? if (isset($supervisors[$acc->user_id])) : ?>
-                        <td colspan="<?= sizeof($chapterList) ?>">
-                            Nutzer/in ist in der Gruppe "Berechtigte für Portfolioarbeit" und kann keine separaten Zugriffsrechte erhalten.
-                        </td>
-                    <? else : ?>
-                        <? foreach ($chapterList as $chapter): ?>
-                            <?php $hasAccess = EportfolioFreigabe::hasAccess($acc->user_id, $cid, $chapter['id']); ?>
-                            <td onClick="setAccess('<?= $chapter['id'] ?>', '<?= $acc->user_id ?>', this, '<?= $cid ?>');"
-                                class="righttable-inner">
-                                <? if ($hasAccess): ?>
-                                    <span id="icon-<?= $acc->user_id . '-' . $chapter['id']; ?>"
-                                          class="glyphicon glyphicon-ok"
-                                          title='Klick, um Kapitel nicht mehr feizugeben'><?= Icon::create('accept', Icon::ROLE_CLICKABLE); ?></span>
+                    <? foreach ($chapterList as $chapter): ?>
+                        <?php $hasAccess = EportfolioFreigabe::getAccess($acc->user_id, $cid, $chapter['id']); ?>
+                        <td onClick="setAccess('<?= $chapter['id'] ?>', '<?= $acc->user_id ?>', this, '<?= $cid ?>');"
+                            class="righttable-inner">
+                            <? if ($hasAccess): ?>
+                                <span id="icon-<?= $acc->user_id . '-' . $chapter['id']; ?>"
+                                      class="glyphicon glyphicon-ok"
+                                      title='Klick, um Kapitel nicht mehr feizugeben'><?= Icon::create('accept', Icon::ROLE_CLICKABLE); ?></span>
+                            <? else : ?>
+                                <? if ($hasAccess !=  EportfolioFreigabe::hasAccess($acc->user_id, $cid, $chapter['id'])) : ?>
+                                <span id="icon-<?= $acc->user_id . '-' . $chapter['id']; ?>"
+                                      class="glyphicon glyphicon-remove"
+                                      title='Nutzer/in ist in der Gruppe "Berechtigte für Portfolioarbeit" hat dadurch trotzdem Zugriff! Klick, um Kapitel freizugeben'><?= Icon::create('decline', Icon::ROLE_ATTENTION); ?></span>
                                 <? else : ?>
-                                    <span id="icon-<?= $acc->user_id . '-' . $chapter['id']; ?>"
-                                          class="glyphicon glyphicon-remove"
-                                          title='Klick, um Kapitel freizugeben'><?= Icon::create('decline', Icon::ROLE_CLICKABLE); ?></span>
-                                <? endif; ?>
-                            </td>
-                        <? endforeach; ?>
-                    <? endif ?>
+                                <span id="icon-<?= $acc->user_id . '-' . $chapter['id']; ?>"
+                                      class="glyphicon glyphicon-remove"
+                                      title='Klick, um Kapitel freizugeben'><?= Icon::create('decline', Icon::ROLE_CLICKABLE); ?></span>
+                                  <? endif ?>
+                            <? endif; ?>
+                        </td>
+                    <? endforeach; ?>
                 </tr>
             <? endforeach; ?>
         </tbody>

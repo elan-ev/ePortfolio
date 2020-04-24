@@ -20,6 +20,7 @@ class EportfolioFreigabe extends SimpleORMap
 
     public static function hasAccess($user_id, $seminar_id, $chapter_id)
     {
+        $hasAccess = false;
         $portfolio = Eportfoliomodel::findBySeminarId($seminar_id);
 
         //Wenn das Portfolio Teil einer Gruppe mit zugehöriger Supervisorgruppe ist:
@@ -34,11 +35,15 @@ class EportfolioFreigabe extends SimpleORMap
 
         }
         if ($isUser) {
-            $user_id = $portfoliogroup[0]->supervisor_group_id;
+            $hasAccess = EportfolioFreigabe::findBySQL('Seminar_id = :seminar_id AND block_id = :block_id AND user_id = :user_id',
+                [':seminar_id' => $seminar_id, ':block_id' => $chapter_id, ':user_id' => $portfoliogroup[0]->supervisor_group_id]);
         }
 
-        $hasAccess = EportfolioFreigabe::findBySQL('Seminar_id = :seminar_id AND block_id = :block_id AND user_id = :user_id',
-            [':seminar_id' => $seminar_id, ':block_id' => $chapter_id, ':user_id' => $user_id]);
+        // if user has no access for example through the supervisor grpup, check if access is allowed on per user basis
+        if (!$hasAccess) {
+            $hasAccess = EportfolioFreigabe::findBySQL('Seminar_id = :seminar_id AND block_id = :block_id AND user_id = :user_id',
+                [':seminar_id' => $seminar_id, ':block_id' => $chapter_id, ':user_id' => $user_id]);
+        }
         $isOwner   = Eportfoliomodel::isOwner($seminar_id, $user_id);
 
         if ($hasAccess || $isOwner) {
@@ -47,6 +52,13 @@ class EportfolioFreigabe extends SimpleORMap
             return false;
         }
     }
+
+    public static function getAccess($user_id, $seminar_id, $chapter_id)
+    {
+        return EportfolioFreigabe::findBySQL('Seminar_id = :seminar_id AND block_id = :block_id AND user_id = :user_id',
+            [':seminar_id' => $seminar_id, ':block_id' => $chapter_id, ':user_id' => $user_id]);
+    }
+
 
     /**
      * Given a Portfolio and a Block of said Portfolio
@@ -80,7 +92,7 @@ class EportfolioFreigabe extends SimpleORMap
      */
     public static function setAccess($user_id, $seminar_id, $chapter_id, $status)
     {
-        if ($status && !self::hasAccess($user_id, $seminar_id, $chapter_id)) {
+        if ($status && !self::getAccess($user_id, $seminar_id, $chapter_id)) {
             $access             = new self();
             $access->mkdate     = time();
             $access->Seminar_id = $seminar_id;
@@ -93,7 +105,7 @@ class EportfolioFreigabe extends SimpleORMap
                     EportfolioActivity::addActivity($seminar_id, $chapter_id, 'freigabe');
                 }
             }
-        } else if (self::hasAccess($user_id, $seminar_id, $chapter_id)) {
+        } else if (self::getAccess($user_id, $seminar_id, $chapter_id)) {
             self::deleteBySQL('Seminar_id = :seminar_id AND block_id = :block_id AND user_id = :user_id',
                 [':seminar_id' => $seminar_id, ':block_id' => $chapter_id, ':user_id' => $user_id]);
             if (SupervisorGroup::find($user_id)) {
