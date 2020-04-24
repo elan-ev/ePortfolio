@@ -34,7 +34,10 @@ class EportfolioUser extends SimpleORMap
                 )
             )
             AS freigaben ON info.block_id = freigaben.block_id
-            JOIN eportfolio_group_templates ON info.template_id = eportfolio_group_templates.seminar_id
+            JOIN eportfolio_group_templates ON (
+                info.template_id = eportfolio_group_templates.seminar_id
+                OR info.template_id = 0
+            )
             WHERE mooc_blocks.type = 'Chapter'
                 AND mooc_blocks.parent_id != '0'
                 AND info.seminar_id = :portfolio_id
@@ -140,7 +143,7 @@ class EportfolioUser extends SimpleORMap
 
         $chapterInfo = array();
         $chapterInfo['abgabe_datum'] = $deadline;
-        
+
         if($sharedChapterCnt == $chapterCnt) {
             $chapterInfo['shareDate'] = true;
         }

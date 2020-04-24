@@ -154,10 +154,11 @@ class ShowsupervisorController extends StudipController
          * reindex both arrays so both arrays can be combined
          */
         $portfolioInformation = EportfolioUser::getPortfolioInformationInGroup($group_id, $this->portfolio_id, $GLOBALS['user']->id);
-        $portfolioInformation = array_column($portfolioInformation, Null, 'id');
+        $portfolioInformation = array_column($portfolioInformation, null, 'id');
 
         $chapters = EportfolioModel::getChapterInformation($this->portfolio_id);
-        $chapters = array_column($chapters, Null, 'id');
+        $chapters = array_column($chapters, null, 'id');
+
 
         $this->chapterInfos = array();
         foreach($chapters as $key => $val) {
