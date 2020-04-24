@@ -12,7 +12,9 @@
             <?= htmlReady($user->getFullname()) ?>
         </div>
         <div class="member-subname">
-            <?= _('Studiengang etc') ?>
+            <?= $this->render_partial('showsupervisor/_studycourse.php', [
+                'studycourses' => new SimpleCollection(UserStudyCourse::findByUser($user->id)),
+            ]) ?>
             <br>
             <?= "Letzte Änderung: ".date('d.m.Y', Eportfoliomodel::getLastOwnerEdit($portfolio_id)) ?>
         </div>
