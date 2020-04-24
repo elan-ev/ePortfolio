@@ -76,7 +76,7 @@
                 <?= $kapitel['title'] ?>
 
                 <? if (!$kapitel['template_title']) : // chapter does not belong to a template ?>
-                    <?= tooltipIcon('Dieses Kapitel stammt nicht aus einer Vorlage!') ?>
+                    <?= tooltipIcon('Dieses Kapitel stammt nicht aus einer Vorlage oder die Vorlage wurde gelöscht / verändert.') ?>
                 <? endif ?>
             </div>
             <div class="col-sm-8">
