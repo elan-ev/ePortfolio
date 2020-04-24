@@ -121,14 +121,24 @@ class EportfolioFreigabe extends SimpleORMap
         return $hasAccessSince->mkdate;
     }
 
+    /**
+     * return number of shared chapters in template, considering supervisor group ONLY
+     *
+     * @param  string $cid      course_id of portfolio
+     * @param  mixed $chapters  the chapters to check
+     *
+     * @return int              number of chapters shared with supervisor group
+     */
     public static function sharedChaptersInTemplate($cid, $chapters)
     {
         $chapterIds = array_keys(array_column($chapters, NULL, 'id'));
 
         $stmt = DBManager::get()->prepare("SELECT COUNT(DISTINCT block_id)
             FROM eportfolio_freigaben
+            JOIN eportfolio_groups AS g
+                ON eportfolio_freigaben.user_id = g.supervisor_group_id
             WHERE block_id IN (:block_id)
-                AND Seminar_id = :seminar_id");
+                AND eportfolio_freigaben.Seminar_id = :seminar_id");
 
         $stmt->bindPAram(':block_id', $chapterIds, StudipPDO::PARAM_ARRAY);
         $stmt->execute([':seminar_id' => $cid]);
