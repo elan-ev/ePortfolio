@@ -115,7 +115,10 @@
                     <div class="col-sm-2"></div>
                     <div class="col member-aktionen-detail">
                         <? if ($kapitel['shareDate']) : ?>
-                            <a href="<?= URLHelper::getLink("plugins.php/courseware/courseware?cid=" . $portfolio_id . "&selected=" . $kapitel['id'] . '&return_to=' . Context::getId()); ?>">
+                            <a href="<?= URLHelper::getLink("plugins.php/courseware/courseware?cid=" . $portfolio_id
+                                    . "&selected=" . $kapitel['id'] . '&return_to=' . Context::getId()); ?>"
+                                target="_blank"
+                            >
                                 Anschauen
                             </a>
                         <? else : ?>
