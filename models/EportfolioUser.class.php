@@ -21,7 +21,7 @@ class EportfolioUser extends SimpleORMap
     public static function getPortfolioInformationInGroup($group_id, $portfolio_id, $current_user_id)
     {
         return DBManager::get()->fetchAll("SELECT mooc_blocks.title, freigaben.mkdate as shareDate,
-                info.block_id as id, eportfolio_group_templates.abgabe_datum
+                info.block_id as id, eportfolio_group_templates.abgabe_datum, info.template_id
             FROM mooc_blocks
             JOIN eportfolio_block_infos AS info ON info.block_id = mooc_blocks.id
             LEFT JOIN (
@@ -105,9 +105,13 @@ class EportfolioUser extends SimpleORMap
      **/
     public static function portfolioSharedChapters($userPortfolioId)
     {
-        $query = "SELECT COUNT(e1.Seminar_id) FROM eportfolio e1
-                  JOIN eportfolio_freigaben e2 ON e1.Seminar_id = e2.Seminar_id
-                  WHERE e1.Seminar_id IN (?)";
+        $query = "SELECT COUNT(DISTINCT freigabe.block_id) FROM eportfolio
+                  JOIN eportfolio_freigaben AS freigabe
+                    ON eportfolio.Seminar_id = freigabe.Seminar_id
+                  JOIN eportfolio_block_infos AS info
+                    ON info.block_id = freigabe.block_id
+                  WHERE eportfolio.Seminar_id = ?
+                    AND info.template_id != 0";
         return DBManager::get()->fetchColumn(
             $query,
             [$userPortfolioId]

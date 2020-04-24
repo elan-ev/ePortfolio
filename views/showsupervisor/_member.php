@@ -5,7 +5,7 @@
     <a class="member-link" data-dialog="size=1000px;"
        href="<?= URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/memberdetail/' . $groupId . '/' . $user->id) ?>">
     <? endif; ?>
-        <div class="member-item">            
+        <div class="member-item">
             <div class="row">
                 <div class="col-sm-4">
                     <div class="member-avatar">
@@ -33,14 +33,14 @@
                             case -1:
                                 $icon = Icon::ROLE_STATUS_RED;
                                 break;
-                        } ?> 
+                        } ?>
                         <?= Icon::create('span-full', $icon);
                         ?><br>
                         <?= _('Studiengang etc') ?>
                         <br><?= sprintf(_('Letzte Änderung: %s'), date('d.m.Y', Eportfoliomodel::getLastOwnerEdit($userPortfolioId))) ?>
                     </div>
                 </div>
-                
+
                 <? if (EportfolioGroupTemplates::checkMissingTemplate($groupId, $userPortfolioId, $portfolioChapters)) : ?>
                 <div class="col-sm-12">
                     <div class="member-content">

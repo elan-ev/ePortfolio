@@ -65,12 +65,16 @@
             </div>
         </div>
     </div>
-    
+
     <!-- display information for every chapter and subchapter -->
     <? foreach ($chapterInfos as $kapitel): ?>
-        <div class="row member-content-single-line">
+        <div class="row member-content-single-line <?= $kapitel['template_id'] == 0 ? 'unlinked' : '' ?>">
             <div class="col-sm-4 member-content-single-line-ober">
                 <?= $kapitel['title'] ?>
+
+                <? if ($kapitel['template_id'] == 0) : // chapter does not belong to a template ?>
+                    <?= tooltipIcon('Dieses Kapitel stammt nicht aus einer Vorlage!') ?>
+                <? endif ?>
             </div>
             <div class="col-sm-8">
                 <div class="row" style="text-align: center;">
