@@ -108,8 +108,14 @@
                             <? else: ?>
                                 <?= Icon::create('accept', 'status-green'); ?>
                             <? endif; ?>
-                        <? else: ?>
-                            <?= Icon::create('decline', 'status-red'); ?>
+                        <? else : ?>
+                            <? if ($hasAccess) : ?>
+                                <?= Icon::create('decline', 'status-yellow', [
+                                    'title' => ' Nur sie haben Zugriff, nicht die Berechtigten für die Portfolioarbeit!'
+                                ]); ?>
+                            <? else : ?>
+                                <?= Icon::create('decline', 'status-red'); ?>
+                            <? endif ?>
                         <? endif; ?>
                     </div>
                     <div class="col-sm-2"></div>
