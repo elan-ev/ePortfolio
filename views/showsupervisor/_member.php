@@ -70,7 +70,9 @@
                     <div class="row member-footer-box">
                         <div class="col-sm-4">
                             <div class="member-footer-box-big">
-                                <?= $portfolioSharedChapters = EportfolioUser::portfolioSharedChapters($userPortfolioId); ?>
+                                <?= $portfolioSharedChapters = EportfolioUser::portfolioSharedChapters(
+                                    $userPortfolioId, EportfolioGroupTemplates::getUserChapterInfos($groupId, $userPortfolioId)
+                                ); ?>
                                 /
                                 <?= $portfolioChapters ?>
                             </div>

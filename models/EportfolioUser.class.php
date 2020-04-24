@@ -103,19 +103,27 @@ class EportfolioUser extends SimpleORMap
     /**
      * Gibt die Anzahl der freigegeben Kapitel zurück
      **/
-    public static function portfolioSharedChapters($userPortfolioId)
+    public static function portfolioSharedChapters($userPortfolioId, $templates)
     {
-        $query = "SELECT COUNT(DISTINCT freigabe.block_id) FROM eportfolio
+        $ids = [];
+        foreach ($templates as $template) {
+            foreach ($template as $chapter) {
+                $ids[] = $chapter['id'];
+            }
+        }
+
+        $stmt = DBManager::get()->prepare("SELECT COUNT(DISTINCT freigabe.block_id) FROM eportfolio
                   JOIN eportfolio_freigaben AS freigabe
                     ON eportfolio.Seminar_id = freigabe.Seminar_id
                   JOIN eportfolio_block_infos AS info
                     ON info.block_id = freigabe.block_id
-                  WHERE eportfolio.Seminar_id = ?
-                    AND info.template_id != 0";
-        return DBManager::get()->fetchColumn(
-            $query,
-            [$userPortfolioId]
-        );
+                  WHERE eportfolio.Seminar_id = :seminar_id
+                    AND info.block_id IN (:block_id)");
+
+        $stmt->bindParam(":block_id", $ids, StudipPDO::PARAM_ARRAY);
+        $stmt->execute([':seminar_id' => $userPortfolioId]);
+
+        return $stmt->fetchColumn();
     }
 
     /**

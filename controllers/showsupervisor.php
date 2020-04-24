@@ -145,7 +145,9 @@ class ShowsupervisorController extends StudipController
         $this->user_id  = $user_id;
 
         $this->portfolio_id = EportfolioGroup::getPortfolioIdOfUserInGroup($user_id, $group_id);
-        $this->portfolioSharedChapters = EportfolioUser::portfolioSharedChapters($this->portfolio_id);
+        $this->templates  = EportfolioGroupTemplates::getUserChapterInfos($group_id, $this->portfolio_id);
+
+        $this->portfolioSharedChapters = EportfolioUser::portfolioSharedChapters($this->portfolio_id, $this->templates);
         $this->chapterCount = EportfolioGroup::getAnzahlAllerKapitel($this->groupId);
         $this->notesCount = EportfolioUser::getAnzahlNotizen($this->portfolio_id);
 
@@ -163,6 +165,12 @@ class ShowsupervisorController extends StudipController
         $this->chapterInfos = array();
         foreach($chapters as $key => $val) {
             $this->chapterInfos[$key] = array_key_exists($key, $portfolioInformation) ? array_merge($val, $portfolioInformation[$key]) : $val;
+
+            foreach ($this->templates[$this->chapterInfos[$key]['template_id']] as $template_chapter) {
+                if ($template_chapter['id'] == $key) {
+                    $this->chapterInfos[$key]['template_title'] = $template_chapter['title'];
+                }
+            }
         }
 
 
