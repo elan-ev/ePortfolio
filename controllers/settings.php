@@ -85,7 +85,9 @@ class settingsController extends StudipController
 
         foreach ($supervisors as $supervisor) {
             $this->supervisor_list[] = htmlReady($supervisor->user->getFullname());
+            $this->supervisors[$supervisor->user_id] = true;
         }
+
     }
 
     public function setAccess_action()

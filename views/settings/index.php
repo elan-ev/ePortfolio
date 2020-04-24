@@ -59,21 +59,27 @@
                         <span><?= Icon::create('trash', 'clickable') ?></span>
                     </td>
 
-                    <? foreach ($chapterList as $chapter): ?>
-                        <?php $hasAccess = EportfolioFreigabe::hasAccess($acc->user_id, $cid, $chapter['id']); ?>
-                        <td onClick="setAccess('<?= $chapter['id'] ?>', '<?= $acc->user_id ?>', this, '<?= $cid ?>');"
-                            class="righttable-inner">
-                            <? if ($hasAccess): ?>
-                                <span id="icon-<?= $acc->user_id . '-' . $chapter['id']; ?>"
-                                      class="glyphicon glyphicon-ok"
-                                      title='Klick, um Kapitel nicht mehr feizugeben'><?= Icon::create('accept', Icon::ROLE_CLICKABLE); ?></span>
-                            <? else : ?>
-                                <span id="icon-<?= $acc->user_id . '-' . $chapter['id']; ?>"
-                                      class="glyphicon glyphicon-remove"
-                                      title='Klick, um Kapitel freizugeben'><?= Icon::create('decline', Icon::ROLE_CLICKABLE); ?></span>
-                            <? endif; ?>
+                    <? if (isset($supervisors[$acc->user_id])) : ?>
+                        <td colspan="<?= sizeof($chapterList) ?>">
+                            Nutzer/in ist in der Gruppe "Berechtigte für Portfolioarbeit" und kann keine separaten Zugriffsrechte erhalten.
                         </td>
-                    <? endforeach; ?>
+                    <? else : ?>
+                        <? foreach ($chapterList as $chapter): ?>
+                            <?php $hasAccess = EportfolioFreigabe::hasAccess($acc->user_id, $cid, $chapter['id']); ?>
+                            <td onClick="setAccess('<?= $chapter['id'] ?>', '<?= $acc->user_id ?>', this, '<?= $cid ?>');"
+                                class="righttable-inner">
+                                <? if ($hasAccess): ?>
+                                    <span id="icon-<?= $acc->user_id . '-' . $chapter['id']; ?>"
+                                          class="glyphicon glyphicon-ok"
+                                          title='Klick, um Kapitel nicht mehr feizugeben'><?= Icon::create('accept', Icon::ROLE_CLICKABLE); ?></span>
+                                <? else : ?>
+                                    <span id="icon-<?= $acc->user_id . '-' . $chapter['id']; ?>"
+                                          class="glyphicon glyphicon-remove"
+                                          title='Klick, um Kapitel freizugeben'><?= Icon::create('decline', Icon::ROLE_CLICKABLE); ?></span>
+                                <? endif; ?>
+                            </td>
+                        <? endforeach; ?>
+                    <? endif ?>
                 </tr>
             <? endforeach; ?>
         </tbody>
@@ -108,14 +114,14 @@
 
         function setAccess(id, viewerId, obj, cid) {
             var status = !$(obj).children('span').hasClass('glyphicon-ok');
-            
+
             $.ajax({
                 type: "POST",
                 url: STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/settings/setAccess'),
                 data: {
                     user_id: viewerId,
-                    seminar_id: cid, 
-                    chapter_id: id, 
+                    seminar_id: cid,
+                    chapter_id: id,
                     status: status
                 }
             }).done(function(data) {

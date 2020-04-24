@@ -52,6 +52,8 @@ class ShowsupervisorController extends StudipController
         });
 
         $this->portfolioChapters = EportfolioGroup::getAnzahlAllerKapitel($this->groupId);
+
+        EportfolioFreigabe::prune($this->course->id);
     }
 
     public function createportfolio_action($master)

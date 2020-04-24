@@ -115,11 +115,44 @@ class EportfolioFreigabe extends SimpleORMap
 
         $stmt = DBManager::get()->prepare("SELECT COUNT(DISTINCT block_id)
             FROM eportfolio_freigaben
-            WHERE block_id IN (:block_id)");
+            WHERE block_id IN (:block_id)
+                AND Seminar_id = :seminar_id");
 
         $stmt->bindPAram(':block_id', $chapterIds, StudipPDO::PARAM_ARRAY);
-        $stmt->execute();
+        $stmt->execute([':seminar_id' => $cid]);
 
         return $stmt->fetchColumn();
+    }
+
+    /**
+     * Delete entrys which belong to users no longer present
+     *
+     * @param  string $course_id
+     *
+     * @return void
+     */
+    public static function prune($course_id)
+    {
+
+        $results = DBManager::get()->query("SELECT DISTINCT f.seminar_id, f.user_id, f.block_id FROM eportfolio_freigaben f
+            LEFT JOIN eportfolio_user u ON (
+                f.seminar_id = u.seminar_id
+                AND f.user_id = u.user_id
+            )
+            LEFT JOIN supervisor_group_user sup ON (
+                sup.supervisor_group_id = f.user_id
+            )
+            WHERE u.seminar_id IS NULL
+                AND sup.user_id IS NULL
+        ");
+
+        while ($data = $results->fetch(PDO::FETCH_ASSOC)) {
+            self::deleteBySQL('Seminar_id = :seminar_id AND block_id = :block_id AND user_id = :user_id', $zw = [
+                ':seminar_id' => $data['Seminar_id'],
+                ':block_id'   => $data['block_id'],
+                ':user_id' => $data['user_id']
+            ]);
+        }
+
     }
 }
