@@ -40,16 +40,13 @@ class EportfolioGroupTemplates extends SimpleORMap
      **/
     public static function getGroupTemplates($groupId)
     {
-        $query = "
-            SELECT  DISTINCT `seminare`.*
-            FROM `seminare`
-            JOIN `seminar_user` USING(`Seminar_id`)
-            JOIN eportfolio_group_templates USING(`Seminar_id`)
-            WHERE `seminare`.`status` = ? AND `seminar_user`.`status` IN ('autor', 'tutor', 'dozent')
-            AND `seminar_user`.`user_id` = ? AND eportfolio_group_templates.group_id = ?
-            ORDER BY `mkdate` DESC
-        ";
-        return DBManager::get()->fetchAll($query, [Config::get()->SEM_CLASS_PORTFOLIO_VORLAGE, User::findCurrent()->id, $groupId], 'Course::buildExisting');
+        $query = "SELECT DISTINCT seminare.*
+            FROM seminare
+            JOIN eportfolio_group_templates USING (Seminar_id)
+            WHERE seminare.status = ?
+                AND eportfolio_group_templates.group_id = ?
+            ORDER BY `mkdate` DESC";
+        return DBManager::get()->fetchAll($query, [Config::get()->SEM_CLASS_PORTFOLIO_VORLAGE, $groupId], 'Course::buildExisting');
     }
 
         /**EportfolioGroupTemplates::getGroupTemplates
@@ -128,7 +125,7 @@ class EportfolioGroupTemplates extends SimpleORMap
         if(!$userPortfolioId) {
             return true;
         }
-        
+
         //Alle Chapter, die User hat
         $userChapters = DBManager::get()->fetchAll("SELECT COUNT(eportfolio_block_infos.block_id) FROM eportfolio_group_templates
             JOIN mooc_blocks USING(Seminar_id)
@@ -144,19 +141,24 @@ class EportfolioGroupTemplates extends SimpleORMap
         return false;
     }
 
-    public static function getGroupTemplateInformation($groupId, $portfolios) {
-        $portfolioIds = array_map(function($portfolio) { return $portfolio->id; }, $portfolios);
-        $data = DBManager::get()->fetchAll('SELECT verteilt_durch, mkdate, abgabe_datum, Seminar_id 
-                                                            FROM `eportfolio_group_templates` 
-                                                            WHERE `Seminar_id` IN (?) AND `group_id` = ?', 
-                                                            [$portfolioIds, $groupId]);
+    public static function getGroupTemplateInformation($groupId, $portfolios)
+    {
+        $portfolioIds = array_map(function($portfolio) {
+            return $portfolio->id;
+        }, $portfolios);
+
+        $data = DBManager::get()->fetchAll('SELECT verteilt_durch, mkdate, abgabe_datum, Seminar_id
+            FROM `eportfolio_group_templates`
+            WHERE `Seminar_id` IN (?) AND `group_id` = ?',
+            [$portfolioIds, $groupId]
+        );
 
         $portfoliosData = [];
-        foreach($data as $portfolioData) {
+        foreach ($data as $portfolioData) {
             $portfolio['distributionDate'] = $portfolioData['mkdate'];
-            $portfolio['deadline'] = $portfolioData['abgabe_datum'];
-            $portfolio['seminarId'] = $portfolioData['Seminar_id'];
-            $portfolio['portfolio'] = $portfolios[array_search($portfolio['seminarId'], array_column($portfolios, 'id'))];
+            $portfolio['deadline']         = $portfolioData['abgabe_datum'];
+            $portfolio['seminarId']        = $portfolioData['Seminar_id'];
+            $portfolio['portfolio']        = $portfolios[array_search($portfolio['seminarId'], array_column($portfolios, 'id'))];
 
             if (!$portfolioData['verteilt_durch']) {
                 $portfolio['creatorName'] = "Unknown";
@@ -165,7 +167,7 @@ class EportfolioGroupTemplates extends SimpleORMap
             }
             array_push($portfoliosData, $portfolio);
         }
-        
+
         return $portfoliosData;
     }
 

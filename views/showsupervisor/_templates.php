@@ -46,14 +46,24 @@
     ?>
     <tbody>
         <? foreach ($portfolios as $portfolio): ?>
+        <? if($hasTemplate) {
+            $owner = $portfolio['portfolio']->getParticipantStatus($GLOBALS['user']->id) == 'dozent';
+        } else {
+            $owner = true;
+        }
+        ?>
             <tr>
                 <td>
-                    <a href="<?= URLHelper::getLink('plugins.php/courseware/courseware', [
-                        'cid'       => $hasTemplate ? $portfolio['portfolio']->id : $portfolio->id,
-                        'return_to' => Context::getId()
-                        ]); ?>">
+                    <? if (!$owner) : ?>
                         <?= htmlReady($hasTemplate ? $portfolio['portfolio']->getFullName() : $portfolio->getFullName()) ?>
-                    </a>
+                    <? else : ?>
+                        <a href="<?= URLHelper::getLink('plugins.php/courseware/courseware', [
+                            'cid'       => $hasTemplate ? $portfolio['portfolio']->id : $portfolio->id,
+                            'return_to' => Context::getId()
+                            ]); ?>">
+                            <?= htmlReady($hasTemplate ? $portfolio['portfolio']->getFullName() : $portfolio->getFullName()) ?>
+                        </a>
+                    <? endif ?>
                 </td>
                 <td>
                     <?= htmlReady($hasTemplate ? $portfolio['portfolio']->beschreibung : $portfolio->beschreibung) ?>
@@ -74,7 +84,9 @@
                 </td>
                 <td>
                     <span style="display:none"><?= $portfolio['deadline'] ?: 1 ?></span>
-                    <? if ($portfolio['deadline']): ?>
+                    <? if (!$owner) : ?>
+                        <?= sprintf(_('Abgabetermin: %s'), date('d.m.Y', $portfolio['deadline'])) ?>
+                    <? elseif ($portfolio['deadline']): ?>
                     <div>
                         <a data-dialog="size=auto;"
                            href="<?= URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/templatedates/' . $groupId . '/' . $portfolio['portfolio']->id) ?>">
@@ -100,12 +112,16 @@
                 <td style="text-align: center;">
                     <?
                         $actionMenu = ActionMenu::get();
-                        $actionMenu->addLink(
-                            PluginEngine::getLink($this->plugin, [], 'showsupervisor/updatevorlage/' . ($hasTemplate ? $portfolio['portfolio']->id : $portfolio->id)),
-                            _('Portfolio-Titel und Beschreibung bearbeiten'),
-                            Icon::create('edit', 'clickable'),
-                            ['data-dialog' => 'size=auto;reload-on-close']
-                        );
+
+                        if ($owner) {
+                            $actionMenu->addLink(
+                                PluginEngine::getLink($this->plugin, [], 'showsupervisor/updatevorlage/' . ($hasTemplate ? $portfolio['portfolio']->id : $portfolio->id)),
+                                _('Portfolio-Titel und Beschreibung bearbeiten'),
+                                Icon::create('edit', 'clickable'),
+                                ['data-dialog' => 'size=auto;reload-on-close']
+                            );
+                        }
+
                         if ($member && !$hasTemplate) {
                             $actionMenu->addLink(
                                 URLHelper::getUrl('plugins.php/courseware/courseware', [
