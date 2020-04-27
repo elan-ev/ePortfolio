@@ -45,10 +45,10 @@
                 'title' => 'Diese Vorlagen wurden bereits in der Veranstaltung verteilt'
                 ])?>
             </h1>
-            <? foreach ($groupTemplates as $template_id):?>
+            <? foreach ($groupTemplates as $template):?>
                 <div>
-                    <?= Course::find($template_id)->name ?> verteilt am
-                    <?= date('d.m.Y', EportfolioGroupTemplates::getWannWurdeVerteilt($group_id, $template_id)) ?>
+                    <?= htmlReady($template->name)?> verteilt am
+                    <?= date('d.m.Y', EportfolioGroupTemplates::getWannWurdeVerteilt($group_id, $template->id)) ?>
                 </div>
             <? endforeach ?>
         <? endif ?>
