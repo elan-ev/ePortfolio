@@ -94,7 +94,7 @@ class settingsController extends StudipController
     {
         $freigabe = new EportfolioFreigabe();
         $freigabe::setAccess(Request::get("user_id"), Request::get("seminar_id"), Request::get("chapter_id"), Request::get("status"));
-        $status = $freigabe::hasAccess(Request::get("user_id"), Request::get("seminar_id"), Request::get("chapter_id"));
+        $status = $freigabe::getAccess(Request::get("user_id"), Request::get("seminar_id"), Request::get("chapter_id"));
 
         //check, if setAccess changed accessibility according to request
         if ($status == filter_var(Request::get("status"), FILTER_VALIDATE_BOOLEAN)) {
