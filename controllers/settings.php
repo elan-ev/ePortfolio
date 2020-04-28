@@ -129,7 +129,7 @@ class settingsController extends StudipController
         $seminar       = new Seminar(Context::getId());
         $eportfolio    = Eportfoliomodel::findBySeminarId(Context::getId());
         $eportfolio_id = $eportfolio->eportfolio_id;
-        $userRole      = 'autor';
+        $userRole      = 'dozent';
 
         $db        = DBManager::get();
         $query     = "INSERT INTO eportfolio_user (user_id, Seminar_id, eportfolio_id, status, owner)
