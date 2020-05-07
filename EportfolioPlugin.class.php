@@ -88,11 +88,11 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     public function getTabNavigation($course_id)
     {
         $tabs     = [];
-        $isDozent = $GLOBALS['perm']->have_studip_perm('dozent', $course_id);
+        $isSupervisor = SupervisorGroup::isUserInGroup($GLOBALS['user']->id, $course_id);
 
         //Veranstaltungsreiter in Vorlesung
         if (!$this->isPortfolio() && !$this->isVorlage()) {
-            if ($isDozent) {
+            if ($isSupervisor) {
                 $navigation = new Navigation('Portfolio-Arbeit', PluginEngine::getURL($this, compact('cid'), 'showsupervisor', true));
                 $navigation->setImage(Icon::create('group4', 'info_alt'));
                 $navigation->setActiveImage(Icon::create('group4', 'info'));
@@ -112,7 +112,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
             }
 
         } else if ($this->isPortfolio() || $this->isVorlage()) {
-            if ($isDozent && !$this->isVorlage()) {
+            if ($isSupervisor && !$this->isVorlage()) {
                 $navigation = new Navigation(
                     _('Übersicht'),
                     PluginEngine::getURL($this, ['cid' => $course_id], 'eportfolioplugin', true)
@@ -154,7 +154,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
             $navigationSettings->setImage(Icon::create('admin', 'info_alt'));
             $navigationSettings->setActiveImage(Icon::create('admin', 'info'));
             $tabs['settings'] = $navigationSettings;
-        } else if ($isDozent == true && $this->isVorlage()) {
+        } else if ($isSupervisor == true && $this->isVorlage()) {
             $navigationSettings = new Navigation('Einstellungen', PluginEngine::getURL($this, compact('cid'), 'blocksettings', true));
             $navigationSettings->setImage(Icon::create('admin', 'info_alt'));
             $navigationSettings->setActiveImage(Icon::create('admin', 'info'));

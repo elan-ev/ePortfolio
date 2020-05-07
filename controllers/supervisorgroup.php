@@ -42,15 +42,18 @@ class SupervisorgroupController extends StudipController
         $this->groupId = $group->id;
         $this->linkId  = Context::getId();
 
-        $search_obj = new SQLSearch("SELECT auth_user_md5.user_id, CONCAT(auth_user_md5.nachname, ', ', auth_user_md5.vorname, ' (' , auth_user_md5.email, ')' ) as fullname, username, perms "
-            . "FROM auth_user_md5 "
-            . "WHERE (CONCAT(auth_user_md5.Vorname, \" \", auth_user_md5.Nachname) LIKE :input "
-            . "OR CONCAT(auth_user_md5.Nachname, \" \", auth_user_md5.Vorname) LIKE :input "
-            . "OR auth_user_md5.username LIKE :input)"
-            . "AND auth_user_md5.perms LIKE 'dozent'"
-            . "AND auth_user_md5.user_id NOT IN "
-            . "(SELECT supervisor_group_user.user_id FROM supervisor_group_user WHERE supervisor_group_user.supervisor_group_id = '" . $supervisorgroupid . "')  "
-            . "ORDER BY Vorname, Nachname ",
+        $search_obj = new SQLSearch(
+            "SELECT auth_user_md5.user_id, CONCAT(auth_user_md5.nachname, ', ', auth_user_md5.vorname, ' (' , auth_user_md5.email, ')' ) as fullname, username, perms 
+            FROM auth_user_md5
+            WHERE (
+                CONCAT(auth_user_md5.Vorname, \" \", auth_user_md5.Nachname) LIKE :input 
+                OR CONCAT(auth_user_md5.Nachname, \" \", auth_user_md5.Vorname) LIKE :input 
+                OR auth_user_md5.username LIKE :input
+            )
+            AND auth_user_md5.perms IN ('dozent', 'tutor')
+            AND auth_user_md5.user_id NOT IN (
+                SELECT supervisor_group_user.user_id FROM supervisor_group_user WHERE supervisor_group_user.supervisor_group_id = '" . $supervisorgroupid . "')
+            ORDER BY Vorname, Nachname ",
             _("Teilnehmer suchen"), "username");
 
         $this->mp = MultiPersonSearch::get('supervisorgroupSelectUsers')

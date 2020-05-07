@@ -84,10 +84,17 @@ class SupervisorGroup extends SimpleORMap
         $group->delete();
     }
 
-    //testen
-    public function isUserInGroup($userId)
+    
+    public function isUserInGroup($user_id, $course_id)
     {
-        $user = new SupervisorGroupUser($userId);
-        return in_array($user, $this->user);
+        $supervisor_group_id = EportfolioGroup::findById($course_id)[0]->supervisor_group_id;
+        $supervisor_users = SupervisorGroupUser::findBySupervisorGroupId($supervisor_group_id);
+        
+        foreach ($supervisor_users as $user) {
+            if($user->user_id === $user_id) {
+                return true;
+            }
+        }
+        return false;
     }
 }
