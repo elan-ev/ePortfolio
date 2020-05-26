@@ -88,7 +88,8 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     public function getTabNavigation($course_id)
     {
         $tabs     = [];
-        $isSupervisor = SupervisorGroup::isUserInGroup($GLOBALS['user']->id, $course_id);
+        $isSupervisor = SupervisorGroup::isUserInGroup($GLOBALS['user']->id, $course_id)
+            || $GLOBALS['perm']->have_perm('root');
 
         //Veranstaltungsreiter in Vorlesung
         if (!$this->isPortfolio() && !$this->isVorlage()) {
@@ -324,7 +325,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
                 Helpbar::get()->addPlainText(_('Tip zum Bearbeiten'), $bearbeiten, Icon::create('doctoral-cap', 'info_alt'));
             }
         }
-        
+
         // rename Dateien to Meine Portfoliodateien
         if ($this->isPortfolio() && Navigation::hasItem('/course/files')) {
             Navigation::getItem('/course/files')->setTitle('Meine Portfoliodateien');
