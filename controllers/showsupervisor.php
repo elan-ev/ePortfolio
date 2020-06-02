@@ -1,15 +1,9 @@
-<?
+<?php
 
 use Mooc\Container;
 
-class ShowsupervisorController extends StudipController
+class ShowsupervisorController extends PluginController
 {
-
-    public function __construct($dispatcher)
-    {
-        parent::__construct($dispatcher);
-        $this->plugin = $dispatcher->current_plugin;
-    }
 
     public function before_filter(&$action, &$args)
     {

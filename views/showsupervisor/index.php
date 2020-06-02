@@ -48,7 +48,7 @@
         <? endif; ?>
 
     <? else: ?>
-        <? if (sizeof($member) > 30) : ?>
+        <? if (is_atrray($member) && count($member) > 30) : ?>
             <table class="default">
                 <caption>Teilnehmende</caption>
 

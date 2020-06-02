@@ -13,7 +13,7 @@
                     <? if ($groupTemplates): ?>
                     <br>
                     <b>Es wurden schon Vorlagen in dieser Veranstaltung verteilt:<br>
-                    <a href="<?= URLHelper::getLink('plugins.php/eportfolioplugin/showstudent/createlateportfolio/' . $group_id . '/' . $userid, []) ?>"> Portfolio anlegen</a> <br>
+                    <a href="<?= URLHelper::getLink('plugins.php/eportfolioplugin/showstudent/createlateportfolio/' . $group_id . '/' . $GLOBALS['user']->id, []) ?>"> Portfolio anlegen</a> <br>
                     </b><br>
                     <? endif ?>
                     Weitere Details zur Portfolioarbeit erklären wir im folgenden Video:

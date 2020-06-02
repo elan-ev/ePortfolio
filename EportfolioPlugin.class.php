@@ -15,18 +15,18 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         parent::__construct();
 
         $navigation = new Navigation(_('ePortfolios'));
-        $navigation->setURL(PluginEngine::getURL($this, [], "show"));
+        $navigation->setURL(PluginEngine::getURL($this, [], 'show'));
 
         if (!Request::get('username') || Request::get('username') == $GLOBALS['user']->username) {
             Navigation::addItem('/profile/eportfolioplugin', $navigation);
         }
 
-        NotificationCenter::addObserver($this, "setup_navigation", "PageWillRender");
-        NotificationCenter::addObserver($this, "store_activity", "UserDidPostSupervisorNotiz");
-        NotificationCenter::addObserver($this, "store_activity", "SupervisorDidPostAnswer");
-        NotificationCenter::addObserver($this, "store_activity", "UserDidPostNotiz");
+        NotificationCenter::addObserver($this, 'setup_navigation', 'PageWillRender');
+        NotificationCenter::addObserver($this, 'store_activity', 'UserDidPostSupervisorNotiz');
+        NotificationCenter::addObserver($this, 'store_activity', 'SupervisorDidPostAnswer');
+        NotificationCenter::addObserver($this, 'store_activity', 'UserDidPostNotiz');
 
-        NotificationCenter::addObserver($this, "prevent_settings_access", "NavigationDidActivateItem");
+        NotificationCenter::addObserver($this, 'prevent_settings_access', 'NavigationDidActivateItem');
 
         // generate css to hide all portfolio seminars on the my_realm page - DIRTY HACK, i know
         PageLayout::addStyle('#my_seminars {display: none; }');
@@ -87,7 +87,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
 
     public function getTabNavigation($course_id)
     {
-        $tabs     = [];
+        $tabs         = [];
         $isSupervisor = SupervisorGroup::isUserInGroup($GLOBALS['user']->id, $course_id)
             || $GLOBALS['perm']->have_perm('root');
 
@@ -95,8 +95,8 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         if (!$this->isPortfolio() && !$this->isVorlage()) {
             if ($isSupervisor) {
                 $navigation = new Navigation('Portfolio-Arbeit', PluginEngine::getURL($this, compact('cid'), 'showsupervisor', true));
-                $navigation->setImage(Icon::create('group4', 'info_alt'));
-                $navigation->setActiveImage(Icon::create('group4', 'info'));
+                $navigation->setImage(Icon::create('group4', Icon::ROLE_INFO_ALT));
+                $navigation->setActiveImage(Icon::create('group4', Icon::ROLE_INFO));
 
                 $item = new Navigation(_('Portfolio-Arbeit'), PluginEngine::getURL($this, compact('cid'), 'showsupervisor', true));
                 $navigation->addSubNavigation('supervision', $item);
@@ -108,8 +108,8 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
                 $navigation->addSubNavigation('supervisorgroup', $item);
             } else {
                 $navigation = new Navigation('Portfolio-Arbeit', PluginEngine::getURL($this, compact('cid'), 'showstudent', true));
-                $navigation->setImage(Icon::create('group4', 'info_alt'));
-                $navigation->setActiveImage(Icon::create('group4', 'info'));
+                $navigation->setImage(Icon::create('group4', Icon::ROLE_INFO_ALT));
+                $navigation->setActiveImage(Icon::create('group4', Icon::ROLE_INFO));
             }
 
         } else if ($this->isPortfolio() || $this->isVorlage()) {
@@ -118,8 +118,8 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
                     _('Übersicht'),
                     PluginEngine::getURL($this, ['cid' => $course_id], 'eportfolioplugin', true)
                 );
-                $navigation->setImage(Icon::create('group4', 'info_alt'));
-                $navigation->setActiveImage(Icon::create('group4', 'info'));
+                $navigation->setImage(Icon::create('group4', Icon::ROLE_INFO_ALT));
+                $navigation->setActiveImage(Icon::create('group4', Icon::ROLE_INFO));
             }
 
             if (Request::option('return_to')) {
@@ -152,13 +152,13 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
 
         if ($this->isPortfolio() && $owner) {
             $navigationSettings = new Navigation('Zugriffsrechte', PluginEngine::getURL($this, compact('cid'), 'settings', true));
-            $navigationSettings->setImage(Icon::create('admin', 'info_alt'));
-            $navigationSettings->setActiveImage(Icon::create('admin', 'info'));
+            $navigationSettings->setImage(Icon::create('admin', Icon::ROLE_INFO_ALT));
+            $navigationSettings->setActiveImage(Icon::create('admin', Icon::ROLE_INFO));
             $tabs['settings'] = $navigationSettings;
         } else if ($isSupervisor == true && $this->isVorlage()) {
             $navigationSettings = new Navigation('Einstellungen', PluginEngine::getURL($this, compact('cid'), 'blocksettings', true));
-            $navigationSettings->setImage(Icon::create('admin', 'info_alt'));
-            $navigationSettings->setActiveImage(Icon::create('admin', 'info'));
+            $navigationSettings->setImage(Icon::create('admin', Icon::ROLE_INFO_ALT));
+            $navigationSettings->setActiveImage(Icon::create('admin', Icon::ROLE_INFO));
             $tabs['blocksettings'] = $navigationSettings;
         }
 
@@ -175,33 +175,32 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
 
     public function getIconNavigation($course_id, $last_visit, $user_id)
     {
-        global $perm;
-        if ($perm->have_studip_perm('dozent', $course_id)) {
+        if ($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) {
             $url = 'showsupervisor/activityfeed';
         } else {
             $url = 'showstudent';
         }
 
-        $icon         = new AutoNavigation(
+        $icon = new AutoNavigation(
             'Portfolio-Arbeit',
             PluginEngine::getURL($this, ['cid' => $course_id, 'iconnav' => 'true'], $url, true)
         );
 
         $group = EportfolioGroup::find($course_id);
         if ($group) {
-            $new_ones = sizeof($group->getActivities());
-
-            if ($new_ones) {
-                if ($perm->have_studip_perm('dozent', $course_id)) {
+            $activies = $group->getActivities();
+            if (is_array($activies)) {
+                $new_ones = count($activies);
+                if ($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) {
                     $title = $new_ones > 1 ? sprintf(_('%s neue Ereignisse in Studierenden-Portfolios'), $new_ones) : _('1 neues Ereignisse in Studierenden-Portfolio');
                 } else {
                     $title = _('Keine neuen Ereignisse.');
                 }
 
-                $icon->setImage(Icon::create('eportfolio', 'attention', ['title' => $title]));
+                $icon->setImage(Icon::create('eportfolio', Icon::ROLE_ATTENTION, ['title' => $title]));
                 $icon->setBadgeNumber($new_ones);
             } else {
-                $icon->setImage(Icon::create('eportfolio', 'inactive', ['title' => 'Supervision']));
+                $icon->setImage(Icon::create('eportfolio', Icon::ROLE_ATTENTION, ['title' => 'Supervision']));
             }
         }
 
@@ -258,7 +257,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         $course = Course::findCurrent();
         if ($course) {
             $status = $course->status;
-            if ($status == Config::get()->getValue('SEM_CLASS_PORTFOLIO_VORLAGE')) {
+            if ($status == Config::get()->SEM_CLASS_PORTFOLIO_VORLAGE) {
                 return true;
             }
         }
@@ -270,7 +269,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         $course = Course::findCurrent();
         if ($course) {
             $status = $course->status;
-            if ($status == Config::get()->getValue('SEM_CLASS_PORTFOLIO_Supervisionsgruppe')) {
+            if ($status == Config::get()->SEM_CLASS_PORTFOLIO_Supervisionsgruppe) {
                 return true;
             }
         }
@@ -332,11 +331,10 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         }
     }
 
-    function prevent_settings_access($event, $path)
+    public function prevent_settings_access($event, $path)
     {
         if (($this->isPortfolio() || $this->isVorlage())
-            && $path == '/course/mooc_courseware/settings')
-        {
+            && $path == '/course/mooc_courseware/settings') {
             throw new AccessDeniedException();
         }
     }

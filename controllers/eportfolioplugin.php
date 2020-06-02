@@ -1,13 +1,10 @@
 <?php
 
-class EportfoliopluginController extends StudipController
+class EportfoliopluginController extends PluginController
 {
-
     public function __construct($dispatcher)
     {
         parent::__construct($dispatcher);
-        $this->plugin = $dispatcher->current_plugin;
-
         $this->cid        = Course::findCurrent()->id;
         $this->eportfolio = Eportfoliomodel::findBySeminarId($this->cid);
         $this->group_id   = $this->eportfolio->group_id;

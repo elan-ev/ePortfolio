@@ -1,14 +1,8 @@
 <?php
 
-class SupervisorgroupController extends StudipController
+class SupervisorgroupController extends PluginController
 {
-    var $id = null;
-
-    public function __construct($dispatcher)
-    {
-        parent::__construct($dispatcher);
-        $this->plugin = $dispatcher->current_plugin;
-    }
+    public $id = null;
 
     public function before_filter(&$action, &$args)
     {
@@ -93,22 +87,5 @@ class SupervisorgroupController extends StudipController
         $group = new SupervisorGroup($group_id);
         $group->deleteUser($user_id);
         $this->redirect($this->url_for('supervisorgroup'), ['cid' => $group->eportfolio_group->seminar_id]);
-    }
-
-    public function url_for($to = '')
-    {
-        $args = func_get_args();
-
-        # find params
-        $params = [];
-        if (is_array(end($args))) {
-            $params = array_pop($args);
-        }
-
-        # urlencode all but the first argument
-        $args    = array_map('urlencode', $args);
-        $args[0] = $to;
-
-        return PluginEngine::getURL($this->dispatcher->current_plugin, $params, join('/', $args));
     }
 }

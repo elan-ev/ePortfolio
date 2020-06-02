@@ -1,37 +1,25 @@
-<?
+<?php
 
 class livesearchController extends StudipController
 {
-    public function __construct($dispatcher)
-    {
-        parent::__construct($dispatcher);
-        $this->plugin = $dispatcher->current_plugin;
-    }
-    
-    public function before_filter(&$action, &$args)
-    {
-        parent::before_filter($action, $args);
-        
-    }
-    
     public function index_action()
     {
         //set retun array
         $return_arr = [];
-        
+
         // set vars
         $cid = Request::get('cid');
-        
+
         //set ajax vars
         $user_status = Request::get('status');
         $val         = Request::get('val');
-        
+
         // empty input
         if ($val == "") {
             $val = [];
             exit(json_encode($val));
         }
-        
+
         //query
         if (Request::get('searchViewer')) {
             $query     = "SELECT Vorname, Nachname, user_id FROM auth_user_md5 WHERE Vorname LIKE '%:vorname%' OR Nachname LIKE '%:nachname%'";
@@ -44,22 +32,22 @@ class livesearchController extends StudipController
             $statement->execute([':string_1' => $val, ':string_2' => $val[1], ':user_status' => $user_status]);
             $search_query = $statement->fetchAll();
         }
-        
+
         $query     = "SELECT * FROM seminar_user WHERE Seminar_id = :cid AND user_id = :user_id_viewer";
         $statement = DBManager::get()->prepare($query);
-        
+
         foreach ($search_query as $key) {
-            
+
             $user_id_viewer = $key['user_id'];
-            
+
             $statement->execute([':cid' => $cid, ':user_id_viewer' => $user_id_viewer]);
-            
+
             if (empty($statement->fetchAll())) {
                 $arrayOne             = [];
                 $arrayOne["Vorname"]  = $key['Vorname'];
                 $arrayOne["Nachname"] = $key['Nachname'];
                 $arrayOne["userid"]   = $key['user_id'];
-                
+
                 array_push($return_arr, $arrayOne);
             }
         }
