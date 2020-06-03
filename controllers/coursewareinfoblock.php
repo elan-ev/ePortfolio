@@ -1,22 +1,15 @@
-<?
+<?php
 
-class CoursewareinfoblockController extends StudipController
+class CoursewareinfoblockController extends PluginController
 {
     public function __construct($dispatcher)
     {
         parent::__construct($dispatcher);
-        $this->plugin = $dispatcher->current_plugin;
-
+        PageLayout::setTitle('ePortfolio');
         if (Request::get('infobox')) {
             $this->infobox(Request::get('cid'), Request::get('userid'), Request::get('selected'));
             exit();
         }
-    }
-
-    public function before_filter(&$action, &$args)
-    {
-        parent::before_filter($action, $args);
-        PageLayout::setTitle('ePortfolio');
     }
 
     public function index_action()
@@ -25,12 +18,8 @@ class CoursewareinfoblockController extends StudipController
 
     public function isOwner($cid, $userId)
     {
-        $query     = "SELECT owner_id FROM eportfolio WHERE Seminar_id = :cid";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute([':cid' => $cid]);
-        if ($statement->fetchAll()[0][0] == $userId) {
-            return true;
-        }
+        $query = "SELECT owner_id FROM eportfolio WHERE Seminar_id = ?";
+        return DBManager::get()->fetchColumn($query, [$cid]) == $userId;
     }
 
     public function infobox($cid, $owner_id, $selected)
@@ -52,7 +41,7 @@ class CoursewareinfoblockController extends StudipController
                 $newarray["userid"] = $key["user_id"];
                 $newarray["access"] = $key["eportfolio_access"];
 
-                $userinfo              = User::find($key["user_id"]);
+                $userinfo              = User::find($key['user_id']);
                 $newarray['firstname'] = $userinfo['Vorname'];
                 $newarray['lastname']  = $userinfo['Nachname'];
 
@@ -68,25 +57,18 @@ class CoursewareinfoblockController extends StudipController
                 if ($access[$selected] == 1) {
                     $infoboxArray["users"][] = $newarray;
                 }
-
             }
 
-            $query     = "SELECT supervisor_id FROM eportfolio WHERE seminar_id = :cid";
-            $statement = $db->prepare($query);
-            $statement->execute([':cid' => $cid]);
-            $supervisorQuery = $statement->fetchAll();
-
-            $supervisorId = $supervisorQuery[0][0];
+            $supervisorId = DBManager::get()->fetchColumn(
+                "SELECT supervisor_id FROM eportfolio WHERE seminar_id = ?", [$cid]
+            );
 
             //supervisor Infos
-            if (!empty($supervisorQuery[0][0])) {
-
-                # check Freigaben
-                $query     = "SELECT freigaben_kapitel FROM eportfolio WHERE Seminar_id = :cid";
-                $statement = $db->prepare($query);
-                $statement->execute([':cid' => $cid]);
-
-                $freigabe = json_decode($statement->fetchAll()[0][0]);
+            if ($supervisorId) {
+                $freigabe = json_decode(DBManager::get()->fetchColumn(
+                    "SELECT freigaben_kapitel FROM eportfolio WHERE Seminar_id = ?",
+                    [$cid]
+                ));
                 $freigabe = $freigabe->$selected;
 
                 if ($freigabe == 1) {
@@ -98,11 +80,11 @@ class CoursewareinfoblockController extends StudipController
                 }
             }
         } else {
-            //get owner Id
-            $query     = "SELECT owner_id FROM eportfolio WHERE Seminar_id = :cid";
-            $statement = $db->prepare($query);
-            $statement->execute([':cid' => $cid]);
-            $userId                    = $statement->fetchAll()[0][0];
+            $userId = DBManager::get(
+                "SELECT owner_id FROM eportfolio WHERE Seminar_id = ?",
+                [$cid]
+            );
+
             $supervisor                = User::find($userId);
             $infoboxArray['firstname'] = $supervisor['Vorname'];
             $infoboxArray['lastname']  = $supervisor['Nachname'];

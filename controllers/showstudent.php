@@ -1,16 +1,9 @@
-<?
+<?php
 
 use Mooc\Container;
 
-class ShowstudentController extends StudipController
+class ShowstudentController extends PluginController
 {
-
-    public function __construct($dispatcher)
-    {
-        parent::__construct($dispatcher);
-        $this->plugin = $dispatcher->current_plugin;
-    }
-
     public function before_filter(&$action, &$args)
     {
         parent::before_filter($action, $args);
@@ -23,9 +16,7 @@ class ShowstudentController extends StudipController
     public function index_action()
     {
         $this->group_id = Context::getId();
-        $this->userid = $GLOBALS["user"]->id;
-
-        $this->portfolio_id   = EportfolioGroup::getPortfolioIdOfUserInGroup($this->userid, $this->group_id);
+        $this->portfolio_id   = EportfolioGroup::getPortfolioIdOfUserInGroup($GLOBALS['user']->id, $this->group_id);
         $this->groupTemplates = EportfolioGroupTemplates::getGroupTemplates($this->group_id);
     }
 

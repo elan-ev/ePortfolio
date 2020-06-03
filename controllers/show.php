@@ -1,14 +1,14 @@
-<?
+<?php
 
-class ShowController extends StudipController
+class ShowController extends PluginController
 {
 
     public function __construct($dispatcher)
     {
         parent::__construct($dispatcher);
-        $this->plugin = $dispatcher->current_plugin;
-
-        $this->userId   = $GLOBALS["user"]->id;
+        PageLayout::setTitle('ePortfolio - Übersicht');
+        Navigation::activateItem('/profile/eportfolioplugin');
+        $this->userId   = $GLOBALS['user']->id;
         $this->isDozent = $GLOBALS['perm']->have_perm('dozent');
 
         $sidebar = Sidebar::Get();
@@ -26,16 +26,8 @@ class ShowController extends StudipController
         $sidebar->addWidget($actions);
     }
 
-    public function before_filter(&$action, &$args)
-    {
-        parent::before_filter($action, $args);
-        PageLayout::setTitle('ePortfolio - Übersicht');
-        Navigation::activateItem('/profile/eportfolioplugin');
-    }
-
     public function index_action()
     {
-        $this->user = $GLOBALS['user'];
     }
 
     public function list_seminars_action($vorlage_id)
@@ -66,9 +58,7 @@ class ShowController extends StudipController
         $archive->eportfolio_id = $vorlage_id;
         $archive->store();
 
-        PageLayout::postMessage(MessageBox::success(
-            _('Vorlage wurde archiviert.')
-        ));
+        PageLayout::postSuccess(_('Vorlage wurde archiviert.'));
 
         $this->redirect('show');
     }
@@ -80,11 +70,8 @@ class ShowController extends StudipController
         }
 
         $archive = EportfolioArchive::find($vorlage_id);
-        if ($archive) {
-            $archive->delete();
-            PageLayout::postMessage(MessageBox::success(
-                _('Vorlage wurde wiederhergestellt.')
-            ));
+        if ($archive && $archive->delete()) {
+            PageLayout::postSuccess(_('Vorlage wurde wiederhergestellt.'));
         }
 
         $this->redirect('show');
@@ -129,19 +116,19 @@ class ShowController extends StudipController
         if (!$GLOBALS['perm']->have_studip_perm('dozent', $vorlage_id)) {
             throw new Exception('Access denied');
         }
-        
+
         $seminar = Seminar::getInstance($vorlage_id);
 
         if(Request::submitted('updatevorlage')) {
             $sem_name        = strip_tags(Request::get('name'));
             $sem_description = strip_tags(Request::get('description'));
-            
+
             $seminar->name = $sem_name;
             $seminar->description = $sem_description;
 
             $seminar->store();
 
-            PageLayout::postMessage(MessageBox::success(sprintf(_('Vorlage "%s" wurde angelegt.'), $sem_name)));
+            PageLayout::postSuccess(sprintf(_('Vorlage "%s" wurde angelegt.'), $sem_name));
 
             $this->response->add_header('X-Dialog-Close', '1');
             $this->render_nothing();

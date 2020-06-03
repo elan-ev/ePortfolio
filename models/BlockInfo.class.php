@@ -1,4 +1,4 @@
-<?
+<?php
 
 /**
  * @author  <asudau@uos.de>
@@ -13,13 +13,13 @@
  */
 class BlockInfo extends SimpleORMap
 {
-    
+
     protected static function configure($config = [])
     {
         $config['db_table'] = 'eportfolio_block_infos';
         parent::configure($config);
     }
-    
+
     /**
      * Use as constructor
      * is used by VorlagenCopy, when students get their own copy of a courseware
@@ -36,7 +36,7 @@ class BlockInfo extends SimpleORMap
         $entry->template_id       = $template_id;
         return $entry->store();
     }
-    
+
     /**
      * check if a given Mooc-Block is marked as locked
      *

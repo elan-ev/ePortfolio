@@ -1,23 +1,10 @@
-<?
+<?php
 
-class settingsController extends StudipController
+class settingsController extends PluginController
 {
-
-    public function __construct($dispatcher)
-    {
-        parent::__construct($dispatcher);
-        $this->plugin = $dispatcher->current_plugin;
-    }
-
-    public function before_filter(&$action, &$args)
-    {
-        parent::before_filter($action, $args);
-    }
-
     public function index_action($cid = null)
     {
-
-        $userid          = $GLOBALS["user"]->id;
+        $userid          = $GLOBALS['user']->id;
         $course          = Course::findCurrent();
         $this->isVorlage = Eportfoliomodel::isVorlage($course->id);
         $eportfolio      = Eportfoliomodel::findBySeminarId($course->id);
@@ -77,14 +64,10 @@ class settingsController extends StudipController
         $this->viewerList    = $viewers;
         $this->numberChapter = count($chapters);
         $this->supervisorId  = $supervisor_id;
-
-        // get list of users with access to this portfolio
-        $supervisorList = [];
-
-        $supervisors = SupervisorGroupUser::findBySupervisorGroupId($supervisor_id);
+        $supervisors         = SupervisorGroupUser::findBySupervisorGroupId($supervisor_id);
 
         foreach ($supervisors as $supervisor) {
-            $this->supervisor_list[] = htmlReady($supervisor->user->getFullname());
+            $this->supervisor_list[]                 = htmlReady($supervisor->user->getFullname());
             $this->supervisors[$supervisor->user_id] = true;
         }
 
@@ -92,15 +75,23 @@ class settingsController extends StudipController
 
     public function setAccess_action()
     {
-        $freigabe = new EportfolioFreigabe();
-        $freigabe::setAccess(Request::get("user_id"), Request::get("seminar_id"), Request::get("chapter_id"), Request::get("status"));
-        $status = $freigabe::getAccess(Request::get("user_id"), Request::get("seminar_id"), Request::get("chapter_id"));
+        EportfolioFreigabe::setAccess(
+            Request::get('user_id'),
+            Request::get('seminar_id'),
+            Request::get('chapter_id'),
+            Request::get('status')
+        );
+        $status = EportfolioFreigabe::getAccess(
+            Request::get('user_id'),
+            Request::get('seminar_id'),
+            Request::get('chapter_id')
+        );
 
         //check, if setAccess changed accessibility according to request
-        if ($status == filter_var(Request::get("status"), FILTER_VALIDATE_BOOLEAN)) {
-            echo MessageBox::success(_("Die Zugriffsrechte wurden geändert."));
+        if ($status == filter_var(Request::get('status'), FILTER_VALIDATE_BOOLEAN)) {
+            echo MessageBox::success(_('Die Zugriffsrechte wurden geändert.'));
         } else {
-            echo MessageBox::error(_("Die Zugriffsrechte konnten nicht geändert werden!"));
+            echo MessageBox::error(_('Die Zugriffsrechte konnten nicht geändert werden!'));
         }
         $this->render_nothing();
     }
@@ -114,9 +105,9 @@ class settingsController extends StudipController
     {
         $portfolio = Eportfoliomodel::findBySeminarId(Context::getId());
         if ($portfolio->group_id) {
-            $portfoliogroup = EportfolioGroup::findbySQL('seminar_id = :id', [':id' => $portfolio->group_id]);
+            $portfoliogroup = EportfolioGroup::findOneBySQL('seminar_id = :id', [':id' => $portfolio->group_id]);
         }
-        if ($portfoliogroup[0]->supervisor_group_id) {
+        if ($portfoliogroup) {
             return $portfoliogroup[0]->supervisor_group_id;
         } else {
             return false;
@@ -152,12 +143,12 @@ class settingsController extends StudipController
         $eportfolio    = Eportfoliomodel::findBySeminarId(Context::getId());
         $eportfolio_id = $eportfolio->eportfolio_id;
 
-        $course        = Course::findCurrent();
-        $chapters      = Eportfoliomodel::getChapters($course->id);
+        $course   = Course::findCurrent();
+        $chapters = Eportfoliomodel::getChapters($course->id);
 
         foreach ($chapters as $chapter) {
             if (EportfolioFreigabe::hasAccess($user_id, Context::getId(), $chapter['id'])) {
-                EportfolioFreigabe::setAccess($user_id, Context::getId(), $chapter['id'], FALSE);
+                EportfolioFreigabe::setAccess($user_id, Context::getId(), $chapter['id'], false);
             }
         }
 
@@ -168,18 +159,5 @@ class settingsController extends StudipController
         $statement->execute([':cid' => Context::getId(), ':userId' => $user_id, ':eportfolio_id' => $eportfolio_id]);
 
         $this->render_nothing();
-    }
-
-    public function url_for($to = '')
-    {
-        $args   = func_get_args();
-        $params = [];
-        if (is_array(end($args))) {
-            $params = array_pop($args);
-        }
-        $args    = array_map('urlencode', $args);
-        $args[0] = $to;
-
-        return PluginEngine::getURL($this->dispatcher->current_plugin, $params, join('/', $args));
     }
 }
