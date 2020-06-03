@@ -108,7 +108,7 @@ class settingsController extends PluginController
             $portfoliogroup = EportfolioGroup::findOneBySQL('seminar_id = :id', [':id' => $portfolio->group_id]);
         }
         if ($portfoliogroup) {
-            return $portfoliogroup[0]->supervisor_group_id;
+            return $portfoliogroup->supervisor_group_id;
         } else {
             return false;
         }
