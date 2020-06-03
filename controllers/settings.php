@@ -77,13 +77,11 @@ class settingsController extends PluginController
     {
         EportfolioFreigabe::setAccess(
             Request::get('user_id'),
-            Request::get('seminar_id'),
             Request::get('chapter_id'),
             Request::get('status')
         );
         $status = EportfolioFreigabe::getAccess(
             Request::get('user_id'),
-            Request::get('seminar_id'),
             Request::get('chapter_id')
         );
 
@@ -147,8 +145,8 @@ class settingsController extends PluginController
         $chapters = Eportfoliomodel::getChapters($course->id);
 
         foreach ($chapters as $chapter) {
-            if (EportfolioFreigabe::hasAccess($user_id, Context::getId(), $chapter['id'])) {
-                EportfolioFreigabe::setAccess($user_id, Context::getId(), $chapter['id'], false);
+            if (EportfolioFreigabe::hasAccess($user_id, $chapter['id'])) {
+                EportfolioFreigabe::setAccess($user_id, $chapter['id'], false);
             }
         }
 

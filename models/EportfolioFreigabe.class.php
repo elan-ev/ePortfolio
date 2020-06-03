@@ -18,45 +18,35 @@ class EportfolioFreigabe extends SimpleORMap
         parent::configure($config);
     }
 
-    public static function hasAccess($user_id, $seminar_id, $chapter_id)
+    private static function loadCourseware()
     {
-        $hasAccess = false;
-        $portfolio = Eportfoliomodel::findBySeminarId($seminar_id);
-
-        //Wenn das Portfolio Teil einer Gruppe mit zugehöriger Supervisorgruppe ist:
-        //checke ob user Teil der Supervisorgruppe ist und prüfe in diesem Fall Berechtigung für Supervisorgruppe
-        if ($portfolio->group_id) {
-            $portfoliogroup = EportfolioGroup::findbySQL('seminar_id = :id', [':id' => $portfolio->group_id]);
-
-        }
-        if ($portfoliogroup[0]->supervisor_group_id) {
-            $isUser = SupervisorGroupUser::findbySQL('supervisor_group_id = :id AND user_id = :user_id',
-                [':id' => $portfoliogroup[0]->supervisor_group_id, ':user_id' => $user_id]);
-
-        }
-        if ($isUser) {
-            $hasAccess = EportfolioFreigabe::findBySQL('Seminar_id = :seminar_id AND block_id = :block_id AND user_id = :user_id',
-                [':seminar_id' => $seminar_id, ':block_id' => $chapter_id, ':user_id' => $portfoliogroup[0]->supervisor_group_id]);
-        }
-
-        // if user has no access for example through the supervisor grpup, check if access is allowed on per user basis
-        if (!$hasAccess) {
-            $hasAccess = EportfolioFreigabe::findBySQL('Seminar_id = :seminar_id AND block_id = :block_id AND user_id = :user_id',
-                [':seminar_id' => $seminar_id, ':block_id' => $chapter_id, ':user_id' => $user_id]);
-        }
-        $isOwner   = Eportfoliomodel::isOwner($seminar_id, $user_id);
-
-        if ($hasAccess || $isOwner) {
-            return true;
-        } else {
-            return false;
-        }
+        $plugin_courseware = PluginManager::getInstance()->getPlugin('Courseware');
+        require_once 'public/' . $plugin_courseware->getPluginPath() . '/vendor/autoload.php';
     }
 
-    public static function getAccess($user_id, $seminar_id, $chapter_id)
+    public static function hasAccess($user_id, $chapter_id)
     {
-        return EportfolioFreigabe::findBySQL('Seminar_id = :seminar_id AND block_id = :block_id AND user_id = :user_id',
-            [':seminar_id' => $seminar_id, ':block_id' => $chapter_id, ':user_id' => $user_id]);
+        $block = Mooc\DB\Block::find($chapter_id);
+        return $block->hasApproval($user_id);
+    }
+
+    public static function getAccess($user_id, $chapter_id)
+    {
+        self::loadCourseware();
+
+        // check, if $user_id as portfolio-group
+        $approval_type = EportfolioGroup::findOneBySQL('supervisor_group_id = ?', [$user_id]) ? 'groups' : 'users';
+
+        $block = Mooc\DB\Block::find($chapter_id);
+        $list = $block->getApprovalList($approval_type);
+
+        foreach ($list as $key => $id) {
+            if ($id == $user_id) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 
@@ -90,28 +80,50 @@ class EportfolioFreigabe extends SimpleORMap
      * @param int $chapter_id of courseware_chapter (Mooc\block)
      * @param boolean $status true => user_id gets access to chapter)
      */
-    public static function setAccess($user_id, $seminar_id, $chapter_id, $status)
+    public static function setAccess($user_id, $chapter_id, $status)
     {
-        if ($status && !self::getAccess($user_id, $seminar_id, $chapter_id)) {
-            $access             = new self();
-            $access->mkdate     = time();
-            $access->Seminar_id = $seminar_id;
-            $access->block_id   = $chapter_id;
-            $access->user_id    = $user_id;
-            if ($access->store()) {
-                Eportfoliomodel::sendNotificationToUser('freigabe', $seminar_id, $chapter_id, $user_id);
-                //freigaben werden nur als globale activity aufgenommen wenn sie für die supervisoren erfolgten
-                if (SupervisorGroup::find($user_id)) {
-                    EportfolioActivity::addActivity($seminar_id, $chapter_id, 'freigabe');
+        self::loadCourseware();
+
+        // check, if $user_id as portfolio-group
+        $approval_type = EportfolioGroup::findOneBySQL('supervisor_group_id = ?', [$user_id]) ? 'groups' : 'users';
+
+        $block = Mooc\DB\Block::find($chapter_id);
+        $list[$approval_type] = $block->getApprovalList($approval_type);
+
+        $seminar_id = $block->seminar_id;
+
+        if ($approval_type == 'groups') {
+            // make sure, the appropriate status group exists
+            if (!Statusgruppen::find($user_id)) {
+                Statusgruppen::create([
+                    'statusgruppe_id' => $user_id,
+                    'name'            => 'Berechtigte für Portfolioarbeit',
+                    'range_id'        => $seminar_id
+                ]);
+            }
+        }
+
+        if ($status && !self::getAccess($user_id, $chapter_id)) {
+            $list[$approval_type][] = $user_id;
+
+            Eportfoliomodel::sendNotificationToUser('freigabe', $seminar_id, $chapter_id, $user_id);
+            //freigaben werden nur als globale activity aufgenommen wenn sie für die supervisoren erfolgten
+            if (SupervisorGroup::find($user_id)) {
+                EportfolioActivity::addActivity($seminar_id, $chapter_id, 'freigabe');
+            }
+        } else if (self::getAccess($user_id, $chapter_id)) {
+            foreach ($list[$approval_type] as $key => $id) {
+                if ($id == $user_id) {
+                    unset($list[$approval_type][$key]);
                 }
             }
-        } else if (self::getAccess($user_id, $seminar_id, $chapter_id)) {
-            self::deleteBySQL('Seminar_id = :seminar_id AND block_id = :block_id AND user_id = :user_id',
-                [':seminar_id' => $seminar_id, ':block_id' => $chapter_id, ':user_id' => $user_id]);
+
             if (SupervisorGroup::find($user_id)) {
                 EportfolioActivity::addActivity($seminar_id, $chapter_id, 'freigabe-entfernt');
             }
         }
+
+        $block->setApprovalList(json_encode($list));
     }
 
     public static function hasAccessSince($user_id, $chapter_id)
