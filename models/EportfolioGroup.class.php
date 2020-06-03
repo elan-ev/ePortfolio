@@ -71,6 +71,7 @@ class EportfolioGroup extends SimpleORMap
         $supervisorgroup->store();
         $supervisorgroup->addUser($owner);
 
+        return $group;
     }
 
     public static function getOwner($course_id)
