@@ -71,13 +71,6 @@ class SupervisorGroup extends SimpleORMap
         }
     }
 
-    public static function newGroup($name)
-    {
-        $group       = new SupervisorGroup();
-        $group->name = $name;
-        $group->store();
-    }
-
     public static function deleteGroup($group_id)
     {
         $group = new SupervisorGroup($group_id);
