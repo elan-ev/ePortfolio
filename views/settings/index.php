@@ -27,7 +27,7 @@
                     <td></td>
 
                     <? foreach ($chapterList as $chapter): ?>
-                        <?php $hasAccess = EportfolioFreigabe::getAccess($supervisorId, $cid, $chapter['id']); ?>
+                        <?php $hasAccess = EportfolioFreigabe::getAccess($supervisorId, $chapter['id']); ?>
                         <td onClick="setAccess('<?= $chapter['id'] ?>', '<?= $supervisorId ?>', this, '<?= $cid ?>');"
                             class="righttable-inner">
                             <? if ($hasAccess): ?>
@@ -63,7 +63,7 @@
                     </td>
 
                     <? foreach ($chapterList as $chapter): ?>
-                        <?php $hasAccess = EportfolioFreigabe::getAccess($acc->user_id, $cid, $chapter['id']); ?>
+                        <?php $hasAccess = EportfolioFreigabe::getAccess($acc->user_id, $chapter['id']); ?>
                         <td onClick="setAccess('<?= $chapter['id'] ?>', '<?= $acc->user_id ?>', this, '<?= $cid ?>');"
                             class="righttable-inner">
                             <? if ($hasAccess): ?>
@@ -71,7 +71,7 @@
                                       class="glyphicon glyphicon-ok"
                                       title='Klick, um Kapitel nicht mehr feizugeben'><?= Icon::create('accept', Icon::ROLE_CLICKABLE); ?></span>
                             <? else : ?>
-                                <? if ($hasAccess !=  EportfolioFreigabe::hasAccess($acc->user_id, $cid, $chapter['id'])) : ?>
+                                <? if ($hasAccess !=  EportfolioFreigabe::hasAccess($acc->user_id, $chapter['id'])) : ?>
                                 <span id="icon-<?= $acc->user_id . '-' . $chapter['id']; ?>"
                                       class="glyphicon glyphicon-remove"
                                       title='Nutzer/in ist in der Gruppe "Berechtigte für Portfolioarbeit" hat dadurch trotzdem Zugriff! Klick, um Kapitel freizugeben'><?= Icon::create('decline', Icon::ROLE_ATTENTION); ?></span>

@@ -263,18 +263,6 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         return false;
     }
 
-    private function isSupervisionsgruppe()
-    {
-        $course = Course::findCurrent();
-        if ($course) {
-            $status = $course->status;
-            if ($status == Config::get()->SEM_CLASS_PORTFOLIO_Supervisionsgruppe) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public function setup_navigation()
     {
         if (($this->isPortfolio() || $this->isVorlage()) && Navigation::hasItem('/course/mooc_courseware')) {

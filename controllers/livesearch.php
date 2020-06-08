@@ -1,6 +1,6 @@
 <?php
 
-class livesearchController extends StudipController
+class livesearchController extends PluginController
 {
     public function index_action()
     {

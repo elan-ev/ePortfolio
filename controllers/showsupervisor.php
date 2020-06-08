@@ -17,11 +17,6 @@ class ShowsupervisorController extends PluginController
             $this->groupId = $this->course->id;
             $this->group   = EportfolioGroup::findbySQL('seminar_id = :id', [':id' => $this->groupId])[0];
 
-            //noch kein Portfoliogruppeneintrag für dieses Seminar vorhanden: Gruppe erstellen
-            if (!$this->group) {
-                EportfolioGroup::newGroup($this->userId, $this->groupId);
-                $this->group = EportfolioGroup::findbySQL('seminar_id = :id', [':id' => $this->groupId])[0];
-            }
             $this->supervisorGroupId = $this->group->supervisor_group_id;
 
             $this->distributedPortfolios = EportfolioGroupTemplates::getGroupTemplates($this->groupId);

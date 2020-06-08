@@ -71,10 +71,26 @@ class SupervisorGroup extends SimpleORMap
         }
     }
 
+    public static function deleteGroup($group_id)
+    {
+        $group = new SupervisorGroup($group_id);
+        $group->delete();
+    }
+
+
     public function isUserInGroup($user_id, $course_id)
     {
         $supervisor_group_id = EportfolioGroup::findById($course_id)[0]->supervisor_group_id;
-        $supervisor_users    = SupervisorGroupUser::findBySupervisorGroupId($supervisor_group_id);
+
+        if (!$supervisor_group_id) {
+            // only privileged users are allowed to be the first person in the supervisor group
+            if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id, $user_id)) {
+                $group = EportfolioGroup::newGroup($user_id, $course_id);
+                $supervisor_group_id = $group->supervisor_group_id;
+            }
+        }
+
+        $supervisor_users = SupervisorGroupUser::findBySupervisorGroupId($supervisor_group_id);
 
         foreach ($supervisor_users as $user) {
             if ($user->user_id === $user_id) {
