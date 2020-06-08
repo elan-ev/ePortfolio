@@ -131,7 +131,7 @@
                         'cid'         => $portfolio->id,
                         'return_to'   => 'overview'
                     ]); ?>">
-                        <?= $portfolio->name; ?>
+                        <?= htmlReady($portfolio->name) ?>
                     </a>
                 </td>
                 <td><?= htmlReady($portfolio->beschreibung); ?></td>
@@ -180,7 +180,7 @@
                         'cid'         => $portfolio->id,
                         'return_to'   => 'overview'
                     ]); ?>">
-                        <?= $portfolio->name; ?>
+                        <?= htmlReady($portfolio->name) ?>
                     </a>
                 </td>
                 <td></td>

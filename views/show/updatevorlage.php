@@ -2,7 +2,7 @@
       action="<?= URLHelper::getLink("plugins.php/eportfolioplugin/show/updatevorlage/" . basename(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH))) ?>"
       method="post" enctype="multipart/form-data" class="default"
     <?= Request::isAjax() ? "data-dialog" : "" ?>>
-    
+
     <label>
         <?= _("Name") ?>
         <input type="text" name="name" required="" class="size-l" value="<?echo $template_name?>">

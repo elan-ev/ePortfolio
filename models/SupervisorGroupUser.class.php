@@ -1,4 +1,4 @@
-<?
+<?php
 
 
 /**
@@ -45,14 +45,4 @@ class SupervisorGroupUser extends SimpleORMap
         }
         return $array;
     }
-
-    public static function deleteUserFromGroup($id)
-    {
-        $groupUser = SupervisorGroupUser::findbySQL('supervisor_group_id = ?', [$id]);
-        foreach ($groupUser as $user) {
-            $currentUser = new SupervisorGroupUser($user);
-            $currentUser->delete();
-        }
-    }
-
 }

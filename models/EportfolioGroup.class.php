@@ -150,8 +150,8 @@ class EportfolioGroup extends SimpleORMap
         $course->delete();
 
         #supervisor_group löschen
-        SupervisorGroup::deleteGroup($supervisor_group_id);
-
+        $group = new SupervisorGroup($supervisor_group_id);
+        $group->delete();
         #eportfolio mit group_id löschen
         $eportfolio = new Eportfoliomodel($cid);
         $eportfolio->delete();

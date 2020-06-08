@@ -1,4 +1,4 @@
-<?
+<?php
 
 /**
  * @author  <tgloeggl@uos.de>

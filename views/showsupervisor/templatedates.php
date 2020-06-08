@@ -1,8 +1,8 @@
-<form action="<?= URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/settemplatedates/' . $group_id . '/' . $template_id) ?>" method="POST" class="default" enctype="multipart/form-data">
-
+<form action="<?= $controller->url_for('showsupervisor/settemplatedates/' . $group_id . '/' . $template_id) ?>"
+      method="post" class="default" enctype="multipart/form-data">
     <label>
-      Abgabedatum:
-      <input type="date" id="beginn" name="begin" value="<?= $abgabe ?>" class="size-l"></input><br>
+        <?= _('Abgabedatum') ?>
+        <input type="date" id="beginn" name="begin" value="<?= $abgabe ?>" class="size-l">
     </label>
 
     <footer data-dialog-button>

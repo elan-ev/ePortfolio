@@ -50,7 +50,7 @@ class ShowstudentController extends PluginController
             EportfolioActivity::addVorlagenActivity($group_id, User::findCurrent()->id);
         }
 
-        PageLayout::postMessage(MessageBox::success('Portfolio wurde erstellt'));
+        PageLayout::postSuccess(_('Portfolio wurde erstellt'));
         $this->redirect('showstudent?cid=' . $group_id);
     }
 }

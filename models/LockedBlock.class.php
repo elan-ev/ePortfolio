@@ -1,4 +1,4 @@
-<?
+<?php
 
 /**
  * @author  <asudau@uos.de>
@@ -10,13 +10,13 @@
  */
 class LockedBlock extends SimpleORMap
 {
-    
+
     protected static function configure($config = [])
     {
         $config['db_table'] = 'eportfolio_locked_blocks';
         parent::configure($config);
     }
-    
+
     public static function isLocked($block_id)
     {
         $entry = self::findById($block_id);
@@ -26,7 +26,7 @@ class LockedBlock extends SimpleORMap
             return false;
         }
     }
-    
+
     public static function lockBlock($Seminar_id, $block_id, $lock)
     {
         if (($lock == 'true') && !self::findById($block_id)) {

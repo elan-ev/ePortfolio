@@ -1,4 +1,4 @@
-<?
+<?php
 require __DIR__ . '/bootstrap.php';
 
 
@@ -82,7 +82,6 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     {
         $this->addStylesheet('assets/style.less');
         PageLayout::addStylesheet($this->getPluginURL() . '/assets/flexboxgrid.min.css');
-        PageLayout::addScript($this->getPluginURL() . '/assets/js/jquery.tablesorter.min.js');
     }
 
     public function getTabNavigation($course_id)

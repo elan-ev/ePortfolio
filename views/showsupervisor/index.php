@@ -23,12 +23,12 @@
 
     <? if (empty($distributedPortfolios)): ?>
         <? if (!$member): ?>
-            <?= MessageBox::info('Es sind noch keine Nutzer in der Veranstaltung eingetragen'); ?>
+            <?= MessageBox::info(_('Es sind noch keine Nutzer in der Veranstaltung eingetragen')); ?>
         <? else: ?>
             <table class="default">
                 <caption><?= _('Gruppenmitglieder') ?></caption>
                 <tr>
-                    <th>Name</th>
+                    <th><?= _('Name')?></th>
                 </tr>
                 <?php foreach ($member as $user): ?>
                     <tr>
@@ -48,10 +48,9 @@
         <? endif; ?>
 
     <? else: ?>
-        <? if (is_atrray($member) && count($member) > 30) : ?>
-            <table class="default">
-                <caption>Teilnehmende</caption>
-
+        <? if (is_array($member) && count($member) > 30) : ?>
+            <table class="default sortable-table">
+                <caption><?= _('Teilnehmende')?></caption>
                 <colgroup>
                     <col width="20%">
                     <col width="5%">
@@ -61,28 +60,23 @@
                     <col width="25%">
                     <col width="20%">
                 </colgroup>
-
                 <thead>
-                    <th>Nachname, Vorname</th>
-                    <th>Status</th>
-                    <th>Freigaben</th>
-                    <th>Bearbeitet</th>
-                    <th>Notizen</th>
-                    <th>Studiengang</th>
+                    <th data-sorter="text"><?= _('Nachname, Vorname')?></th>
+                    <th><?= _('Status')?></th>
+                    <th><?= _('Freigaben')?></th>
+                    <th data-sorter="number"><?= _('Bearbeitet')?></th>
+                    <th><?= _('Notizen')?></th>
+                    <th><?= _('Studiengang')?></th>
                     <th></th>
                 </thead>
-
                 <tbody>
                     <?php foreach ($member as $user): ?>
                         <?= $this->render_partial('showsupervisor/_member_tablerow', compact('user', 'groupId', 'portfolioChapters')) ?>
                     <? endforeach; ?>
                 </tbody>
             </table>
-
         <? else : ?>
-            <span style="color: #3c434e;font-size: 1.4em;">
-                Teilnehmende
-            </span>
+            <h2><?= _('Teilnehmende')?></h2>
 
             <div class="grid-container">
                 <div class="row member-container">
@@ -98,30 +92,19 @@
 <!-- Legende -->
 <div class="legend">
     <ul>
-        <li><?= Icon::create('decline', 'inactive'); ?> Kapitel/Impuls noch nicht freigeschaltet</li>
-        <li><?= Icon::create('accept', 'clickable'); ?> Kapitel/Impuls freigeschaltet</li>
-        <li><?= Icon::create('accept+new', 'clickable'); ?></i>  Kapitel/Impuls freigeschaltet und Änderungen seit Ihrem letzten Besuch</li>
-        <li><?= Icon::create('file', 'inactive'); ?> keine Supervisionsanliegen freigeschaltet</li>
-        <li><?= Icon::create('file', 'clickable'); ?> Supervisionsanliegen freigeschaltet</li>
-        <li><?= Icon::create('forum', 'clickable'); ?> Feedback gegeben</li>
+        <li><?= Icon::create('decline', Icon::ROLE_INACTIVE) ?> <?= _('Kapitel/Impuls noch nicht freigeschaltet')?></li>
+        <li><?= Icon::create('accept') ?> <?= _('Kapitel/Impuls freigeschaltet')?></li>
+        <li><?= Icon::create('accept+new'); ?>  <?= _('Kapitel/Impuls freigeschaltet und Änderungen seit Ihrem letzten Besuch')?></li>
+        <li><?= Icon::create('file', Icon::ROLE_INACTIVE); ?> <?= _('keine Supervisionsanliegen freigeschaltet')?></li>
+        <li><?= Icon::create('file'); ?> <?= _('Supervisionsanliegen freigeschaltet')?></li>
+        <li><?= Icon::create('forum'); ?> <?= _('Feedback gegeben')?></li>
 
         <li>
             <?= Icon::create('span-full', Icon::ROLE_STATUS_GREEN); ?>
             <?= Icon::create('span-full', Icon::ROLE_STATUS_YELLOW); ?>
             <?= Icon::create('span-full', Icon::ROLE_STATUS_RED); ?>
-            Diese Status-Icons geben an, wie gut der Lernende bei Abgabeterminen in der Zeit liegt.
-            Wenn für keine Vorlage eine Deadline gesetzt wurde, wird das Status-Icon immer grün anzeigen.
+            <?= _('Diese Status-Icons geben an, wie gut der Lernende bei Abgabeterminen in der Zeit liegt.')?>
+            <?= _('Wenn für keine Vorlage eine Deadline gesetzt wurde, wird das Status-Icon immer grün anzeigen.')?>
         </li>
     </ul>
 </div>
-
-
-<script type="text/javascript">
-    jQuery(function () {
-        jQuery("table.tablesorter").tablesorter({
-            sortList: [[0,0]],
-            cssAsc: 'sortasc',
-            cssDesc: 'sortdesc'
-        });
-    });
-</script>

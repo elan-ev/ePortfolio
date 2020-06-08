@@ -1,4 +1,4 @@
-<?
+<?php
 
 /**
  * @author  <asudau@uos.de>
@@ -115,7 +115,7 @@ class Eportfoliomodel extends SimpleORMap
         FROM mooc_blocks
         WHERE mooc_blocks.seminar_id = :portfolio_id AND mooc_blocks.type = 'Chapter' AND mooc_blocks.parent_id != '0'
         ORDER BY mooc_blocks.id ASC",
-        ["portfolio_id" => $portfolio_id]);
+            ["portfolio_id" => $portfolio_id]);
         return $chapters;
     }
 
@@ -137,12 +137,12 @@ class Eportfoliomodel extends SimpleORMap
             [':parent_id' => $chapter_id]
         );
 
-        if(empty($supervisorResponses)) {
+        if (empty($supervisorResponses)) {
             return false;
         }
 
-        foreach($supervisorResponses as $response) {
-            if($response['json_data'] === '""') {
+        foreach ($supervisorResponses as $response) {
+            if ($response['json_data'] === '""') {
                 return false;
             }
         }
@@ -163,13 +163,13 @@ class Eportfoliomodel extends SimpleORMap
             WHERE mooc_fields.name = 'supervisorcontent' AND mooc_blocks.type = 'PortfolioBlockSupervisor' AND mcb.parent_id IN (:subchapter_ids)",
             [':subchapter_ids' => $subchapter_ids]
         );
-        
-        if(empty($supervisorResponses)) {
+
+        if (empty($supervisorResponses)) {
             return false;
         }
 
-        foreach($supervisorResponses as $response) {
-            if($response['json_data'] === '""') {
+        foreach ($supervisorResponses as $response) {
+            if ($response['json_data'] === '""') {
                 return false;
             }
         }
@@ -181,7 +181,10 @@ class Eportfoliomodel extends SimpleORMap
      **/
     public static function checkKapitelFreigabe($chapter_id)
     {
-        return (int)DBManager::get()->fetchColumn("SELECT COUNT(*) FROM eportfolio_freigaben WHERE block_id = :block_id", [':block_id' => $chapter_id]) > 0;
+        return (int)DBManager::get()->fetchColumn(
+                "SELECT COUNT(*) FROM eportfolio_freigaben WHERE block_id = ?",
+                [$chapter_id]
+            ) > 0;
     }
 
     /**
@@ -233,72 +236,6 @@ class Eportfoliomodel extends SimpleORMap
             , [':seminar_id' => $seminar_id, ':block_id' => $block_id]);
     }
 
-    /**
-     * Prüft ob ein Kapitel vom Nutzer selber erstellt wurde
-     **/
-    public static function isEigenesKapitel($seminar_id, $group_id, $chapter_id)
-    {
-        return !(int)DBManager::get()->fetchColumn(
-                "SELECT COUNT(`vorlagen_block_id`) FROM `eportfolio_block_infos` WHERE `block_id` = :block_id AND `Seminar_id` = :seminar_id",
-                [':block_id' => $chapter_id, ':seminar_id' => $seminar_id]) > 0;
-    }
-
-    /**
-     * Prüft ob ein Unterkapitel vom Nutzer selber erstellt wurde
-     **/
-    public static function isEigenesUnterkapitel($subchapter_id)
-    {
-        $timestapChapter = Eportfoliomodel::getTimestampOfChapter(Eportfoliomodel::getParentId($subchapter_id));
-        if ($timestapChapter < Eportfoliomodel::getTimestampOfChapter($subchapter_id)) {
-            return true;
-        }
-    }
-
-    /**
-     * Liefert Timestamp eines Kapitels
-     **/
-    public static function getTimestampOfChapter($block_id)
-    {
-        return DBManager::get()->fetchColumn(
-            "SELECT mkdate FROM mooc_blocks WHERE id = :block_id",
-            [':block_id' => $block_id]
-        );
-    }
-
-    /**
-     * Liefert den Timestamp des als letzt hinzugefügtes Templates
-     * in einer Gruppe
-     **/
-    public static function getNewestTemplateTimestamp($group_id)
-    {
-        return DBManager::get()->fetchColumn(
-            "SELECT mkdate FROM eportfolio_group_templates WHERE group_id = :group_id ORDER BY mkdate DESC",
-            [':group_id' => $group_id]
-        );
-    }
-
-    /**
-     * Liefert mkdate des Templates
-     **/
-    public static function getTimestampOfTemplate($group_id, $seminar_id)
-    {
-        return DBManager::get()->fetchColumn(
-            "SELECT mkdate FROM eportfolio_group_templates WHERE group_id = :group_id AND seminar_id = :seminar_id",
-            [':group_id' => $group_id, ':seminar_id' => $seminar_id]
-        );
-    }
-
-    /**
-     * liefert ParentId eines Blocks
-     **/
-    public static function getParentId($block_id)
-    {
-        return DBManager::get()->fetchColumn(
-            "SELECT parent_id FROM mooc_blocks WHERE id = :id",
-            [':id' => $block_id]
-        );
-    }
-
     public static function checkSupervisorNoteInSubchapter($subchapter_ids)
     {
         return DBManager::get()->fetchAll(
@@ -313,8 +250,8 @@ class Eportfoliomodel extends SimpleORMap
 
     public static function isVorlage($id)
     {
-        if (Course::findById($id)) {
-            $seminar = Seminar::getInstance($id);
+        $seminar = Seminar::getInstance($id);
+        if ($seminar) {
             $status  = $seminar->getStatus();
             if ($status == Config::get()->SEM_CLASS_PORTFOLIO_VORLAGE) {
                 return true;
@@ -421,7 +358,7 @@ class Eportfoliomodel extends SimpleORMap
      **/
     public static function getDaysLeft($deadline)
     {
-        $now      = time();
+        $now = time();
 
         if ($now < $deadline) {
             $daysleft = abs($now - $deadline) / 60 / 60 / 24;
@@ -429,59 +366,6 @@ class Eportfoliomodel extends SimpleORMap
         } else {
             return 0;
         }
-    }
-
-    /**
-     * Liefert die Anzahl der Kapitel in einem Template
-     **/
-    public static function getNumberOfChaptersFromTemplate($template_id)
-    {
-        return DBManager::get()->fetchColumn(
-            "SELECT COUNT(id) FROM mooc_blocks WHERE type = 'Chapter' AND Seminar_id = :template_id",
-            [':template_id' => $template_id]
-        );
-    }
-
-    /**
-     * Liefert die Anzahl der freigebenen Kapitel der Users
-     * innerhalb eines verteilten Templates
-     **/
-    public static function getNumberOfSharedChaptersOfTemplateFromUser($template_id, $user_template_id)
-    {
-        $return           = 0;
-        $templateChapters = Eportfoliomodel::getChapters($template_id);
-        foreach ($templateChapters as $chapter) {
-            $block_id = Eportfoliomodel::getUserPortfolioBlockId($user_template_id, $chapter['id']);
-            if (Eportfoliomodel::checkKapitelFreigabe($block_id)) {
-                $return++;
-            }
-        }
-        return $return;
-    }
-
-    /**
-     * Liefert Fortschritt des Users in in einem Template
-     **/
-    public static function getProgressOfUserInTemplate($shared, $all)
-    {
-        return round($shared / $all * 100, 0);
-    }
-
-    /**
-     * Liefert die Anzahl der Supervisornotizen innerhalb eines $templateStatus
-     * einers Users
-     **/
-    public static function getNumberOfNotesInTemplateOfUser($template_id, $user_template_id)
-    {
-        $return           = 0;
-        $templateChapters = Eportfoliomodel::getChapters($template_id);
-        foreach ($templateChapters as $chapter) {
-            $block_id = Eportfoliomodel::getUserPortfolioBlockId($user_template_id, $chapter['id']);
-            if (Eportfoliomodel::checkSupervisorNotiz($block_id)) {
-                $return++;
-            }
-        }
-        return $return;
     }
 
     /**
@@ -500,8 +384,8 @@ class Eportfoliomodel extends SimpleORMap
     public static function getLastOwnerEdit($sem_id)
     {
         $last_edit     = DBManager::get()->fetchColumn(
-            "SELECT chdate FROM mooc_blocks WHERE Seminar_id = :id ORDER BY chdate DESC",
-            [':id' => $sem_id]
+            "SELECT chdate FROM mooc_blocks WHERE Seminar_id = ? ORDER BY chdate DESC",
+            [$sem_id]
         );
         $last_freigabe = EportfolioActivity::getLastFreigabeOfPortfolio($sem_id);
 
@@ -557,6 +441,9 @@ class Eportfoliomodel extends SimpleORMap
         $eportfolio    = new Seminar();
         $eportfolio_id = $eportfolio->createId();
 
+        /**
+         * @TODO CHECK: $masterid und $groupowner werden nicht gesetzt
+         */
         $statement = $db->prepare("INSERT INTO eportfolio
             (Seminar_id, eportfolio_id, group_id, owner_id, template_id, supervisor_id)
             VALUES (:sem_id, :eportfolio_id, :groupid, :userid, :masterid, :groupowner)");
@@ -581,13 +468,13 @@ class Eportfoliomodel extends SimpleORMap
         // create basic courseware block, prevents creation of dummy blocks by courseware
         $block = new Mooc\DB\Block();
 
-        $block->setData(array(
+        $block->setData([
             'seminar_id' => $sem_id,
             'parent_id'  => null,
             'type'       => 'Courseware',
             'title'      => 'Courseware',
             'position'   => 0
-        ));
+        ]);
 
         $block->store();
 
@@ -624,5 +511,4 @@ class Eportfoliomodel extends SimpleORMap
             }
         }
     }
-
 }

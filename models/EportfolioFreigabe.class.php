@@ -1,4 +1,4 @@
-<?
+<?php
 
 /**
  * @author  <asudau@uos.de>
@@ -61,27 +61,6 @@ class EportfolioFreigabe extends SimpleORMap
 
 
     /**
-     * Given a Portfolio and a Block of said Portfolio
-     * return a string of all users with access to the Block
-     *
-     * @param string $seminar_id id of seminar(eportfolio)
-     * @param int $chapter_id of courseware_chapter (Mooc\block)
-     */
-    public static function userList($seminar_id, $chapter_id)
-    {
-        $accessList = EportfolioFreigabe::findBySQL('Seminar_id = :seminar_id AND block_id = :block_id',
-            [':seminar_id' => $seminar_id, ':block_id' => $chapter_id]);
-
-        $users = array();
-        foreach ($accessList as $user) {
-            $users[] = User::find($user["user_id"])->getFullname();
-        }
-        usort($users, "strcmp");
-
-        return implode(", ", $users);
-    }
-
-    /**
      * Give primary key of record as param to fetch
      * corresponding record from db if available, if not preset primary key
      * with given value. Give null to create new record
@@ -112,13 +91,6 @@ class EportfolioFreigabe extends SimpleORMap
                 EportfolioActivity::addActivity($seminar_id, $chapter_id, 'freigabe-entfernt');
             }
         }
-    }
-
-    public static function hasAccessSince($user_id, $chapter_id)
-    {
-        $hasAccessSince = EportfolioFreigabe::findOneBySQL('block_id = :block_id AND user_id = :user_id',
-            [':block_id' => $chapter_id, ':user_id' => $user_id]);
-        return $hasAccessSince->mkdate;
     }
 
     /**

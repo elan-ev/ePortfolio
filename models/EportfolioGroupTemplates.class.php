@@ -1,4 +1,4 @@
-<?
+<?php
 
 /**
  * @author  <mkipp@uos.de>
@@ -49,72 +49,10 @@ class EportfolioGroupTemplates extends SimpleORMap
         return DBManager::get()->fetchAll($query, [Config::get()->SEM_CLASS_PORTFOLIO_VORLAGE, $groupId], 'Course::buildExisting');
     }
 
-        /**EportfolioGroupTemplates::getGroupTemplates
-     * Liefert alle verteilten Templates einer Gruppe
-     **/
-    public static function getGroupTemplatesUser($group_id)
-    {
-        return DBManager::get()->fetchFirst("SELECT DISTINCT Seminar_id
-            FROM eportfolio_group_templates
-            WHERE group_id = ?
-            ORDER BY mkdate DESC", [$group_id]);
-    }
-
-    /**
-     * Liefert alle Kapitel der verteilten Templates einer Gruppe zurück
-     * deprecated
-     */
-    public static function getGroupChapters($groupId)
-    {
-        $query = "
-            SELECT  DISTINCT `seminare`.*
-            FROM `seminare`
-            JOIN `seminar_user` USING(`Seminar_id`)
-            JOIN eportfolio_group_templates USING(`Seminar_id`)
-            WHERE `seminare`.`status` = ? AND `seminar_user`.`status` IN ('autor', 'tutor', 'dozent')
-            AND `seminar_user`.`user_id` = ? AND eportfolio_group_templates.group_id = ?
-            ORDER BY `mkdate` DESC
-        ";
-        //return DBManager::get()->fetchAll($query, [Config::get()->SEM_CLASS_PORTFOLIO_VORLAGE, User::findCurrent()->id, $groupId], 'Course::buildExisting');
-    }
-
-    /**
-     * Liefert die Anzahl der verteilten Templates einer Gruppe
-     * deprecated
-     **/
-    public static function getNumberOfGroupTemplates($group_id)
-    {
-        return DBManager::get()->fetchColumn(
-            "SELECT COUNT(Seminar_id) FROM eportfolio_group_templates WHERE group_id = :group_id",
-            [':group_id' => $group_id]
-        );
-    }
-
-    /**
-     * Prüft ob ein Template schon verteilt wurde
-     **/
-    public static function checkIfGroupHasTemplate($group_id, $template_id)
-    {
-        return EportfolioGroupTemplates::countBySql("Seminar_id = :template_id AND group_id = :group_id",
-                [':template_id' => $template_id, ':group_id' => $group_id]) > 0;
-    }
 
     public static function getWannWurdeVerteilt($group_id, $template_id)
     {
         return DBManager::get()->fetchColumn('SELECT `mkdate` FROM `eportfolio_group_templates` WHERE `Seminar_id` = ? AND `group_id` = ?', [$template_id, $group_id]);
-    }
-
-    /**
-     * Liefert den Names des Users der das Template verteilt hat als String
-     * **/
-    public static function getCreatorName($group_id, $template_id)
-    {
-        $user_id = DBManager::get()->fetchColumn('SELECT `verteilt_durch` FROM `eportfolio_group_templates` WHERE `Seminar_id` = ? AND `group_id` = ?', [$template_id, $group_id]);
-        if (!$user_id) {
-            return "Unknown";
-        } else {
-            return User::find($user_id)->getFullName();
-        }
     }
 
     /**

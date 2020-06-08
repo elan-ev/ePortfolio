@@ -4,8 +4,8 @@
         <?= Avatar::getAvatar($user_id, $user->username)
             ->getImageTag(Avatar::MEDIUM, [
                 'style' => 'margin-right: 0px; border-radius: 75px; height: 75px; width: 75px; border: 1px solid #28497c;',
-                'title' => htmlReady($user->Vorname . " " . $user->Nachname)
-        ]); ?>
+                'title' => htmlReady($user->getFullName())
+            ]); ?>
     </div>
     <div class="col-sm-5">
         <div class="member-name-detail">
@@ -16,10 +16,10 @@
                 'studycourses' => new SimpleCollection(UserStudyCourse::findByUser($user->id)),
             ]) ?>
             <br>
-            <?= "Letzte Änderung: ".date('d.m.Y', Eportfoliomodel::getLastOwnerEdit($portfolio_id)) ?>
+            <?= sprintf(_('Letzte Änderungs: %s'), date('d.m.Y', Eportfoliomodel::getLastOwnerEdit($portfolio_id)))?>
         </div>
-        <a href="<?= URLHelper::getURL('dispatch.php/messages/write?rec_uname=' .$user->username) ?>" target="_blank">
-            Nachricht schicken
+        <a href="<?= URLHelper::getURL('dispatch.php/messages/write?rec_uname=' . $user->username) ?>" target="_blank">
+            <?= _('Nachricht schicken') ?>
         </a>
     </div>
     <div class="col-sm-5">
@@ -29,7 +29,7 @@
                     <?= $portfolioSharedChapters ?> / <?= $chapterCount; ?>
                 </div>
                 <div class="member-footer-box-head">
-                    freigegeben
+                    <?= _('freigegeben') ?>
                 </div>
             </div>
             <div class="col-sm-4">
@@ -37,15 +37,15 @@
                     <?= EportfolioUser::getGesamtfortschrittInProzent($portfolioSharedChapters, $chapterCount); ?> %
                 </div>
                 <div class="member-footer-box-head">
-                    bearbeitet
+                    <?= _('bearbeitet') ?>
                 </div>
             </div>
             <div class="col-sm-4">
                 <div class="member-footer-box-big-detail">
-                    <?= $notesCount; ?>
+                    <?= $notesCount ?>
                 </div>
                 <div class="member-footer-box-head">
-                    Notizen
+                    <?= _('Notizen') ?>
                 </div>
             </div>
         </div>
@@ -56,14 +56,14 @@
 <div class="member-contant-detail">
     <!-- table-header -->
     <div class="row member-containt-head-detail">
-        <div class="col-sm-4">Kapitelname</div>
+        <div class="col-sm-4"><?= _('Kapitelname') ?></div>
         <div class="col-sm-8">
             <div class="row member-content-icons">
-                <div class="col-sm-2">Status</div>
-                <div class="col-sm-2">Freigabe</div>
-                <div class="col-sm-2">Notiz</div>
-                <div class="col-sm-2">Feedback</div>
-                <div class="col">Aktionen</div>
+                <div class="col-sm-2"><?= _('Status') ?></div>
+                <div class="col-sm-2"><?= _('Freigabe') ?></div>
+                <div class="col-sm-2"><?= _('Notiz') ?></div>
+                <div class="col-sm-2"><?= _('Feedback') ?></div>
+                <div class="col"><?= _('Aktionen') ?></div>
             </div>
         </div>
     </div>
@@ -76,7 +76,7 @@
                 <?= $kapitel['title'] ?>
 
                 <? if (!$kapitel['template_title']) : // chapter does not belong to a template ?>
-                    <?= tooltipIcon('Dieses Kapitel stammt nicht aus einer Vorlage oder die Vorlage wurde gelöscht / verändert.') ?>
+                    <?= tooltipIcon(_('Dieses Kapitel stammt nicht aus einer Vorlage oder die Vorlage wurde gelöscht / verändert.')) ?>
                 <? endif ?>
             </div>
             <div class="col-sm-8">
@@ -103,18 +103,19 @@
                     </div>
                     <div class="col-sm-2" style="text-align: center;">
                         <? if ($kapitel['shareDate']): ?>
-                            <? if ($lastVisit  < $kapitel['shareDate']): ?>
-                                <?= Icon::create('accept+new', 'status-green'); ?>
+                            <? if ($lastVisit < $kapitel['shareDate']): ?>
+                                <?= Icon::create('accept+new', Icon::ROLE_STATUS_GREEN); ?>
                             <? else: ?>
-                                <?= Icon::create('accept', 'status-green'); ?>
+                                <?= Icon::create('accept', Icon::ROLE_STATUS_GREEN); ?>
                             <? endif; ?>
                         <? else : ?>
                             <? if ($hasAccess) : ?>
-                                <?= Icon::create('decline', 'status-yellow', [
-                                    'title' => ' Nur sie haben Zugriff, nicht die Berechtigten für die Portfolioarbeit!'
-                                ]); ?>
+                                <?= Icon::create('decline', Icon::ROLE_STATUS_YELLOW,
+                                    [
+                                        'title' => _(' Nur sie haben Zugriff, nicht die Berechtigten für die Portfolioarbeit!')
+                                    ]); ?>
                             <? else : ?>
-                                <?= Icon::create('decline', 'status-red'); ?>
+                                <?= Icon::create('decline', Icon::ROLE_STATUS_RED); ?>
                             <? endif ?>
                         <? endif; ?>
                     </div>
@@ -123,14 +124,14 @@
                     <div class="col member-aktionen-detail">
                         <? if ($hasAccess): ?>
                             <a href="<?= URLHelper::getLink("plugins.php/courseware/courseware?cid=" . $portfolio_id
-                                    . "&selected=" . $kapitel['id'] . '&return_to=' . Context::getId()); ?>"
-                                target="_blank"
+                                . "&selected=" . $kapitel['id'] . '&return_to=' . Context::getId()); ?>"
+                               target="_blank"
                             >
-                                Anschauen
+                                <?= _('Anschauen') ?>
                             </a>
                         <? else : ?>
-                            Nicht freigegeben
-                            <?= tooltipIcon("Das Anschauen ist nicht möglich, da der Nutzer dieses Kapitel noch nicht freigegeben hat") ?>
+                            <?= _('Nicht freigegeben') ?>
+                            <?= tooltipIcon(_('Das Anschauen ist nicht möglich, da der Nutzer dieses Kapitel noch nicht freigegeben hat')) ?>
                         <? endif ?>
                     </div>
                 </div>
@@ -147,26 +148,28 @@
                         <div class="col-sm-2"></div>
                         <div class="col-sm-2">
                             <? if ($subchapterNotes = Eportfoliomodel::checkSupervisorNoteInSubchapter($unterkapitel['id'])): ?>
-                                <?= Icon::create('file', 'clickable', [
-                                    'title' => 'Notiz vorhanden'
-                                ]); ?>
+                                <?= Icon::create('file', Icon::ROLE_CLICKABLE,
+                                    [
+                                        'title' => _('Notiz vorhanden')
+                                    ]); ?>
                             <? else: ?>
-                                <?= Icon::create('file', 'inactive', [
-                                    'title' => 'Keine Notiz hinterlegt'
-                                ]); ?>
+                                <?= Icon::create('file', Icon::ROLE_INACTIVE,
+                                    [
+                                        'title' => _('Keine Notiz hinterlegt')
+                                    ]); ?>
                             <? endif; ?>
                         </div>
                         <div class="col-sm-2">
                             <? if (Eportfoliomodel::checkSupervisorResonanzInSubchapter($unterkapitel['id'])): ?>
                                 <?= Icon::create('forum'); ?>
                             <? else: ?>
-                                <?= Icon::create('forum', 'inactive'); ?>
+                                <?= Icon::create('forum', Icon::ROLE_INACTIVE); ?>
                             <? endif; ?>
                         </div>
                         <div class="col member-aktion-detail">
                             <? if ($subchapterNotes): ?>
-                                <a href="<?= URLHelper::getLink("plugins.php/courseware/courseware?cid=" . $portfolio_id . "&selected=" . $unterkapitel['id'] . '&return_to=' . Context::getId()); ?>">
-                                    Notiz beantworten
+                                <a href="<?= URLHelper::getLink('plugins.php/courseware/courseware?cid=' . $portfolio_id . "&selected=" . $unterkapitel['id'] . '&return_to=' . Context::getId()); ?>">
+                                    <?= _('Notiz beantworten') ?>
                                 </a>
                             <? endif; ?>
                         </div>
@@ -175,5 +178,4 @@
             <? endforeach; ?>
         </div>
     <? endforeach; ?>
-    </div>
 </div>
