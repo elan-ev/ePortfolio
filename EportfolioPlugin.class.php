@@ -189,17 +189,18 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         $group = SupervisorGroup::findOneBySQL('seminar_id = ?', [$course_id]);
 
         if ($group) {
-            $activies = EportfolioActivity::getActivitiesForGroup($course_id);
+            $activies = EportfolioActivity::newActivities($course_id, $user_id);
             if (is_array($activies)) {
-                $new_ones = count($activies);
-                if ($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) {
-                    $title = $new_ones > 1 ? sprintf(_('%s neue Ereignisse in Studierenden-Portfolios'), $new_ones) : _('1 neues Ereignisse in Studierenden-Portfolio');
+                $activityCount = count($activies);
+                if ($activityCount) {
+                    $title = $activityCount > 1 ? sprintf(_('%s neue Ereignisse in Studierenden-Portfolios'), $activityCount) : _('1 neues Ereignis in Studierenden-Portfolio');
+                    $icon->setImage(Icon::create('eportfolio', Icon::ROLE_ATTENTION, ['title' => $title]));
                 } else {
                     $title = _('Keine neuen Ereignisse.');
+                    $icon->setImage(Icon::create('eportfolio', Icon::ROLE_INACTIVE, ['title' => $title]));
                 }
 
-                $icon->setImage(Icon::create('eportfolio', Icon::ROLE_ATTENTION, ['title' => $title]));
-                $icon->setBadgeNumber($new_ones);
+                $icon->setBadgeNumber($activityCount);
             } else {
                 $icon->setImage(Icon::create('eportfolio', Icon::ROLE_ATTENTION, ['title' => 'Supervision']));
             }

@@ -107,10 +107,16 @@ class EportfolioActivity extends SimpleORMap
     }
 
     public static function newActivities($seminar_id)
-    {
-        return EportfolioActivity::findBySQL(
-            'group_id = ?  AND mk_date > ? AND user_id != ? ORDER BY mk_date DESC',
-            [$seminar_id, object_get_visit($seminar_id, 'sem'), $GLOBALS['user']->id]);
+    {                
+        if ($GLOBALS['perm']->have_studip_perm('dozent', $seminar_id)) {
+            return EportfolioActivity::findBySQL(
+                'group_id = ?  AND mk_date > ? AND user_id != ? AND type IN ("freigabe", "supervisor-notiz") ORDER BY mk_date DESC',
+                [$seminar_id, object_get_visit($seminar_id, 'sem'), $GLOBALS['user']->id]);
+        } else {
+            return EportfolioActivity::findBySQL(
+                'group_id = ?  AND mk_date > ? AND user_id != ? AND type IN ("vorlage-verteilt", "supervisor-answer") ORDER BY mk_date DESC',
+                [$seminar_id, object_get_visit($seminar_id, 'sem'), $GLOBALS['user']->id]);
+        }
     }
 
     public function addVorlagenActivity($group_id, $user_id)
