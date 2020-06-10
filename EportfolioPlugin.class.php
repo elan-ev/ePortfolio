@@ -189,7 +189,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         $group = SupervisorGroup::findOneBySQL('seminar_id = ?', [$course_id]);
 
         if ($group) {
-            $activies = EportfolioActivity::newActivities($course_id, $user_id);
+            $activies = EportfolioActivity::newActivities($course_id);
             if (is_array($activies)) {
                 $activityCount = count($activies);
                 if ($activityCount) {
