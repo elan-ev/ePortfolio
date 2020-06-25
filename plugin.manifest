@@ -1,7 +1,7 @@
 pluginname=ePortfolio
 pluginclassname=EportfolioPlugin
 origin=virtUOS
-version=1.8
+version=1.9
 studipMinVersion=4.0
 screenshots = assets/images/screenshots
 screenshots.uebersicht.png = portfolio

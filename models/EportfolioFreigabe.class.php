@@ -27,7 +27,7 @@ class EportfolioFreigabe extends SimpleORMap
     public static function hasAccess($user_id, $chapter_id)
     {
         $block = Mooc\DB\Block::find($chapter_id);
-        return $block->hasApproval($user_id);
+        return $block->hasReadApproval($user_id);
     }
 
     public static function getAccess($user_id, $chapter_id)
@@ -40,7 +40,7 @@ class EportfolioFreigabe extends SimpleORMap
         $block = Mooc\DB\Block::find($chapter_id);
         $list = $block->getApprovalList($approval_type);
 
-        foreach ($list as $key => $id) {
+        foreach ($list['read'] as $key => $id) {
             if ($id == $user_id) {
                 return true;
             }
@@ -85,7 +85,8 @@ class EportfolioFreigabe extends SimpleORMap
         self::loadCourseware();
 
         // check, if $user_id as portfolio-group
-        $approval_type = EportfolioGroup::findOneBySQL('supervisor_group_id = ?', [$user_id]) ? 'groups' : 'users';
+        $egroup        = EportfolioGroup::findOneBySQL('supervisor_group_id = ?', [$user_id]);
+        $approval_type = $egroup ? 'groups' : 'users';
 
         $block = Mooc\DB\Block::find($chapter_id);
         $list[$approval_type] = $block->getApprovalList($approval_type);
@@ -94,17 +95,29 @@ class EportfolioFreigabe extends SimpleORMap
 
         if ($approval_type == 'groups') {
             // make sure, the appropriate status group exists
-            if (!Statusgruppen::find($user_id)) {
-                Statusgruppen::create([
+            if (!$sgroup = Statusgruppen::find($user_id)) {
+                $sgroup = Statusgruppen::create([
                     'statusgruppe_id' => $user_id,
                     'name'            => 'Berechtigte für Portfolioarbeit',
                     'range_id'        => $seminar_id
                 ]);
             }
+
+            // make sure, all supervisors group users are part of this statusgroup
+            foreach ($egroup->user as $user) {
+                $sgroup->user[] = $user;
+            }
+
+            $sgroup->store();
+
         }
 
         if ($status && !self::getAccess($user_id, $chapter_id)) {
-            $list[$approval_type][] = $user_id;
+            if (!is_array($list[$approval_type][$egroup ? 'read' : 'write'])) {
+                $list[$approval_type][$egroup ? 'read' : 'write'] = [];
+            }
+
+            $list[$approval_type][$egroup ? 'read' : 'write'][] = $user_id;
 
             Eportfoliomodel::sendNotificationToUser('freigabe', $seminar_id, $chapter_id, $user_id);
             //freigaben werden nur als globale activity aufgenommen wenn sie für die supervisoren erfolgten
@@ -112,10 +125,14 @@ class EportfolioFreigabe extends SimpleORMap
                 EportfolioActivity::addActivity($seminar_id, $chapter_id, 'freigabe');
             }
         } else if (self::getAccess($user_id, $chapter_id)) {
-            foreach ($list[$approval_type] as $key => $id) {
-                if ($id == $user_id) {
-                    unset($list[$approval_type][$key]);
-                }
+            $pos = array_search($user_id, $list[$approval_type]['read']);
+            if ($pos !== false) {
+                array_splice($list[$approval_type]['read'], $pos, 1);
+            }
+
+            $pos = array_search($user_id, $list[$approval_type]['write']);
+            if ($pos !== false) {
+                array_splice($list[$approval_type]['write'], $pos, 1);
             }
 
             if (SupervisorGroup::find($user_id)) {

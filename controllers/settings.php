@@ -118,7 +118,7 @@ class settingsController extends PluginController
         $seminar       = new Seminar(Context::getId());
         $eportfolio    = Eportfoliomodel::findBySeminarId(Context::getId());
         $eportfolio_id = $eportfolio->eportfolio_id;
-        $userRole      = 'dozent';
+        $userRole      = 'autor';
 
         $db        = DBManager::get();
         $query     = "INSERT INTO eportfolio_user (user_id, Seminar_id, eportfolio_id, status, owner)
