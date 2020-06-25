@@ -113,7 +113,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
             }
 
         } else if ($this->isPortfolio() || $this->isVorlage()) {
-            if ($isSupervisor && !$this->isVorlage()) {
+            if (!$this->isVorlage()) {
                 $navigation = new Navigation(
                     _('Übersicht'),
                     PluginEngine::getURL($this, ['cid' => $course_id], 'eportfolioplugin', true)
