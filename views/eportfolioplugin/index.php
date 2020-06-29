@@ -4,7 +4,7 @@
         <div class="row member-container">
             <? foreach ($templates as $template_id => $chapters): ?>
 
-                <? $sharedChapterCnt = EportfolioFreigabe::sharedChapters($cid, $chapters) ?>
+                <? $sharedChapterCnt = EportfolioFreigabe::sharedChapters($group_id, [$template_id => $chapters]) ?>
                 <? $supervisorNotesCnt = EportfolioModel::countSupervisorNotiz(array_keys(array_column($chapters, NULL, 'id'))) ?>
 
                 <div class="col-sm-4 member-single-card">
@@ -63,7 +63,7 @@
                                 <div class="col-sm-8">
                                     <div class="row member-icons">
                                         <div class="col-sm-4">
-                                            <? if (EportfolioModel::checkKapitelFreigabe($chapter['id'])): ?>
+                                            <? if (EportfolioFreigabe::getAccess($supervisorgroup->id, $chapter['id'])): ?>
                                                 <?= Icon::create('accept', 'status-green', [
                                                     'title' => 'Freigabe erteilt'
                                                 ]); ?>

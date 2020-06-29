@@ -64,7 +64,6 @@ class EportfolioFreigabe extends SimpleORMap
         // check, if $user_id as portfolio-group
         $approval_type = SupervisorGroup::find($user_id) ? 'groups' : 'users';
 
-
         $block = Mooc\DB\Block::find($chapter_id);
         $list = $block->getApprovalList($approval_type);
 
@@ -158,7 +157,7 @@ class EportfolioFreigabe extends SimpleORMap
                 $current_members[] = $user->user_id;
             }
 
-            foreach ($supervisors->users as $user) {
+            foreach ($supervisors->user as $user) {
                 $new_members[] = $user->user_id;
             }
 
@@ -166,10 +165,12 @@ class EportfolioFreigabe extends SimpleORMap
             $remove_members = array_diff($new_members, $current_members);
 
             foreach ($remove_members as $uid) {
-                $sgroup->members->findOneByUserId($uid)->delete();
+                if ($user = $sgroup->members->findOneByUserId($uid)) {
+                    $user->delete();
+                }
             }
 
-            foreach ($remove_members as $uid) {
+            foreach ($add_members as $uid) {
                 $sgroup->members[] = StatusgruppeUser::build([
                     'statusgruppe_id' => $id,
                     'user_id'         => $user->id

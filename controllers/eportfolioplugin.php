@@ -5,9 +5,11 @@ class EportfoliopluginController extends PluginController
     public function __construct($dispatcher)
     {
         parent::__construct($dispatcher);
-        $this->cid        = Course::findCurrent()->id;
-        $this->eportfolio = EportfolioModel::findBySeminarId($this->cid);
-        $this->group_id   = $this->eportfolio->group_id;
+
+        $this->cid             = Course::findCurrent()->id;
+        $this->eportfolio      = EportfolioModel::findBySeminarId($this->cid);
+        $this->group_id        = $this->eportfolio->group_id;
+        $this->supervisorgroup = SupervisorGroup::findOneBySQL('Seminar_id = ?', [$this->group_id]);
 
         if ($this->group_id) {
             $action  = $GLOBALS['perm']->have_studip_perm('tutor', $this->group_id) ? 'showsupervisor' : 'showstudent';
