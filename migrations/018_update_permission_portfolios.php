@@ -24,6 +24,9 @@ class UpdatePermissionPortfolios extends Migration
             DROP settings');
 
         $db->exec('ALTER TABLE eportfolio
+            DROP eportfolio_id');
+
+        $db->exec('ALTER TABLE eportfolio
             ADD INDEX Seminar_id (Seminar_id)');
 
         $db->exec('ALTER TABLE eportfolio
@@ -46,6 +49,7 @@ class UpdatePermissionPortfolios extends Migration
             )');
 
         $db->exec('DROP TABLE eportfolio_groups');
+        $db->exec('DROP TABLE eportfolio_user');
 
         // check all portfolios, set supervisors to 'autor' and all other users (besides the owner) to 'user'
         $results = $db->query("SELECT seminar_user.Seminar_id, seminar_user.user_id FROM seminar_user
