@@ -32,7 +32,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         PageLayout::addStyle('#my_seminars {display: none; }');
 
         $stmt = DBManager::get()->prepare('SELECT Seminar_id FROM seminar_user
-            JOIN eportfolio_user USING (Seminar_id)
+            JOIN eportfolio USING (Seminar_id)
             WHERE seminar_user.user_id = ?');
         $stmt->execute([$GLOBALS['user']->id]);
 
@@ -148,7 +148,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
             }
         }
 
-        $owner = Eportfoliomodel::isOwner($course_id, $GLOBALS['user']->id);
+        $owner = EportfolioModel::isOwner($course_id, $GLOBALS['user']->id);
 
         if ($this->isPortfolio() && $owner) {
             $navigationSettings = new Navigation('Zugriffsrechte', PluginEngine::getURL($this, compact('cid'), 'settings', true));
@@ -186,9 +186,10 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
             PluginEngine::getURL($this, ['cid' => $course_id, 'iconnav' => 'true'], $url, true)
         );
 
-        $group = EportfolioGroup::find($course_id);
+        $group = SupervisorGroup::findOneBySQL('seminar_id = ?', [$course_id]);
+
         if ($group) {
-            $activies = $group->getActivities();
+            $activies = EportfolioActivity::getActivitiesForGroup($course_id);
             if (is_array($activies)) {
                 $new_ones = count($activies);
                 if ($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) {

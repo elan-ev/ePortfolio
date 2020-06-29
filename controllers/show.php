@@ -28,6 +28,28 @@ class ShowController extends PluginController
 
     public function index_action()
     {
+        $this->my_portfolios = EportfolioModel::getMyPortfolios();
+
+        $courses = EportfolioModel::getPortfolioVorlagen();
+        $this->vorlagen = array_filter($courses, function($course) use ($id) {
+            return empty(EportfolioArchive::find($course->id));
+        });
+
+        $this->archived = array_filter($courses, function($course) use ($id) {
+            return !empty(EportfolioArchive::find($course->id));
+        });
+        
+
+        $this->accessible_portfolios = EportfolioModel::findBySQL(
+            "JOIN seminar_user ON (
+                seminar_user.Seminar_id = eportfolio.Seminar_id
+            )
+            WHERE
+                eportfolio.owner_id != :user_id
+                AND seminar_user.user_id = :user_id
+                AND seminar_user.status = 'user'",
+            [':user_id' => $GLOBALS['user']->id]
+        );
     }
 
     public function list_seminars_action($vorlage_id)
@@ -75,32 +97,6 @@ class ShowController extends PluginController
         }
 
         $this->redirect('show');
-    }
-
-    public static function getAccessPortfolio()
-    {
-        return Course::findBySQL(
-            'INNER JOIN `eportfolio_user` ON `eportfolio_user`.`Seminar_id` = `seminare`.`Seminar_id`
-            WHERE `eportfolio_user`.`user_id` = ? AND `eportfolio_user`.`owner`= "0"',
-            [$GLOBALS['user']->id]
-        );
-    }
-
-    public function getOwnerName($cid)
-    {
-        $sql = "SELECT CONCAT(a.Vorname, ' ', a.Nachname)
-            FROM eportfolio e
-            JOIN auth_user_md5 a ON a.user_id = e.owner_id
-            WHERE e.Seminar_id = ?
-        ";
-
-        return DBManager::get()->fetchColumn($sql, [$cid]);
-    }
-
-    //TODO refactoring gehrt zu ePortfoliomodel
-    public function countViewer($cid)
-    {
-        return  DBManager::get()->fetchColumn("SELECT COUNT(Seminar_id) FROM eportfolio_user WHERE Seminar_id = ? AND owner = 0", [$cid]);
     }
 
     public function createvorlage_action()
@@ -170,10 +166,6 @@ class ShowController extends PluginController
         $query     = "INSERT INTO eportfolio (Seminar_id, eportfolio_id, owner_id, group_id) VALUES (:sem_id, :eportfolio_id, :userid, '')";
         $statement = DBManager::get()->prepare($query);
         $statement->execute([':sem_id' => $sem_id, ':eportfolio_id' => $eportfolio_id, ':userid' => $userid]); //table eportfolio
-
-        $query     = "INSERT INTO eportfolio_user(user_id, Seminar_id, eportfolio_id, owner) VALUES (:userid, :Seminar_id , :eportfolio_id, 1)";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute([':Seminar_id' => $sem_id, ':eportfolio_id' => $eportfolio_id, ':userid' => $userid]); //table eportfollio_user
 
         PageLayout::postMessage(MessageBox::success(sprintf(_('Vorlage "%s" wurde angelegt.'), $sem_name)));
 

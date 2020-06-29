@@ -35,11 +35,7 @@
             </tr>
         </thead>
         <tbody>
-            <?php $courses = Eportfoliomodel::getPortfolioVorlagen();
-            $courses = array_filter($courses, function($course) use ($id) {
-                return empty(EportfolioArchive::find($course->id));
-            });
-            foreach ($courses as $portfolio): ?>
+            <? foreach ($vorlagen as $portfolio): ?>
                 <tr>
                     <td>
                         <a href="<?= URLHelper::getUrl('plugins.php/courseware/courseware', [
@@ -91,7 +87,7 @@
         </tbody>
     </table>
 
-    <? if (empty($courses)) : ?>
+    <? if (empty($vorlagen)) : ?>
         <?= MessageBox::info('Sie haben noch keine Portfolio Vorlagen oder alle Vorlagen sind archiviert.') ?>
     <? endif ?>
 <? endif; ?>
@@ -123,20 +119,21 @@
     </thead>
     <tbody>
 
-        <?php $myportfolios = Eportfoliomodel::getMyPortfolios(); ?>
-        <?php foreach ($myportfolios as $portfolio): ?>
+        <? foreach ($myportfolios as $portfolio): ?>
             <tr>
                 <td>
                     <a href="<?= URLHelper::getUrl('plugins.php/courseware/courseware', [
                         'cid'         => $portfolio->id,
                         'return_to'   => 'overview'
                     ]); ?>">
-                        <?= $portfolio->name; ?>
+                        <?= htmlReady($portfolio->name); ?>
                     </a>
                 </td>
-                <td><?= htmlReady($portfolio->beschreibung); ?></td>
+                <td>
+                    <?= htmlReady($portfolio->beschreibung); ?>
+                </td>
                 <td style="text-align: center;">
-                    <?= ShowController::countViewer($portfolio->id); ?>
+                    <?= sizeof(Course::find($portfolio->id)->members) - 1; ?>
                 </td>
                 <td class="actions">
                     <a href="<?= URLHelper::getUrl('plugins.php/courseware/courseware', [
@@ -172,35 +169,33 @@
         </tr>
     </thead>
     <tbody>
-        <? $myAccess = ShowController::getAccessPortfolio(); ?>
-        <? foreach ($myAccess as $portfolio): ?>
+        <? foreach ($accessible_portfolios as $portfolio): ?>
             <tr class="insert_tr">
                 <td>
                     <a href="<?= URLHelper::getUrl('plugins.php/courseware/courseware', [
-                        'cid'         => $portfolio->id,
+                        'cid'         => $portfolio->seminar_id,
                         'return_to'   => 'overview'
                     ]); ?>">
-                        <?= $portfolio->name; ?>
+                        <?= $portfolio->seminar->name; ?>
                     </a>
                 </td>
-                <td></td>
                 <td>
-                    <?= ShowController::getOwnerName($portfolio->id); ?>
+                    <?= htmlReady($portfolio->seminar->beschreibung); ?>
+                </td>
+                <td>
+                    <?= htmlReady(get_fullname($portfolio->owner_id)); ?>
                 </td>
             </tr>
         <? endforeach; ?>
     </tbody>
 </table>
 
-<? if (empty($myAccess)) : ?>
+<? if (empty($accessible_portfolios)) : ?>
     <?= MessageBox::info('Bisher wurden keine Portfolios für Sie freigegeben.') ?>
 <? endif ?>
 
-<? $courses = Eportfoliomodel::getPortfolioVorlagen();
-$courses = array_filter($courses, function($course) use ($id) {
-    return !empty(EportfolioArchive::find($course->id));
-}); ?>
-<? if ($isDozent && !empty($courses)): ?>
+
+<? if ($isDozent && !empty($archived)): ?>
     <br>
     <table class="default">
         <colgroup>
@@ -219,7 +214,7 @@ $courses = array_filter($courses, function($course) use ($id) {
             </tr>
         </thead>
         <tbody>
-            <? foreach ($courses as $portfolio): ?>
+            <? foreach ($archived as $portfolio): ?>
                 <tr>
                     <td>
                         <a href="<?= URLHelper::getUrl('plugins.php/courseware/courseware', [
@@ -264,8 +259,4 @@ $courses = array_filter($courses, function($course) use ($id) {
             <? endforeach; ?>
         </tbody>
     </table>
-
-    <? if (empty($courses)) : ?>
-        <?= MessageBox::info('Sie haben noch keine Portfolio Vorlagen.') ?>
-    <? endif ?>
 <? endif; ?>

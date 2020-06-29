@@ -14,11 +14,6 @@ class SupervisorGroup extends SimpleORMap
     {
         $config['db_table'] = 'supervisor_group';
 
-        $config['has_one']['eportfolio_group'] = [
-            'class_name'        => 'EportfolioGroup',
-            'assoc_foreign_key' => 'supervisor_group_id',
-        ];
-
         $config['has_many']['user'] = [
             'class_name'        => 'SupervisorGroupUser',
             'assoc_foreign_key' => 'supervisor_group_id',
@@ -71,25 +66,9 @@ class SupervisorGroup extends SimpleORMap
         }
     }
 
-    public static function deleteGroup($group_id)
-    {
-        $group = new SupervisorGroup($group_id);
-        $group->delete();
-    }
-
-
     public function isUserInGroup($user_id, $course_id)
     {
-        $supervisor_group_id = EportfolioGroup::findById($course_id)[0]->supervisor_group_id;
-
-        if (!$supervisor_group_id) {
-            // only privileged users are allowed to be the first person in the supervisor group
-            if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id, $user_id)) {
-                $group = EportfolioGroup::newGroup($user_id, $course_id);
-                $supervisor_group_id = $group->supervisor_group_id;
-            }
-        }
-
+        $supervisor_group_id = SupervisorGroup::findBySQL('Seminar_id = ?', [$course_id])[0]->id;
         $supervisor_users = SupervisorGroupUser::findBySupervisorGroupId($supervisor_group_id);
 
         foreach ($supervisor_users as $user) {

@@ -68,4 +68,4 @@
     </td>
 </tr>
 
-<!-- <br><?= sprintf(_('Letzte Änderung: %s'), date('d.m.Y', Eportfoliomodel::getLastOwnerEdit($userPortfolioId))) ?> -->
+<!-- <br><?= sprintf(_('Letzte Änderung: %s'), date('d.m.Y', EportfolioModel::getLastOwnerEdit($userPortfolioId))) ?> -->

@@ -39,7 +39,7 @@
                         <?= $this->render_partial('showsupervisor/_studycourse.php', [
                             'studycourses' => new SimpleCollection(UserStudyCourse::findByUser($user->id)),
                         ]) ?>
-                        <br><?= sprintf(_('Letzte Änderung: %s'), date('d.m.Y', Eportfoliomodel::getLastOwnerEdit($userPortfolioId))) ?>
+                        <br><?= sprintf(_('Letzte Änderung: %s'), date('d.m.Y', EportfolioModel::getLastOwnerEdit($userPortfolioId))) ?>
                     </div>
                 </div>
 

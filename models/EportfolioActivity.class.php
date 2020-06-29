@@ -27,7 +27,7 @@ class EportfolioActivity extends SimpleORMap
             'foreign_key' => 'group_id',];
 
         $config['belongs_to']['eportfolio'] = [
-            'class_name'  => 'Eportfoliomodel',
+            'class_name'  => 'EportfolioModel',
             'foreign_key' => 'eportfolio_id',];
 
         $config['additional_fields']['is_new']['get'] = function ($item) {
@@ -151,7 +151,7 @@ class EportfolioActivity extends SimpleORMap
 
         $activity->user_id       = User::findCurrent()->id;
         $activity->mk_date       = time();
-        $group_id                = Eportfoliomodel::findBySeminarId($portfolio_id)->group_id;
+        $group_id                = EportfolioModel::findBySeminarId($portfolio_id)->group_id;
         $activity->group_id      = $group_id ? $group_id : null;
         $activity->block_id      = intval($block_id);
         $activity->eportfolio_id = $portfolio_id;

@@ -52,7 +52,7 @@
                                 <?= $deadline ? date('d.m.Y', $deadline) : _("kein Abgabedatum") ?>
                                 
                                 <span class="template-infos-days-left">
-                                <?= $deadline ? "(noch " . Eportfoliomodel::getDaysLeft($group_id, $template_id) . " Tage)" : "" ?>
+                                <?= $deadline ? "(noch " . EportfolioModel::getDaysLeft($group_id, $template_id) . " Tage)" : "" ?>
                                 </span>
                             </div>
                         </div>
@@ -63,7 +63,7 @@
                                 <div class="col-sm-8">
                                     <div class="row member-icons">
                                         <div class="col-sm-4">
-                                            <? if (Eportfoliomodel::checkKapitelFreigabe($chapter['id'])): ?>
+                                            <? if (EportfolioModel::checkKapitelFreigabe($chapter['id'])): ?>
                                                 <?= Icon::create('accept', 'status-green', [
                                                     'title' => 'Freigabe erteilt'
                                                 ]); ?>
@@ -74,7 +74,7 @@
                                             <? endif ?>
                                         </div>
                                         <div class="col-sm-4">
-                                            <? if (Eportfoliomodel::checkSupervisorNotiz($chapter['id'])): ?>
+                                            <? if (EportfolioModel::checkSupervisorNotiz($chapter['id'])): ?>
                                                 <a href="<?= URLHelper::getLink('plugins.php/courseware/courseware?cid=' . $cid . '&selected=' . $chapter['id']) ?>">
                                                     <?= Icon::create('file', 'clickable', [
                                                         'title' => 'Notiz für Supvervisor vorhanden'
@@ -87,7 +87,7 @@
                                             <? endif ?>
                                         </div>
                                         <div class="col-sm-4">
-                                            <? if (Eportfoliomodel::checkSupervisorResonanz($chapter['id'])): ?>
+                                            <? if (EportfolioModel::checkSupervisorResonanz($chapter['id'])): ?>
                                                 <a href="<?= URLHelper::getLink('plugins.php/courseware/courseware?cid=' . $cid . '&selected=' . $chapter['id']) ?>">
                                                     <?= Icon::create('forum', 'clickable', [
                                                         'title' => 'Feedback von Supervisor vorhanden'
@@ -139,7 +139,7 @@
                         </div>
 
                         <div class="template-user-item-footer">
-                            <?= \Studip\LinkButton::create('Anschauen', Eportfoliomodel::getLinkOfFirstChapter($template_id, $cid)) ?>
+                            <?= \Studip\LinkButton::create('Anschauen', EportfolioModel::getLinkOfFirstChapter($template_id, $cid)) ?>
                         </div>
 
                     </div>

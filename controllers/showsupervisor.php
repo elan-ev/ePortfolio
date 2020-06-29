@@ -15,9 +15,9 @@ class ShowsupervisorController extends PluginController
             $this->userId  = $GLOBALS['user']->id;
 
             $this->groupId = $this->course->id;
-            $this->group = EportfolioGroup::findbySQL('seminar_id = :id', [':id' => $this->groupId])[0];
+            $this->group = SupervisorGroup::findBySQL('seminar_id = ?', [$this->groupId])[0];
 
-            $this->supervisorGroupId = $this->group->supervisor_group_id;
+            $this->supervisorGroupId = $this->group->id;
 
             $this->distributedPortfolios = EportfolioGroupTemplates::getGroupTemplates($this->groupId);
         }
@@ -33,7 +33,7 @@ class ShowsupervisorController extends PluginController
         Navigation::activateItem('/course/eportfolioplugin/supervision');
 
         $this->member     = EportfolioGroup::getGroupMember($this->group);
-        $this->portfolios = Eportfoliomodel::getPortfolioVorlagen();
+        $this->portfolios = EportfolioModel::getPortfolioVorlagen();
 
         /* remove archived portfolios from list */
         $this->portfolios = array_filter($this->portfolios, function($portfolios) use ($id) {
@@ -41,21 +41,16 @@ class ShowsupervisorController extends PluginController
         });
 
         $this->portfolioChapters = EportfolioGroup::getAnzahlAllerKapitel($this->groupId);
-
-        EportfolioFreigabe::prune($this->course->id);
     }
 
     public function createportfolio_action($master)
     {
         $this->seminar_list = [];
-        $this->masterid           = $master;
-        $this->groupid            = Course::findCurrent()->id;
-        $group              = EportfolioGroup::find($this->groupid);
+        $this->masterid  = $master;
+        $this->course_id = Course::findCurrent()->id;
+        $group           = EportfolioGroup::find($this->groupid);
 
         $members = EportfolioGroup::getGroupMember($group);
-        $groupowner        = $group->owner_id;
-        $groupname         = new Seminar($this->groupid);
-        $supervisorgroupid = EportfolioGroup::getSupervisorGroupId($this->groupid);
 
         /**
          * Jeden User in der Gruppe einzeln behandeln
@@ -66,17 +61,18 @@ class ShowsupervisorController extends PluginController
             /**
              * Überprüfen ob es für den Nutzer schon ein Portfolio-Seminar gibt
              * **/
+            $portfolio = Eportfolio::findBySQL('owner_id = ? AND group_id = ?', [
+                $member->id, $this->course_id
+            ]);
 
-            $portfolio_id = EportfolioGroup::getPortfolioIdOfUserInGroup($member->id, $this->groupid);
-
-            if (!empty($portfolio_id)) {
+            if (!empty($portfolio->Seminar_id)) {
 
                 /**
                  * Wenn ja: Template einfach wie gehabt Kopieren
                  * bzw. in die seminar_list anfügen und später triggern
                  * **/
 
-                array_push($this->seminar_list, $portfolio_id);
+                array_push($this->seminar_list, $portfolio->Seminar_id);
 
             } else {
 
@@ -85,19 +81,19 @@ class ShowsupervisorController extends PluginController
                  * in seminar_list anfügen
                  * **/
 
-                $portfolio_id_add = EportfolioModel::createPortfolioForUser($this->groupid, $member->id, $this->dispatcher->current_plugin);
+                $portfolio_id_add = EportfolioModel::createPortfolioForUser($this->course_id, $member->id, $this->dispatcher->current_plugin);
                 array_push($this->seminar_list, $portfolio_id_add);
 
             }
 
         }
-        EportfolioGroup::createTemplateForGroup($this->groupid, $this->masterid, $GLOBALS["user"]->id);
+        EportfolioGroup::createTemplateForGroup($this->course_id, $this->masterid, $GLOBALS["user"]->id);
 
         VorlagenCopy::copyCourseware(new Seminar($this->masterid), $this->seminar_list);
-        EportfolioActivity::addVorlagenActivity($this->groupid, User::findCurrent()->id);
+        EportfolioActivity::addVorlagenActivity($this->course_id, User::findCurrent()->id);
 
         PageLayout::postMessage(MessageBox::success('Vorlage wurde verteilt.'));
-        $this->redirect('showsupervisor?cid=' . $this->groupid);
+        $this->redirect('showsupervisor?cid=' . $this->course_id);
     }
 
     public function updatevorlage_action($vorlage_id)

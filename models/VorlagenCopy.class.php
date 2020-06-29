@@ -93,7 +93,7 @@ class VorlagenCopy
     
     private function lockBlocks(Seminar $master, array $semList)
     {
-        $masterBlocks        = Eportfoliomodel::getAllBlocksInOrder($master->id);
+        $masterBlocks        = EportfolioModel::getAllBlocksInOrder($master->id);
         $lockedBlocksIndizes = [];
         
         for ($i = 0; $i < count($masterBlocks); $i++) {
@@ -104,7 +104,7 @@ class VorlagenCopy
         
         //hier können potentiell beleibige infos von den Vorlagen Blöcken auf die Block-Kopien übertragen werden
         foreach ($semList as $user_id => $cid) {
-            $seminarBlocks = Eportfoliomodel::getAllBlocksInOrder($cid);
+            $seminarBlocks = EportfolioModel::getAllBlocksInOrder($cid);
             $newBlocks     = array_slice($seminarBlocks, -count($masterBlocks));
             
             //das Attribut blocked (von Studenten nicht bearbeitbar)

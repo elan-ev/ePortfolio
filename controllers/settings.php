@@ -1,13 +1,13 @@
 <?php
 
-class settingsController extends PluginController
+class SettingsController extends PluginController
 {
     public function index_action($cid = null)
     {
         $userid          = $GLOBALS['user']->id;
         $course          = Course::findCurrent();
-        $this->isVorlage = Eportfoliomodel::isVorlage($course->id);
-        $eportfolio      = Eportfoliomodel::findBySeminarId($course->id);
+        $this->isVorlage = EportfolioModel::isVorlage($course->id);
+        $eportfolio      = EportfolioModel::findBySeminarId($course->id);
 
         $seminar = new Seminar($course->id);
 
@@ -25,7 +25,7 @@ class settingsController extends PluginController
         $views->addLink(_('Zugriffsrechte vergeben'), '')->setActive(true);
         Sidebar::get()->addWidget($views);
 
-        $chapters      = Eportfoliomodel::getChapters($course->id);
+        $chapters      = EportfolioModel::getChapters($course->id);
         $viewers       = $course->getMembersWithStatus('autor');
         $supervisor_id = $this->getSupervisorGroupOfPortfolio($course->id);
 
@@ -35,7 +35,7 @@ class settingsController extends PluginController
             . "OR CONCAT(auth_user_md5.Nachname, \" \", auth_user_md5.Vorname) LIKE :input "
             . "OR auth_user_md5.username LIKE :input)"
             . "AND auth_user_md5.user_id NOT IN "
-            . "(SELECT eportfolio_user.user_id FROM eportfolio_user WHERE eportfolio_user.Seminar_id = '" . $course->id . "')  "
+            . "(SELECT seminar_user.user_id FROM seminar_user WHERE seminar_user.Seminar_id = '" . $course->id . "')  "
             . "ORDER BY Vorname, Nachname ",
             _("Nutzer suchen"), "username");
 
@@ -101,12 +101,15 @@ class settingsController extends PluginController
      */
     public function getSupervisorGroupOfPortfolio()
     {
-        $portfolio = Eportfoliomodel::findBySeminarId(Context::getId());
+        $course_id = Context::getId();
+        $portfolio = EportfolioModel::findBySeminarId($course_id);
+
         if ($portfolio->group_id) {
-            $portfoliogroup = EportfolioGroup::findOneBySQL('seminar_id = :id', [':id' => $portfolio->group_id]);
+            $portfoliogroup = SupervisorGroup::findOneBySql('Seminar_id = ?', [$portfolio->group_id]) ;
         }
+
         if ($portfoliogroup) {
-            return $portfoliogroup->supervisor_group_id;
+            return $portfoliogroup->id;
         } else {
             return false;
         }
@@ -116,15 +119,9 @@ class settingsController extends PluginController
     {
         $mp            = MultiPersonSearch::load('selectFreigabeUser');
         $seminar       = new Seminar(Context::getId());
-        $eportfolio    = Eportfoliomodel::findBySeminarId(Context::getId());
+        $eportfolio    = EportfolioModel::findBySeminarId(Context::getId());
         $eportfolio_id = $eportfolio->eportfolio_id;
-        $userRole      = 'autor';
-
-        $db        = DBManager::get();
-        $query     = "INSERT INTO eportfolio_user (user_id, Seminar_id, eportfolio_id, status, owner)
-                    VALUES (:userId, :id, :eportfolio_id, 'autor', 0)";
-        $statement = $db->prepare($query);
-
+        $userRole      = 'user';
 
         foreach ($mp->getAddedUsers() as $userId) {
             $seminar->addMember($userId, $userRole);
@@ -138,11 +135,11 @@ class settingsController extends PluginController
     {
         $user_id       = Request::get('userId');
         $seminar       = new Seminar(Context::getId());
-        $eportfolio    = Eportfoliomodel::findBySeminarId(Context::getId());
+        $eportfolio    = EportfolioModel::findBySeminarId(Context::getId());
         $eportfolio_id = $eportfolio->eportfolio_id;
 
         $course   = Course::findCurrent();
-        $chapters = Eportfoliomodel::getChapters($course->id);
+        $chapters = EportfolioModel::getChapters($course->id);
 
         foreach ($chapters as $chapter) {
             if (EportfolioFreigabe::hasAccess($user_id, $chapter['id'])) {
@@ -151,10 +148,6 @@ class settingsController extends PluginController
         }
 
         $seminar->deleteMember($user_id);
-
-        $query     = "DELETE FROM eportfolio_user WHERE user_id = :userId AND seminar_id = :cid AND eportfolio_id = :eportfolio_id";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute([':cid' => Context::getId(), ':userId' => $user_id, ':eportfolio_id' => $eportfolio_id]);
 
         $this->render_nothing();
     }

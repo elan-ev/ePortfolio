@@ -12,7 +12,7 @@
             <? endforeach; ?>
         </tr>
         <tbody>
-            <?php if (Eportfoliomodel::findBySeminarId($cid)->group_id): ?>
+            <?php if (EportfolioModel::findBySeminarId($cid)->group_id): ?>
                 <tr style="background-color: lightblue;">
                     <td class="supervisor">
                         <?= Avatar::getNobody()->getImageTag(Avatar::SMALL,

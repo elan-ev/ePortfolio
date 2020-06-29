@@ -27,7 +27,18 @@ class EportfolioFreigabe extends SimpleORMap
     public static function hasAccess($user_id, $chapter_id)
     {
         $block = Mooc\DB\Block::find($chapter_id);
-        return $block->hasReadApproval($user_id);
+
+        // check, if $user_id as portfolio-group
+        $approval_type = SupervisorGroup::find($user_id) ? 'groups' : 'users';
+
+        if ($approval_type == 'groups') {
+            $id = md5($user_id . $block->seminar_id);
+        } else {
+            $id = $user_id;
+        }
+
+        return $block->hasGroupApproval($id, 'read')
+            || $block->hasUserApproval($id, 'write');
     }
 
     public static function getAccess($user_id, $chapter_id)
@@ -35,13 +46,20 @@ class EportfolioFreigabe extends SimpleORMap
         self::loadCourseware();
 
         // check, if $user_id as portfolio-group
-        $approval_type = EportfolioGroup::findOneBySQL('supervisor_group_id = ?', [$user_id]) ? 'groups' : 'users';
+        $approval_type = SupervisorGroup::find($user_id) ? 'groups' : 'users';
+
 
         $block = Mooc\DB\Block::find($chapter_id);
         $list = $block->getApprovalList($approval_type);
 
-        foreach ($list['read'] as $key => $id) {
-            if ($id == $user_id) {
+        if ($approval_type == 'groups') {
+            $id = md5($user_id . $block->seminar_id);
+        } else {
+            $id = $user_id;
+        }
+
+        foreach ($list[$approval_type] as $b_user_id => $perm) {
+            if ($id == $b_user_id && ($perm == 'write' || $perm == 'read')) {
                 return true;
             }
         }
@@ -85,58 +103,91 @@ class EportfolioFreigabe extends SimpleORMap
         self::loadCourseware();
 
         // check, if $user_id as portfolio-group
-        $egroup        = EportfolioGroup::findOneBySQL('supervisor_group_id = ?', [$user_id]);
+        $egroup        = SupervisorGroup::find($user_id);
         $approval_type = $egroup ? 'groups' : 'users';
 
         $block = Mooc\DB\Block::find($chapter_id);
-        $list[$approval_type] = $block->getApprovalList($approval_type);
+        if (!$block) {
+            return false;
+        }
+
+        if ($approval_type == 'groups') {
+            $id = md5($user_id . $block->seminar_id);
+        } else {
+            $id = $user_id;
+        }
+
+        $list = $block->getApprovalList($approval_type);
 
         $seminar_id = $block->seminar_id;
 
         if ($approval_type == 'groups') {
+            // get all supervisors
+            $supervisors = EportfolioGroup::getAllSupervisors($user_id);
+
             // make sure, the appropriate status group exists
-            if (!$sgroup = Statusgruppen::find($user_id)) {
+            if (!$sgroup = Statusgruppen::find($id)) {
+                // create new statusgroup
                 $sgroup = Statusgruppen::create([
-                    'statusgruppe_id' => $user_id,
+                    'statusgruppe_id' => $id,
                     'name'            => 'Berechtigte für Portfolioarbeit',
                     'range_id'        => $seminar_id
                 ]);
             }
 
-            // make sure, all supervisors group users are part of this statusgroup
-            foreach ($egroup->user as $user) {
-                $sgroup->user[] = $user;
+            $current_members = [];
+            $new_members = [];
+
+            foreach ($sgroup->members as $user) {
+                $current_members[] = $user->user_id;
             }
 
-            $sgroup->store();
+            foreach ($supervisors as $user) {
+                $new_members[] = $user->user_id;
+            }
+
+            $add_members    = array_diff($current_members, $new_members);
+            $remove_members = array_diff($new_members, $current_members);
+
+            foreach ($remove_members as $uid) {
+                $sgroup->members->findOneByUserId($uid)->delete();
+            }
+
+            foreach ($remove_members as $uid) {
+                $sgroup->members[] = StatusgruppeUser::build([
+                    'statusgruppe_id' => $id,
+                    'user_id'         => $user->id
+                ]);
+            }
+
+            $sgroup->members->store();
 
         }
 
-        if ($status && !self::getAccess($user_id, $chapter_id)) {
-            if (!is_array($list[$approval_type][$egroup ? 'read' : 'write'])) {
-                $list[$approval_type][$egroup ? 'read' : 'write'] = [];
-            }
+        if (!is_array($list[$approval_type])) {
+            $list[$approval_type] = [];
+        }
 
-            $list[$approval_type][$egroup ? 'read' : 'write'][] = $user_id;
+        // set permissions for supervisor group
+        if ($approval_type == 'groups') {
+            if ($status == 'true') {
+                // do not overwrite write permissions
+                if ($list[$approval_type][$id] != 'write') {
+                    $list[$approval_type][$id] = 'read';
+                }
 
-            Eportfoliomodel::sendNotificationToUser('freigabe', $seminar_id, $chapter_id, $user_id);
-            //freigaben werden nur als globale activity aufgenommen wenn sie für die supervisoren erfolgten
-            if (SupervisorGroup::find($user_id)) {
                 EportfolioActivity::addActivity($seminar_id, $chapter_id, 'freigabe');
-            }
-        } else if (self::getAccess($user_id, $chapter_id)) {
-            $pos = array_search($user_id, $list[$approval_type]['read']);
-            if ($pos !== false) {
-                array_splice($list[$approval_type]['read'], $pos, 1);
-            }
+            } else {
+                $list[$approval_type][$id] = 'none';
 
-            $pos = array_search($user_id, $list[$approval_type]['write']);
-            if ($pos !== false) {
-                array_splice($list[$approval_type]['write'], $pos, 1);
-            }
-
-            if (SupervisorGroup::find($user_id)) {
                 EportfolioActivity::addActivity($seminar_id, $chapter_id, 'freigabe-entfernt');
+            }
+        } else {
+            if ($status == 'true') {
+                // do not overwrite write permissions
+                $list[$approval_type][$id] = 'write';
+            } else {
+                $list[$approval_type][$id] = 'none';
             }
         }
 

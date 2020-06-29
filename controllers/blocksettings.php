@@ -8,7 +8,7 @@ class blocksettingsController extends PluginController
         $this->course  = Course::findCurrent();
         $userid        = $GLOBALS['user']->id;
         $this->cid     = Request::option('cid');
-        $this->vorlage = Eportfoliomodel::findBySeminarId($this->cid);
+        $this->vorlage = EportfolioModel::findBySeminarId($this->cid);
 
 
         # Aktuelle Seite
@@ -26,7 +26,7 @@ class blocksettingsController extends PluginController
         Sidebar::get()->addWidget($views);
 
         //get list chapters
-        $chapters = Eportfoliomodel::getChapters($this->course->id);
+        $chapters = EportfolioModel::getChapters($this->course->id);
 
         //get viewer information
         $viewers = $this->course->getMembersWithStatus('autor');

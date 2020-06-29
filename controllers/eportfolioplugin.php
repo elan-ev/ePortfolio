@@ -6,7 +6,7 @@ class EportfoliopluginController extends PluginController
     {
         parent::__construct($dispatcher);
         $this->cid        = Course::findCurrent()->id;
-        $this->eportfolio = Eportfoliomodel::findBySeminarId($this->cid);
+        $this->eportfolio = EportfolioModel::findBySeminarId($this->cid);
         $this->group_id   = $this->eportfolio->group_id;
 
         if ($this->group_id) {
@@ -30,7 +30,7 @@ class EportfoliopluginController extends PluginController
 
         # Aktuelle Seite
         PageLayout::setTitle('ePortfolio von ' . $owner['Vorname'] . ' ' . $owner['Nachname'] . ': ' . $seminar->getName());
-        if (Eportfoliomodel::isVorlage($this->cid)) {
+        if (EportfolioModel::isVorlage($this->cid)) {
             PageLayout::setTitle('ePortfolio-Vorlage - Übersicht: ' . $seminar->getName());
             $this->render_action('index_vorlage');
         }

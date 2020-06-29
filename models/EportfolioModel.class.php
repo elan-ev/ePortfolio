@@ -13,20 +13,21 @@
  * @property varchar $template_id
  * @property json $settings //deprecated?
  */
-class Eportfoliomodel extends SimpleORMap
+class EportfolioModel extends SimpleORMap
 {
     protected static function configure($config = [])
     {
         $config['db_table'] = 'eportfolio';
 
         $config['belongs_to']['seminar'] = [
-            'class_name'  => 'Seminar',
-            'foreign_key' => 'Seminar_id',
-            'on_delete'   => 'delete',];
+            'class_name'  => 'Course',
+            'foreign_key' => 'Seminar_id'
+        ];
 
         $config['belongs_to']['owner'] = [
             'class_name'  => 'User',
-            'foreign_key' => 'owner_id',];
+            'foreign_key' => 'owner_id'
+        ];
 
         parent::configure($config);
     }
@@ -34,7 +35,7 @@ class Eportfoliomodel extends SimpleORMap
     public static function getAllSupervisors($cid)
     {
         $supervisoren = [];
-        $portfolio    = Eportfoliomodel::findBySeminarId($cid);
+        $portfolio    = EportfolioModel::findBySeminarId($cid);
         if ($portfolio->group_id) {
             array_push($supervisoren, EportfolioGroup::getAllSupervisors($portfolio->group_id));
         }
@@ -63,13 +64,13 @@ class Eportfoliomodel extends SimpleORMap
 
     public static function findBySeminarId($sem_id)
     {
-        $eportfolio = Eportfoliomodel::findOneBySQL('seminar_id = :id', [':id' => $sem_id]);
+        $eportfolio = EportfolioModel::findOneBySQL('seminar_id = :id', [':id' => $sem_id]);
         return $eportfolio;
     }
 
     public static function isOwner($sem_id, $user_id)
     {
-        $eportfolio = Eportfoliomodel::findBySeminarId($sem_id);
+        $eportfolio = EportfolioModel::findBySeminarId($sem_id);
         return $eportfolio->owner_id == $user_id;
     }
 
@@ -163,7 +164,7 @@ class Eportfoliomodel extends SimpleORMap
             WHERE mooc_fields.name = 'supervisorcontent' AND mooc_blocks.type = 'PortfolioBlockSupervisor' AND mcb.parent_id IN (:subchapter_ids)",
             [':subchapter_ids' => $subchapter_ids]
         );
-        
+
         if(empty($supervisorResponses)) {
             return false;
         }
@@ -248,8 +249,8 @@ class Eportfoliomodel extends SimpleORMap
      **/
     public static function isEigenesUnterkapitel($subchapter_id)
     {
-        $timestapChapter = Eportfoliomodel::getTimestampOfChapter(Eportfoliomodel::getParentId($subchapter_id));
-        if ($timestapChapter < Eportfoliomodel::getTimestampOfChapter($subchapter_id)) {
+        $timestapChapter = EportfolioModel::getTimestampOfChapter(EportfolioModel::getParentId($subchapter_id));
+        if ($timestapChapter < EportfolioModel::getTimestampOfChapter($subchapter_id)) {
             return true;
         }
     }
@@ -360,7 +361,7 @@ class Eportfoliomodel extends SimpleORMap
     public static function sendNotificationToUser($case, $portfolio_id, $block_id, $user_id)
     {
 
-        $portfolio = Eportfoliomodel::findBySeminarId($portfolio_id);
+        $portfolio = EportfolioModel::findBySeminarId($portfolio_id);
         $owner     = $portfolio->getOwnerFullname();
         $link      = $GLOBALS['ABSOLUTE_URI_STUDIP'] . 'plugins.php/courseware/courseware?cid=' . $portfolio_id . '&selected=' . $block_id;
         switch ($case) {
@@ -449,10 +450,10 @@ class Eportfoliomodel extends SimpleORMap
     public static function getNumberOfSharedChaptersOfTemplateFromUser($template_id, $user_template_id)
     {
         $return           = 0;
-        $templateChapters = Eportfoliomodel::getChapters($template_id);
+        $templateChapters = EportfolioModel::getChapters($template_id);
         foreach ($templateChapters as $chapter) {
-            $block_id = Eportfoliomodel::getUserPortfolioBlockId($user_template_id, $chapter['id']);
-            if (Eportfoliomodel::checkKapitelFreigabe($block_id)) {
+            $block_id = EportfolioModel::getUserPortfolioBlockId($user_template_id, $chapter['id']);
+            if (EportfolioModel::checkKapitelFreigabe($block_id)) {
                 $return++;
             }
         }
@@ -474,10 +475,10 @@ class Eportfoliomodel extends SimpleORMap
     public static function getNumberOfNotesInTemplateOfUser($template_id, $user_template_id)
     {
         $return           = 0;
-        $templateChapters = Eportfoliomodel::getChapters($template_id);
+        $templateChapters = EportfolioModel::getChapters($template_id);
         foreach ($templateChapters as $chapter) {
-            $block_id = Eportfoliomodel::getUserPortfolioBlockId($user_template_id, $chapter['id']);
-            if (Eportfoliomodel::checkSupervisorNotiz($block_id)) {
+            $block_id = EportfolioModel::getUserPortfolioBlockId($user_template_id, $chapter['id']);
+            if (EportfolioModel::checkSupervisorNotiz($block_id)) {
                 $return++;
             }
         }
@@ -489,7 +490,7 @@ class Eportfoliomodel extends SimpleORMap
      **/
     public static function getLinkOfFirstChapter($template_id, $seminar_id)
     {
-        $templateChapters   = Eportfoliomodel::getChapters($template_id);
+        $templateChapters   = EportfolioModel::getChapters($template_id);
         $vorlagenchapter    = $templateChapters[0]['id'];
         $portfolio_block_id = BlockInfo::findOneBySQL(
             'vorlagen_block_id = :vorlagenchapter AND Seminar_id = :cid',
@@ -519,7 +520,7 @@ class Eportfoliomodel extends SimpleORMap
         $groupname   = Seminar::GetInstance($group_id);
         $groupid     = Course::findCurrent()->id;
         $group       = EportfolioGroup::find($group_id);
-        $sem_type_id = Eportfoliomodel::getPortfolioSemId();
+        $sem_type_id = EportfolioModel::getPortfolioSemId();
 
         $owner            = User::find($user_id);
         $owner_fullname   = $owner['Vorname'] . ' ' . $owner['Nachname'];
@@ -542,7 +543,7 @@ class Eportfoliomodel extends SimpleORMap
         $avatar = CourseAvatar::getAvatar($sem_id);
         $avatar->createFrom($plugin->getpluginPath() . '/assets/images/avatare/eportfolio.png');
 
-        $sem->addMember($user_id, 'dozent'); // add user to his to seminar
+        $sem->addMember($user_id, 'dozent'); // add user to his seminar
 
         /**
          * Alle Supervisoren hinzufügen
@@ -567,15 +568,6 @@ class Eportfoliomodel extends SimpleORMap
             ':userid'        => $user_id,
             ':masterid'      => $masterid,
             ':groupowner'    => $groupowner
-        ]);
-
-        $statement = $db->prepare("INSERT INTO
-            eportfolio_user(user_id, Seminar_id, eportfolio_id, owner)
-            VALUES (:userid, :Seminar_id, :eportfolio_id, 1)");
-        $statement->execute([
-            ':Seminar_id'    => $sem_id,
-            ':eportfolio_id' => $eportfolio_id,
-            ':userid'        => $user_id
         ]);
 
         // create basic courseware block, prevents creation of dummy blocks by courseware
@@ -605,9 +597,9 @@ class Eportfoliomodel extends SimpleORMap
 
         $template_list = EportfolioGroupTemplates::getGroupTemplates($group_id);
         foreach ($template_list as $template) {
-            $template_chapters = Eportfoliomodel::getChapters($template);
+            $template_chapters = EportfolioModel::getChapters($template);
             foreach ($template_chapters as $chapter) {
-                if (!Eportfoliomodel::getUserPortfolioBlockId($portfolio_id, $chapter['id'])) {
+                if (!EportfolioModel::getUserPortfolioBlockId($portfolio_id, $chapter['id'])) {
                     array_push($return, $template);
                 }
             }

@@ -1,5 +1,5 @@
 <?php
-require __DIR__.'/../models/Eportfoliomodel.class.php';
+require __DIR__.'/../models/EportfolioModel.class.php';
 require __DIR__.'/../vendor/autoload.php';
 
 class AvatarMigration extends Migration
@@ -10,7 +10,7 @@ class AvatarMigration extends Migration
 
 
     public function up () {
-        $seminare = Eportfoliomodel::findBySQL('true');
+        $seminare = EportfolioModel::findBySQL('true');
         foreach ($seminare as $sem){
             $course = Course::find($sem->Seminar_id);
             if($course){

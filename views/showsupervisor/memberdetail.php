@@ -16,7 +16,7 @@
                 'studycourses' => new SimpleCollection(UserStudyCourse::findByUser($user->id)),
             ]) ?>
             <br>
-            <?= "Letzte Änderung: ".date('d.m.Y', Eportfoliomodel::getLastOwnerEdit($portfolio_id)) ?>
+            <?= "Letzte Änderung: ".date('d.m.Y', EportfolioModel::getLastOwnerEdit($portfolio_id)) ?>
         </div>
         <a href="<?= URLHelper::getURL('dispatch.php/messages/write?rec_uname=' .$user->username) ?>" target="_blank">
             Nachricht schicken
@@ -137,7 +137,7 @@
             </div>
 
             <!-- display information for subchapters | 76 queries-->
-            <? foreach (Eportfoliomodel::getSubChapters($kapitel['id']) as $unterkapitel): ?>
+            <? foreach (EportfolioModel::getSubChapters($kapitel['id']) as $unterkapitel): ?>
                 <div class="col-sm-4 member-content-unterkapitel">
                     <?= $unterkapitel['title']; ?>
                 </div>
@@ -146,7 +146,7 @@
                         <div class="col-sm-2"></div>
                         <div class="col-sm-2"></div>
                         <div class="col-sm-2">
-                            <? if ($subchapterNotes = Eportfoliomodel::checkSupervisorNoteInSubchapter($unterkapitel['id'])): ?>
+                            <? if ($subchapterNotes = EportfolioModel::checkSupervisorNoteInSubchapter($unterkapitel['id'])): ?>
                                 <?= Icon::create('file', 'clickable', [
                                     'title' => 'Notiz vorhanden'
                                 ]); ?>
@@ -157,7 +157,7 @@
                             <? endif; ?>
                         </div>
                         <div class="col-sm-2">
-                            <? if (Eportfoliomodel::checkSupervisorResonanzInSubchapter($unterkapitel['id'])): ?>
+                            <? if (EportfolioModel::checkSupervisorResonanzInSubchapter($unterkapitel['id'])): ?>
                                 <?= Icon::create('forum'); ?>
                             <? else: ?>
                                 <?= Icon::create('forum', 'inactive'); ?>
