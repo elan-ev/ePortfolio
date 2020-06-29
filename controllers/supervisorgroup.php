@@ -18,9 +18,10 @@ class SupervisorgroupController extends PluginController
 
             $this->templistid = $this->groupTemplates;
 
-            $group = EportfolioGroup::findbySQL('seminar_id = :id', [':id' => $this->course->id]);
+            $this->supervisorGroup = SupervisorGroup::findOnebySQL('seminar_id = :id',
+                [':id' => $this->course->id]
+            );
 
-            $this->supervisorGroupId = $group[0]->supervisor_group_id;
         }
     }
 
@@ -29,24 +30,24 @@ class SupervisorgroupController extends PluginController
         Navigation::activateItem('/course/eportfolioplugin/supervisorgroup');
 
         PageLayout::setTitle(Context::getHeaderLine() . ' - Berechtigungen Portfolioarbeit');
-        $supervisorgroupid = Eportfoliogroup::getSupervisorGroupId(Context::getId());
+        $this->supervisorGroup->id;
 
-        $group         = new SupervisorGroup($supervisorgroupid);
-        $this->title   = $group->name;
-        $this->groupId = $group->id;
+        $this->title   = $this->supervisorGroup->name;
+        $this->groupId = $this->supervisorGroup->id;
         $this->linkId  = Context::getId();
 
         $search_obj = new SQLSearch(
-            "SELECT auth_user_md5.user_id, CONCAT(auth_user_md5.nachname, ', ', auth_user_md5.vorname, ' (' , auth_user_md5.email, ')' ) as fullname, username, perms 
+            "SELECT auth_user_md5.user_id, CONCAT(auth_user_md5.nachname, ', ', auth_user_md5.vorname, ' (' , auth_user_md5.email, ')' ) as fullname, username, perms
             FROM auth_user_md5
             WHERE (
-                CONCAT(auth_user_md5.Vorname, \" \", auth_user_md5.Nachname) LIKE :input 
-                OR CONCAT(auth_user_md5.Nachname, \" \", auth_user_md5.Vorname) LIKE :input 
+                CONCAT(auth_user_md5.Vorname, \" \", auth_user_md5.Nachname) LIKE :input
+                OR CONCAT(auth_user_md5.Nachname, \" \", auth_user_md5.Vorname) LIKE :input
                 OR auth_user_md5.username LIKE :input
             )
             AND auth_user_md5.perms IN ('dozent', 'tutor')
             AND auth_user_md5.user_id NOT IN (
-                SELECT supervisor_group_user.user_id FROM supervisor_group_user WHERE supervisor_group_user.supervisor_group_id = '" . $supervisorgroupid . "')
+                SELECT supervisor_group_user.user_id FROM supervisor_group_user
+            WHERE supervisor_group_user.supervisor_group_id = '" . $this->supervisorGroup->id . "')
             ORDER BY Vorname, Nachname ",
             _("Teilnehmer suchen"), "username");
 
@@ -58,7 +59,7 @@ class SupervisorgroupController extends PluginController
             ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/supervisorgroup/addUser/' . $group->id, ['id' => $group_id, 'redirect' => $this->url_for('showsupervisor/supervisorgroup/' . $this->linkId)]))
             ->render();
 
-        $this->usersOfGroup = $group->user;
+        $this->usersOfGroup = $this->supervisorGroup->user;
 
         // Sidebar
         $sidebar = Sidebar::Get();

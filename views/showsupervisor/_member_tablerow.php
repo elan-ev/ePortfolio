@@ -1,4 +1,4 @@
-<? $userPortfolioId = EportfolioGroup::getPortfolioIdOfUserInGroup($user->id, $groupId); ?>
+<? $userPortfolioId = EportfolioModel::getPortfolioIdOfUserInGroup($user->id, $groupId); ?>
 <tr>
     <td>
         <? if ($userPortfolioId): ?>
@@ -35,7 +35,7 @@
     </td>
 
     <td>
-        <?= $portfolioSharedChapters = EportfolioUser::portfolioSharedChapters(
+        <?= $portfolioSharedChapters = EportfolioFreigabe::sharedChapters(
             $userPortfolioId, EportfolioGroupTemplates::getUserChapterInfos($groupId, $userPortfolioId)
         ); ?>
         /

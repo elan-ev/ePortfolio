@@ -101,34 +101,6 @@ class EportfolioUser extends SimpleORMap
     }
 
     /**
-     * Returns number of shared chapters for the supervisor group ONLY
-     **/
-    public static function portfolioSharedChapters($userPortfolioId, $templates)
-    {
-        $ids = [];
-        foreach ($templates as $template) {
-            foreach ($template as $chapter) {
-                $ids[] = $chapter['id'];
-            }
-        }
-
-        $stmt = DBManager::get()->prepare("SELECT COUNT(DISTINCT freigabe.block_id) FROM eportfolio
-                JOIN eportfolio_freigaben AS freigabe
-                    ON eportfolio.Seminar_id = freigabe.Seminar_id
-                JOIN eportfolio_block_infos AS info
-                    ON info.block_id = freigabe.block_id
-                JOIN eportfolio_groups AS g
-                    ON freigabe.user_id = g.supervisor_group_id
-                WHERE eportfolio.Seminar_id = :seminar_id
-                    AND info.block_id IN (:block_id)");
-
-        $stmt->bindParam(":block_id", $ids, StudipPDO::PARAM_ARRAY);
-        $stmt->execute([':seminar_id' => $userPortfolioId]);
-
-        return $stmt->fetchColumn();
-    }
-
-    /**
      * Gibt die Verhältnis freigeben/gesamt in Prozent wieder
      **/
     public static function getGesamtfortschrittInProzent($oben, $unten)

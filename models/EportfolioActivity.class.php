@@ -122,7 +122,7 @@ class EportfolioActivity extends SimpleORMap
         $activity->group_id = $group_id;
         $activity->store();
 
-        foreach (EportfolioGroup::find($group_id)->getRelatedStudentPortfolios() as $portfolio) {
+        foreach (EportfolioModel::getRelatedStudentPortfolios() as $portfolio) {
             $activity                = new EportfolioActivity();
             $activity->type          = 'vorlage-erhalten';
             $activity->user_id       = $user_id;

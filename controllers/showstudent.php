@@ -16,13 +16,13 @@ class ShowstudentController extends PluginController
     public function index_action()
     {
         $this->group_id = Context::getId();
-        $this->portfolio_id   = EportfolioGroup::getPortfolioIdOfUserInGroup($GLOBALS['user']->id, $this->group_id);
+        $this->portfolio_id   = EportfolioModel::getPortfolioIdOfUserInGroup($GLOBALS['user']->id, $this->group_id);
         $this->groupTemplates = EportfolioGroupTemplates::getGroupTemplates($this->group_id);
     }
 
     public function createlateportfolio_action($group_id, $user_id)
     {
-        $portfolio_id = EportfolioGroup::getPortfolioIdOfUserInGroup($user_id, $group_id);
+        $portfolio_id = EportfolioModel::getPortfolioIdOfUserInGroup($user_id, $group_id);
         if (!$portfolio_id) {
             /**
              * Der User hat noch kein Portfilio

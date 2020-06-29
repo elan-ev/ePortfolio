@@ -32,23 +32,6 @@ class EportfolioModel extends SimpleORMap
         parent::configure($config);
     }
 
-    public static function getAllSupervisors($cid)
-    {
-        $supervisoren = [];
-        $portfolio    = EportfolioModel::findBySeminarId($cid);
-        if ($portfolio->group_id) {
-            array_push($supervisoren, EportfolioGroup::getAllSupervisors($portfolio->group_id));
-        }
-        return $supervisoren[0];
-    }
-
-    public function getOwnerFullname()
-    {
-        $user     = $this->owner;
-        $fullname = $user->vorname . ' ' . $user->nachname;
-        return $fullname;
-    }
-
     public static function getPortfolioVorlagen()
     {
         $query = "
@@ -178,11 +161,19 @@ class EportfolioModel extends SimpleORMap
     }
 
     /**
-     * Prüft ob einn Kapitel freigeschaltet wurde
+     * Prüft ob ein Kapitel freigeschaltet wurde
      **/
     public static function checkKapitelFreigabe($chapter_id)
     {
-        return (int)DBManager::get()->fetchColumn("SELECT COUNT(*) FROM eportfolio_freigaben WHERE block_id = :block_id", [':block_id' => $chapter_id]) > 0;
+        // check, if the passed chapter is accessible by the responsible supervisor group
+        $block = Mooc\DB\Block::find($chapter_id);
+        if (!$block) {
+            return false;
+        }
+
+        $group = SupervisorGroup::findOneBySQL('Seminar_id = ?', [$block->seminar_id]);
+
+        return EportfolioFreigabe::hasAccess($group->id, $chapter_id);
     }
 
     /**
@@ -362,7 +353,7 @@ class EportfolioModel extends SimpleORMap
     {
 
         $portfolio = EportfolioModel::findBySeminarId($portfolio_id);
-        $owner     = $portfolio->getOwnerFullname();
+        $owner     = get_fullname($portfolio->owner->id);
         $link      = $GLOBALS['ABSOLUTE_URI_STUDIP'] . 'plugins.php/courseware/courseware?cid=' . $portfolio_id . '&selected=' . $block_id;
         switch ($case) {
             default:
@@ -519,7 +510,6 @@ class EportfolioModel extends SimpleORMap
         $db          = DBManager::get();
         $groupname   = Seminar::GetInstance($group_id);
         $groupid     = Course::findCurrent()->id;
-        $group       = EportfolioGroup::find($group_id);
         $sem_type_id = EportfolioModel::getPortfolioSemId();
 
         $owner            = User::find($user_id);
@@ -548,8 +538,9 @@ class EportfolioModel extends SimpleORMap
         /**
          * Alle Supervisoren hinzufügen
          * **/
-        $supervisors = EportfolioGroup::getAllSupervisors($group_id);
-        foreach ($supervisors as $supervisor) {
+        $supervisors = SupervisorGroup::find($group_id);
+
+        foreach ($supervisors->members as $supervisor) {
             $sem->addMember($supervisor, 'autor');
         }
 
@@ -617,4 +608,62 @@ class EportfolioModel extends SimpleORMap
         }
     }
 
+    /**
+     * Gibt die ID des Portfolios des Nutzers in einer Gruppe zurück
+     **/
+    public static function getPortfolioIdOfUserInGroup($user_id, $group_id)
+    {
+        return self::findOneBySql('owner_id = ? AND group_id = ?', [
+            $user_id, $group_id
+        ])->Seminar_id;
+    }
+
+    public static function getGroupMembers($course_id)
+    {
+        $users   = [];
+
+        $course = Course::find($course_id);
+        $user_ids = $course->members->filter(function ($a) {
+            return $a['status'] === 'autor';
+        })->pluck('user_id');
+
+        $users = User::findMany($user_ids, "ORDER BY Nachname, Vorname");
+
+        return $users;
+    }
+
+    /**
+     * Gibt die Anzahl aller Kapitel (Chapter) in den Templates wieder
+     **/
+    public static function getAnzahlAllerKapitel($group_id)
+    {
+        return (int)DBManager::get()->fetchColumn(
+            "SELECT COUNT(`type`)
+                FROM `mooc_blocks`
+                WHERE `seminar_id` IN (SELECT `Seminar_id` FROM `eportfolio_group_templates` WHERE `group_id` = ?) AND `type` = 'Chapter'",
+            [$group_id]
+        );
+    }
+
+    public function getRelatedStudentPortfolios($course_id)
+    {
+        $member     = $this->user;
+        $portfolios = [];
+
+        foreach ($member as $key) {
+            $portfolio = EportfolioModel::findBySQL('group_id = :groupid AND owner_id = :value', [
+                ':groupid' => $course_id, ':value' => $key->user_id
+            ]);
+
+            if ($portfolio) {
+                array_push($portfolios, $portfolio[0]->Seminar_id);
+            }
+        }
+
+        if (!empty($portfolios)) {
+            return $portfolios;
+        } else {
+            return null;
+        }
+    }
 }

@@ -4,7 +4,7 @@
         <div class="row member-container">
             <? foreach ($templates as $template_id => $chapters): ?>
 
-                <? $sharedChapterCnt = EportfolioFreigabe::sharedChaptersInTemplate($cid, $chapters) ?>
+                <? $sharedChapterCnt = EportfolioFreigabe::sharedChapters($cid, $chapters) ?>
                 <? $supervisorNotesCnt = EportfolioModel::countSupervisorNotiz(array_keys(array_column($chapters, NULL, 'id'))) ?>
 
                 <div class="col-sm-4 member-single-card">
@@ -40,17 +40,17 @@
                                     <?= _('Status: ') ?>
                                     <?= Icon::create('span-full', $icon) ?>
                                 </div>
-                                
+
                                 <div class="template-infos-single" title="Verteilt am" style="margin-left: 100px;">
                                     <?= Icon::create('activity', 'clickable') ?>
                                     <?= date('d.m.Y', EportfolioGroupTemplates::getWannWurdeVerteilt($group_id, $template_id)) ?>
-                                </div>  
+                                </div>
                             </div>
 
                             <div class="template-infos-single">
                                 <?= Icon::create('date', 'clickable') ?>
                                 <?= $deadline ? date('d.m.Y', $deadline) : _("kein Abgabedatum") ?>
-                                
+
                                 <span class="template-infos-days-left">
                                 <?= $deadline ? "(noch " . EportfolioModel::getDaysLeft($group_id, $template_id) . " Tage)" : "" ?>
                                 </span>

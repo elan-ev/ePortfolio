@@ -1,4 +1,4 @@
-<? $userPortfolioId = EportfolioGroup::getPortfolioIdOfUserInGroup($user->id, $groupId); ?>
+<? $userPortfolioId = EportfolioModel::getPortfolioIdOfUserInGroup($user->id, $groupId); ?>
 
 <div class="col-sm-4 member-single-card">
     <? if ($userPortfolioId): ?>
@@ -70,7 +70,7 @@
                     <div class="row member-footer-box">
                         <div class="col-sm-4">
                             <div class="member-footer-box-big">
-                                <?= $portfolioSharedChapters = EportfolioUser::portfolioSharedChapters(
+                                <?= $portfolioSharedChapters = EportfolioFreigabe::sharedChapters(
                                     $userPortfolioId, EportfolioGroupTemplates::getUserChapterInfos($groupId, $userPortfolioId)
                                 ); ?>
                                 /
