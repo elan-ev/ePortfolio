@@ -9,15 +9,8 @@
  * @property string $status
  * @property int $owner
  */
-class EportfolioUser extends SimpleORMap
+class EportfolioUser
 {
-
-    protected static function configure($config = [])
-    {
-        $config['db_table'] = 'eportfolio_user';
-        parent::configure($config);
-    }
-
     public static function getPortfolioInformationInGroup($group_id, $portfolio_id, $current_user_id)
     {
         return DBManager::get()->fetchAll("SELECT mooc_blocks.title, freigaben.mkdate as shareDate,

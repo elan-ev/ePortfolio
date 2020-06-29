@@ -64,6 +64,7 @@ class SettingsController extends PluginController
         $this->viewerList    = $viewers;
         $this->numberChapter = count($chapters);
         $this->supervisorId  = $supervisor_id;
+        $this->course        = $course;
         $supervisors         = SupervisorGroupUser::findBySupervisorGroupId($supervisor_id);
 
         foreach ($supervisors as $supervisor) {

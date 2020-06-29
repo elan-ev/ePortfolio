@@ -139,7 +139,7 @@ class ShowsupervisorController extends PluginController
         $this->portfolio_id = EportfolioModel::getPortfolioIdOfUserInGroup($user_id, $group_id);
         $this->templates  = EportfolioGroupTemplates::getUserChapterInfos($group_id, $this->portfolio_id);
 
-        $this->portfolioSharedChapters = EportfolioFreigabe::sharedChapters($this->portfolio_id, $this->templates);
+        $this->portfolioSharedChapters = EportfolioFreigabe::sharedChapters($this->course_id, $this->templates);
         $this->chapterCount = EportfolioModel::getAnzahlAllerKapitel($this->groupId);
         $this->notesCount = EportfolioUser::getAnzahlNotizen($this->portfolio_id);
 

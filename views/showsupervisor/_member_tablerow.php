@@ -36,7 +36,7 @@
 
     <td>
         <?= $portfolioSharedChapters = EportfolioFreigabe::sharedChapters(
-            $userPortfolioId, EportfolioGroupTemplates::getUserChapterInfos($groupId, $userPortfolioId)
+            $this->course_id, EportfolioGroupTemplates::getUserChapterInfos($groupId, $userPortfolioId)
         ); ?>
         /
         <?= $portfolioChapters ?>

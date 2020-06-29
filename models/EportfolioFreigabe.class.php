@@ -25,9 +25,9 @@ class EportfolioFreigabe extends SimpleORMap
     }
 
     /**
-     * [hasAccess description]
+     * check if the user can access the passed chapter, including access via group
      *
-     * @param  [type]  $user_id    [description]
+     * @param  [type]  $user_id    Valid user_ids only
      * @param  [type]  $chapter_id [description]
      *
      * @return boolean             [description]
@@ -36,23 +36,17 @@ class EportfolioFreigabe extends SimpleORMap
     {
         $block = Mooc\DB\Block::find($chapter_id);
 
-        // check, if $user_id as portfolio-group
+        // check, if $user_id is portfolio-group
         $approval_type = SupervisorGroup::find($user_id) ? 'groups' : 'users';
 
-        if ($approval_type == 'groups') {
-            $id = md5($user_id . $block->seminar_id);
-        } else {
-            $id = $user_id;
-        }
-
-        return $block->hasGroupApproval($id, 'read')
-            || $block->hasUserApproval($id, 'write');
+        return $block->hasGroupApproval($user_id, 'read')
+            || $block->hasUserApproval($user_id, 'write');
     }
 
     /**
-     * [getAccess description]
+     * checks, if access for passed user or group is explicitly set.
      *
-     * @param  [type] $user_id    [description]
+     * @param  [type] $user_id    user_id or supervisor_group_id
      * @param  [type] $chapter_id [description]
      *
      * @return [type]             [description]
@@ -161,8 +155,8 @@ class EportfolioFreigabe extends SimpleORMap
                 $new_members[] = $user->user_id;
             }
 
-            $add_members    = array_diff($current_members, $new_members);
-            $remove_members = array_diff($new_members, $current_members);
+            $remove_members = array_diff($current_members, $new_members);
+            $add_members    = array_diff($new_members, $current_members);
 
             foreach ($remove_members as $uid) {
                 if ($user = $sgroup->members->findOneByUserId($uid)) {
@@ -173,7 +167,7 @@ class EportfolioFreigabe extends SimpleORMap
             foreach ($add_members as $uid) {
                 $sgroup->members[] = StatusgruppeUser::build([
                     'statusgruppe_id' => $id,
-                    'user_id'         => $user->id
+                    'user_id'         => $uid
                 ]);
             }
 

@@ -88,19 +88,20 @@ class EportfolioModel extends SimpleORMap
         $query     = "SELECT `title`, `id`  FROM `mooc_blocks`
             WHERE `parent_id` = :parent_id AND `type` = 'Subchapter'
             ORDER BY `position` ASC";
+
         $statement = DBManager::get()->prepare($query);
         $statement->execute([':parent_id' => $chapter_id]);
+
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public static function getChapterInformation($portfolio_id)
     {
-        $chapters = DBManager::get()->fetchAll("SELECT mooc_blocks.title, mooc_blocks.id
-        FROM mooc_blocks
-        WHERE mooc_blocks.seminar_id = :portfolio_id AND mooc_blocks.type = 'Chapter' AND mooc_blocks.parent_id != '0'
-        ORDER BY mooc_blocks.id ASC",
+        return DBManager::get()->fetchAll("SELECT mooc_blocks.title, mooc_blocks.id
+            FROM mooc_blocks
+            WHERE mooc_blocks.seminar_id = :portfolio_id AND mooc_blocks.type = 'Chapter' AND mooc_blocks.parent_id != '0'
+            ORDER BY mooc_blocks.id ASC",
         ["portfolio_id" => $portfolio_id]);
-        return $chapters;
     }
 
     /**
@@ -173,7 +174,7 @@ class EportfolioModel extends SimpleORMap
 
         $group = SupervisorGroup::findOneBySQL('Seminar_id = ?', [$block->seminar_id]);
 
-        return EportfolioFreigabe::hasAccess($group->id, $chapter_id);
+        return EportfolioFreigabe::getAccess($group->id, $chapter_id);
     }
 
     /**
@@ -226,27 +227,6 @@ class EportfolioModel extends SimpleORMap
     }
 
     /**
-     * Prüft ob ein Kapitel vom Nutzer selber erstellt wurde
-     **/
-    public static function isEigenesKapitel($seminar_id, $group_id, $chapter_id)
-    {
-        return !(int)DBManager::get()->fetchColumn(
-                "SELECT COUNT(`vorlagen_block_id`) FROM `eportfolio_block_infos` WHERE `block_id` = :block_id AND `Seminar_id` = :seminar_id",
-                [':block_id' => $chapter_id, ':seminar_id' => $seminar_id]) > 0;
-    }
-
-    /**
-     * Prüft ob ein Unterkapitel vom Nutzer selber erstellt wurde
-     **/
-    public static function isEigenesUnterkapitel($subchapter_id)
-    {
-        $timestapChapter = EportfolioModel::getTimestampOfChapter(EportfolioModel::getParentId($subchapter_id));
-        if ($timestapChapter < EportfolioModel::getTimestampOfChapter($subchapter_id)) {
-            return true;
-        }
-    }
-
-    /**
      * Liefert Timestamp eines Kapitels
      **/
     public static function getTimestampOfChapter($block_id)
@@ -254,29 +234,6 @@ class EportfolioModel extends SimpleORMap
         return DBManager::get()->fetchColumn(
             "SELECT mkdate FROM mooc_blocks WHERE id = :block_id",
             [':block_id' => $block_id]
-        );
-    }
-
-    /**
-     * Liefert den Timestamp des als letzt hinzugefügtes Templates
-     * in einer Gruppe
-     **/
-    public static function getNewestTemplateTimestamp($group_id)
-    {
-        return DBManager::get()->fetchColumn(
-            "SELECT mkdate FROM eportfolio_group_templates WHERE group_id = :group_id ORDER BY mkdate DESC",
-            [':group_id' => $group_id]
-        );
-    }
-
-    /**
-     * Liefert mkdate des Templates
-     **/
-    public static function getTimestampOfTemplate($group_id, $seminar_id)
-    {
-        return DBManager::get()->fetchColumn(
-            "SELECT mkdate FROM eportfolio_group_templates WHERE group_id = :group_id AND seminar_id = :seminar_id",
-            [':group_id' => $group_id, ':seminar_id' => $seminar_id]
         );
     }
 
@@ -421,59 +378,6 @@ class EportfolioModel extends SimpleORMap
         } else {
             return 0;
         }
-    }
-
-    /**
-     * Liefert die Anzahl der Kapitel in einem Template
-     **/
-    public static function getNumberOfChaptersFromTemplate($template_id)
-    {
-        return DBManager::get()->fetchColumn(
-            "SELECT COUNT(id) FROM mooc_blocks WHERE type = 'Chapter' AND Seminar_id = :template_id",
-            [':template_id' => $template_id]
-        );
-    }
-
-    /**
-     * Liefert die Anzahl der freigebenen Kapitel der Users
-     * innerhalb eines verteilten Templates
-     **/
-    public static function getNumberOfSharedChaptersOfTemplateFromUser($template_id, $user_template_id)
-    {
-        $return           = 0;
-        $templateChapters = EportfolioModel::getChapters($template_id);
-        foreach ($templateChapters as $chapter) {
-            $block_id = EportfolioModel::getUserPortfolioBlockId($user_template_id, $chapter['id']);
-            if (EportfolioModel::checkKapitelFreigabe($block_id)) {
-                $return++;
-            }
-        }
-        return $return;
-    }
-
-    /**
-     * Liefert Fortschritt des Users in in einem Template
-     **/
-    public static function getProgressOfUserInTemplate($shared, $all)
-    {
-        return round($shared / $all * 100, 0);
-    }
-
-    /**
-     * Liefert die Anzahl der Supervisornotizen innerhalb eines $templateStatus
-     * einers Users
-     **/
-    public static function getNumberOfNotesInTemplateOfUser($template_id, $user_template_id)
-    {
-        $return           = 0;
-        $templateChapters = EportfolioModel::getChapters($template_id);
-        foreach ($templateChapters as $chapter) {
-            $block_id = EportfolioModel::getUserPortfolioBlockId($user_template_id, $chapter['id']);
-            if (EportfolioModel::checkSupervisorNotiz($block_id)) {
-                $return++;
-            }
-        }
-        return $return;
     }
 
     /**
