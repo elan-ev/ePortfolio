@@ -70,7 +70,8 @@
 
     <!-- display information for every chapter and subchapter -->
     <? foreach ($chapterInfos as $kapitel): ?>
-        <? $hasAccess = EportfolioFreigabe::hasAccess($GLOBALS['user']->id, $kapitel['id']) ?>
+        <? $hasAccess   = EportfolioFreigabe::hasAccess($GLOBALS['user']->id, $kapitel['id']) ?>
+        <? $groupAccess = EportfolioFreigabe::getAccess($this->supervisor_group->id, $kapitel['id']) ?>
         <div class="row member-content-single-line <?= $kapitel['template_title'] ? '' : 'unlinked' ?>">
             <div class="col-sm-4 member-content-single-line-ober">
                 <?= $kapitel['title'] ?>
@@ -102,7 +103,7 @@
                         <?= Icon::create('span-full', $icon); ?>
                     </div>
                     <div class="col-sm-2" style="text-align: center;">
-                        <? if ($kapitel['shareDate']): ?>
+                        <? if ($groupAccess): ?>
                             <? if ($lastVisit  < $kapitel['shareDate']): ?>
                                 <?= Icon::create('accept+new', 'status-green'); ?>
                             <? else: ?>

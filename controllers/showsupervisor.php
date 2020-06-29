@@ -143,6 +143,8 @@ class ShowsupervisorController extends PluginController
         $this->chapterCount = EportfolioModel::getAnzahlAllerKapitel($this->groupId);
         $this->notesCount = EportfolioUser::getAnzahlNotizen($this->portfolio_id);
 
+        $this->supervisor_group = SupervisorGroup::findOneBySQL('Seminar_id = ?', [$this->course_id]);
+
         /**
          * get all deadlines, shareDates from PortfolioInformation and titles and correct number of chapters from chapterInformation
          * reindex both arrays so both arrays can be combined
