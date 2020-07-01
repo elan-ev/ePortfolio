@@ -203,6 +203,12 @@ class EportfolioFreigabe extends SimpleORMap
         }
 
         $block->setApprovalList(json_encode($list));
+
+        // remove default read permissions
+    
+$block = Mooc\DB\Block::find($chapter_id);
+        $settings['settings']['defaultRead'] = false;
+$block->setApprovalList
     }
 
     public static function hasAccessSince($user_id, $chapter_id)
