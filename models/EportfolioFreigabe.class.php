@@ -120,6 +120,20 @@ class EportfolioFreigabe extends SimpleORMap
             return false;
         }
 
+        // remove default read permission
+        // get root node
+        $stmt = DBManager::get()->prepare("SELECT id FROM mooc_blocks
+            WHERE parent_id IS NULL
+                AND type ='Courseware'
+                AND seminar_id = ?");
+
+        $stmt->execute([$block->seminar_id]);
+
+        $root_block = Mooc\DB\Block::find($stmt->fetchColumn());
+        $settings['settings']['defaultRead'] = false;
+        $root_block->setApprovalList(json_encode($settings));
+        // end - remove default read permission
+
         if ($approval_type == 'groups') {
             $id = md5($user_id . $block->seminar_id);
         } else {
@@ -203,12 +217,6 @@ class EportfolioFreigabe extends SimpleORMap
         }
 
         $block->setApprovalList(json_encode($list));
-
-        // remove default read permissions
-    
-$block = Mooc\DB\Block::find($chapter_id);
-        $settings['settings']['defaultRead'] = false;
-$block->setApprovalList
     }
 
     public static function hasAccessSince($user_id, $chapter_id)
