@@ -82,7 +82,7 @@ class UpdatePermissionPortfolios extends Migration
             );
         }
 
-        // $db->exec('DROP TABLE eportfolio_freigaben');
+        $db->exec('DROP TABLE eportfolio_freigaben');
     }
 
 
