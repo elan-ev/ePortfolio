@@ -69,20 +69,6 @@ class UpdatePermissionPortfolios extends Migration
         while ($data = $results->fetch(PDO::FETCH_ASSOC)) {
             $stmt->execute([$data['Seminar_id'], $data['user_id']]);
         }
-
-        // convert all accesses from eportfolio_freigaben to courseware permissions
-
-        // update permissions for supervisorgroups and single users
-        $results = $db->query("SELECT user_id, block_id
-            FROM eportfolio_freigaben");
-
-        while ($data = $results->fetch(PDO::FETCH_ASSOC)) {
-            EportfolioFreigabe::setAccess(
-                $data['user_id'], $data['block_id'], true
-            );
-        }
-
-        $db->exec('DROP TABLE eportfolio_freigaben');
     }
 
 
