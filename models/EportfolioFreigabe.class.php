@@ -34,6 +34,8 @@ class EportfolioFreigabe extends SimpleORMap
      */
     public static function hasAccess($user_id, $chapter_id)
     {
+        self::loadCourseware();
+
         $block = Mooc\DB\Block::find($chapter_id);
 
         // check, if $user_id is portfolio-group
@@ -217,13 +219,6 @@ class EportfolioFreigabe extends SimpleORMap
         }
 
         $block->setApprovalList(json_encode($list));
-    }
-
-    public static function hasAccessSince($user_id, $chapter_id)
-    {
-        $hasAccessSince = EportfolioFreigabe::findOneBySQL('block_id = :block_id AND user_id = :user_id',
-            [':block_id' => $chapter_id, ':user_id' => $user_id]);
-        return $hasAccessSince->mkdate;
     }
 
     /**
