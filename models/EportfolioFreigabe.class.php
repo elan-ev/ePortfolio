@@ -69,9 +69,11 @@ class EportfolioFreigabe extends SimpleORMap
             $id = $user_id;
         }
 
-        foreach ($list[$approval_type] as $b_user_id => $perm) {
-            if ($id == $b_user_id && ($perm == 'write' || $perm == 'read')) {
-                return true;
+        if (is_array($list[$approval_type])) {
+            foreach ($list[$approval_type] as $b_user_id => $perm) {
+                if ($id == $b_user_id && ($perm == 'write' || $perm == 'read')) {
+                    return true;
+                }
             }
         }
 
