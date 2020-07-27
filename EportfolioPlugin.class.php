@@ -189,21 +189,17 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         $group = SupervisorGroup::findOneBySQL('seminar_id = ?', [$course_id]);
 
         if ($group) {
-            $activies = EportfolioActivity::newActivities($course_id);
-            if (is_array($activies)) {
-                $activityCount = count($activies);
-                if ($activityCount) {
-                    $title = $activityCount > 1 ? sprintf(_('%s neue Ereignisse in Studierenden-Portfolios'), $activityCount) : _('1 neues Ereignis in Studierenden-Portfolio');
-                    $icon->setImage(Icon::create('eportfolio', Icon::ROLE_ATTENTION, ['title' => $title]));
-                } else {
-                    $title = _('Keine neuen Ereignisse.');
-                    $icon->setImage(Icon::create('eportfolio', Icon::ROLE_INACTIVE, ['title' => $title]));
-                }
+            $activityCount = count(EportfolioActivity::newActivities($course_id));
 
-                $icon->setBadgeNumber($activityCount);
+            if ($activityCount) {
+                $title = $activityCount > 1 ? sprintf(_('%s neue Ereignisse in Studierenden-Portfolios'), $activityCount) : _('1 neues Ereignis in Studierenden-Portfolio');
+                $icon->setImage(Icon::create('eportfolio', Icon::ROLE_ATTENTION, ['title' => $title]));
             } else {
-                $icon->setImage(Icon::create('eportfolio', Icon::ROLE_ATTENTION, ['title' => 'Supervision']));
+                $title = _('Keine neuen Ereignisse.');
+                $icon->setImage(Icon::create('eportfolio', Icon::ROLE_INACTIVE, ['title' => $title]));
             }
+
+            $icon->setBadgeNumber($activityCount);
         }
 
         return $icon;
