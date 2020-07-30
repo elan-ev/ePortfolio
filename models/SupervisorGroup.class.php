@@ -4,7 +4,7 @@
  * @author  <asudau@uos.de>
  *
  * @property varchar $id
- * @property varchar $eportfolio_group
+ * @property varchar $seminar_id
  * @property string $name
  * @property SupervisorGroupUser[] $user
  */
@@ -35,8 +35,7 @@ class SupervisorGroup extends SimpleORMap
 
         if ($user->store()) {
             //als user in alle ePortfolios der StudentInnen eintragen
-            $group    = $this->eportfolio_group;
-            $seminare = $group->getRelatedStudentPortfolios();
+            $seminare = EportfolioModel::getRelatedStudentPortfolios($this->seminar_id);
 
             if ($seminare) {
                 foreach ($seminare as $seminar) {
@@ -54,14 +53,16 @@ class SupervisorGroup extends SimpleORMap
         $user = SupervisorGroupUser::findOneBySQL('user_id = :user_id AND supervisor_group_id = :supervisor_group_id',
             [':user_id' => $user_id, ':supervisor_group_id' => $this->id]);
 
-        if ($user->delete()) {
+        if ($user && $user->delete()) {
             //als user aus allen ePortfolios der StudentInnen austragen
-            $group    = $this->eportfolio_group;
-            $seminare = $group->getRelatedStudentPortfolios();
-            foreach ($seminare as $seminar) {
-                $seminar = Seminar::GetInstance($seminar);
-                $seminar->deleteMember($user_id);
-                $seminar->store();
+            $seminare = EportfolioModel::getRelatedStudentPortfolios($this->seminar_id);
+
+            if ($seminare) {
+                foreach ($seminare as $seminar) {
+                    $seminar = Seminar::GetInstance($seminar);
+                    $seminar->deleteMember($user_id);
+                    $seminar->store();
+                }
             }
         }
     }

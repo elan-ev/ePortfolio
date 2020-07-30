@@ -549,12 +549,13 @@ class EportfolioModel extends SimpleORMap
         );
     }
 
-    public function getRelatedStudentPortfolios($course_id)
+    public static function getRelatedStudentPortfolios($course_id)
     {
-        $member     = $this->user;
+        $course     = new Course($course_id);
+        $members    = $course->members;
         $portfolios = [];
 
-        foreach ($member as $key) {
+        foreach ($members as $key) {
             $portfolio = EportfolioModel::findBySQL('group_id = :groupid AND owner_id = :value', [
                 ':groupid' => $course_id, ':value' => $key->user_id
             ]);

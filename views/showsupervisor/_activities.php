@@ -1,7 +1,6 @@
 <? if (!sizeof($activities)) : ?>
-    <h1>
-        <?= _('Keine Aktivitäten') ?>
-    </h1>
+    <?= MessageBox::info(_('Keine Aktivitäten')) ?>
+    <br>
 <? else : ?>
 <? foreach ($activities as $activity): ?>
     <div class="single-activity">
