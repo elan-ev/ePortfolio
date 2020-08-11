@@ -220,7 +220,7 @@ class EportfolioFreigabe extends SimpleORMap
             }
         }
 
-        $block->setApprovalList(json_encode($list));
+        $block->setApprovalList(json_encode([$approval_type => $list[$approval_type]]));
     }
 
     /**

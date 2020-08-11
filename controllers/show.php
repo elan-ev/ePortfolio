@@ -38,7 +38,7 @@ class ShowController extends PluginController
         $this->archived = array_filter($courses, function($course) use ($id) {
             return !empty(EportfolioArchive::find($course->id));
         });
-        
+
 
         $this->accessible_portfolios = EportfolioModel::findBySQL(
             "JOIN seminar_user ON (
@@ -47,7 +47,7 @@ class ShowController extends PluginController
             WHERE
                 eportfolio.owner_id != :user_id
                 AND seminar_user.user_id = :user_id
-                AND seminar_user.status = 'user'",
+                AND seminar_user.status = 'autor'",
             [':user_id' => $GLOBALS['user']->id]
         );
     }
