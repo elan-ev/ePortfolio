@@ -15,9 +15,9 @@ class ShowstudentController extends PluginController
 
     public function index_action()
     {
-        $this->group_id = Context::getId();
-        $this->portfolio_id   = EportfolioModel::getPortfolioIdOfUserInGroup($GLOBALS['user']->id, $this->group_id);
-        $this->groupTemplates = EportfolioGroupTemplates::getGroupTemplates($this->group_id);
+        $this->course_id = Context::getId();
+        $this->portfolio_id   = EportfolioModel::getPortfolioIdOfUserInGroup($GLOBALS['user']->id, $this->course_id);
+        $this->groupTemplates = EportfolioGroupTemplates::getGroupTemplates($this->course_id);
     }
 
     public function createlateportfolio_action($group_id, $user_id)

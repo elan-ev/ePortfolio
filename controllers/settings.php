@@ -4,10 +4,11 @@ class SettingsController extends PluginController
 {
     public function index_action($cid = null)
     {
-        $userid          = $GLOBALS['user']->id;
-        $course          = Course::findCurrent();
-        $this->isVorlage = EportfolioModel::isVorlage($course->id);
-        $eportfolio      = EportfolioModel::findBySeminarId($course->id);
+        $userid           = $GLOBALS['user']->id;
+        $course           = Course::findCurrent();
+        $this->isVorlage  = EportfolioModel::isVorlage($course->id);
+        $eportfolio       = EportfolioModel::findBySeminarId($course->id);
+        $supervisor_group = SupervisorGroup::findOneBySQL('Seminar_id = ?', [$eportfolio->group_id]);
 
         $seminar = new Seminar($course->id);
 
@@ -27,7 +28,7 @@ class SettingsController extends PluginController
 
         $chapters      = EportfolioModel::getChapters($course->id);
         $viewers       = $course->getMembersWithStatus('autor');
-        $supervisor_id = $this->getSupervisorGroupOfPortfolio($course->id);
+        $supervisor_id = $supervisor_group->id;
 
         $search_obj = new SQLSearch("SELECT auth_user_md5.user_id, CONCAT(auth_user_md5.nachname, ', ', auth_user_md5.vorname, ' (' , auth_user_md5.email, ')' ) as fullname, username, perms "
             . "FROM auth_user_md5 "
@@ -95,38 +96,15 @@ class SettingsController extends PluginController
         $this->render_nothing();
     }
 
-    /**
-     * TOTO refactoring gehört in ePortfoliomodel
-     * @param $id
-     * @return bool
-     */
-    public function getSupervisorGroupOfPortfolio()
-    {
-        $course_id = Context::getId();
-        $portfolio = EportfolioModel::findBySeminarId($course_id);
-
-        if ($portfolio->group_id) {
-            $portfoliogroup = SupervisorGroup::findOneBySql('Seminar_id = ?', [$portfolio->group_id]) ;
-        }
-
-        if ($portfoliogroup) {
-            return $portfoliogroup->id;
-        } else {
-            return false;
-        }
-    }
-
     public function addZugriff_action()
     {
         $mp            = MultiPersonSearch::load('selectFreigabeUser');
         $seminar       = new Seminar(Context::getId());
         $eportfolio    = EportfolioModel::findBySeminarId(Context::getId());
-        $eportfolio_id = $eportfolio->eportfolio_id;
         $userRole      = 'user';
 
         foreach ($mp->getAddedUsers() as $userId) {
             $seminar->addMember($userId, $userRole);
-            $statement->execute([':id' => Context::getId(), ':userId' => $userId, ':eportfolio_id' => $eportfolio_id]);
         }
 
         $this->redirect('settings/index/' . Context::getId());
@@ -137,7 +115,6 @@ class SettingsController extends PluginController
         $user_id       = Request::get('userId');
         $seminar       = new Seminar(Context::getId());
         $eportfolio    = EportfolioModel::findBySeminarId(Context::getId());
-        $eportfolio_id = $eportfolio->eportfolio_id;
 
         $course   = Course::findCurrent();
         $chapters = EportfolioModel::getChapters($course->id);

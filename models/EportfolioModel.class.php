@@ -4,14 +4,10 @@
  * @author  <asudau@uos.de>
  *
  * @property varchar $Seminar_id
- * @property varchar $eportfolio_id
- * @property varchar $group_id
- * @property string $templateStatus
+ * @property integer $templateStatus
  * @property varchar $owner_id
- * @property varchar $supervisor_id
- * @property json $freigaben_kapitel //deprecated
- * @property varchar $template_id
- * @property json $settings //deprecated?
+ * @property varchar $group_id
+
  */
 class EportfolioModel extends SimpleORMap
 {
@@ -411,9 +407,8 @@ class EportfolioModel extends SimpleORMap
      * **/
     public static function createPortfolioForUser($group_id, $user_id, $plugin)
     {
-        $db          = DBManager::get();
-        $groupname   = Seminar::GetInstance($group_id);
-        $groupid     = Course::findCurrent()->id;
+        $group       = SupervisorGroup::findOneById($group_id);
+        $groupname   = Seminar::GetInstance($group->Seminar_id);
         $sem_type_id = EportfolioModel::getPortfolioSemId();
 
         $owner            = User::find($user_id);
@@ -442,28 +437,31 @@ class EportfolioModel extends SimpleORMap
         /**
          * Alle Supervisoren hinzufügen
          * **/
-        $supervisors = SupervisorGroup::find($group_id);
 
-        foreach ($supervisors->members as $supervisor) {
-            $sem->addMember($supervisor, 'autor');
+        foreach ($group->user as $supervisor) {
+            var_dump($supervisor->user_id);
+            $sem->addMember($supervisor->user_id, 'autor');
         }
 
         $sem->store();
 
-        $eportfolio    = new Seminar();
-        $eportfolio_id = $eportfolio->createId();
-
-        $statement = $db->prepare("INSERT INTO eportfolio
-            (Seminar_id, eportfolio_id, group_id, owner_id, template_id, supervisor_id)
-            VALUES (:sem_id, :eportfolio_id, :groupid, :userid, :masterid, :groupowner)");
-        $statement->execute([
-            ':groupid'       => $group_id,
-            ':sem_id'        => $sem_id,
-            ':eportfolio_id' => $eportfolio_id,
-            ':userid'        => $user_id,
-            ':masterid'      => $masterid,
-            ':groupowner'    => $groupowner
+        self::create([
+            'Seminar_id' => $sem_id,
+            'owner_id'   => $user_id,
+            'group_id'   => $group->Seminar_id
         ]);
+
+        // create portfolio statusgroup in new portfolio-seminar
+        $id = md5($group_id . $sem_id);
+
+        if (!$sgroup = Statusgruppen::find($id)) {
+            // create new statusgroup
+            $sgroup = Statusgruppen::create([
+                'statusgruppe_id' => $id,
+                'name'            => 'Berechtigte für Portfolioarbeit',
+                'range_id'        => $sem_id
+            ]);
+        }
 
         // create basic courseware block, prevents creation of dummy blocks by courseware
         $block = new Mooc\DB\Block();
@@ -515,10 +513,10 @@ class EportfolioModel extends SimpleORMap
     /**
      * Gibt die ID des Portfolios des Nutzers in einer Gruppe zurück
      **/
-    public static function getPortfolioIdOfUserInGroup($user_id, $group_id)
+    public static function getPortfolioIdOfUserInGroup($user_id, $course_id)
     {
         return self::findOneBySql('owner_id = ? AND group_id = ?', [
-            $user_id, $group_id
+            $user_id, $course_id
         ])->Seminar_id;
     }
 

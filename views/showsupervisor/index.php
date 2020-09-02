@@ -1,3 +1,9 @@
+<? if (!$group || !sizeof($group->user)) : ?>
+    <?= MessageBox::warning(sprintf(_('Es muss mindestens eine Person Berechtigungen für die Portfolioarbeit besitzen.
+        Fügen Sie bei <a href="%s">"Berechtigungen Portfolioarbeit"</a> jemanden hinzu!'),
+        $controller->url_for('supervisorgroup')
+    )) ?>
+<? else : ?>
 <div>
     <?= $this->render_partial('showsupervisor/_templates', [
         'title'             => _('Verteilte Vorlagen'),
@@ -125,3 +131,4 @@
         });
     });
 </script>
+<? endif ?>

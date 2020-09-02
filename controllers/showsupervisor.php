@@ -16,7 +16,7 @@ class ShowsupervisorController extends PluginController
             $this->userId  = $GLOBALS['user']->id;
 
             $this->groupId = $this->course->id;
-            $this->group = SupervisorGroup::findBySQL('seminar_id = ?', [$this->groupId])[0];
+            $this->group = SupervisorGroup::findOneBySQL('seminar_id = ?', [$this->groupId]);
 
             $this->supervisorGroupId = $this->group->id;
 
@@ -49,7 +49,7 @@ class ShowsupervisorController extends PluginController
         $this->seminar_list = [];
         $this->masterid  = $master;
 
-        $this->member    = EportfolioModel::getGroupMembers($this->course_id);
+        $members    = EportfolioModel::getGroupMembers($this->course_id);
 
         /**
          * Jeden User in der Gruppe einzeln behandeln
@@ -60,7 +60,7 @@ class ShowsupervisorController extends PluginController
             /**
              * Überprüfen ob es für den Nutzer schon ein Portfolio-Seminar gibt
              * **/
-            $portfolio = Eportfolio::findBySQL('owner_id = ? AND group_id = ?', [
+            $portfolio = EportfolioModel::findOneBySQL('owner_id = ? AND group_id = ?', [
                 $member->id, $this->course_id
             ]);
 
@@ -79,8 +79,7 @@ class ShowsupervisorController extends PluginController
                  * Wenn nein: Neues Portfolio-Seminar für den User anlegen und ausgewähltes Template kopieren
                  * in seminar_list anfügen
                  * **/
-
-                $portfolio_id_add = EportfolioModel::createPortfolioForUser($this->course_id, $member->id, $this->dispatcher->current_plugin);
+                $portfolio_id_add = EportfolioModel::createPortfolioForUser($this->supervisorGroupId, $member->id, $this->dispatcher->current_plugin);
                 array_push($this->seminar_list, $portfolio_id_add);
 
             }

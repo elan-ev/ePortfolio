@@ -88,8 +88,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     public function getTabNavigation($course_id)
     {
         $tabs         = [];
-        $isSupervisor = SupervisorGroup::isUserInGroup($GLOBALS['user']->id, $course_id)
-            || $GLOBALS['perm']->have_perm('root');
+        $isSupervisor = $GLOBALS['perm']->have_studip_perm('dozent', $course_id);
 
         //Veranstaltungsreiter in Vorlesung
         if (!$this->isPortfolio() && !$this->isVorlage()) {
