@@ -18,6 +18,14 @@ class ShowsupervisorController extends PluginController
             $this->groupId = $this->course->id;
             $this->group = SupervisorGroup::findOneBySQL('seminar_id = ?', [$this->groupId]);
 
+            if (!$group) {
+                $group = SupervisorGroup::create([
+                    'id'         => md5(uniqid()),
+                    'Seminar_id' => $this->course->id,
+                    'name'       => $this->course->name
+                ]);
+            }
+
             $this->supervisorGroupId = $this->group->id;
 
             $this->distributedPortfolios = EportfolioGroupTemplates::getGroupTemplates($this->groupId);
