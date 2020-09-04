@@ -18,8 +18,8 @@ class ShowsupervisorController extends PluginController
             $this->groupId = $this->course->id;
             $this->group = SupervisorGroup::findOneBySQL('seminar_id = ?', [$this->groupId]);
 
-            if (!$group) {
-                $group = SupervisorGroup::create([
+            if (!$this->group) {
+                $this->group = SupervisorGroup::create([
                     'id'         => md5(uniqid()),
                     'Seminar_id' => $this->course->id,
                     'name'       => $this->course->name
@@ -140,17 +140,18 @@ class ShowsupervisorController extends PluginController
         $this->group_id     = $group_id;
         $this->group_title  = Course::findCurrent()->name;
 
-        $this->user           = new User($user_id);
-        $this->user_id  = $user_id;
+        $this->user         = new User($user_id);
+        $this->user_id      = $user_id;
 
         $this->portfolio_id = EportfolioModel::getPortfolioIdOfUserInGroup($user_id, $group_id);
-        $this->templates  = EportfolioGroupTemplates::getUserChapterInfos($group_id, $this->portfolio_id);
+        $this->templates    = EportfolioGroupTemplates::getUserChapterInfos($group_id, $this->portfolio_id);
 
         $this->portfolioSharedChapters = EportfolioFreigabe::sharedChapters($this->course_id, $this->templates);
         $this->chapterCount = EportfolioModel::getAnzahlAllerKapitel($this->groupId);
-        $this->notesCount = EportfolioUser::getAnzahlNotizen($this->portfolio_id);
+        $this->notesCount   = EportfolioUser::getAnzahlNotizen($this->portfolio_id);
 
-        $this->supervisor_group = SupervisorGroup::findOneBySQL('Seminar_id = ?', [$this->course_id]);
+        // check, if current user is in supervisor group
+        $this->userIsSupervisor = sizeof($this->group->user->findBy('user_id', $GLOBALS['user']->id)) ? true : false;
 
         /**
          * get all deadlines, shareDates from PortfolioInformation and titles and correct number of chapters from chapterInformation
