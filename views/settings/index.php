@@ -9,7 +9,7 @@
                 <?= _('Berechtigte für Portfolioarbeit') ?>
                 <?= tooltipHtmlIcon(
                     _('Folgende Personen befinden sich in dieser Gruppe:') .'<br/><ul><li>'.
-                    nl2br(implode("</li><li>", $supervisor_list)) .'</li>'
+                    nl2br(implode("</li><li>", $supervisor_list ?: [_('Bisher niemand')])) .'</li>'
                 ) ?>
         </h1>
 
