@@ -131,11 +131,12 @@
                             </a>
                             <span class="freigabe-date" title="Freigabe zuletzt erteilt am:">
                                 <?= Icon::create('date', 'info') ?>
-                                <?= date('d.m.Y - H:i', EportfolioActivity::findOneBySQL(
+                                <? $date = EportfolioActivity::findOneBySQL(
                                         'user_id = ? AND type ="freigabe" AND block_id = ?
                                         ORDER BY mk_date DESC',
                                         [$user_id, $kapitel['id']]
-                                    )->mk_date) ?>
+                                    )->mk_date ?>
+                                <?= $date ? date('d.m.Y - H:i', $date) : _('unbekannt') ?>
                             </span>
                         <? else : ?>
                             Nicht freigegeben
