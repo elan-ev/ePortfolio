@@ -112,7 +112,7 @@
                         <? else : ?>
                             <? if ($hasAccess) : ?>
                                 <?= Icon::create('decline', 'status-yellow', [
-                                    'title' => ' Nur sie haben Zugriff, nicht die Berechtigten für die Portfolioarbeit!'
+                                    'title' => ' Nur Sie haben Zugriff, nicht die Berechtigten für die Portfolioarbeit!'
                                 ]); ?>
                             <? else : ?>
                                 <?= Icon::create('decline', 'status-red'); ?>
