@@ -49,7 +49,8 @@
     <? endif; ?>
 
     <? foreach ($course->members as $acc): ?>
-        <? if ($acc->user_id == $GLOBALS['user']->id) continue; ?>
+        <? if ($acc->user_id == $GLOBALS['user']->id
+            || $acc->status != 'user') continue; ?>
         <? $user = User::find($acc->user_id); ?>
         <h1>
             <?= Avatar::getAvatar($acc->user_id)->getImageTag(Avatar::SMALL,
@@ -61,10 +62,11 @@
             <? endif ?>
 
             <span style="display: inline-block; vertical-align: bottom">
-                <?= Icon::create('trash', 'clickable', [
-                    'onClick' => "deleteUserAccess('{$acc->user_id}', '$cid', this);",
-                    'style'   => 'margin-bottom: 0px'
-                ]) ?>
+                <a href="<?= $controller->url_for('settings/deleteUserAccess/' . $acc->user_id) ?>" onClick="return confirm('<?= _('Sind sie sicher?') ?>')">
+                    <?= Icon::create('trash', 'clickable', [
+                        'style'   => 'margin-bottom: 0px'
+                    ]) ?>
+                </a>
             </span>
         </h1>
 
@@ -124,19 +126,6 @@
     </div>
 
     <script type="text/javascript">
-        function deleteUserAccess(userId, seminar_id, obj) {
-            $.ajax({
-                type: "POST",
-                url: STUDIP.URLHelper.getURL('plugins.php/eportfolioplugin/settings/deleteUserAccess'),
-                data: {
-                    'userId': userId
-                },
-                success: function () {
-                    $(obj).parents('tr').fadeOut();
-                }
-            });
-        }
-
         function setAccess(id, viewerId, obj, cid) {
             var status = !$(obj).children('span').hasClass('glyphicon-ok');
 

@@ -4,6 +4,10 @@ class SettingsController extends PluginController
 {
     public function index_action($cid = null)
     {
+        if (!$GLOBALS['perm']->have_studip_perm('tutor', Context::getId())) {
+            throw new AccessDeniedException();
+        }
+
         $userid           = $GLOBALS['user']->id;
         $course           = Course::findCurrent();
         $this->isVorlage  = EportfolioModel::isVorlage($course->id);
@@ -27,7 +31,7 @@ class SettingsController extends PluginController
         Sidebar::get()->addWidget($views);
 
         $chapters      = EportfolioModel::getChapters($course->id);
-        $viewers       = $course->getMembersWithStatus('autor');
+        $viewers       = $course->getMembersWithStatus('user');
         $supervisor_id = $supervisor_group->id;
 
         $search_obj = new SQLSearch("SELECT auth_user_md5.user_id, CONCAT(auth_user_md5.nachname, ', ', auth_user_md5.vorname, ' (' , auth_user_md5.email, ')' ) as fullname, username, perms "
@@ -77,6 +81,10 @@ class SettingsController extends PluginController
 
     public function setAccess_action()
     {
+        if (!$GLOBALS['perm']->have_studip_perm('tutor', Context::getId())) {
+            throw new AccessDeniedException();
+        }
+
         EportfolioFreigabe::setAccess(
             Request::get('user_id'),
             Request::get('chapter_id'),
@@ -98,6 +106,10 @@ class SettingsController extends PluginController
 
     public function addZugriff_action()
     {
+        if (!$GLOBALS['perm']->have_studip_perm('tutor', Context::getId())) {
+            throw new AccessDeniedException();
+        }
+
         $mp            = MultiPersonSearch::load('selectFreigabeUser');
         $seminar       = new Seminar(Context::getId());
         $eportfolio    = EportfolioModel::findBySeminarId(Context::getId());
@@ -110,9 +122,12 @@ class SettingsController extends PluginController
         $this->redirect('settings/index/' . Context::getId());
     }
 
-    public function deleteUserAccess_action()
+    public function deleteUserAccess_action($user_id)
     {
-        $user_id       = Request::get('userId');
+        if (!$GLOBALS['perm']->have_studip_perm('tutor', Context::getId())) {
+            throw new AccessDeniedException();
+        }
+
         $seminar       = new Seminar(Context::getId());
         $eportfolio    = EportfolioModel::findBySeminarId(Context::getId());
 
@@ -127,6 +142,6 @@ class SettingsController extends PluginController
 
         $seminar->deleteMember($user_id);
 
-        $this->render_nothing();
+        $this->redirect('settings/index/' . Context::getId());
     }
 }
