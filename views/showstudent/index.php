@@ -13,7 +13,7 @@
                     <? if ($groupTemplates): ?>
                     <br>
                     <b>Es wurden schon Vorlagen in dieser Veranstaltung verteilt:<br>
-                    <a href="<?= URLHelper::getLink('plugins.php/eportfolioplugin/showstudent/createlateportfolio/' . $group_id . '/' . $GLOBALS['user']->id, []) ?>"> Portfolio anlegen</a> <br>
+                    <a href="<?= URLHelper::getLink('plugins.php/eportfolioplugin/showstudent/createlateportfolio/' . $course_id . '/' . $GLOBALS['user']->id, []) ?>"> Portfolio anlegen</a> <br>
                     </b><br>
                     <? endif ?>
                     Weitere Details zur Portfolioarbeit erklären wir im folgenden Video:
@@ -48,7 +48,7 @@
             <? foreach ($groupTemplates as $template):?>
                 <div>
                     <?= htmlReady($template->name)?> verteilt am
-                    <?= date('d.m.Y', EportfolioGroupTemplates::getWannWurdeVerteilt($group_id, $template->id)) ?>
+                    <?= date('d.m.Y', EportfolioGroupTemplates::getWannWurdeVerteilt($course_id, $template->id)) ?>
                 </div>
             <? endforeach ?>
         <? endif ?>

@@ -38,7 +38,7 @@ class ShowController extends PluginController
         $this->archived = array_filter($courses, function($course) use ($id) {
             return !empty(EportfolioArchive::find($course->id));
         });
-        
+
 
         $this->accessible_portfolios = EportfolioModel::findBySQL(
             "JOIN seminar_user ON (
@@ -47,7 +47,7 @@ class ShowController extends PluginController
             WHERE
                 eportfolio.owner_id != :user_id
                 AND seminar_user.user_id = :user_id
-                AND seminar_user.status = 'user'",
+                AND seminar_user.status = 'autor'",
             [':user_id' => $GLOBALS['user']->id]
         );
     }
@@ -159,13 +159,6 @@ class ShowController extends PluginController
         $avatar   = CourseAvatar::getAvatar($sem_id);
         $filename = sprintf('%s/%s', $this->plugin->getpluginPath(), 'assets/images/avatare/vorlage.png');
         $avatar->createFrom($filename);
-
-        $eportfolio    = new Seminar();
-        $eportfolio_id = $eportfolio->createId();
-
-        $query     = "INSERT INTO eportfolio (Seminar_id, eportfolio_id, owner_id, group_id) VALUES (:sem_id, :eportfolio_id, :userid, '')";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute([':sem_id' => $sem_id, ':eportfolio_id' => $eportfolio_id, ':userid' => $userid]); //table eportfolio
 
         PageLayout::postMessage(MessageBox::success(sprintf(_('Vorlage "%s" wurde angelegt.'), $sem_name)));
 

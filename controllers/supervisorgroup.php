@@ -30,26 +30,35 @@ class SupervisorgroupController extends PluginController
         Navigation::activateItem('/course/eportfolioplugin/supervisorgroup');
 
         PageLayout::setTitle(Context::getHeaderLine() . ' - Berechtigungen Portfolioarbeit');
-        $this->supervisorGroup->id;
 
         $this->title   = $this->supervisorGroup->name;
         $this->groupId = $this->supervisorGroup->id;
         $this->linkId  = Context::getId();
 
         $search_obj = new SQLSearch(
-            "SELECT auth_user_md5.user_id, CONCAT(auth_user_md5.nachname, ', ', auth_user_md5.vorname, ' (' , auth_user_md5.email, ')' ) as fullname, username, perms
-            FROM auth_user_md5
-            WHERE (
-                CONCAT(auth_user_md5.Vorname, \" \", auth_user_md5.Nachname) LIKE :input
-                OR CONCAT(auth_user_md5.Nachname, \" \", auth_user_md5.Vorname) LIKE :input
-                OR auth_user_md5.username LIKE :input
-            )
-            AND auth_user_md5.perms IN ('dozent', 'tutor')
-            AND auth_user_md5.user_id NOT IN (
-                SELECT supervisor_group_user.user_id FROM supervisor_group_user
-            WHERE supervisor_group_user.supervisor_group_id = '" . $this->supervisorGroup->id . "')
+            "SELECT auth_user_md5.user_id, username, perms,
+                CONCAT(auth_user_md5.nachname, ', ', auth_user_md5.vorname, ' (' , auth_user_md5.email, ')' ) as fullname
+            FROM seminar_user
+            LEFT JOIN auth_user_md5 USING(user_id)
+            WHERE
+                Seminar_id = '$this->linkId'
+                AND (
+                    CONCAT(auth_user_md5.Vorname, \" \", auth_user_md5.Nachname) LIKE :input
+                    OR CONCAT(auth_user_md5.Nachname, \" \", auth_user_md5.Vorname) LIKE :input
+                    OR auth_user_md5.username LIKE :input
+                )
+                AND auth_user_md5.perms IN ('dozent', 'tutor')
+                AND auth_user_md5.user_id NOT IN (
+                    SELECT supervisor_group_user.user_id FROM supervisor_group_user
+                        WHERE supervisor_group_user.supervisor_group_id = '" . $this->supervisorGroup->id . "'
+                )
             ORDER BY Vorname, Nachname ",
             _("Teilnehmer suchen"), "username");
+
+        $course_users = $this->course->members->filter(function($value) {
+                return $value['status'] == 'dozent'
+                    || $value['status'] == 'tutor';
+            })->pluck('user_id');
 
         $this->mp = MultiPersonSearch::get('supervisorgroupSelectUsers')
             ->setLinkText(_('Weitere Zugriffsrechte vergeben'))
@@ -57,6 +66,8 @@ class SupervisorgroupController extends PluginController
             ->setTitle(_('Personen Zugriffsrechte gewähren'))
             ->setSearchObject($search_obj)
             ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/supervisorgroup/addUser/' . $group->id, ['id' => $group_id, 'redirect' => $this->url_for('showsupervisor/supervisorgroup/' . $this->linkId)]))
+            ->setDefaultSelectableUser($course_users)
+            ->addQuickFilter('Lehrende und Tutor/innen dieser Veranstaltung', $course_users)
             ->render();
 
         $this->usersOfGroup = $this->supervisorGroup->user;
@@ -72,21 +83,34 @@ class SupervisorgroupController extends PluginController
         }
     }
 
-    public function addUser_action($group)
+    public function addUser_action()
     {
-        $mp    = MultiPersonSearch::load('supervisorgroupSelectUsers');
-        $group = new SupervisorGroup($group);
-        foreach ($mp->getAddedUsers() as $key) {
-            $group->addUser($key);
+        $group = SupervisorGroup::findOneBySQL('Seminar_id = ?', [$this->course->id]);
+
+        if (!$group) {
+            $group = SupervisorGroup::create([
+                'id'         => md5(uniqid()),
+                'Seminar_id' => $this->course->id,
+                'name'       => $this->course->name
+            ]);
         }
-        //$this->render_nothing();
-        $this->redirect($this->url_for('supervisorgroup'), ['cid' => $group->eportfolio_group->seminar_id]);
+
+        $mp    = MultiPersonSearch::load('supervisorgroupSelectUsers');
+        foreach ($mp->getAddedUsers() as $key) {
+            try {
+                $group->addUser($key);
+            } catch (PDOException $e) {
+
+            }
+        }
+
+        $this->redirect($this->url_for('supervisorgroup'), ['cid' => $this->course->id]);
     }
 
     public function deleteUser_action($group_id, $user_id)
     {
         $group = new SupervisorGroup($group_id);
         $group->deleteUser($user_id);
-        $this->redirect($this->url_for('supervisorgroup'), ['cid' => $group->eportfolio_group->seminar_id]);
+        $this->redirect($this->url_for('supervisorgroup'), ['cid' => $this->course->id]);
     }
 }

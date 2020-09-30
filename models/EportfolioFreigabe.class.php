@@ -220,7 +220,7 @@ class EportfolioFreigabe extends SimpleORMap
             }
         }
 
-        $block->setApprovalList(json_encode($list));
+        $block->setApprovalList(json_encode([$approval_type => $list[$approval_type]]));
     }
 
     /**
@@ -236,9 +236,11 @@ class EportfolioFreigabe extends SimpleORMap
         $group    = SupervisorGroup::findOneBySQL('Seminar_id = ?', [$course_id]);
         $count    = 0;
 
-        foreach (reset($chapters) as $chapter) {
-            if (self::getAccess($group->id, $chapter['id'])) {
-                $count++;
+        foreach ($chapters as $blocks) {
+            foreach ($blocks as $chapter) {
+                if (self::getAccess($group->id, $chapter['id'])) {
+                    $count++;
+                }
             }
         }
 

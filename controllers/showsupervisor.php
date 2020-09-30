@@ -16,7 +16,15 @@ class ShowsupervisorController extends PluginController
             $this->userId  = $GLOBALS['user']->id;
 
             $this->groupId = $this->course->id;
-            $this->group = SupervisorGroup::findBySQL('seminar_id = ?', [$this->groupId])[0];
+            $this->group = SupervisorGroup::findOneBySQL('seminar_id = ?', [$this->groupId]);
+
+            if (!$this->group) {
+                $this->group = SupervisorGroup::create([
+                    'id'         => md5(uniqid()),
+                    'Seminar_id' => $this->course->id,
+                    'name'       => $this->course->name
+                ]);
+            }
 
             $this->supervisorGroupId = $this->group->id;
 
@@ -49,7 +57,7 @@ class ShowsupervisorController extends PluginController
         $this->seminar_list = [];
         $this->masterid  = $master;
 
-        $this->member    = EportfolioModel::getGroupMembers($this->course_id);
+        $members    = EportfolioModel::getGroupMembers($this->course_id);
 
         /**
          * Jeden User in der Gruppe einzeln behandeln
@@ -60,7 +68,7 @@ class ShowsupervisorController extends PluginController
             /**
              * Überprüfen ob es für den Nutzer schon ein Portfolio-Seminar gibt
              * **/
-            $portfolio = Eportfolio::findBySQL('owner_id = ? AND group_id = ?', [
+            $portfolio = EportfolioModel::findOneBySQL('owner_id = ? AND group_id = ?', [
                 $member->id, $this->course_id
             ]);
 
@@ -79,8 +87,7 @@ class ShowsupervisorController extends PluginController
                  * Wenn nein: Neues Portfolio-Seminar für den User anlegen und ausgewähltes Template kopieren
                  * in seminar_list anfügen
                  * **/
-
-                $portfolio_id_add = EportfolioModel::createPortfolioForUser($this->course_id, $member->id, $this->dispatcher->current_plugin);
+                $portfolio_id_add = EportfolioModel::createPortfolioForUser($this->supervisorGroupId, $member->id, $this->dispatcher->current_plugin);
                 array_push($this->seminar_list, $portfolio_id_add);
 
             }
@@ -133,17 +140,18 @@ class ShowsupervisorController extends PluginController
         $this->group_id     = $group_id;
         $this->group_title  = Course::findCurrent()->name;
 
-        $this->user           = new User($user_id);
-        $this->user_id  = $user_id;
+        $this->user         = new User($user_id);
+        $this->user_id      = $user_id;
 
         $this->portfolio_id = EportfolioModel::getPortfolioIdOfUserInGroup($user_id, $group_id);
-        $this->templates  = EportfolioGroupTemplates::getUserChapterInfos($group_id, $this->portfolio_id);
+        $this->templates    = EportfolioGroupTemplates::getUserChapterInfos($group_id, $this->portfolio_id);
 
         $this->portfolioSharedChapters = EportfolioFreigabe::sharedChapters($this->course_id, $this->templates);
         $this->chapterCount = EportfolioModel::getAnzahlAllerKapitel($this->groupId);
-        $this->notesCount = EportfolioUser::getAnzahlNotizen($this->portfolio_id);
+        $this->notesCount   = EportfolioUser::getAnzahlNotizen($this->portfolio_id);
 
-        $this->supervisor_group = SupervisorGroup::findOneBySQL('Seminar_id = ?', [$this->course_id]);
+        // check, if current user is in supervisor group
+        $this->userIsSupervisor = sizeof($this->group->user->findBy('user_id', $GLOBALS['user']->id)) ? true : false;
 
         /**
          * get all deadlines, shareDates from PortfolioInformation and titles and correct number of chapters from chapterInformation

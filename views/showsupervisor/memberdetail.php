@@ -71,7 +71,7 @@
     <!-- display information for every chapter and subchapter -->
     <? foreach ($chapterInfos as $kapitel): ?>
         <? $hasAccess   = EportfolioFreigabe::hasAccess($GLOBALS['user']->id, $kapitel['id']) ?>
-        <? $groupAccess = EportfolioFreigabe::getAccess($this->supervisor_group->id, $kapitel['id']) ?>
+        <? $groupAccess = EportfolioFreigabe::getAccess($group->id, $kapitel['id']) ?>
         <div class="row member-content-single-line <?= $kapitel['template_title'] ? '' : 'unlinked' ?>">
             <div class="col-sm-4 member-content-single-line-ober">
                 <?= $kapitel['title'] ?>
@@ -112,7 +112,7 @@
                         <? else : ?>
                             <? if ($hasAccess) : ?>
                                 <?= Icon::create('decline', 'status-yellow', [
-                                    'title' => ' Nur sie haben Zugriff, nicht die Berechtigten für die Portfolioarbeit!'
+                                    'title' => ' Nur Sie haben Zugriff, nicht die Berechtigten für die Portfolioarbeit!'
                                 ]); ?>
                             <? else : ?>
                                 <?= Icon::create('decline', 'status-red'); ?>
@@ -122,13 +122,25 @@
                     <div class="col-sm-2"></div>
                     <div class="col-sm-2"></div>
                     <div class="col member-aktionen-detail">
-                        <? if ($hasAccess || $groupAccess): ?>
+                        <? if ($hasAccess || ($groupAccess && $userIsSupervisor)): ?>
                             <a href="<?= URLHelper::getLink("plugins.php/courseware/courseware?cid=" . $portfolio_id
                                     . "&selected=" . $kapitel['id'] . '&return_to=' . Context::getId()); ?>"
                                 target="_blank"
                             >
                                 Anschauen
                             </a>
+                            <span class="freigabe-date" title="Freigabe zuletzt erteilt am:">
+                                <?= Icon::create('date', 'info') ?>
+                                <? $date = EportfolioActivity::findOneBySQL(
+                                        'user_id = ? AND type ="freigabe" AND block_id = ?
+                                        ORDER BY mk_date DESC',
+                                        [$user_id, $kapitel['id']]
+                                    )->mk_date ?>
+                                <?= $date ? date('d.m.Y - H:i', $date) : _('unbekannt') ?>
+                            </span>
+                        <? elseif ($groupAccess && !$userIsSupervisor) : ?>
+                            Kein Zugriff
+                            <?= tooltipIcon("Das Anschauen ist nicht möglich, da Sie nicht in der Gruppe der Berechtigten für die Portfolioarbeit sind!") ?>
                         <? else : ?>
                             Nicht freigegeben
                             <?= tooltipIcon("Das Anschauen ist nicht möglich, da der Nutzer dieses Kapitel noch nicht freigegeben hat") ?>
