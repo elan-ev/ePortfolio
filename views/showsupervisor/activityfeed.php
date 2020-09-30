@@ -17,4 +17,6 @@
                 return !$entry->is_new;
             })
         ]); ?>
+
+    <?= object_set_visit(Context::getId(), 'sem'); ?>
 </div>
