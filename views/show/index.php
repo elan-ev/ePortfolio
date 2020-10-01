@@ -119,7 +119,7 @@
     </thead>
     <tbody>
 
-        <? foreach ($myportfolios as $portfolio): ?>
+        <? foreach ($my_portfolios as $portfolio): ?>
             <tr>
                 <td>
                     <a href="<?= URLHelper::getUrl('plugins.php/courseware/courseware', [
@@ -149,7 +149,7 @@
         <? endforeach; ?>
     </tbody>
 </table>
-<? if (empty($myportfolios)) : ?>
+<? if (empty($my_portfolios)) : ?>
     <?= MessageBox::info('Bisher sind keine eigenen Portfolios vorhanden.') ?>
 <? endif ?>
 
