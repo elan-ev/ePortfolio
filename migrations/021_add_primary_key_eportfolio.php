@@ -11,9 +11,13 @@ class AddPrimaryKeyEportfolio extends Migration
     {
         $db = DBManager::get();
 
-        $db->exec('ALTER TABLE `eportfolio`
-            ADD PRIMARY KEY `Seminar_id` (`Seminar_id`),
-            DROP INDEX `Seminar_id`');
+        try {
+            $db->exec('ALTER TABLE `eportfolio`
+                ADD PRIMARY KEY `Seminar_id` (`Seminar_id`),
+                DROP INDEX `Seminar_id`');
+        } catch (PDOException $e) {
+            echo $e->getMessage() ."\n";
+        }
     }
 
 

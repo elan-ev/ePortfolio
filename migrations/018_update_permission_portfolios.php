@@ -13,43 +13,47 @@ class UpdatePermissionPortfolios extends Migration
     {
         $db = DBManager::get();
 
-        // clean out obsolete fields from eportfolio table
-        $db->exec('ALTER TABLE eportfolio
-            DROP supervisor_id');
+        try {
+            // clean out obsolete fields from eportfolio table
+            $db->exec('ALTER TABLE eportfolio
+                DROP supervisor_id');
 
-        $db->exec('ALTER TABLE eportfolio
-            DROP template_id');
+            $db->exec('ALTER TABLE eportfolio
+                DROP template_id');
 
-        $db->exec('ALTER TABLE eportfolio
-            DROP settings');
+            $db->exec('ALTER TABLE eportfolio
+                DROP settings');
 
-        $db->exec('ALTER TABLE eportfolio
-            DROP eportfolio_id');
+            $db->exec('ALTER TABLE eportfolio
+                DROP eportfolio_id');
 
-        $db->exec('ALTER TABLE eportfolio
-            ADD INDEX Seminar_id (Seminar_id)');
+            $db->exec('ALTER TABLE eportfolio
+                ADD INDEX Seminar_id (Seminar_id)');
 
-        $db->exec('ALTER TABLE eportfolio
-            ADD INDEX group_id (group_id)');
+            $db->exec('ALTER TABLE eportfolio
+                ADD INDEX group_id (group_id)');
 
-        // add Seminar_id to supervisor_group and remove eportfolio_groups afterwars, since they serve no further purpose
-        $db->exec('ALTER TABLE supervisor_group
-            ADD Seminar_id VARCHAR(32) NOT NULL AFTER id');
+            // add Seminar_id to supervisor_group and remove eportfolio_groups afterwars, since they serve no further purpose
+            $db->exec('ALTER TABLE supervisor_group
+                ADD Seminar_id VARCHAR(32) NOT NULL AFTER id');
 
-        $db->exec('ALTER TABLE supervisor_group
-            DROP supervisor_group_id');
+            $db->exec('ALTER TABLE supervisor_group
+                DROP supervisor_group_id');
 
-        $db->exec('ALTER TABLE supervisor_group
-            ADD INDEX Seminar_id (Seminar_id)');
+            $db->exec('ALTER TABLE supervisor_group
+                ADD INDEX Seminar_id (Seminar_id)');
 
-        $db->exec('UPDATE supervisor_group
-            SET Seminar_id = (
-                 SELECT Seminar_id FROM eportfolio_groups
-                 WHERE supervisor_group_id = supervisor_group.id
-            )');
+            $db->exec('UPDATE supervisor_group
+                SET Seminar_id = (
+                     SELECT Seminar_id FROM eportfolio_groups
+                     WHERE supervisor_group_id = supervisor_group.id
+                )');
 
-        $db->exec('DROP TABLE eportfolio_groups');
-        $db->exec('DROP TABLE eportfolio_user');
+            $db->exec('DROP TABLE eportfolio_groups');
+            $db->exec('DROP TABLE eportfolio_user');
+        } catch (PDOException $e) {
+            echo $e->getMessage() ."\n";
+        }
 
         // check all portfolios, set supervisors to 'autor' and all other users (besides the owner) to 'user'
         $results = $db->query("SELECT seminar_user.Seminar_id, seminar_user.user_id FROM seminar_user
