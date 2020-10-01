@@ -4,7 +4,6 @@
  * @author  <asudau@uos.de>
  *
  * @property varchar $Seminar_id
- * @property integer $templateStatus
  * @property varchar $owner_id
  * @property varchar $group_id
 
