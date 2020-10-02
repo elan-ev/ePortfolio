@@ -83,8 +83,6 @@ class FixPermissions extends Migration
                 }
             }
         }
-
-        die;
     }
 
 
