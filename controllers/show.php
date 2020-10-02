@@ -200,16 +200,10 @@ class ShowController extends PluginController
         $eportfolio_id = $eportfolio->createId();
 
         //table eportfolio
-        $values    = ['sem_id' => $sem_id, 'eportfolio_id' => $eportfolio_id, 'userid' => $userid];
-        $query     = "INSERT INTO eportfolio (Seminar_id, eportfolio_id, owner_id, group_id) VALUES (:sem_id, :eportfolio_id, :userid, '')";
+        $values    = ['sem_id' => $sem_id, 'userid' => $userid];
+        $query     = "INSERT INTO eportfolio (Seminar_id, owner_id, group_id) VALUES (:sem_id, :userid, '')";
         $statement = DBManager::get()->prepare($query);
         $statement->execute($values);
-
-        //table eportfolio_user
-        $values2    = ['userid' => $userid, 'Seminar_id' => $sem_id, 'eportfolio_id' => $eportfolio_id,];
-        $query2     = "INSERT INTO eportfolio_user(user_id, Seminar_id, eportfolio_id, owner) VALUES (:userid, :Seminar_id , :eportfolio_id, 1)";
-        $statement2 = DBManager::get()->prepare($query2);
-        $statement2->execute($values2);
 
         PageLayout::postMessage(MessageBox::success(sprintf(_('Portfolio "%s" wurde angelegt.'), $sem_name)));
 
