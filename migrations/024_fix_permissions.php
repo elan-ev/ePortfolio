@@ -56,11 +56,15 @@ class FixPermissions extends Migration
                     foreach ($chapters as $chapter) {
                         if (EportfolioFreigabe::getAccess($data['group_id'], $chapter['id'])) {
                             EportfolioFreigabe::setAccess($data['group_id'], $chapter['id'], true);
+                        } else {
+                            EportfolioFreigabe::setAccess($data['group_id'], $chapter['id'], false);
                         }
 
                         foreach ($users as $user) {
                             if (EportfolioFreigabe::getAccess($user['user_id'], $chapter['id'])) {
-                                EportfolioFreigabe::setAccess($data['user_id'], $chapter['id'], true);
+                                EportfolioFreigabe::setAccess($user['user_id'], $chapter['id'], true);
+                            } else {
+                                EportfolioFreigabe::setAccess($user['user_id'], $chapter['id'], false);
                             }
                         }
                     }
