@@ -4,7 +4,7 @@
                 'style' => 'margin-right: 5px;border-radius: 35px; height:36px; width:36px; border: 1px solid #28497c;',
                 'title' => htmlReady($GLOBALS['user']->getFullName())
         ]); ?>
-    <?= ngettext('Mein Portfolio', 'Meine Portfolios', $countPortfolios); ?>
+    <?= ngettext('Mein Portfolio', 'Meine Portfolios', count($my_portfolios)); ?>
     <span>
         <?= _('Hier finden Sie alle ePortfolios, die Sie angelegt haben oder die andere f&uuml;r Sie freigegeben haben.') ?>
     </span>
