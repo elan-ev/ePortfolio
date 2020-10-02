@@ -1,5 +1,6 @@
 <?php
 
+require __DIR__.'/../bootstrap.php';
 require __DIR__.'/../vendor/autoload.php';
 
 class FixPermissions extends Migration
@@ -8,27 +9,10 @@ class FixPermissions extends Migration
         return 'Fix permissions settings for all portfolios';
     }
 
-    /*
-
-    BEGIN
-    INSERT INTO mooc_blocks_changes
-    (
-      id,
-      old_approval,
-      new_approval
-    )
-    VALUES
-    (
-      OLD.id,
-      OLD.approval,
-      NEW.approval
-    );
-  END
-
-     */
-
     public function up ()
     {
+        set_time_limit(0);
+
         $db = DBManager::get();
 
         $users_stmt = $db->prepare("SELECT * FROM seminar_user
