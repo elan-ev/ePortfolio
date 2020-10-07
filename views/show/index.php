@@ -174,7 +174,7 @@
                         'cid'         => $portfolio->seminar_id,
                         'return_to'   => 'overview'
                     ]); ?>">
-                        <?= $portfolio->seminar->name; ?>
+                        <?= Seminar::GetInstance($portfolio->group_id)->getName(); ?>
                     </a>
                 </td>
                 <td>
