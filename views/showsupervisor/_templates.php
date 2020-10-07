@@ -55,13 +55,13 @@
             <tr>
                 <td>
                     <? if (!$owner) : ?>
-                        <?= htmlReady($hasTemplate ? $portfolio['portfolio']->getFullName() : $portfolio->getFullName()) ?>
+                        <?= htmlReady($hasTemplate ? $portfolio['portfolio']->name : $portfolio->name) ?>
                     <? else : ?>
                         <a href="<?= URLHelper::getLink('plugins.php/courseware/courseware', [
                             'cid'       => $hasTemplate ? $portfolio['portfolio']->id : $portfolio->id,
                             'return_to' => Context::getId()
                             ]); ?>">
-                            <?= htmlReady($hasTemplate ? $portfolio['portfolio']->getFullName() : $portfolio->getFullName()) ?>
+                            <?= htmlReady($hasTemplate ? $portfolio['portfolio']->name : $portfolio->name) ?>
                         </a>
                     <? endif ?>
                 </td>
