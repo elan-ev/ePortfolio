@@ -43,7 +43,7 @@
                             'return_to'   => 'overview'
                         ]); ?>"
                            title="<?= _('Portfolio-Vorlage bearbeiten') ?>">
-                            <?= htmlReady($portfolio->getFullName()); ?>
+                            <?= htmlReady($portfolio->name); ?>
                         </a>
                     </td>
                     <td><?= htmlReady($portfolio->beschreibung)?></td>
@@ -217,7 +217,7 @@
                             'return_to'   => 'overview'
                         ]); ?>"
                            title="<?= _('Portfolio-Vorlage bearbeiten') ?>">
-                            <?= htmlReady($portfolio->getFullName()); ?>
+                            <?= htmlReady($portfolio->name); ?>
                         </a>
                     </td>
                     <td><?= htmlReady($portfolio->beschreibung)?></td>
