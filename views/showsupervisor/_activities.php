@@ -32,7 +32,7 @@
             <div class="col-sm-4" style="line-height: 36px; text-align: center;">
                 <? echo date('d.m.Y - G:i', $activity->mk_date); ?>
                 <div class="" style="float: right; position: relative; top: 3px; ">
-                    <? if (EportfolioFreigabe::hasAccess($GLOBALS['user']->id, $activity->block_id)) : ?>
+                    <? if (EportfolioFreigabe::hasAccess($GLOBALS['user']->id, $activity->id)) : ?>
                         <a href="<? echo $activity->link; ?>">
                             <?= Icon::create('link-intern'); ?>
                         </a>
