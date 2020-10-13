@@ -412,7 +412,7 @@ class EportfolioModel extends SimpleORMap
 
         $owner            = User::find($user_id);
         $owner_fullname   = $owner['Vorname'] . ' ' . $owner['Nachname'];
-        $sem_name         = "Gruppenportfolio: " . $groupname->getName() . " (" . $owner_fullname . ")";
+        $sem_name         = "Veranstaltungsportfolio: " . $groupname->getName() . " (" . $owner_fullname . ")";
         $sem_description  = "Dieses Portfolio wurde Ihnen von einem Supervisor zugeteilt";
         $current_semester = Semester::findCurrent();
 
