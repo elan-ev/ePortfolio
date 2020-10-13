@@ -104,10 +104,10 @@
        </span>
     </caption>
     <colgroup>
-        <col style="width: 30%">
-        <col style="width: 30%">
-        <col>
-        <col>
+        <col width="45%">
+        <col width="35%">
+        <col width="10%">
+        <col width="10%">
     </colgroup>
     <thead>
         <tr class="sortable">
@@ -157,15 +157,13 @@
 <table class="default">
     <caption><?= _('Für mich freigegebene Portfolios') ?></caption>
     <colgroup>
-        <col width="30%">
-        <col width="60%">
-        <col width="10%">
+        <col width="80%">
+        <col width="20%">
     </colgroup>
     <thead>
         <tr class="sortable">
             <th><?= _('Portfolio-Name') ?></th>
-            <th><?= _('Beschreibung') ?></th>
-            <th><?= _('Besitzer') ?></th>
+            <th><?= _('Besitzer/in') ?></th>
         </tr>
     </thead>
     <tbody>
@@ -178,9 +176,6 @@
                     ]); ?>">
                         <?= $portfolio->seminar->name; ?>
                     </a>
-                </td>
-                <td>
-                    <?= htmlReady($portfolio->seminar->beschreibung); ?>
                 </td>
                 <td>
                     <?= htmlReady(get_fullname($portfolio->owner_id)); ?>
