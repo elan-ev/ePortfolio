@@ -38,6 +38,10 @@ class EportfolioFreigabe extends SimpleORMap
 
         $block = Mooc\DB\Block::find($chapter_id);
 
+        if (!$block) {
+            return false;
+        }
+
         // check, if $user_id is portfolio-group
         $approval_type = SupervisorGroup::find($user_id) ? 'groups' : 'users';
 
