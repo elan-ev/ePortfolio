@@ -50,7 +50,7 @@
 
     <? foreach ($course->members as $acc): ?>
         <? if ($acc->user_id == $GLOBALS['user']->id
-            || $acc->status != 'user') continue; ?>
+            || isset($supervisors[$acc->user_id])) continue; ?>
         <? $user = User::find($acc->user_id); ?>
         <h1>
             <?= Avatar::getAvatar($acc->user_id)->getImageTag(Avatar::SMALL,

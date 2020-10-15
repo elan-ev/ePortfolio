@@ -47,7 +47,10 @@ class ShowController extends PluginController
             WHERE
                 eportfolio.owner_id != :user_id
                 AND seminar_user.user_id = :user_id
-                AND seminar_user.status = 'user'",
+                AND (
+                    seminar_user.status = 'user' OR
+                    seminar_user.status = 'autor'
+                )",
             [':user_id' => $GLOBALS['user']->id]
         );
     }

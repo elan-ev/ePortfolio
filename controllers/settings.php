@@ -31,7 +31,7 @@ class SettingsController extends PluginController
         Sidebar::get()->addWidget($views);
 
         $chapters      = EportfolioModel::getChapters($course->id);
-        $viewers       = $course->getMembersWithStatus('user');
+        $viewers       = $course->getMembersWithStatus('autor');
         $supervisor_id = $supervisor_group->id;
 
         $search_obj = new SQLSearch("SELECT auth_user_md5.user_id, CONCAT(auth_user_md5.nachname, ', ', auth_user_md5.vorname, ' (' , auth_user_md5.email, ')' ) as fullname, username, perms "
@@ -113,7 +113,7 @@ class SettingsController extends PluginController
         $mp            = MultiPersonSearch::load('selectFreigabeUser');
         $seminar       = new Seminar(Context::getId());
         $eportfolio    = EportfolioModel::findBySeminarId(Context::getId());
-        $userRole      = 'user';
+        $userRole      = 'autor';
 
         foreach ($mp->getAddedUsers() as $userId) {
             $seminar->addMember($userId, $userRole);
