@@ -111,7 +111,7 @@
                             <? endif; ?>
                         <? else : ?>
                             <? if ($hasAccess) : ?>
-                                <?= Icon::create('decline', 'status-yellow', [
+                                <?= Icon::create('accept', 'status-yellow', [
                                     'title' => ' Nur Sie haben Zugriff, nicht die Berechtigten für die Portfolioarbeit!'
                                 ]); ?>
                             <? else : ?>
