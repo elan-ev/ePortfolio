@@ -310,7 +310,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
 
         // rename Dateien to Meine Portfoliodateien
         if ($this->isPortfolio() && Navigation::hasItem('/course/files')) {
-            Navigation::getItem('/course/files')->setTitle('Meine Portfoliodateien');
+            Navigation::getItem('/course/files')->setTitle('Portfoliodateien');
         }
     }
 
