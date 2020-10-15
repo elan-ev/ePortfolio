@@ -48,7 +48,7 @@
         <br><br>
     <? endif; ?>
 
-    <? foreach ($course->members as $acc): ?>
+    <? foreach ($course->members->orderBy('nachname', 'asc') as $acc): ?>
         <? if ($acc->user_id == $GLOBALS['user']->id
             || isset($supervisors[$acc->user_id])) continue; ?>
         <? $user = User::find($acc->user_id); ?>
