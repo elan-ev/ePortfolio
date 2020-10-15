@@ -56,8 +56,7 @@ class SupervisorgroupController extends PluginController
             _("Teilnehmer suchen"), "username");
 
         $course_users = $this->course->members->filter(function($value) {
-                return $value['status'] == 'dozent'
-                    || $value['status'] == 'tutor';
+                return $value['status'] == 'dozent';
             })->pluck('user_id');
 
         $this->mp = MultiPersonSearch::get('supervisorgroupSelectUsers')
