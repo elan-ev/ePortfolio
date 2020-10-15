@@ -18,7 +18,7 @@ class EportfoliopluginController extends PluginController
             $actions->setTitle(_('Aktionen'));
             $actions->addLink(
                 _('In die zugehörige Veranstaltung wechseln'),
-                URLHelper::getLink('plugins.php/eportfolioplugin/' . $action . '?cid=' . $this->cid), null, null);
+                URLHelper::getLink('plugins.php/eportfolioplugin/' . $action . '?cid=' . $this->group_id), null, null);
             Sidebar::get()->addWidget($actions);
         }
     }
