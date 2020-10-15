@@ -11,8 +11,6 @@ class FixSeminarUserStatus extends Migration
 
     public function up ()
     {
-        set_time_limit(0);
-
         $db = DBManager::get();
 
         $users_stmt = $db->prepare("UPDATE seminar_user
