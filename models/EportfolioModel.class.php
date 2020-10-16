@@ -438,7 +438,6 @@ class EportfolioModel extends SimpleORMap
          * **/
 
         foreach ($group->user as $supervisor) {
-            var_dump($supervisor->user_id);
             $sem->addMember($supervisor->user_id, 'autor');
         }
 

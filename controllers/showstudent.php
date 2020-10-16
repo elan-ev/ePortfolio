@@ -22,6 +22,8 @@ class ShowstudentController extends PluginController
 
     public function createlateportfolio_action($group_id, $user_id)
     {
+        return;
+
         $portfolio_id = EportfolioModel::getPortfolioIdOfUserInGroup($user_id, $group_id);
         if (!$portfolio_id) {
             /**

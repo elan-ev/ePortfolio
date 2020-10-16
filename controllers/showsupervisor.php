@@ -227,16 +227,19 @@ class ShowsupervisorController extends PluginController
              * Der User hat noch kein Portfilio
              * in die das Template importiert werden kann
              * **/
-            $userPortfolioId = EportfolioModel::createPortfolioForUser($group_id, $user_id, $this->dispatcher->current_plugin);
+            $userPortfolioId = EportfolioModel::createPortfolioForUser(
+                $this->supervisorGroupId, $user_id, $this->dispatcher->current_plugin
+            );
 
             $template_list_not_shared = EportfolioGroupTemplates::getGroupTemplates($group_id);
             //array_push($portfolio_list, $portfolio_id_in_array);
-
         } else {
             /**
              * Welche Templates wurden dem Nutzer noch nicht Verteilt?
              * **/
-            $template_list_not_shared = EportfolioModel::getNotSharedTemplatesOfUserInGroup($group_id, $user_id, $userPortfolioId);
+            $template_list_not_shared = EportfolioModel::getNotSharedTemplatesOfUserInGroup(
+                $group_id, $user_id, $userPortfolioId
+            );
         }
 
         /**
@@ -261,7 +264,7 @@ class ShowsupervisorController extends PluginController
             EportfolioActivity::addVorlagenActivity($group_id, User::findCurrent()->id);
         }
 
-        $this->redirect('showsupervisor?cid=' . $group_id);
+        $this->redirect('showsupervisor?cid=' . $this->course_id);
     }
 
 }
