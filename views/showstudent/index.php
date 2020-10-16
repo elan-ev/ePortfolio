@@ -3,20 +3,21 @@
         <? if (!$portfolio_id): ?>
             <h1>Generelle Hinweise</h1>
                 <div class="showstudent_textblock">
-                    Dein Dozent/Deine Dozentin wird im Verlauf der Veranstaltung Inhalte verteilen,
-                    welche Dir in Form eines ePortfolios zur Verfügung gestellt werden.
+                    Ihre Dozentin/ Ihr Dozent wird im Verlauf der Veranstaltung Aufgaben zur Erstellung Ihres ePortfolios verteilen.<br>
+                    <br>
                 </div>
                 <div class="showstudent_textblock">
-                    Sobald erste Inhalte Verteilt wurden, findest Du hier eine Übersicht, sowie einen Direktlink in Dein Portfolio. <br>
-                    Ausserdem findest Du eine Gesamtliste Deiner Portfolios in Deinem Profil unter
+                    Sobald das passiert ist, finden Sie hier eine kurze Übersicht sowie einen Direktlink in Ihr ePortfolio.
+                    Falls Sie in mehreren Veranstaltungen mit ePortfolios arbeiten, finden Sie eine Gesamtliste Ihrer
+                    ePortfolios in Ihrem Stud.IP-Profil unter dem Menüpunkt
                     <a href="<?= URLHelper::getLink('plugins.php/eportfolioplugin/show') ?>"> ePortfolios</a>. <br>
                     <? if ($groupTemplates): ?>
                     <br>
-                    <b>Es wurden schon Vorlagen in dieser Veranstaltung verteilt:<br>
-                    <a href="<?= URLHelper::getLink('plugins.php/eportfolioplugin/showstudent/createlateportfolio/' . $course_id . '/' . $GLOBALS['user']->id, []) ?>"> Portfolio anlegen</a> <br>
-                    </b><br>
+                    <b>
+                        Es wurden schon Vorlagen in dieser Veranstaltung verteilt,
+                        bitte wenden Sie sich an Ihre Lehrenden.
+                    </b>
                     <? endif ?>
-                    Weitere Details zur Portfolioarbeit erklären wir im folgenden Video:
                 </div>
             </div>
         <? else: ?>
@@ -25,16 +26,19 @@
                     <?=Icon::create('eportfolio', 'clickable', ['size' => 200])?>
                 </a>
 
-                    Klicke auf das Portfolio-Symbol um direkt in dein eigenes Portfolio zu wechseln.<br>
-                    <br>
-                    Dies ist im Rahmen dieser Veranstaltung deine individuelle Arbeitsmappe.<br>
-                    Vorlagen und Arbeitsblätter, welche von Dozierenden verteilt werden, landen direkt in deinem eigenen ePortfolio.
-                    Um deine Arbeitsergebnisse mit deinem Dozenten/deiner Dozentin zu teilen, musst du die Zugriffsrechte explizit freigeben.<br>
-                    <br>
-                    Falls du in mehreren Veranstaltungen mit Portfolios arbeitest, findest du eine Gesamtliste deiner Portfolios in deinem Profil
-                    unter <a href="<?= URLHelper::getLink('plugins.php/eportfolioplugin/show') ?>"> ePortfolios</a>. <br>
-                    <br>
-                    Weitere Details zur Portfolioarbeit erfährst du im Video weiter unten.
+                Klicken Sie auf das ePortfolio-Symbol. <br>
+                <br>
+                Dies ist im Rahmen dieser Veranstaltung Ihre individuelle Arbeitsmappe.<br>
+                Vorlagen und Arbeitsblätter, die von Dozierenden verteilt werden, landen direkt in Ihrem eigenen ePortfolio. <br>
+                <br>
+                Um nach Ihrer Bearbeitung die Arbeitsergebnisse mit Ihren Dozent*innen zu teilen, müssen Sie
+                die Zugriffsrechte explizit für diese freigeben.<br>
+                <br>
+                Falls Sie in  mehreren Veranstaltungen mit ePortfolios arbeiten, finden
+                Sie eine Gesamtliste Ihrer ePortfolios in Ihrem Stud.IP-Profil unter dem Menüpunkt
+                <a href="<?= URLHelper::getLink('plugins.php/eportfolioplugin/show') ?>"> ePortfolios</a>.
+                Dort finden Sie auch ePortfolios aufgelistet, die Ihnen andere Studierende
+                zur Ansicht freigegeben haben.
             </div>
         <? endif ?>
 
