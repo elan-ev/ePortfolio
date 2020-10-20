@@ -16,7 +16,7 @@
                 'studycourses' => new SimpleCollection(UserStudyCourse::findByUser($user->id)),
             ]) ?>
             <br>
-            <?= "Letzte Änderung: ".date('d.m.Y', EportfolioModel::getLastOwnerEdit($portfolio_id)) ?>
+            <?= sprintf(_('Letzte Änderung: %s'), EportfolioModel::getLastOwnerEdit($portfolio_id)) ?>
         </div>
         <a href="<?= URLHelper::getURL('dispatch.php/messages/write?rec_uname=' .$user->username) ?>" target="_blank">
             Nachricht schicken

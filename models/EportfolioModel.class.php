@@ -396,7 +396,13 @@ class EportfolioModel extends SimpleORMap
         );
         $last_freigabe = EportfolioActivity::getLastFreigabeOfPortfolio($sem_id);
 
-        return max([$last_edit, $last_freigabe]);
+        $date = max([$last_edit, $last_freigabe]);
+
+        if ($date) {
+            return date('%x', $date);
+        }
+
+        return _('unbekannt');
     }
 
     /**

@@ -67,5 +67,3 @@
     <? endif ?>
     </td>
 </tr>
-
-<!-- <br><?= sprintf(_('Letzte Änderung: %s'), date('d.m.Y', EportfolioModel::getLastOwnerEdit($userPortfolioId))) ?> -->
