@@ -61,7 +61,7 @@
             <div class="row member-content-icons">
                 <div class="col-sm-2">Status</div>
                 <div class="col-sm-2">Freigabe</div>
-                <div class="col-sm-2">Notiz</div>
+                <div class="col-sm-1">Notiz</div>
                 <div class="col-sm-2">Feedback</div>
                 <div class="col">Aktionen</div>
             </div>
@@ -119,7 +119,7 @@
                             <? endif ?>
                         <? endif; ?>
                     </div>
-                    <div class="col-sm-2"></div>
+                    <div class="col-sm-1"></div>
                     <div class="col-sm-2"></div>
                     <div class="col member-aktionen-detail">
                         <? if ($hasAccess || ($groupAccess && $userIsSupervisor)): ?>
@@ -158,7 +158,7 @@
                     <div class="row member-content-icons">
                         <div class="col-sm-2"></div>
                         <div class="col-sm-2"></div>
-                        <div class="col-sm-2">
+                        <div class="col-sm-1">
                             <? if ($subchapterNotes = EportfolioModel::checkSupervisorNoteInSubchapter($unterkapitel['id'])): ?>
                                 <?= Icon::create('file', 'clickable', [
                                     'title' => 'Notiz vorhanden'
