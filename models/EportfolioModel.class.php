@@ -399,7 +399,7 @@ class EportfolioModel extends SimpleORMap
         $date = max([$last_edit, $last_freigabe]);
 
         if ($date) {
-            return date('%x', $date);
+            return date('d.m.Y, H:i:s', $date);
         }
 
         return _('unbekannt');
