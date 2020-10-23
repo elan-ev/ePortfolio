@@ -93,16 +93,22 @@ class VorlagenCopy
 
     private function lockBlocks(Seminar $master, array $semList)
     {
-        $masterBlocks        = EportfolioModel::getAllBlocksInOrder($master->id);
+        $masterBlocks = EportfolioModel::getAllBlocksInOrder($master->id);
+        $stmt_read    = DBManager::get()->prepare("UPDATE mooc_blocks
+            SET approval = '{\"settings\":{\"defaultRead\":false}}'
+            WHERE id = ?");
 
         //hier können potentiell beleibige infos von den Vorlagen Blöcken auf die Block-Kopien übertragen werden
         foreach ($semList as $user_id => $cid) {
             $seminarBlocks = EportfolioModel::getAllBlocksInOrder($cid);
             $newBlocks     = array_slice($seminarBlocks, -count($masterBlocks));
-            
+
             //Mapping von neuen Blöcken auf Vorlagen-Blöcke
             for ($i = 0; $i < count($masterBlocks); $i++) {
                 BlockInfo::createEntry($cid, $newBlocks[$i], $masterBlocks[$i], $master->id);
+
+                // set default read to false
+                $stmt_read->execute([$newBlocks[$i]]);
             }
         }
     }
