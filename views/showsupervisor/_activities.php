@@ -31,6 +31,8 @@
             </div>
             <div class="col-sm-4" style="line-height: 36px; text-align: center;">
                 <? echo date('d.m.Y - G:i', $activity->mk_date); ?>
+
+                <? if ($activity->block_id) : ?>
                 <div class="" style="float: right; position: relative; top: 3px; ">
                     <? if (EportfolioFreigabe::hasAccess($GLOBALS['user']->id, $activity->block_id)) : ?>
                         <a href="<? echo $activity->link; ?>">
@@ -42,6 +44,7 @@
                         ]); ?>
                     <? endif ?>
                 </div>
+                <? endif ?>
             </div>
         </div>
     </div>
