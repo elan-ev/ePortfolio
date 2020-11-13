@@ -43,7 +43,7 @@
                             'return_to'   => 'overview'
                         ]); ?>"
                            title="<?= _('Portfolio-Vorlage bearbeiten') ?>">
-                            <?= htmlReady($portfolio->getFullName()); ?>
+                            <?= htmlReady($portfolio->name); ?>
                         </a>
                     </td>
                     <td><?= htmlReady($portfolio->beschreibung)?></td>
@@ -174,7 +174,7 @@
                         'cid'         => $portfolio->seminar_id,
                         'return_to'   => 'overview'
                     ]); ?>">
-                        <?= $portfolio->seminar->name; ?>
+                        <?= Seminar::GetInstance($portfolio->group_id)->getName(); ?>
                     </a>
                 </td>
                 <td>
@@ -217,7 +217,7 @@
                             'return_to'   => 'overview'
                         ]); ?>"
                            title="<?= _('Portfolio-Vorlage bearbeiten') ?>">
-                            <?= htmlReady($portfolio->getFullName()); ?>
+                            <?= htmlReady($portfolio->name); ?>
                         </a>
                     </td>
                     <td><?= htmlReady($portfolio->beschreibung)?></td>
