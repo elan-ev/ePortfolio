@@ -15,9 +15,12 @@ class ShowstudentController extends PluginController
 
     public function index_action()
     {
-        $this->course_id = Context::getId();
-        $this->portfolio_id   = EportfolioModel::getPortfolioIdOfUserInGroup($GLOBALS['user']->id, $this->course_id);
-        $this->groupTemplates = EportfolioGroupTemplates::getGroupTemplates($this->course_id);
+        $this->group_id = Context::getId();
+        $this->portfolio_id   = EportfolioModel::getPortfolioIdOfUserInGroup($GLOBALS['user']->id, $this->group_id);
+        $this->groupTemplates = EportfolioGroupTemplates::getGroupTemplates($this->group_id);
+
+        //needed to set Icon in my_courses to inactive
+        object_set_visit(Context::getId(), 'sem');
     }
 
     public function createlateportfolio_action($group_id, $user_id)
