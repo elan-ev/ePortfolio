@@ -195,4 +195,13 @@ class EportfolioGroupTemplates extends SimpleORMap
 
         return $templates;
     }
+
+    public function isDistributed($portfolio_id) {
+        $isDistributed = DBManager::get()->fetchAll(
+            "SELECT eportfolio_group_templates.Seminar_id FROM eportfolio_group_templates 
+            WHERE eportfolio_group_templates.Seminar_id = :portfolio_id LIMIT 1",
+            [":portfolio_id" => $portfolio_id]
+        );
+        return $isDistributed;
+    }
 }
