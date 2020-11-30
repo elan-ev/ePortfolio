@@ -1,3 +1,8 @@
+<?= Studip\LinkButton::create(
+    _('Aktivitäten herunterladen'),
+    URLHelper::getLink('plugins.php/eportfolioplugin/showsupervisor/activitydownload/')
+); ?>
+
 <div class="activity-feed-container">
     <h1>
         <?= _('Neue Aktivitäten') ?>

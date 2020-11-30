@@ -267,4 +267,43 @@ class ShowsupervisorController extends PluginController
         $this->redirect('showsupervisor?cid=' . $this->course_id);
     }
 
+    public function activitydownload_action()
+    {
+        $blanks = array("\t", "\t");
+        $f = fopen('php://output', 'w');
+        $members     = EportfolioModel::getGroupMembers($this->course_id);
+
+        fputcsv($f, array("Aktivitätsübersicht vom " . date('d.m.Y - H:i:s', time())), ',');
+        fputcsv($f, $blanks, ',');
+
+        foreach ($members as $user) {
+            $activities = DBManager::get()->fetchAll("SELECT * FROM `eportfolio_activities`
+                                                    WHERE group_id = 'd0cd791307eaf4852573a26f89c90e76'
+                                                    AND user_id = 'e7a0a84b161f3e8c09b4a0a2e8a58147'
+                                                    AND type = 'freigabe'",
+                                                    [":group_id" => $this->course_id, ":user_id" => $user['user_id']]);
+                                                    
+
+            $user_info = array($user['Vorname'] . " " . $user['Nachname'] . " (" . $user['username'] . ")");
+            fputcsv($f, $user_info, ',');
+            
+            $header = array("Datum", "Block");
+            fputcsv($f, $header, ',');
+            
+            foreach ($activities as $activity) {
+                $activity_info = array(date('d.m.Y - H:i:s', $activity['mk_date']), Mooc\DB\Block::find($activity['block_id'])->title . " wurde freigegeben");
+                fputcsv($f, $activity_info, ',');
+            }
+            
+            fputcsv($f, $blanks, ',');
+        }
+
+        $this->set_content_type('application/csv');
+        $this->response->add_header(
+            'Content-disposition',
+            'attachment;' . encode_header_parameter('filename', "activities.csv")
+        );
+        $this->response->add_header('Content-Length', filesize($f));
+        $this->render_text(file_get_contents($f));
+    }
 }
