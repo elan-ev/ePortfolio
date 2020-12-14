@@ -17,7 +17,10 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         $navigation = new Navigation(_('ePortfolios'));
         $navigation->setURL(PluginEngine::getURL($this, [], 'show'));
 
-        if (!Request::get('username') || Request::get('username') == $GLOBALS['user']->username) {
+        if (
+            (!Request::get('username') || Request::get('username') == $GLOBALS['user']->username)
+            && !$GLOBALS['perm']->have_studip_perm('admin', $course_id)
+        ) {
             Navigation::addItem('/profile/eportfolioplugin', $navigation);
         }
 

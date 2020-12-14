@@ -18,7 +18,8 @@
             } else {
                 return -1;
             }
-        })
+        }),
+        'hide_add'     => $GLOBALS['perm']->have_studip_perm('admin', $course_id)
     ]) ?>
 
     <? if (empty($distributedPortfolios)): ?>

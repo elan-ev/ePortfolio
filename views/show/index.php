@@ -22,10 +22,11 @@
             <?= _('Portfolio Vorlagen') ?>
             <span class='actions'>
                 <a data-dialog="size=auto;reload-on-close" href="<?= $controller->url_for('show/createvorlage') ?>">
-            <? $params = tooltip2(_("Neue Vorlage erstellen")); ?>
-            <? $params['style'] = 'cursor: pointer'; ?>
-            <?= Icon::create('add', Icon::ROLE_CLICKABLE, $params)?>
-       </span>
+                    <? $params = tooltip2(_("Neue Vorlage erstellen")); ?>
+                    <? $params['style'] = 'cursor: pointer'; ?>
+                    <?= Icon::create('add', Icon::ROLE_CLICKABLE, $params)?>
+                </a>
+            </span>
         </caption>
         <thead>
             <tr class="sortable">
@@ -174,7 +175,8 @@
                         'cid'         => $portfolio->seminar_id,
                         'return_to'   => 'overview'
                     ]); ?>">
-                        <?= Seminar::GetInstance($portfolio->group_id)->getName(); ?>
+                        <?= Course::find($portfolio->group_id)->name
+                            ?: Course::find($portfolio->seminar_id)->name; ?>
                     </a>
                 </td>
                 <td>
