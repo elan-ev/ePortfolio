@@ -189,7 +189,104 @@ class ShowsupervisorController extends PluginController
     {
         Navigation::activateItem('/course/eportfolioplugin/portfoliofeed');
         $this->activities      = EportfolioActivity::getActivitiesForGroup($this->course_id);
-        $this->countActivities = sizeof(EportfolioActivity::newActivities($this->seminar_id) ?: []);
+        $this->countActivities = sizeof(EportfolioActivity::newActivities($this->course_id) ?: []);
+
+        // Sidebar
+        $sidebar = Sidebar::get();
+
+        $navcreate = new LinksWidget();
+        $navcreate->setTitle(_('Aktionen'));
+        $navcreate->addLink(
+            'Aktivitäten exportieren',
+            $this->url_for('showsupervisor/export_activities'),
+            new Icon('community+add')
+        );
+
+        $sidebar->addWidget($navcreate);
+    }
+
+    public function export_activities_action()
+    {
+        $activities = EportfolioActivity::findBySQL('group_id = ?
+            ORDER BY user_id, mk_date ASC', [$this->course_id]);
+
+        $course = Course::find($this->course_id);
+
+        $stmt = DBManager::get()->prepare("SELECT title FROM mooc_blocks
+            WHERE id = ?");
+
+        define ('NL', "\n");  // if we need to change the newline-marker
+        define ('TR', ';');   // divider for entrys
+
+        // set correct header
+        session_write_close();
+        ob_end_clean();
+
+        header("Content-type: text/comma-separated-values; charset=utf-8");
+        header("Content-Disposition: attachment; filename=Aktivitaeten_Portfolio_"
+            . urlencode($course->getFullname('number-name-semester')));
+        header("Pragma: public");
+
+        echo "\xEF\xBB\xBF";   // byte order marker for utf-8
+
+        echo "Nutzer" . TR;
+        echo "Portfolio" . TR;
+        echo "Atkivität" . TR;
+        echo "Kapitel" . TR;
+        echo "Datum" . NL;
+
+        $cache = [];
+
+        $translations = [
+            'freigabe'          => 'Freigabe erstellt',
+            'freigabe-entfernt' => 'Freigabe entfernt',
+            'supervisor-answer' => 'Anwort von Supervisor/in',
+            'supervisor-notiz'  => 'Notiz an Supervisor/in',
+            'UserDidPostNotiz'  => 'Notiz an Supervisor/in',
+            'vorlage-erhalten'  => 'Vorlage erhalten',
+            'vorlage-verteilt'  => 'Vorlage verteilt'
+        ];
+
+        foreach ($activities as $activity) {
+            $row = [];
+
+            if (!$cache['usernames'][$activity->user_id]) {
+                $cache['usernames'][$activity->user_id] = get_fullname($activity->user_id);
+            }
+
+            $row[] = $cache['usernames'][$activity->user_id];
+
+            if ($activity->type == 'vorlage-verteilt') {
+                if (!$cache['portfolios'][$activity->group_id]) {
+                    $cache['portfolios'][$activity->group_id] = Course::find($activity->group_id);
+                }
+
+                $row[] = $cache['portfolios'][$activity->group_id]->name;
+            } else {
+                if (!$cache['portfolios'][$activity->eportfolio_id]) {
+                    $cache['portfolios'][$activity->eportfolio_id] = Course::find($activity->eportfolio_id);
+                }
+
+                $row[] = $cache['portfolios'][$activity->eportfolio_id]->name;
+            }
+
+            $row[] = $translations[$activity->type] ?: $activity->type;
+
+            if (!$cache['chapters'][$activity->block_id]) {
+                $stmt->execute([$activity->block_id]);
+                $cache['chapters'][$activity->block_id] = $stmt->fetchColumn();
+            }
+
+            $row[] = $cache['chapters'][$activity->block_id]->name;
+
+            $row[] = date('d.m.Y, H:i:s', $activity->mk_date);
+
+            echo '"'. implode('"'. TR .'"', $row) .'"';
+            echo NL;
+        }
+
+
+        die;
     }
 
     public function templatedates_action($group_id, $template_id)
@@ -273,18 +370,18 @@ class ShowsupervisorController extends PluginController
             $this->redirect('showsupervisor?cid=' . $this->course_id);
             return;
         }
-        
+
         $portfolio = Seminar::getInstance($portfolio_id);
         $portfolio->delete();
         $this->deleteCourseware($portfolio_id);
-        
+
         $this->redirect('showsupervisor?cid=' . $this->course_id);
     }
 
     private function deleteCourseware($portfolio_id) {
         $deleteFields = DBManager::get()->prepare('DELETE FROM mooc_fields WHERE block_id IN (SELECT id FROM mooc_blocks WHERE seminar_id = ?)');
-        $deleteFields->execute([$portfolio_id]);    
-        
+        $deleteFields->execute([$portfolio_id]);
+
         $statement = DBManager::get()->prepare('DELETE FROM mooc_blocks WHERE seminar_id = ?');
         $statement->execute([$portfolio_id]);
     }
