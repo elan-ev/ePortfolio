@@ -267,4 +267,25 @@ class ShowsupervisorController extends PluginController
         $this->redirect('showsupervisor?cid=' . $this->course_id);
     }
 
+    public function deleteportfolio_action($portfolio_id) {
+        //don't delete master portfolio if already distributed
+        if(EportfolioGroupTemplates::isDistributed($portfolio_id)) {
+            $this->redirect('showsupervisor?cid=' . $this->course_id);
+            return;
+        }
+        
+        $portfolio = Seminar::getInstance($portfolio_id);
+        $portfolio->delete();
+        $this->deleteCourseware($portfolio_id);
+        
+        $this->redirect('showsupervisor?cid=' . $this->course_id);
+    }
+
+    private function deleteCourseware($portfolio_id) {
+        $deleteFields = DBManager::get()->prepare('DELETE FROM mooc_fields WHERE block_id IN (SELECT id FROM mooc_blocks WHERE seminar_id = ?)');
+        $deleteFields->execute([$portfolio_id]);    
+        
+        $statement = DBManager::get()->prepare('DELETE FROM mooc_blocks WHERE seminar_id = ?');
+        $statement->execute([$portfolio_id]);
+    }
 }

@@ -120,6 +120,15 @@
                                 Icon::create('edit', 'clickable'),
                                 ['data-dialog' => 'size=auto;reload-on-close']
                             );
+
+                            if(!EportfolioGroupTemplates::isDistributed($hasTemplate ? $portfolio['portfolio']->id : $portfolio->id)) {
+                                $actionMenu->addLink(
+                                    PluginEngine::getLink($this->plugin, [], 'showsupervisor/deleteportfolio/' . ($hasTemplate ? $portfolio['portfolio']->id : $portfolio->id)),
+                                    _('Portfolio löschen'),
+                                    Icon::create('remove', 'clickable'),
+                                    ['data-confirm' => 'Möchten Sie diese Vorlage wirklich unwiderruflich löschen?']
+                                );
+                            }
                         }
 
                         if ($member && !$hasTemplate) {
