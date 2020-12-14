@@ -120,7 +120,7 @@
     </thead>
     <tbody>
 
-        <? foreach ($my_portfolios as $portfolio): ?>
+        <? if (!empty($my_portfolios)) foreach ($my_portfolios as $portfolio): ?>
             <tr>
                 <td>
                     <a href="<?= URLHelper::getUrl('plugins.php/courseware/courseware', [
