@@ -54,6 +54,29 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         if ($js) {
             PageLayout::addHeadElement('script', [], "jQuery(function() { $js })");
         }
+        
+        //add all dozents to supervisorgroup
+        $course_id = REQUEST::get('cid');
+        $course = Course::find($course_id);
+      
+        $group = SupervisorGroup::findOneBySQL('Seminar_id = ?', [$course->id]);
+
+        if (!$group) {
+            $group = SupervisorGroup::create([
+                'id'         => md5(uniqid()),
+                'Seminar_id' => $course->id,
+                'name'       => $course->name
+            ]);
+        }
+
+        $dozenten = $course->getMembersWithStatus('dozent');
+
+        foreach($dozenten as $dozent) {
+            $dozent_id = $dozent['user_id'];
+            if(!SupervisorGroup::isUserInGroup($dozent_id, $course_id)) {
+                $group->addUser($dozent_id);
+            }
+        }
     }
 
     public function getCardInfos($cid)
