@@ -275,7 +275,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
                 Navigation::getItem('/course/mooc_courseware')->setTitle('Vorlage');
             } else {
                 $stmt = DBManager::get()->prepare("UPDATE mooc_blocks
-                    SET title = 'Vorlage'
+                    SET title = 'Portfolio'
                     WHERE type = 'Courseware'
                         AND seminar_id = ?");
                 $stmt->execute([Context::getId()]);
