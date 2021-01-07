@@ -129,7 +129,7 @@
                             if(!EportfolioGroupTemplates::isDistributed($hasTemplate ? $portfolio['portfolio']->id : $portfolio->id)) {
                                 $actionMenu->addLink(
                                     PluginEngine::getLink($this->plugin, [], 'showsupervisor/deleteportfolio/' . ($hasTemplate ? $portfolio['portfolio']->id : $portfolio->id)),
-                                    _('Portfolio löschen'),
+                                    _('Portfolio-Vorlage löschen'),
                                     Icon::create('remove', 'clickable'),
                                     ['data-confirm' => 'Möchten Sie diese Vorlage wirklich unwiderruflich löschen?']
                                 );

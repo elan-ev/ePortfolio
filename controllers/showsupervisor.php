@@ -10,7 +10,14 @@ class ShowsupervisorController extends PluginController
         parent::before_filter($action, $args);
 
         $this->course_id = Context::getId();
-        $this->course = Course::find($this->course_id);
+
+        // Aktuelle Seite
+        if ($this->course_id) {
+            PageLayout::setTitle(Context::getHeaderLine() . '- ePortfolio Administration');
+            Navigation::activateItem('course/eportfolioplugin');
+
+            $this->course = Course::find($this->course_id);
+        }
 
         if ($this->course) {
             $this->userId  = $GLOBALS['user']->id;
@@ -31,10 +38,7 @@ class ShowsupervisorController extends PluginController
             $this->distributedPortfolios = EportfolioGroupTemplates::getGroupTemplates($this->groupId);
         }
 
-        // Aktuelle Seite
-        PageLayout::setTitle(Context::getHeaderLine() . '- ePortfolio Administration');
 
-        Navigation::activateItem('course/eportfolioplugin');
     }
 
     public function index_action()
@@ -364,25 +368,34 @@ class ShowsupervisorController extends PluginController
         $this->redirect('showsupervisor?cid=' . $this->course_id);
     }
 
-    public function deleteportfolio_action($portfolio_id) {
+    public function deleteportfolio_action($portfolio_id, $source = 'seminar')
+    {
         //don't delete master portfolio if already distributed
-        if(EportfolioGroupTemplates::isDistributed($portfolio_id)) {
-            $this->redirect('showsupervisor?cid=' . $this->course_id);
-            return;
+        if (!EportfolioGroupTemplates::isDistributed($portfolio_id)) {
+            $portfolio = Seminar::getInstance($portfolio_id);
+            $portfolio->delete();
+            $this->deleteCourseware($portfolio_id);
+
+            PageLayout::postMessage(MessageBox::success('Die Vorlage wurde gelöscht.'));
         }
 
-        $portfolio = Seminar::getInstance($portfolio_id);
-        $portfolio->delete();
-        $this->deleteCourseware($portfolio_id);
-
-        $this->redirect('showsupervisor?cid=' . $this->course_id);
+        if ($source == 'profile') {
+            $this->redirect('show');
+        } else {
+            $this->redirect('showsupervisor?cid=' . $this->course_id);
+        }
     }
 
-    private function deleteCourseware($portfolio_id) {
-        $deleteFields = DBManager::get()->prepare('DELETE FROM mooc_fields WHERE block_id IN (SELECT id FROM mooc_blocks WHERE seminar_id = ?)');
+    private function deleteCourseware($portfolio_id)
+    {
+        $deleteFields = DBManager::get()->prepare('DELETE FROM mooc_fields
+            WHERE block_id IN (SELECT id FROM mooc_blocks WHERE seminar_id = ?)'
+        );
         $deleteFields->execute([$portfolio_id]);
 
-        $statement = DBManager::get()->prepare('DELETE FROM mooc_blocks WHERE seminar_id = ?');
+        $statement = DBManager::get()->prepare('DELETE FROM mooc_blocks
+            WHERE seminar_id = ?'
+        );
         $statement->execute([$portfolio_id]);
     }
 }

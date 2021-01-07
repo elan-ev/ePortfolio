@@ -72,6 +72,15 @@
                             Icon::create('archive')
                         );
 
+                        if(!EportfolioGroupTemplates::isDistributed($portfolio->id)) {
+                            $actionMenu->addLink(
+                                $controller->url_for('showsupervisor/deleteportfolio/' . $portfolio->id . '/profile'),
+                                _('Portfolio-Vorlage löschen'),
+                                Icon::create('remove', 'clickable'),
+                                ['data-confirm' => 'Möchten Sie diese Vorlage wirklich unwiderruflich löschen?']
+                            );
+                        }
+
                         if (!empty(EportfolioGroupTemplates::findBySeminar_id($portfolio->id))) {
                             $actionMenu->addLink(
                                 $controller->url_for('show/list_seminars/' . $portfolio->id),
