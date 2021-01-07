@@ -127,7 +127,7 @@ class ShowController extends PluginController
 
             $seminar->store();
 
-            PageLayout::postSuccess(sprintf(_('Vorlage "%s" wurde angelegt.'), $sem_name));
+            PageLayout::postSuccess(sprintf(_('Vorlage "%s" wurde aktualisiert.'), $sem_name));
 
             $this->response->add_header('X-Dialog-Close', '1');
             $this->render_nothing();
