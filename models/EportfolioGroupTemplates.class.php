@@ -101,7 +101,12 @@ class EportfolioGroupTemplates extends SimpleORMap
 
     public static function getWannWurdeVerteilt($group_id, $template_id)
     {
-        return DBManager::get()->fetchColumn('SELECT `mkdate` FROM `eportfolio_group_templates` WHERE `Seminar_id` = ? AND `group_id` = ?', [$template_id, $group_id]);
+        return DBManager::get()->fetchColumn('SELECT `mkdate`
+            FROM `eportfolio_group_templates`
+             WHERE `Seminar_id` = ?
+                AND `group_id` = ?',
+            [$template_id, $group_id]
+        );
     }
 
     /**
@@ -198,7 +203,7 @@ class EportfolioGroupTemplates extends SimpleORMap
 
     public function isDistributed($portfolio_id) {
         $isDistributed = DBManager::get()->fetchAll(
-            "SELECT eportfolio_group_templates.Seminar_id FROM eportfolio_group_templates 
+            "SELECT eportfolio_group_templates.Seminar_id FROM eportfolio_group_templates
             WHERE eportfolio_group_templates.Seminar_id = :portfolio_id LIMIT 1",
             [":portfolio_id" => $portfolio_id]
         );

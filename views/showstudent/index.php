@@ -52,7 +52,7 @@
             <? foreach ($groupTemplates as $template):?>
                 <div>
                     <?= htmlReady($template->name)?> verteilt am
-                    <?= date('d.m.Y', EportfolioGroupTemplates::getWannWurdeVerteilt($course_id, $template->id)) ?>
+                    <?= date('d.m.Y', EportfolioGroupTemplates::getWannWurdeVerteilt($group_id, $template->id)) ?>
                 </div>
             <? endforeach ?>
         <? endif ?>
