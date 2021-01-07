@@ -91,7 +91,8 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     public function getTabNavigation($course_id)
     {
         $tabs         = [];
-        $isSupervisor = $GLOBALS['perm']->have_studip_perm('dozent', $course_id);
+        $isSupervisor = $GLOBALS['perm']->have_studip_perm('tutor', $course_id);
+        $isDozent     = $GLOBALS['perm']->have_studip_perm('dozent', $course_id);
 
         //Veranstaltungsreiter in Vorlesung
         if (!$this->isPortfolio() && !$this->isVorlage()) {
@@ -106,8 +107,10 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
                 $item = new Navigation(_('Activity Feed'), PluginEngine::getURL($this, compact('cid'), 'showsupervisor/activityfeed', true));
                 $navigation->addSubNavigation('portfoliofeed', $item);
 
-                $item = new Navigation(_('Berechtigungen Portfolioarbeit'), PluginEngine::getURL($this, compact('cid'), 'supervisorgroup', true));
-                $navigation->addSubNavigation('supervisorgroup', $item);
+                if ($isDozent) {
+                    $item = new Navigation(_('Berechtigungen Portfolioarbeit'), PluginEngine::getURL($this, compact('cid'), 'supervisorgroup', true));
+                    $navigation->addSubNavigation('supervisorgroup', $item);
+                }
             } else {
                 $navigation = new Navigation('Portfolio-Arbeit', PluginEngine::getURL($this, compact('cid'), 'showstudent', true));
                 $navigation->setImage(Icon::create('group4', Icon::ROLE_INFO_ALT));
@@ -172,7 +175,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
 
     public function getIconNavigation($course_id, $last_visit, $user_id)
     {
-        if ($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) {
+        if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)) {
             $url = 'showsupervisor/activityfeed';
         } else {
             $url = 'showstudent';

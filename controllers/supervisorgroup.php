@@ -8,6 +8,10 @@ class SupervisorgroupController extends PluginController
     {
         parent::before_filter($action, $args);
 
+        if (!$GLOBALS['perm']->have_studip_perm('dozent', Context::getId())) {
+            throw new AccessDeniedException();
+        }
+
         $this->course = Course::find(Context::getId());
 
         if ($this->course) {
