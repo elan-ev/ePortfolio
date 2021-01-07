@@ -88,7 +88,9 @@
                 <td>
                     <span style="display:none"><?= $portfolio['deadline'] ?: 1 ?></span>
                     <? if (!$owner) : ?>
-                        <?= sprintf(_('Abgabetermin: %s'), date('d.m.Y', $portfolio['deadline'])) ?>
+                        <? if ($portfolio['deadline']) : ?>
+                            <?= sprintf(_('Abgabetermin: %s'), date('d.m.Y', $portfolio['deadline'])) ?>
+                        <? endif ?>
                     <? elseif ($portfolio['deadline']): ?>
                     <div>
                         <a data-dialog="size=auto;"
