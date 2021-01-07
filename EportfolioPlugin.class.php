@@ -315,6 +315,10 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         if ($this->isPortfolio() && Navigation::hasItem('/course/files')) {
             Navigation::getItem('/course/files')->setTitle('Portfoliodateien');
         }
+
+        if ($this->isVorlage()) {
+            Navigation::removeItem('/course/members');
+        }
     }
 
     public function prevent_settings_access($event, $path)
