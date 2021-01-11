@@ -161,7 +161,7 @@ class ShowsupervisorController extends PluginController
          * get all deadlines, shareDates from PortfolioInformation and titles and correct number of chapters from chapterInformation
          * reindex both arrays so both arrays can be combined
          */
-        $portfolioInformation = EportfolioUser::getPortfolioInformationInGroup($group_id, $this->portfolio_id, $GLOBALS['user']->id);
+        $portfolioInformation = EportfolioUser::getPortfolioInformationInGroup($group_id, $this->portfolio_id);
         $portfolioInformation = array_column($portfolioInformation, null, 'id');
 
         $chapters = EportfolioModel::getChapterInformation($this->portfolio_id);

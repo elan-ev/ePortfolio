@@ -11,7 +11,7 @@
  */
 class EportfolioUser
 {
-    public static function getPortfolioInformationInGroup($group_id, $portfolio_id, $current_user_id)
+    public static function getPortfolioInformationInGroup($group_id, $portfolio_id)
     {
         return DBManager::get()->fetchAll("SELECT mooc_blocks.title,
                 info.block_id as id, eportfolio_group_templates.abgabe_datum, info.template_id
@@ -19,7 +19,6 @@ class EportfolioUser
             JOIN eportfolio_block_infos AS info ON info.block_id = mooc_blocks.id
             JOIN eportfolio_group_templates ON (
                 info.template_id = eportfolio_group_templates.seminar_id
-                OR info.template_id = 0
             )
             WHERE mooc_blocks.type = 'Chapter'
                 AND mooc_blocks.parent_id != '0'
@@ -66,15 +65,15 @@ class EportfolioUser
      **/
     public static function getStatusOfUserInGroup($group_id, $portfolio_id, $current_user_id)
     {
-        if(!$portfolio_id) {
+        if (!$portfolio_id) {
             return -1;
         }
 
         $results   = [];
-        $portfolioInfo = EportfolioUser::getPortfolioInformationInGroup($group_id, $portfolio_id, $current_user_id);
+        $portfolioInfo = EportfolioUser::getPortfolioInformationInGroup($group_id, $portfolio_id);
 
         foreach ($portfolioInfo as $chapterInfo) {
-            if (EportfolioFreigabe::hasAccess($GLOBALS['user']->id, $chapterInfo['id'])) {
+            if (EportfolioFreigabe::hasAccess($current_user_id, $chapterInfo['id'])) {
                 $chapterInfo['shareDate'] = true;
             } else {
                 $chapterInfo['shareDate'] = false;
