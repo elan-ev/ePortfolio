@@ -71,6 +71,7 @@
     <!-- display information for every chapter and subchapter -->
     <? foreach ($chapterInfos as $kapitel): ?>
         <? $hasAccess   = EportfolioFreigabe::hasAccess($GLOBALS['user']->id, $kapitel['id']) ?>
+        <? if ($hasAccess) $kapitel['shareDate'] = true ?>
         <? $groupAccess = EportfolioFreigabe::getAccess($group->id, $kapitel['id']) ?>
         <div class="row member-content-single-line <?= $kapitel['template_title'] ? '' : 'unlinked' ?>">
             <div class="col-sm-4 member-content-single-line-ober">

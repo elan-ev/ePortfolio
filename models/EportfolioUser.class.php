@@ -13,20 +13,10 @@ class EportfolioUser
 {
     public static function getPortfolioInformationInGroup($group_id, $portfolio_id, $current_user_id)
     {
-        return DBManager::get()->fetchAll("SELECT mooc_blocks.title, freigaben.mkdate as shareDate,
+        return DBManager::get()->fetchAll("SELECT mooc_blocks.title,
                 info.block_id as id, eportfolio_group_templates.abgabe_datum, info.template_id
             FROM mooc_blocks
             JOIN eportfolio_block_infos AS info ON info.block_id = mooc_blocks.id
-            LEFT JOIN (
-                SELECT block_id, mkdate
-                FROM eportfolio_freigaben
-                WHERE user_id IN (
-                    SELECT supervisor_group_id
-                    FROM supervisor_group_user
-                     WHERE user_id = :current_user_id
-                )
-            )
-            AS freigaben ON info.block_id = freigaben.block_id
             JOIN eportfolio_group_templates ON (
                 info.template_id = eportfolio_group_templates.seminar_id
                 OR info.template_id = 0
@@ -36,7 +26,7 @@ class EportfolioUser
                 AND info.seminar_id = :portfolio_id
                 AND eportfolio_group_templates.group_id = :group_id
             ORDER BY info.block_id ASC",
-            [':group_id' => $group_id, ':portfolio_id' => $portfolio_id, ':current_user_id' => $current_user_id]);
+            [':group_id' => $group_id, ':portfolio_id' => $portfolio_id]);
     }
 
     /**
@@ -84,6 +74,12 @@ class EportfolioUser
         $portfolioInfo = EportfolioUser::getPortfolioInformationInGroup($group_id, $portfolio_id, $current_user_id);
 
         foreach ($portfolioInfo as $chapterInfo) {
+            if (EportfolioFreigabe::hasAccess($GLOBALS['user']->id, $chapterInfo['id'])) {
+                $chapterInfo['shareDate'] = true;
+            } else {
+                $chapterInfo['shareDate'] = false;
+            }
+
             $status = EportfolioUser::getStatusOfChapter($chapterInfo);
 
             if ($status < 2) {
