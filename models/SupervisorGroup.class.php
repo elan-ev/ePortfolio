@@ -27,6 +27,16 @@ class SupervisorGroup extends SimpleORMap
 
     public function addUser($user_id)
     {
+        // check, if user is already in group
+
+        $user = SupervisorGroupUser::findOneBySQL('supervisor_group_id = ? AND user_id = ?',
+            [$this->id, $user_id]
+        );
+
+        if ($user) {
+            return false;
+        }
+
         $user = SupervisorGroupUser::build([
                 'supervisor_group_id' => $this->id,
                 'user_id'             => $user_id
@@ -45,6 +55,8 @@ class SupervisorGroup extends SimpleORMap
                 }
             }
         }
+
+        return true;
     }
 
     public function deleteUser($user_id)

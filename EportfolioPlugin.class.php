@@ -28,6 +28,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         NotificationCenter::addObserver($this, 'store_activity', 'UserDidPostSupervisorNotiz');
         NotificationCenter::addObserver($this, 'store_activity', 'SupervisorDidPostAnswer');
         NotificationCenter::addObserver($this, 'store_activity', 'UserDidPostNotiz');
+        NotificationCenter::addObserver($this, 'set_permissions', 'PluginForSeminarDidEnabled');
 
         NotificationCenter::addObserver($this, 'prevent_settings_access', 'NavigationDidActivateItem');
 
@@ -332,5 +333,29 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
     public function store_activity($notification, $block_id, $course_id)
     {
         EportfolioActivity::addActivity($course_id, $block_id, $notification);
+    }
+
+    public function set_permissions($notification, $seminar_id, $plugin_id)
+    {
+        if ($this->getPluginId() == $plugin_id) {
+            $course = Course::find($seminar_id);
+            if (!$course) {
+                return;
+            }
+
+            $group = SupervisorGroup::findOneBySQL('Seminar_id = ?', [$course->id]);
+
+            if (!$group) {
+                $group = SupervisorGroup::create([
+                    'id'         => md5(uniqid()),
+                    'Seminar_id' => $course->id,
+                    'name'       => $course->name
+                ]);
+            }
+
+            foreach ($course->getMembersWithStatus('dozent') as $member) {
+                $group->addUser($member->user_id);
+            }
+        }
     }
 }
