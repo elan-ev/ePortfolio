@@ -39,12 +39,12 @@ class EportfolioUser
     {
         $deadline = $chapterInfo['abgabe_datum'];
 
-        // set deadline to last second of selected day
-        $deadline = mktime(23, 59, 59, date('m', $deadline), date('d', $deadline), date('Y', $deadline));
-
         if ($deadline == 0) {
             return 2;
         }
+
+        // set deadline to last second of selected day
+        $deadline = mktime(23, 59, 59, date('m', $deadline), date('d', $deadline), date('Y', $deadline));
 
         // status Icon changes to orange on deadline+2 days
         $timestampXTageVorher = strtotime('-4 day', $deadline);
