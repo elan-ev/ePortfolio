@@ -39,6 +39,9 @@ class EportfolioUser
     {
         $deadline = $chapterInfo['abgabe_datum'];
 
+        // set deadline to last second of selected day
+        $deadline = mktime(23, 59, 59, date('m', $deadline), date('d', $deadline), date('Y', $deadline));
+
         if ($deadline == 0) {
             return 2;
         }
@@ -50,7 +53,7 @@ class EportfolioUser
         if ($now < $timestampXTageVorher || $chapterInfo['shareDate'] != false) {
             return 1;
         } else {
-            if ($now > $timestampXTageVorher && $now <= strtotime('+1 day', $deadline)) {
+            if ($now > $timestampXTageVorher && $now <= $deadline) {
                 return 0;
             } else {
                 return -1;

@@ -51,9 +51,11 @@
                                 <?= Icon::create('date', 'clickable') ?>
                                 <?= $deadline ? date('d.m.Y', $deadline) : _("kein Abgabedatum") ?>
 
-                                <span class="template-infos-days-left">
-                                <?= $deadline ? "(noch " . EportfolioModel::getDaysLeft($group_id, $template_id) . " Tage)" : "" ?>
-                                </span>
+                                <? if ($deadline >= time()) : ?>
+                                    <span class="template-infos-days-left">
+                                    <?= $deadline ? "(noch " . EportfolioModel::getDaysLeft($deadline) . " Tage)" : "" ?>
+                                    </span>
+                                <? endif ?>
                             </div>
                         </div>
 
