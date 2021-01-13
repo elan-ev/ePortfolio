@@ -27,7 +27,7 @@
             <?= MessageBox::info('Es sind noch keine Nutzer in der Veranstaltung eingetragen'); ?>
         <? else: ?>
             <table class="default">
-                <caption><?= _('Gruppenmitglieder') ?></caption>
+                <caption><?= _('Teilnehmende') ?></caption>
                 <tr>
                     <th>Name</th>
                 </tr>

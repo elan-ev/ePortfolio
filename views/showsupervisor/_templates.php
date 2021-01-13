@@ -147,7 +147,7 @@
                             );
                             $actionMenu->addLink(
                                 PluginEngine::getLink($this->plugin, [], 'showsupervisor/createportfolio/' . ($hasTemplate ? $portfolio['portfolio']->id : $portfolio->id)),
-                                _('Portfolio-Vorlage an Gruppenmitglieder verteilen.'),
+                                _('Portfolio-Vorlage an Teilnehmende verteilen.'),
                                 Icon::create('share', 'clickable'),
                                 ['data-confirm' => _('Sobald diese Vorlage verteilt ist, können Sie zwar weitere Änderungen an der Vorlage vornehmen,
                                                     diese werden jedoch nicht in die Ansicht der Studierenden übernommen!'),
