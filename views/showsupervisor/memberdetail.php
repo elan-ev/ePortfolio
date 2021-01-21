@@ -144,7 +144,7 @@
                             <?= tooltipIcon("Das Anschauen ist nicht möglich, da Sie nicht in der Gruppe der Berechtigten für die Portfolioarbeit sind!") ?>
                         <? else : ?>
                             Nicht freigegeben
-                            <?= tooltipIcon("Das Anschauen ist nicht möglich, da der Nutzer dieses Kapitel noch nicht freigegeben hat") ?>
+                            <?= tooltipIcon("Das Anschauen ist nicht möglich, da diese/r Nutzer/in dieses Kapitel noch nicht freigegeben hat") ?>
                         <? endif ?>
                     </div>
                 </div>

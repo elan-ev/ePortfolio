@@ -24,7 +24,7 @@
 
     <? if (empty($distributedPortfolios)): ?>
         <? if (!$member): ?>
-            <?= MessageBox::info('Es sind noch keine Nutzer in der Veranstaltung eingetragen'); ?>
+            <?= MessageBox::info('Es sind noch keine Nutzer/innen in der Veranstaltung eingetragen'); ?>
         <? else: ?>
             <table class="default">
                 <caption><?= _('Teilnehmende') ?></caption>

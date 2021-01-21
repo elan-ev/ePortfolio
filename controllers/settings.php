@@ -42,12 +42,12 @@ class SettingsController extends PluginController
             . "AND auth_user_md5.user_id NOT IN "
             . "(SELECT seminar_user.user_id FROM seminar_user WHERE seminar_user.Seminar_id = '" . $course->id . "')  "
             . "ORDER BY Vorname, Nachname ",
-            _("Nutzer suchen"), "username");
+            _("Nutzer/in suchen"), "username");
 
         $this->mp = MultiPersonSearch::get('selectFreigabeUser')
             ->setLinkText(_('Zugriffsrechte vergeben'))
             ->setLinkIconPath('')
-            ->setTitle(_('NutzerInnen zur Verwaltung von Zugriffsrechten hinzufügen'))
+            ->setTitle(_('Nutzer/innen zur Verwaltung von Zugriffsrechten hinzufügen'))
             ->setSearchObject($search_obj)
             ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/settings/addZugriff/' . $course->id))
             ->render();

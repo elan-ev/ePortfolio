@@ -233,7 +233,7 @@ class ShowsupervisorController extends PluginController
 
         echo "\xEF\xBB\xBF";   // byte order marker for utf-8
 
-        echo "Nutzer" . TR;
+        echo "NutzerIn" . TR;
         echo "Portfolio" . TR;
         echo "Atkivität" . TR;
         echo "Kapitel" . TR;
