@@ -78,7 +78,7 @@
                                         <div class="col-sm-4">
                                             <? if (EportfolioModel::checkSupervisorNotiz($chapter['id'])): ?>
                                                 <a href="<?= URLHelper::getLink('plugins.php/courseware/courseware?cid=' . $cid . '&selected=' . $chapter['id']) ?>">
-                                                    <?= Icon::create('file', 'clickable', [
+                                                    <?= Icon::create('file+new', 'clickable', [
                                                         'title' => 'Notiz vorhanden'
                                                     ]) ?>
                                                 </a>
