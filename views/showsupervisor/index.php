@@ -99,13 +99,6 @@
 <!-- Legende -->
 <div class="legend">
     <ul>
-        <li><?= Icon::create('decline', 'inactive'); ?> Kapitel/Impuls noch nicht freigeschaltet</li>
-        <li><?= Icon::create('accept', 'clickable'); ?> Kapitel/Impuls freigeschaltet</li>
-        <li><?= Icon::create('accept+new', 'clickable'); ?></i>  Kapitel/Impuls freigeschaltet und Änderungen seit Ihrem letzten Besuch</li>
-        <li><?= Icon::create('file', 'inactive'); ?> keine Supervisionsanliegen freigeschaltet</li>
-        <li><?= Icon::create('file', 'clickable'); ?> Supervisionsanliegen freigeschaltet</li>
-        <li><?= Icon::create('forum', 'clickable'); ?> Feedback gegeben</li>
-
         <li>
             <?= Icon::create('span-full', Icon::ROLE_STATUS_GREEN); ?>
             <?= Icon::create('span-full', Icon::ROLE_STATUS_YELLOW); ?>
