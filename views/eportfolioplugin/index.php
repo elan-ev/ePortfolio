@@ -70,7 +70,7 @@
                                                     'title' => 'Freigabe erteilt'
                                                 ]); ?>
                                             <? else: ?>
-                                                <?= Icon::create('accept', 'inactive', [
+                                                <?= Icon::create('decline', 'inactive', [
                                                     'title' => 'Freigabe nicht erteilt'
                                                 ]); ?>
                                             <? endif ?>
