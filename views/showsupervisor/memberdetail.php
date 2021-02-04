@@ -178,7 +178,7 @@
                             <? endif; ?>
                         </div>
                         <div class="col member-aktion-detail">
-                            <? if ($subchapterNotes): ?>
+                            <? if ($subchapterNotes && $userIsSupervisor): ?>
                                 <a href="<?= URLHelper::getLink("plugins.php/courseware/courseware?cid=" . $portfolio_id . "&selected=" . $unterkapitel['id'] . '&return_to=' . Context::getId()); ?>">
                                     Notiz beantworten
                                 </a>
