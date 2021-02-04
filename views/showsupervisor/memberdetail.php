@@ -161,7 +161,7 @@
                         <div class="col-sm-2"></div>
                         <div class="col-sm-1">
                             <? if ($subchapterNotes = EportfolioModel::checkSupervisorNoteInSubchapter($unterkapitel['id'])): ?>
-                                <?= Icon::create('file', 'clickable', [
+                                <?= Icon::create('file+new', 'clickable', [
                                     'title' => 'Notiz vorhanden'
                                 ]); ?>
                             <? else: ?>
