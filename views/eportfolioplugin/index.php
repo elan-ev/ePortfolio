@@ -79,12 +79,12 @@
                                             <? if (EportfolioModel::checkSupervisorNotiz($chapter['id'])): ?>
                                                 <a href="<?= URLHelper::getLink('plugins.php/courseware/courseware?cid=' . $cid . '&selected=' . $chapter['id']) ?>">
                                                     <?= Icon::create('file', 'clickable', [
-                                                        'title' => 'Notiz für Supvervisor vorhanden'
+                                                        'title' => 'Notiz vorhanden'
                                                     ]) ?>
                                                 </a>
                                             <? else: ?>
                                                 <?= Icon::create('file', 'inactive', [
-                                                    'title' => 'Notiz für Supvervisor nicht vorhanden'
+                                                    'title' => 'Keine Notiz an Lehrende erstellt'
                                                 ]); ?>
                                             <? endif ?>
                                         </div>
