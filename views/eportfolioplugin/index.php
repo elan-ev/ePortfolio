@@ -92,12 +92,12 @@
                                             <? if (EportfolioModel::checkSupervisorResonanz($chapter['id'])): ?>
                                                 <a href="<?= URLHelper::getLink('plugins.php/courseware/courseware?cid=' . $cid . '&selected=' . $chapter['id']) ?>">
                                                     <?= Icon::create('forum', 'clickable', [
-                                                        'title' => 'Feedback von Supervisor vorhanden'
+                                                        'title' => 'Feedback vorhanden'
                                                     ]) ?>
                                                 </a>
                                             <? else: ?>
                                                 <?= Icon::create('forum', 'inactive', [
-                                                    'title' => 'Feedback von Supervisor nicht vorhanden'
+                                                    'title' => 'Noch kein Feedback vorhanden'
                                                 ]); ?>
                                             <? endif ?>
                                         </div>
