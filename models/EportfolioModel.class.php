@@ -246,7 +246,7 @@ class EportfolioModel extends SimpleORMap
     public static function checkSupervisorNoteInSubchapter($subchapter_ids)
     {
         return DBManager::get()->fetchAll(
-            "SELECT json_data
+            "SELECT json_data, mooc_blocks.chdate
             FROM mooc_fields
             JOIN mooc_blocks ON mooc_blocks.id = mooc_fields.block_id
             JOIN mooc_blocks AS mcb ON mcb.id = mooc_blocks.parent_id

@@ -43,6 +43,8 @@ class ShowsupervisorController extends PluginController
 
     public function index_action()
     {
+        object_set_visit(Context::getId(), 'sem');
+
         Navigation::activateItem('/course/eportfolioplugin/supervision');
 
         $this->member     = EportfolioModel::getGroupMembers($this->course_id);
@@ -181,12 +183,7 @@ class ShowsupervisorController extends PluginController
             }
         }
 
-
         $this->lastVisit = object_get_visit(Context::getId(), 'sem');
-        /* object_set_visit() has to be called twice, so the current time will be moved into last_visited
-        so that the red asteriks will only be shown on the first visit */
-        object_set_visit(Context::getId(), 'sem');
-        object_set_visit(Context::getId(), 'sem');
     }
 
     public function activityfeed_action()
