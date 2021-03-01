@@ -79,9 +79,11 @@
                                         <div class="col-sm-4">
                                             <? if (EportfolioModel::checkSupervisorNotiz($chapter['id'])): ?>
                                                 <a href="<?= URLHelper::getLink('plugins.php/courseware/courseware?cid=' . $cid . '&selected=' . $chapter['id']) ?>">
-                                                    <?= Icon::create('file+new', [
-                                                        'title' => _('Notiz vorhanden')
-                                                    ]) ?>
+                                                    <?= Icon::create('file+new',
+                                                        Icon::ROLE_CLICKABLE,
+                                                        [
+                                                            'title' => _('Notiz vorhanden')
+                                                        ]) ?>
                                                 </a>
                                             <? else: ?>
                                                 <?= Icon::create('file', Icon::ROLE_INACTIVE, [
@@ -92,7 +94,7 @@
                                         <div class="col-sm-4">
                                             <? if (EportfolioModel::checkSupervisorResonanz($chapter['id'])): ?>
                                                 <a href="<?= URLHelper::getLink('plugins.php/courseware/courseware?cid=' . $cid . '&selected=' . $chapter['id']) ?>">
-                                                    <?= Icon::create('forum', [
+                                                    <?= Icon::create('forum', Icon::ROLE_CLICKABLE, [
                                                         'title' => _('Feedback vorhanden')
                                                     ]) ?>
                                                 </a>
