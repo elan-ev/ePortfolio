@@ -268,7 +268,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
                     SET title = 'Vorlage'
                     WHERE type = 'Courseware'
                         AND seminar_id = ?");
-                $stmt->execute([Context::getId()]);
+                $stmt->execute([$this->context->id]);
 
                 Navigation::getItem('/course/mooc_courseware')->setTitle('Vorlage');
             } else {
@@ -276,7 +276,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
                     SET title = 'Portfolio'
                     WHERE type = 'Courseware'
                         AND seminar_id = ?");
-                $stmt->execute([Context::getId()]);
+                $stmt->execute([$this->context->id]);
                 Navigation::getItem('/course/mooc_courseware')->setTitle('ePortfolio');
             }
 
@@ -295,7 +295,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
                 $bearbeiten = _('Um Inhalte oder Kapitel hinzuzufügen, klicken Sie im Reiter **ePortfolio** oben rechts auf den Doktorandenhut');
                 Helpbar::get()->addPlainText(_(''), $description, '');
                 Helpbar::get()->addPlainText(_(''), $tip, '');
-                Helpbar::get()->addPlainText(_('Tip zum Bearbeiten'), $bearbeiten, Icon::create('doctoral-cap', 'info_alt'));
+                Helpbar::get()->addPlainText(_('Tip zum Bearbeiten'), $bearbeiten, Icon::create('doctoral-cap', Icon::ROLE_INFO_ALT));
             }
             if ($this->isVorlage()) {
                 $description = _('Unter **Teilnehmende** können Sie festlegen, wer Zugriff auf diese Vorlage hat. ') . ' ';
@@ -305,7 +305,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
                 $bearbeiten = _('Um Inhalte oder Kapitel hinzuzufügen, klicken Sie im Reiter **Vorlage** oben rechts auf den Doktorandenhut');
                 Helpbar::get()->addPlainText(_(''), $description, '');
                 Helpbar::get()->addPlainText(_(''), $tip, '');
-                Helpbar::get()->addPlainText(_('Tip zum Bearbeiten'), $bearbeiten, Icon::create('doctoral-cap', 'info_alt'));
+                Helpbar::get()->addPlainText(_('Tip zum Bearbeiten'), $bearbeiten, Icon::create('doctoral-cap',  Icon::ROLE_INFO_ALT));
             }
         }
 

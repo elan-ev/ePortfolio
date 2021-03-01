@@ -2,7 +2,6 @@
 
 class ShowController extends PluginController
 {
-
     public function __construct($dispatcher)
     {
         parent::__construct($dispatcher);
@@ -18,8 +17,9 @@ class ShowController extends PluginController
         if ($this->isDozent) {
             $actions->addLink(
                 _('Vorlage erstellen'),
-                PluginEngine::getLink($this->plugin, [], 'show/createvorlage'),
-                Icon::create('add', 'clickable'), ['data-dialog' => "size=auto;reload-on-close"]
+                $this->url_for('show/createvorlage'),
+                Icon::create('add'),
+                ['data-dialog' => 'size=auto;reload-on-close']
             );
         }
 
@@ -31,11 +31,11 @@ class ShowController extends PluginController
         $this->my_portfolios = EportfolioModel::getMyPortfolios();
 
         $courses = EportfolioModel::getPortfolioVorlagen();
-        $this->vorlagen = array_filter($courses, function($course) use ($id) {
+        $this->vorlagen = array_filter($courses, function($course) {
             return empty(EportfolioArchive::find($course->id));
         });
 
-        $this->archived = array_filter($courses, function($course) use ($id) {
+        $this->archived = array_filter($courses, function($course) {
             return !empty(EportfolioArchive::find($course->id));
         });
 
@@ -79,9 +79,7 @@ class ShowController extends PluginController
             throw new Exception('Access denied');
         }
 
-        $archive = new EportfolioArchive();
-        $archive->eportfolio_id = $vorlage_id;
-        $archive->store();
+        EportfolioArchive::create(['eportfolio_id' => $vorlage_id]);
 
         PageLayout::postSuccess(_('Vorlage wurde archiviert.'));
 
@@ -116,7 +114,7 @@ class ShowController extends PluginController
             throw new Exception('Access denied');
         }
 
-        $seminar = Seminar::getInstance($vorlage_id);
+        $seminar = Seminar::GetInstance($vorlage_id);
 
         if(Request::submitted('updatevorlage')) {
             $sem_name        = strip_tags(Request::get('name'));
@@ -140,8 +138,6 @@ class ShowController extends PluginController
     public function newvorlage_action()
     {
         $sem_type_id      = Config::get()->SEM_CLASS_PORTFOLIO_VORLAGE;
-        $current_semester = Semester::findCurrent();
-
         $userid          = $GLOBALS["user"]->id; //get userid
         $sem_name        = strip_tags(Request::get('name'));
         $sem_description = strip_tags(Request::get('beschreibung'));
@@ -163,7 +159,7 @@ class ShowController extends PluginController
         $filename = sprintf('%s/%s', $this->plugin->getpluginPath(), 'assets/images/avatare/vorlage.png');
         $avatar->createFrom($filename);
 
-        PageLayout::postMessage(MessageBox::success(sprintf(_('Vorlage "%s" wurde angelegt.'), $sem_name)));
+        PageLayout::postSuccess(sprintf(_('Vorlage "%s" wurde angelegt.'), htmlReady($sem_name)));
 
         $this->response->add_header('X-Dialog-Close', '1');
         $this->render_nothing();
@@ -200,7 +196,6 @@ class ShowController extends PluginController
         $avatar->createFrom($filename);
 
         $eportfolio    = new Seminar();
-        $eportfolio_id = $eportfolio->createId();
 
         //table eportfolio
         $values    = ['sem_id' => $sem_id, 'userid' => $userid];
@@ -208,7 +203,7 @@ class ShowController extends PluginController
         $statement = DBManager::get()->prepare($query);
         $statement->execute($values);
 
-        PageLayout::postMessage(MessageBox::success(sprintf(_('Portfolio "%s" wurde angelegt.'), $sem_name)));
+        PageLayout::postSuccess(sprintf(_('Portfolio "%s" wurde angelegt.'), htmlReady($sem_name)));
 
         $this->response->add_header('X-Dialog-Close', '1');
         $this->render_nothing();

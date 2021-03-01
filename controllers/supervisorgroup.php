@@ -16,7 +16,7 @@ class SupervisorgroupController extends PluginController
 
         if ($this->course) {
             $this->groupid = $this->course->id;
-            $this->userid  = $GLOBALS['user']->id;
+            $this->userid = $GLOBALS['user']->id;
 
             $this->groupTemplates = EportfolioGroupTemplates::getGroupTemplates($this->course->id);
 
@@ -35,9 +35,9 @@ class SupervisorgroupController extends PluginController
 
         PageLayout::setTitle(Context::getHeaderLine() . ' - Berechtigungen Portfolioarbeit');
 
-        $this->title   = $this->supervisorGroup->name;
+        $this->title = $this->supervisorGroup->name;
         $this->groupId = $this->supervisorGroup->id;
-        $this->linkId  = Context::getId();
+        $this->linkId = Context::getId();
 
         $search_obj = new SQLSearch(
             "SELECT auth_user_md5.user_id, username, perms,
@@ -59,16 +59,16 @@ class SupervisorgroupController extends PluginController
             ORDER BY Vorname, Nachname ",
             _("Teilnehmer suchen"), "username");
 
-        $course_users = $this->course->members->filter(function($value) {
-                return $value['status'] == 'dozent';
-            })->pluck('user_id');
+        $course_users = $this->course->members->filter(function ($value) {
+            return $value['status'] == 'dozent';
+        })->pluck('user_id');
 
         $this->mp = MultiPersonSearch::get('supervisorgroupSelectUsers')
             ->setLinkText(_('Weitere Zugriffsrechte vergeben'))
             ->setLinkIconPath('')
             ->setTitle(_('Personen Zugriffsrechte gewähren'))
             ->setSearchObject($search_obj)
-            ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/supervisorgroup/addUser/' . $group->id, ['id' => $group_id, 'redirect' => $this->url_for('showsupervisor/supervisorgroup/' . $this->linkId)]))
+            ->setExecuteURL($this->url_for('supervisorgroup/addUser/' . $this->groupId, ['id' => $this->groupId, 'redirect' => $this->url_for('showsupervisor/supervisorgroup/' . $this->linkId)]))
             ->setDefaultSelectableUser($course_users)
             ->addQuickFilter('Lehrende und Tutor/innen dieser Veranstaltung', $course_users)
             ->render();
@@ -81,7 +81,7 @@ class SupervisorgroupController extends PluginController
         if ($this->course->id) {
             $navcreate = new LinksWidget();
             $navcreate->setTitle(_('Aktionen'));
-            $navcreate->addLinkFromHTML($this->mp, new Icon('community+add'));
+            $navcreate->addLinkFromHTML($this->mp, Icon::create('community+add'));
             $sidebar->addWidget($navcreate);
         }
     }
@@ -92,13 +92,13 @@ class SupervisorgroupController extends PluginController
 
         if (!$group) {
             $group = SupervisorGroup::create([
-                'id'         => md5(uniqid()),
+                'id' => md5(uniqid()),
                 'Seminar_id' => $this->course->id,
-                'name'       => $this->course->name
+                'name' => $this->course->name
             ]);
         }
 
-        $mp    = MultiPersonSearch::load('supervisorgroupSelectUsers');
+        $mp = MultiPersonSearch::load('supervisorgroupSelectUsers');
         foreach ($mp->getAddedUsers() as $key) {
             try {
                 $group->addUser($key);
@@ -107,13 +107,13 @@ class SupervisorgroupController extends PluginController
             }
         }
 
-        $this->redirect($this->url_for('supervisorgroup'), ['cid' => $this->course->id]);
+        $this->redirect($this->url_for('supervisorgroup', ['cid' => $this->course->id]));
     }
 
     public function deleteUser_action($group_id, $user_id)
     {
         $group = new SupervisorGroup($group_id);
         $group->deleteUser($user_id);
-        $this->redirect($this->url_for('supervisorgroup'), ['cid' => $this->course->id]);
+        $this->redirect($this->url_for('supervisorgroup', ['cid' => $this->course->id]));
     }
 }

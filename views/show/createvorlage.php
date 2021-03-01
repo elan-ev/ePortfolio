@@ -1,5 +1,5 @@
 <form data-dialog="size=auto;reload-on-close"
-      action="<?= URLHelper::getLink("plugins.php/eportfolioplugin/show/newvorlage") ?>"
+      action="<?= $controller->url_for("show/newvorlage") ?>"
       method="post" enctype="multipart/form-data" class="default"
     <?= Request::isAjax() ? "data-dialog" : "" ?>>
 
@@ -16,4 +16,3 @@
         <?= \Studip\Button::create(_("Speichern"), 'newvorlage', ["data-dialog" => ""]) ?>
     </div>
 </form>
-

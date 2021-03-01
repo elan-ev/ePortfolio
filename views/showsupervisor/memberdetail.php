@@ -5,7 +5,7 @@
             ->getImageTag(Avatar::MEDIUM, [
                 'style' => 'margin-right: 0px; border-radius: 75px; height: 75px; width: 75px; border: 1px solid #28497c;',
                 'title' => htmlReady($user->Vorname . " " . $user->Nachname)
-        ]); ?>
+            ]); ?>
     </div>
     <div class="col-sm-5">
         <div class="member-name-detail">
@@ -18,7 +18,7 @@
             <br>
             <?= sprintf(_('Letzte Änderung: %s'), EportfolioModel::getLastOwnerEdit($portfolio_id)) ?>
         </div>
-        <a href="<?= URLHelper::getURL('dispatch.php/messages/write?rec_uname=' .$user->username) ?>" target="_blank">
+        <a href="<?= URLHelper::getURL('dispatch.php/messages/write?rec_uname=' . $user->username) ?>" target="_blank">
             Nachricht schicken
         </a>
     </div>
@@ -70,7 +70,7 @@
 
     <!-- display information for every chapter and subchapter -->
     <? foreach ($chapterInfos as $kapitel): ?>
-        <? $hasAccess   = EportfolioFreigabe::hasAccess($GLOBALS['user']->id, $kapitel['id']) ?>
+        <? $hasAccess = EportfolioFreigabe::hasAccess($GLOBALS['user']->id, $kapitel['id']) ?>
         <? if ($hasAccess) $kapitel['shareDate'] = true ?>
         <? $groupAccess = EportfolioFreigabe::getAccess($group->id, $kapitel['id']) ?>
         <div class="row member-content-single-line <?= $kapitel['template_title'] ? '' : 'unlinked' ?>">
@@ -105,7 +105,7 @@
                     </div>
                     <div class="col-sm-2" style="text-align: center;">
                         <? if ($groupAccess): ?>
-                            <? if ($lastVisit  < $kapitel['shareDate']): ?>
+                            <? if ($lastVisit < $kapitel['shareDate']): ?>
                                 <?= Icon::create('accept+new', 'status-green'); ?>
                             <? else: ?>
                                 <?= Icon::create('accept', 'status-green'); ?>
@@ -125,18 +125,18 @@
                     <div class="col member-aktionen-detail">
                         <? if ($hasAccess || ($groupAccess && $userIsSupervisor)): ?>
                             <a href="<?= URLHelper::getLink("plugins.php/courseware/courseware?cid=" . $portfolio_id
-                                    . "&selected=" . $kapitel['id'] . '&return_to=' . Context::getId()); ?>"
-                                target="_blank"
+                                . "&selected=" . $kapitel['id'] . '&return_to=' . Context::getId()); ?>"
+                               target="_blank"
                             >
                                 Anschauen
                             </a>
                             <span class="freigabe-date" title="Freigabe zuletzt erteilt am:">
                                 <?= Icon::create('date', 'info') ?>
                                 <? $date = EportfolioActivity::findOneBySQL(
-                                        'user_id = ? AND type ="freigabe" AND block_id = ?
+                                    'user_id = ? AND type ="freigabe" AND block_id = ?
                                         ORDER BY mk_date DESC',
-                                        [$user_id, $kapitel['id']]
-                                    )->mk_date ?>
+                                    [$user_id, $kapitel['id']]
+                                )->mk_date ?>
                                 <?= $date ? date('d.m.Y - H:i', $date) : _('unbekannt') ?>
                             </span>
                         <? elseif ($groupAccess && !$userIsSupervisor) : ?>
@@ -195,5 +195,5 @@
             <? endforeach; ?>
         </div>
     <? endforeach; ?>
-    </div>
+</div>
 </div>

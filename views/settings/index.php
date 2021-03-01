@@ -2,23 +2,24 @@
     <?= MessageBox::info(_('Es sind derzeit keine Zugriffsrechte in Ihrem Portfolio vergeben.')); ?>
 <? else : ?>
     <? if (EportfolioModel::findBySeminarId($cid)->group_id): ?>
-        <h1>
-                <?= Avatar::getNobody()->getImageTag(Avatar::SMALL,
-                    ['style' => 'margin-right: 5px;border-radius: 30px; width: 25px; border: 1px solid #28497c;',
-                     'title' => _('Berechtigte für Portfolioarbeit')]); ?>
-                <?= _('Berechtigte für Portfolioarbeit') ?>
-                <?= tooltipHtmlIcon(
-                    _('Folgende Personen befinden sich in dieser Gruppe:') .'<br/><ul><li>'.
-                    nl2br(implode("</li><li>", $supervisor_list ?: [_('Bisher niemand')])) .'</li>'
-                ) ?>
-        </h1>
+
 
         <table class="default">
+            <caption>
+                <?= Avatar::getNobody()->getImageTag(Avatar::SMALL,
+                    ['style' => 'margin-right: 5px;border-radius: 30px; width: 25px; border: 1px solid #28497c;',
+                        'title' => _('Berechtigte für Portfolioarbeit')]); ?>
+                <?= _('Berechtigte für Portfolioarbeit') ?>
+                <?= tooltipHtmlIcon(
+                    _('Folgende Personen befinden sich in dieser Gruppe:') . '<br/><ul><li>' .
+                    nl2br(implode("</li><li>", $supervisor_list ?: [_('Bisher niemand')])) . '</li>'
+                ) ?>
+            </caption>
             <thead>
-                <tr>
-                    <th>Kapitel</th>
-                    <th>Freigabe</th>
-                </tr>
+            <tr>
+                <th><?= _('Kapitel') ?></th>
+                <th><?= _('Freigabe') ?></th>
+            </tr>
             </thead>
             <tbody>
 
@@ -52,31 +53,31 @@
         <? if ($acc->user_id == $GLOBALS['user']->id
             || isset($supervisors[$acc->user_id])) continue; ?>
         <? $user = User::find($acc->user_id); ?>
-        <h1>
-            <?= Avatar::getAvatar($acc->user_id)->getImageTag(Avatar::SMALL,
-                ['style' => 'margin-right: 5px;border-radius: 30px; width: 25px; border: 1px solid #28497c;',
-                 'title' => _('Gruppen-Supervisoren')]); ?>
-            <?= $user->getFullname() ?>
-            <? if (isset($supervisors[$acc->user_id])) : ?>
-                <?= tooltipIcon('Nutzer/in ist in der Gruppe "Berechtigte für Portfolioarbeit" und hat immer mindestens die Zugriffsrechte dieser Gruppe.') ?>
-            <? endif ?>
 
-            <span style="display: inline-block; vertical-align: bottom">
-                <a href="<?= $controller->url_for('settings/deleteUserAccess/' . $acc->user_id) ?>" onClick="return confirm('<?= _('Sind sie sicher?') ?>')">
-                    <?= Icon::create('trash', 'clickable', [
-                        'style'   => 'margin-bottom: 0px'
+        <table class="default">
+            <caption>
+                <?= Avatar::getAvatar($acc->user_id)->getImageTag(Avatar::SMALL,
+                    ['style' => 'margin-right: 5px;border-radius: 30px; width: 25px; border: 1px solid #28497c;',
+                        'title' => _('Gruppen-Supervisoren')]); ?>
+                <?= htmlReady($user->getFullname()) ?>
+                <? if (isset($supervisors[$acc->user_id])) : ?>
+                    <?= tooltipIcon('Nutzer/in ist in der Gruppe "Berechtigte für Portfolioarbeit" und hat immer mindestens die Zugriffsrechte dieser Gruppe.') ?>
+                <? endif ?>
+
+                <span style="display: inline-block; vertical-align: bottom">
+                <a href="<?= $controller->url_for('settings/deleteUserAccess/' . $acc->user_id) ?>"
+                   onClick="return confirm('<?= _('Sind sie sicher?') ?>')">
+                    <?= Icon::create('trash', Icon::ROLE_CLICKABLE, [
+                        'style' => 'margin-bottom: 0px'
                     ]) ?>
                 </a>
             </span>
-        </h1>
-
-
-        <table class="default">
+            </caption>
             <thead>
-                <tr>
-                    <th>Kapitel</th>
-                    <th>Freigabe</th>
-                </tr>
+            <tr>
+                <th><?= _('Kapitel') ?></th>
+                <th><?= _('Freigabe') ?></th>
+            </tr>
             </thead>
             <tbody>
 
@@ -94,15 +95,15 @@
                                   class="glyphicon glyphicon-ok"
                                   title='Klick, um Kapitel nicht mehr feizugeben'><?= Icon::create('accept', Icon::ROLE_CLICKABLE); ?></span>
                         <? else : ?>
-                            <? if ($hasAccess !=  EportfolioFreigabe::hasAccess($acc->user_id, $chapter['id'])) : ?>
-                            <span id="icon-<?= $acc->user_id . '-' . $chapter['id']; ?>"
-                                  class="glyphicon glyphicon-remove"
-                                  title='Nutzer/in ist in der Gruppe "Berechtigte für Portfolioarbeit" hat dadurch trotzdem Zugriff! Klick, um Kapitel freizugeben'><?= Icon::create('decline', Icon::ROLE_ATTENTION); ?></span>
+                            <? if ($hasAccess != EportfolioFreigabe::hasAccess($acc->user_id, $chapter['id'])) : ?>
+                                <span id="icon-<?= $acc->user_id . '-' . $chapter['id']; ?>"
+                                      class="glyphicon glyphicon-remove"
+                                      title='Nutzer/in ist in der Gruppe "Berechtigte für Portfolioarbeit" hat dadurch trotzdem Zugriff! Klick, um Kapitel freizugeben'><?= Icon::create('decline', Icon::ROLE_ATTENTION); ?></span>
                             <? else : ?>
-                            <span id="icon-<?= $acc->user_id . '-' . $chapter['id']; ?>"
-                                  class="glyphicon glyphicon-remove"
-                                  title='Klick, um Kapitel freizugeben'><?= Icon::create('decline', Icon::ROLE_CLICKABLE); ?></span>
-                              <? endif ?>
+                                <span id="icon-<?= $acc->user_id . '-' . $chapter['id']; ?>"
+                                      class="glyphicon glyphicon-remove"
+                                      title='Klick, um Kapitel freizugeben'><?= Icon::create('decline', Icon::ROLE_CLICKABLE); ?></span>
+                            <? endif ?>
                         <? endif; ?>
                     </td>
                 </tr>
@@ -116,10 +117,10 @@
     <div class="legend">
         <ul>
             <li>
-                <?= Icon::create('accept', 'clickable'); ?>  Person / Rechtegruppe hat Zugriff auf das Kapitel
+                <?= Icon::create('accept'); ?> Person / Rechtegruppe hat Zugriff auf das Kapitel
             </li>
             <li>
-                <?= Icon::create('decline', 'clickable'); ?> Person / Rechtegruppe hat keinen Zugriff auf das Kapitel
+                <?= Icon::create('decline'); ?> Person / Rechtegruppe hat keinen Zugriff auf das Kapitel
             </li>
 
         </ul>
@@ -138,15 +139,15 @@
                     chapter_id: id,
                     status: status
                 }
-            }).done(function(data) {
+            }).done(function (data) {
                 // check, if a MessageBox is already displayed
-                if($("#layout_content > *:first").hasClass("messagebox")) {
+                if ($("#layout_content > *:first").hasClass("messagebox")) {
                     $("#layout_content > *:first").remove();
                 }
                 // display MessageBox
                 $("#layout_content").prepend(data);
                 //only change access_icon if succeded
-                if($("#layout_content > *:first").hasClass("messagebox_success")) {
+                if ($("#layout_content > *:first").hasClass("messagebox_success")) {
                     change_access_icon(obj, id, cid, status);
                 } else {
                     change_access_icon(obj, id, cid, !status);

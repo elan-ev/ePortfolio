@@ -8,13 +8,11 @@ class SettingsController extends PluginController
             throw new AccessDeniedException();
         }
 
-        $userid           = $GLOBALS['user']->id;
-        $course           = Course::findCurrent();
-        $this->isVorlage  = EportfolioModel::isVorlage($course->id);
-        $eportfolio       = EportfolioModel::findBySeminarId($course->id);
+        $userid = $GLOBALS['user']->id;
+        $course = $this->plugin->context;
+        $this->isVorlage = EportfolioModel::isVorlage($course->id);
+        $eportfolio = EportfolioModel::findBySeminarId($course->id);
         $supervisor_group = SupervisorGroup::findOneBySQL('Seminar_id = ?', [$eportfolio->group_id]);
-
-        $seminar = new Seminar($course->id);
 
         # Aktuelle Seite
         PageLayout::setTitle($course->getFullname() . ' - Zugriffsrechte');
@@ -27,11 +25,11 @@ class SettingsController extends PluginController
 
         $views = new ViewsWidget();
         $views->setTitle(_('Rechte'));
-        $views->addLink(_('Zugriffsrechte vergeben'), '')->setActive(true);
+        $views->addLink(_('Zugriffsrechte vergeben'), '')->setActive();
         Sidebar::get()->addWidget($views);
 
-        $chapters      = EportfolioModel::getChapters($course->id);
-        $viewers       = $course->getMembersWithStatus('autor');
+        $chapters = EportfolioModel::getChapters($course->id);
+        $viewers = $course->getMembersWithStatus('autor');
         $supervisor_id = $supervisor_group->id;
 
         $search_obj = new SQLSearch("SELECT auth_user_md5.user_id, CONCAT(auth_user_md5.nachname, ', ', auth_user_md5.vorname, ' (' , auth_user_md5.email, ')' ) as fullname, username, perms "
@@ -49,7 +47,7 @@ class SettingsController extends PluginController
             ->setLinkIconPath('')
             ->setTitle(_('Nutzer/innen zur Verwaltung von Zugriffsrechten hinzufügen'))
             ->setSearchObject($search_obj)
-            ->setExecuteURL(URLHelper::getLink('plugins.php/eportfolioplugin/settings/addZugriff/' . $course->id))
+            ->setExecuteURL($this->url_for('settings/addZugriff/' . $course->id))
             ->render();
 
         // Sidebar
@@ -58,22 +56,22 @@ class SettingsController extends PluginController
         if ($course->id) {
             $navcreate = new LinksWidget();
             $navcreate->setTitle(_('Aktionen'));
-            $navcreate->addLinkFromHTML($this->mp, new Icon('community+add'));
+            $navcreate->addLinkFromHTML($this->mp, Icon::create('community+add'));
             $sidebar->addWidget($navcreate);
         }
 
-        $this->cid           = $course->id;
-        $this->userid        = $userid;
-        $this->title         = $course->getFullname();
-        $this->chapterList   = $chapters;
-        $this->viewerList    = $viewers;
+        $this->cid = $course->id;
+        $this->userid = $userid;
+        $this->title = $course->getFullname();
+        $this->chapterList = $chapters;
+        $this->viewerList = $viewers;
         $this->numberChapter = count($chapters);
-        $this->supervisorId  = $supervisor_id;
-        $this->course        = $course;
-        $supervisors         = SupervisorGroupUser::findBySupervisorGroupId($supervisor_id);
+        $this->supervisorId = $supervisor_id;
+        $this->course = $course;
+        $supervisors = SupervisorGroupUser::findBySupervisorGroupId($supervisor_id);
 
         foreach ($supervisors as $supervisor) {
-            $this->supervisor_list[]                 = htmlReady($supervisor->user->getFullname());
+            $this->supervisor_list[] = htmlReady($supervisor->user->getFullname());
             $this->supervisors[$supervisor->user_id] = true;
         }
 
@@ -110,10 +108,10 @@ class SettingsController extends PluginController
             throw new AccessDeniedException();
         }
 
-        $mp            = MultiPersonSearch::load('selectFreigabeUser');
-        $seminar       = new Seminar(Context::getId());
-        $eportfolio    = EportfolioModel::findBySeminarId(Context::getId());
-        $userRole      = 'autor';
+        $mp = MultiPersonSearch::load('selectFreigabeUser');
+        $seminar = new Seminar(Context::getId());
+
+        $userRole = 'autor';
 
         foreach ($mp->getAddedUsers() as $userId) {
             $seminar->addMember($userId, $userRole);
@@ -128,10 +126,10 @@ class SettingsController extends PluginController
             throw new AccessDeniedException();
         }
 
-        $seminar       = new Seminar(Context::getId());
-        $eportfolio    = EportfolioModel::findBySeminarId(Context::getId());
+        $seminar = new Seminar(Context::getId());
+        $eportfolio = EportfolioModel::findBySeminarId(Context::getId());
 
-        $course   = Course::findCurrent();
+        $course = Course::findCurrent();
         $chapters = EportfolioModel::getChapters($course->id);
 
         foreach ($chapters as $chapter) {

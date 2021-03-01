@@ -23,7 +23,7 @@
         <? else: ?>
             <div class="showstudent_textblock" style="margin:15px;">
                 <a style="float:left" title='Mein Portfolio' href ='<?= URLHelper::getLink('seminar_main.php?auswahl=' . $portfolio_id, ['return_to' => Context::getId()]) ?>'>
-                    <?=Icon::create('eportfolio', 'clickable', ['size' => 200])?>
+                    <?=Icon::create('eportfolio', Icon::ROLE_CLICKABLE, ['size' => 200])?>
                 </a>
 
                 Klicken Sie auf das ePortfolio-Symbol. <br>
@@ -45,7 +45,7 @@
         <? if ($groupTemplates): ?>
         <div class="showstudent_verteilteVorlagen"></div>
             <h1> Verteilte Vorlagen
-                <?= Icon::create('info-circle', 'clickable', [
+                <?= Icon::create('info-circle', Icon::ROLE_CLICKABLE, [
                 'title' => 'Diese Vorlagen wurden bereits in der Veranstaltung verteilt'
                 ])?>
             </h1>

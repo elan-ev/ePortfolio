@@ -5,14 +5,14 @@
             <? foreach ($templates as $template_id => $chapters): ?>
 
                 <? $sharedChapterCnt = EportfolioFreigabe::sharedChapters($group_id, [$template_id => $chapters]) ?>
-                <? $supervisorNotesCnt = EportfolioModel::countSupervisorNotiz(array_keys(array_column($chapters, NULL, 'id'))) ?>
+                <? $supervisorNotesCnt = EportfolioModel::countSupervisorNotiz(array_keys(array_column($chapters, null, 'id'))) ?>
 
                 <div class="col-sm-4 member-single-card">
                     <div class="template-user-item">
                         <div class="template-user-item-head">
 
                             <div class="template-user-item-headline">
-                                <?= Seminar::getInstance($template_id)->getName() ?>
+                                <?= htmlReady(Seminar::getInstance($template_id)->getName()) ?>
                             </div>
 
                             <? $deadline = EportfolioGroupTemplates::getDeadline($group_id, $template_id) ?>
@@ -20,19 +20,19 @@
                             <div class="row">
                                 <? switch (EportfolioUser::getStatusOfUserInTemplate($deadline, $sharedChapterCnt, count($chapters))) {
                                     case 1:
-                                        $icon = 'status-green';
+                                        $icon = Icon::ROLE_STATUS_GREEN;
                                         $title = _('Alle Kapitel wurden freigegeben.');
                                         break;
                                     case 0:
-                                        $icon = 'status-yellow';
+                                        $icon = Icon::ROLE_STATUS_YELLOW;
                                         $title = _('Die Deadline nähert sich.');
                                         break;
                                     case -1:
-                                        $icon = 'status-red';
+                                        $icon = Icon::ROLE_STATUS_RED;
                                         $title = _('Die Deadline ist überschritten!');
                                         break;
                                     default:
-                                        $icon = 'inactive';
+                                        $icon = Icon::ROLE_INACTIVE;
                                         $title = _('Keine Deadline vorhanden.');
                                 } ?>
 
@@ -41,8 +41,9 @@
                                     <?= Icon::create('span-full', $icon) ?>
                                 </div>
 
-                                <div class="template-infos-single" title="Verteilt am" style="margin-left: 100px;">
-                                    <?= Icon::create('activity', 'clickable') ?>
+                                <div class="template-infos-single" title="<?= _('Verteilt am') ?>"
+                                     style="margin-left: 100px;">
+                                    <?= Icon::create('activity') ?>
                                     <?= date('d.m.Y', EportfolioGroupTemplates::getWannWurdeVerteilt($group_id, $template_id)) ?>
                                 </div>
                             </div>
@@ -66,38 +67,38 @@
                                     <div class="row member-icons">
                                         <div class="col-sm-4">
                                             <? if (EportfolioFreigabe::getAccess($supervisorgroup->id, $chapter['id'])): ?>
-                                                <?= Icon::create('accept', 'status-green', [
-                                                    'title' => 'Freigabe erteilt'
+                                                <?= Icon::create('accept', Icon::ROLE_STATUS_GREEN, [
+                                                    'title' => _('Freigabe erteilt')
                                                 ]); ?>
                                             <? else: ?>
-                                                <?= Icon::create('decline', 'inactive', [
-                                                    'title' => 'Freigabe nicht erteilt'
+                                                <?= Icon::create('decline', Icon::ROLE_INACTIVE, [
+                                                    'title' => _('Freigabe nicht erteilt')
                                                 ]); ?>
                                             <? endif ?>
                                         </div>
                                         <div class="col-sm-4">
                                             <? if (EportfolioModel::checkSupervisorNotiz($chapter['id'])): ?>
                                                 <a href="<?= URLHelper::getLink('plugins.php/courseware/courseware?cid=' . $cid . '&selected=' . $chapter['id']) ?>">
-                                                    <?= Icon::create('file+new', 'clickable', [
-                                                        'title' => 'Notiz vorhanden'
+                                                    <?= Icon::create('file+new', [
+                                                        'title' => _('Notiz vorhanden')
                                                     ]) ?>
                                                 </a>
                                             <? else: ?>
-                                                <?= Icon::create('file', 'inactive', [
-                                                    'title' => 'Keine Notiz an Lehrende erstellt'
+                                                <?= Icon::create('file', Icon::ROLE_INACTIVE, [
+                                                    'title' => _('Keine Notiz an Lehrende erstellt')
                                                 ]); ?>
                                             <? endif ?>
                                         </div>
                                         <div class="col-sm-4">
                                             <? if (EportfolioModel::checkSupervisorResonanz($chapter['id'])): ?>
                                                 <a href="<?= URLHelper::getLink('plugins.php/courseware/courseware?cid=' . $cid . '&selected=' . $chapter['id']) ?>">
-                                                    <?= Icon::create('forum', 'clickable', [
-                                                        'title' => 'Feedback vorhanden'
+                                                    <?= Icon::create('forum', [
+                                                        'title' => _('Feedback vorhanden')
                                                     ]) ?>
                                                 </a>
                                             <? else: ?>
-                                                <?= Icon::create('forum', 'inactive', [
-                                                    'title' => 'Noch kein Feedback vorhanden'
+                                                <?= Icon::create('forum', Icon::ROLE_INACTIVE, [
+                                                    'title' => _('Noch kein Feedback vorhanden')
                                                 ]); ?>
                                             <? endif ?>
                                         </div>
@@ -116,7 +117,7 @@
                                             <?= count($chapters) ?>
                                         </div>
                                         <div class="member-footer-box-head">
-                                            freigegeben
+                                            <?= _('freigegeben') ?>
                                         </div>
                                     </div>
                                     <div class="col-sm-4">
@@ -125,7 +126,7 @@
                                             %
                                         </div>
                                         <div class="member-footer-box-head">
-                                            bearbeitet
+                                            <?= _('bearbeitet') ?>
                                         </div>
                                     </div>
                                     <div class="col-sm-4">
@@ -133,7 +134,7 @@
                                             <?= $supervisorNotesCnt ?>
                                         </div>
                                         <div class="member-footer-box-head">
-                                            Notizen
+                                            <?= _('Notizen') ?>
                                         </div>
                                     </div>
                                 </div>
@@ -141,7 +142,7 @@
                         </div>
 
                         <div class="template-user-item-footer">
-                            <?= \Studip\LinkButton::create('Anschauen', EportfolioModel::getLinkOfFirstChapter($template_id, $cid)) ?>
+                            <?= \Studip\LinkButton::create(_('Anschauen'), EportfolioModel::getLinkOfFirstChapter($template_id, $cid)) ?>
                         </div>
 
                     </div>
