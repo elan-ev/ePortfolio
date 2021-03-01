@@ -190,7 +190,6 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
 
         if ($group) {
             $activityCount = count(EportfolioActivity::newActivities($course_id));
-
             if ($activityCount) {
                 $title = $activityCount > 1 ? sprintf(_('%s neue Ereignisse in Studierenden-Portfolios'), $activityCount) : _('1 neues Ereignis in Studierenden-Portfolio');
                 $icon->setImage(Icon::create('eportfolio', Icon::ROLE_ATTENTION, ['title' => $title]));

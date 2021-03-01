@@ -1,6 +1,6 @@
 <?= MessageBox::info(_('Alle hier eingetragenen Lehrenden / TutorInnen können auf den Reiter "Portfolio-Arbeit" zugreifen und Einstellungen vornehmen. '
     . 'Studierende haben darauf immer Zugriff, um zu ihrem eigenen Portfolio zu gelangen.')) ?>
-<? if (!empty($usersOfGroup)) : ?>
+<? if (!empty($usersOfGroup) && count($usersOfGroup)) : ?>
     <table class="default">
         <colgroup>
             <col width="30%">
