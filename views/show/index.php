@@ -76,7 +76,7 @@
                             $actionMenu->addLink(
                                 $controller->url_for('showsupervisor/deleteportfolio/' . $portfolio->id . '/profile'),
                                 _('Portfolio-Vorlage löschen'),
-                                Icon::create('remove', 'clickable'),
+                                Icon::create('remove'),
                                 ['data-confirm' => 'Möchten Sie diese Vorlage wirklich unwiderruflich löschen?']
                             );
                         }

@@ -1,4 +1,4 @@
-<?
+<?php
 require __DIR__ . '/bootstrap.php';
 
 
@@ -15,11 +15,11 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         parent::__construct();
 
         $navigation = new Navigation(_('ePortfolios'));
-        $navigation->setURL(PluginEngine::getURL($this, [], 'show'));
-
+        $navigation->setURL(PluginEngine::getURL($this));
+        $this->context = Course::findCurrent();
         if (
             (!Request::get('username') || Request::get('username') == $GLOBALS['user']->username)
-            && !$GLOBALS['perm']->have_studip_perm('admin', $course_id)
+            && !$GLOBALS['perm']->have_studip_perm('admin', $this->context->id)
         ) {
             Navigation::addItem('/profile/eportfolioplugin', $navigation);
         }
@@ -29,7 +29,6 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         NotificationCenter::addObserver($this, 'store_activity', 'SupervisorDidPostAnswer');
         NotificationCenter::addObserver($this, 'store_activity', 'UserDidPostNotiz');
         NotificationCenter::addObserver($this, 'set_permissions', 'PluginForSeminarDidEnabled');
-
         NotificationCenter::addObserver($this, 'prevent_settings_access', 'NavigationDidActivateItem');
 
         // generate css to hide all portfolio seminars on the my_realm page - DIRTY HACK, i know
@@ -59,19 +58,19 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
 
     public function getCardInfos($cid)
     {
-        $db         = DBManager::get();
+        $db = DBManager::get();
         $return_arr = [];
-        $query      = "SELECT id, title FROM mooc_blocks WHERE seminar_id = :id AND type = 'Chapter' ORDER BY position ASC";
-        $statement  = $db->prepare($query);
+        $query = "SELECT id, title FROM mooc_blocks WHERE seminar_id = :id AND type = 'Chapter' ORDER BY position ASC";
+        $statement = $db->prepare($query);
         $statement->execute([':id' => $cid]);
         $getCardInfos = $statement->fetchAll();
         foreach ($getCardInfos as $value) {
-            $arrayOne          = [];
-            $arrayOne['id']    = $value['id'];
+            $arrayOne = [];
+            $arrayOne['id'] = $value['id'];
             $arrayOne['title'] = $value['title'];
 
             // get sections of chapter
-            $query     = "SELECT id, title FROM mooc_blocks WHERE parent_id = :id";
+            $query = "SELECT id, title FROM mooc_blocks WHERE parent_id = :id";
             $statement = $db->prepare($query);
             $statement->execute([':id' => $value['id']]);
             $arrayOne['section'] = $statement->fetchAll();
@@ -91,9 +90,9 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
 
     public function getTabNavigation($course_id)
     {
-        $tabs         = [];
+        $tabs = [];
         $isSupervisor = $GLOBALS['perm']->have_studip_perm('tutor', $course_id);
-        $isDozent     = $GLOBALS['perm']->have_studip_perm('dozent', $course_id);
+        $isDozent = $GLOBALS['perm']->have_studip_perm('dozent', $course_id);
 
         //Veranstaltungsreiter in Vorlesung
         if (!$this->isPortfolio() && !$this->isVorlage()) {
@@ -182,7 +181,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
             $url = 'showstudent';
         }
 
-        $icon = new AutoNavigation(
+        $icon = new Navigation(
             'Portfolio-Arbeit',
             PluginEngine::getURL($this, ['cid' => $course_id, 'iconnav' => 'true'], $url, true)
         );
@@ -191,7 +190,6 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
 
         if ($group) {
             $activityCount = count(EportfolioActivity::newActivities($course_id));
-
             if ($activityCount) {
                 $title = $activityCount > 1 ? sprintf(_('%s neue Ereignisse in Studierenden-Portfolios'), $activityCount) : _('1 neues Ereignis in Studierenden-Portfolio');
                 $icon->setImage(Icon::create('eportfolio', Icon::ROLE_ATTENTION, ['title' => $title]));
@@ -241,9 +239,8 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
 
     private function isPortfolio()
     {
-        $course = Course::findCurrent();
-        if ($course) {
-            $status = $course->status;
+        if ($this->context) {
+            $status = $this->context->status;
             if ($status == Config::get()->SEM_CLASS_PORTFOLIO) {
                 return true;
             }
@@ -253,9 +250,8 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
 
     private function isVorlage()
     {
-        $course = Course::findCurrent();
-        if ($course) {
-            $status = $course->status;
+        if ($this->context) {
+            $status = $this->context->status;
             if ($status == Config::get()->SEM_CLASS_PORTFOLIO_VORLAGE) {
                 return true;
             }
@@ -271,7 +267,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
                     SET title = 'Vorlage'
                     WHERE type = 'Courseware'
                         AND seminar_id = ?");
-                $stmt->execute([Context::getId()]);
+                $stmt->execute([$this->context->id]);
 
                 Navigation::getItem('/course/mooc_courseware')->setTitle('Vorlage');
             } else {
@@ -279,7 +275,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
                     SET title = 'Portfolio'
                     WHERE type = 'Courseware'
                         AND seminar_id = ?");
-                $stmt->execute([Context::getId()]);
+                $stmt->execute([$this->context->id]);
                 Navigation::getItem('/course/mooc_courseware')->setTitle('ePortfolio');
             }
 
@@ -293,22 +289,22 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
             if ($this->isPortfolio()) {
                 $description = _('Unter **Zugriffsrechte** können Sie einzelne Kapitel für Komilitonen oder Ihre Supervisoren freigeben.') . ' ';
                 $description .= _('') . '';
-                $tip         = _('Unter **ePortfolio** können Sie Ihr Portfolio bearbeiten. ');
-                $tip         .= _('');
-                $bearbeiten  = _('Um Inhalte oder Kapitel hinzuzufügen, klicken Sie im Reiter **ePortfolio** oben rechts auf den Doktorandenhut');
+                $tip = _('Unter **ePortfolio** können Sie Ihr Portfolio bearbeiten. ');
+                $tip .= _('');
+                $bearbeiten = _('Um Inhalte oder Kapitel hinzuzufügen, klicken Sie im Reiter **ePortfolio** oben rechts auf den Doktorandenhut');
                 Helpbar::get()->addPlainText(_(''), $description, '');
                 Helpbar::get()->addPlainText(_(''), $tip, '');
-                Helpbar::get()->addPlainText(_('Tip zum Bearbeiten'), $bearbeiten, Icon::create('doctoral-cap', 'info_alt'));
+                Helpbar::get()->addPlainText(_('Tip zum Bearbeiten'), $bearbeiten, Icon::create('doctoral-cap', Icon::ROLE_INFO_ALT));
             }
             if ($this->isVorlage()) {
                 $description = _('Unter **Teilnehmende** können Sie festlegen, wer Zugriff auf diese Vorlage hat. ') . ' ';
                 $description .= _('Ausserdem können Sie unter **Einstellungen** Inhalte der Vorlage für die spätere Bearbeitung durch Studierende sperren.') . '';
-                $tip         = _('Unter **Vorlage** können Sie die Vorlage bearbeiten. ');
-                $tip         .= _('');
-                $bearbeiten  = _('Um Inhalte oder Kapitel hinzuzufügen, klicken Sie im Reiter **Vorlage** oben rechts auf den Doktorandenhut');
+                $tip = _('Unter **Vorlage** können Sie die Vorlage bearbeiten. ');
+                $tip .= _('');
+                $bearbeiten = _('Um Inhalte oder Kapitel hinzuzufügen, klicken Sie im Reiter **Vorlage** oben rechts auf den Doktorandenhut');
                 Helpbar::get()->addPlainText(_(''), $description, '');
                 Helpbar::get()->addPlainText(_(''), $tip, '');
-                Helpbar::get()->addPlainText(_('Tip zum Bearbeiten'), $bearbeiten, Icon::create('doctoral-cap', 'info_alt'));
+                Helpbar::get()->addPlainText(_('Tip zum Bearbeiten'), $bearbeiten, Icon::create('doctoral-cap',  Icon::ROLE_INFO_ALT));
             }
         }
 
@@ -347,9 +343,9 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
 
             if (!$group) {
                 $group = SupervisorGroup::create([
-                    'id'         => md5(uniqid()),
+                    'id' => md5(uniqid()),
                     'Seminar_id' => $course->id,
-                    'name'       => $course->name
+                    'name' => $course->name
                 ]);
             }
 

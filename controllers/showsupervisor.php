@@ -34,11 +34,8 @@ class ShowsupervisorController extends PluginController
             }
 
             $this->supervisorGroupId = $this->group->id;
-
             $this->distributedPortfolios = EportfolioGroupTemplates::getGroupTemplates($this->groupId);
         }
-
-
     }
 
     public function index_action()
@@ -51,7 +48,7 @@ class ShowsupervisorController extends PluginController
         $this->portfolios = EportfolioModel::getPortfolioVorlagen();
 
         /* remove archived portfolios from list */
-        $this->portfolios = array_filter($this->portfolios, function($portfolios) use ($id) {
+        $this->portfolios = array_filter($this->portfolios, function($portfolios)  {
             return @empty(EportfolioArchive::find($portfolios->id));
         });
 
@@ -110,14 +107,14 @@ class ShowsupervisorController extends PluginController
         VorlagenCopy::copyCourseware(new Seminar($this->masterid), $this->seminar_list);
         EportfolioActivity::addVorlagenActivity($this->course_id, User::findCurrent()->id);
 
-        PageLayout::postMessage(MessageBox::success('Vorlage wurde verteilt.'));
+        PageLayout::postSuccess(_('Vorlage wurde verteilt.'));
         $this->redirect('showsupervisor?cid=' . $this->course_id);
     }
 
     public function updatevorlage_action($vorlage_id)
     {
         if (!$GLOBALS['perm']->have_studip_perm('dozent', $vorlage_id)) {
-            throw new AccessDeniedException(_("Sie haben keine Berechtigung die Vorlage zu bearbeiten"));
+            throw new AccessDeniedException(_('Sie haben keine Berechtigung die Vorlage zu bearbeiten'));
         }
 
         $seminar = Seminar::getInstance($vorlage_id);
@@ -131,7 +128,7 @@ class ShowsupervisorController extends PluginController
 
             $seminar->store();
 
-            PageLayout::postSuccess(sprintf(_('Vorlage "%s" wurde aktualisiert.'), $sem_name));
+            PageLayout::postSuccess(sprintf(_('Vorlage "%s" wurde aktualisiert.'), htmlReady($sem_name)));
 
             $this->response->add_header('X-Dialog-Close', '1');
             $this->render_nothing();
@@ -200,7 +197,7 @@ class ShowsupervisorController extends PluginController
         $navcreate->addLink(
             'Aktivitäten exportieren',
             $this->url_for('showsupervisor/export_activities'),
-            new Icon('community+add')
+            Icon::create('community+add')
         );
 
         $sidebar->addWidget($navcreate);
@@ -373,7 +370,7 @@ class ShowsupervisorController extends PluginController
             $portfolio->delete();
             $this->deleteCourseware($portfolio_id);
 
-            PageLayout::postMessage(MessageBox::success('Die Vorlage wurde gelöscht.'));
+            PageLayout::postSuccess(_('Die Vorlage wurde gelöscht.'));
         }
 
         if ($source == 'profile') {

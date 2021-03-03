@@ -6,8 +6,8 @@ class EportfoliopluginController extends PluginController
     {
         parent::__construct($dispatcher);
 
-        $this->cid             = Course::findCurrent()->id;
-        $this->eportfolio      = EportfolioModel::findBySeminarId($this->cid);
+        $this->cid             = $this->plugin->context->id;
+        $this->eportfolio      = EportfolioModel::findBySeminarId($this->plugin->context->id);
         $this->group_id        = $this->eportfolio->group_id;
         $this->supervisorgroup = SupervisorGroup::findOneBySQL('Seminar_id = ?', [$this->group_id]);
 
@@ -27,13 +27,11 @@ class EportfoliopluginController extends PluginController
     {
         parent::before_filter($action, $args);
 
-        $seminar = new Seminar($this->cid);
         $owner   = $this->eportfolio->owner;
-
         # Aktuelle Seite
-        PageLayout::setTitle('ePortfolio von ' . $owner['Vorname'] . ' ' . $owner['Nachname'] . ': ' . $seminar->getName());
-        if (EportfolioModel::isVorlage($this->cid)) {
-            PageLayout::setTitle('ePortfolio-Vorlage - Übersicht: ' . $seminar->getName());
+        PageLayout::setTitle('ePortfolio von ' . $owner['Vorname'] . ' ' . $owner['Nachname'] . ': ' . $this->plugin->context->getFullname());
+        if (EportfolioModel::isVorlage($this->plugin->context->id)) {
+            PageLayout::setTitle('ePortfolio-Vorlage - Übersicht: ' . $this->plugin->context->getFullname());
             $this->render_action('index_vorlage');
         }
 
@@ -42,9 +40,8 @@ class EportfoliopluginController extends PluginController
         }
     }
 
-
     public function index_action()
     {
-        $this->templates  = EportfolioGroupTemplates::getUserChapterInfos($this->group_id, $this->cid);
+        $this->templates  = EportfolioGroupTemplates::getUserChapterInfos($this->group_id, $this->plugin->context->id);
     }
 }

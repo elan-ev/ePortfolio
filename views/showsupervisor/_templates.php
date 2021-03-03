@@ -5,7 +5,7 @@
         <? if (!$hide_add) : ?>
         <span class="actions">
             <a data-dialog="size=auto;reload-on-close" href="<?= URLHelper::getLink('plugins.php/eportfolioplugin/show/createvorlage') ?>">
-                <?= Icon::create('add', 'clickable')
+                <?= Icon::create('add')
                     ->asImg(20, tooltip2(_('Neue Vorlage erstellen'))
                     + ['style' => 'cusros: pointer'])
                 ?>

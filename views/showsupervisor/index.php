@@ -1,25 +1,26 @@
 <div>
     <?= $this->render_partial('showsupervisor/_templates', [
-        'title'             => _('Verteilte Vorlagen'),
-        'missing_text'      => _('Es werden bisher keine der vorhandenen Vorlagen verwendet.'),
-        'hide_add'          => true,
-        'portfolios'        => $distributedPortfolios,
-        'hasTemplate'  => true
+        'title' => _('Verteilte Vorlagen'),
+        'missing_text' => _('Es werden bisher keine der vorhandenen Vorlagen verwendet.'),
+        'hide_add' => true,
+        'portfolios' => $distributedPortfolios,
+        'hasTemplate' => true
     ]) ?>
 
     <?= $this->render_partial('showsupervisor/_templates', [
-        'title'        => _('Verfügbare Vorlagen'),
+        'title' => _('Verfügbare Vorlagen'),
         'missing_text' => _('Keine Vorlagen vorhanden oder alle Vorlagen sind verteilt oder archiviert.'),
-        'portfolios'   => array_udiff($portfolios, $distributedPortfolios, function($portfolio, $distributedPortfolio) {;
-            if($portfolio->id === $distributedPortfolio->id) {
+        'portfolios' => array_udiff($portfolios, $distributedPortfolios, function ($portfolio, $distributedPortfolio) {
+            ;
+            if ($portfolio->id === $distributedPortfolio->id) {
                 return 0;
-            } elseif($portfolio->id > $distributedPortfolio->id) {
+            } elseif ($portfolio->id > $distributedPortfolio->id) {
                 return 1;
             } else {
                 return -1;
             }
         }),
-        'hide_add'     => $GLOBALS['perm']->have_studip_perm('admin', $course_id)
+        'hide_add' => $GLOBALS['perm']->have_studip_perm('admin', $course_id)
     ]) ?>
 
     <? if (empty($distributedPortfolios)): ?>
@@ -64,19 +65,19 @@
                 </colgroup>
 
                 <thead>
-                    <th>Nachname, Vorname</th>
-                    <th>Status</th>
-                    <th>Freigaben</th>
-                    <th>Bearbeitet</th>
-                    <th>Notizen</th>
-                    <th>Studiengang</th>
-                    <th></th>
+                <th>Nachname, Vorname</th>
+                <th>Status</th>
+                <th>Freigaben</th>
+                <th>Bearbeitet</th>
+                <th>Notizen</th>
+                <th>Studiengang</th>
+                <th></th>
                 </thead>
 
                 <tbody>
-                    <?php foreach ($member as $user): ?>
-                        <?= $this->render_partial('showsupervisor/_member_tablerow', compact('user', 'groupId', 'portfolioChapters')) ?>
-                    <? endforeach; ?>
+                <?php foreach ($member as $user): ?>
+                    <?= $this->render_partial('showsupervisor/_member_tablerow', compact('user', 'groupId', 'portfolioChapters')) ?>
+                <? endforeach; ?>
                 </tbody>
             </table>
 
@@ -113,7 +114,7 @@
 <script type="text/javascript">
     jQuery(function () {
         jQuery("table.tablesorter").tablesorter({
-            sortList: [[0,0]],
+            sortList: [[0, 0]],
             cssAsc: 'sortasc',
             cssDesc: 'sortdesc'
         });
