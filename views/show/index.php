@@ -1,16 +1,3 @@
-<h1 id="headline_uebersicht">
-    <?= Avatar::getAvatar($GLOBALS['user']->id, $GLOBALS['user']->username)->getImageTag(Avatar::MEDIUM,
-        [
-                'style' => 'margin-right: 5px;border-radius: 35px; height:36px; width:36px; border: 1px solid #28497c;',
-                'title' => htmlReady($GLOBALS['user']->getFullName())
-        ]); ?>
-    <?= ngettext('Mein Portfolio', 'Meine Portfolios', count($my_portfolios)); ?>
-    <span>
-        <?= _('Hier finden Sie alle ePortfolios, die Sie angelegt haben oder die andere f&uuml;r Sie freigegeben haben.') ?>
-    </span>
-</h1>
-
-
 <? if ($isDozent): ?>
     <table class="default">
         <colgroup>
@@ -21,33 +8,35 @@
         <caption>
             <?= _('Portfolio Vorlagen') ?>
             <span class='actions'>
-                <a data-dialog="size=auto;reload-on-close" href="<?= $controller->url_for('show/createvorlage') ?>">
+                <a data-dialog="size=auto;reload-on-close"
+                   href="<?= $controller->link_for('show/createvorlage') ?>">
                     <? $params = tooltip2(_("Neue Vorlage erstellen")); ?>
                     <? $params['style'] = 'cursor: pointer'; ?>
-                    <?= Icon::create('add', Icon::ROLE_CLICKABLE, $params)?>
+                    <?= Icon::create('add', Icon::ROLE_CLICKABLE, $params) ?>
                 </a>
             </span>
         </caption>
         <thead>
-            <tr class="sortable">
-                <th><?= _('Name') ?></th>
-                <th><?= _('Beschreibung') ?></th>
-                <th class="actions"><?= _('Aktionen') ?></th>
-            </tr>
+        <tr class="sortable">
+            <th><?= _('Name') ?></th>
+            <th><?= _('Beschreibung') ?></th>
+            <th class="actions"><?= _('Aktionen') ?></th>
+        </tr>
         </thead>
         <tbody>
+        <? if (!empty($vorlagen)) : ?>
             <? foreach ($vorlagen as $portfolio): ?>
                 <tr>
                     <td>
                         <a href="<?= URLHelper::getUrl('plugins.php/courseware/courseware', [
-                            'cid'         => $portfolio->id,
-                            'return_to'   => 'overview'
+                            'cid'       => $portfolio->id,
+                            'return_to' => 'overview'
                         ]); ?>"
                            title="<?= _('Portfolio-Vorlage bearbeiten') ?>">
                             <?= htmlReady($portfolio->name); ?>
                         </a>
                     </td>
-                    <td><?= htmlReady($portfolio->beschreibung)?></td>
+                    <td><?= htmlReady($portfolio->beschreibung) ?></td>
                     <td class="actions">
                         <?php
                         $actionMenu = ActionMenu::get();
@@ -59,8 +48,8 @@
                         );
                         $actionMenu->addLink(
                             URLHelper::getUrl('plugins.php/courseware/courseware', [
-                                'cid'         => $portfolio->id,
-                                'return_to'   => 'overview'
+                                'cid'       => $portfolio->id,
+                                'return_to' => 'overview'
                             ]),
                             _('Portfolio-Vorlage bearbeiten'),
                             Icon::create('edit')
@@ -72,7 +61,7 @@
                             Icon::create('archive')
                         );
 
-                        if(!EportfolioGroupTemplates::isDistributed($portfolio->id)) {
+                        if (!EportfolioGroupTemplates::isDistributed($portfolio->id)) {
                             $actionMenu->addLink(
                                 $controller->url_for('showsupervisor/deleteportfolio/' . $portfolio->id . '/profile'),
                                 _('Portfolio-Vorlage löschen'),
@@ -93,48 +82,53 @@
                         <?= $actionMenu->render() ?>
                     </td>
                 </tr>
-            <? endforeach; ?>
+            <? endforeach ?>
+        <? else : ?>
+            <td colspan="3" style="text-align: center">
+                <?= _('Sie haben noch keine Portfolio Vorlagen oder alle Vorlagen sind archiviert.') ?>
+            </td>
+        <? endif ?>
         </tbody>
     </table>
-
-    <? if (empty($vorlagen)) : ?>
-        <?= MessageBox::info('Sie haben noch keine Portfolio Vorlagen oder alle Vorlagen sind archiviert.') ?>
-    <? endif ?>
-<? endif; ?>
+<? endif ?>
 
 
-<br>
-<table class="default">
-    <caption><?= _('Meine Portfolios') ?>
+    <br>
+    <table class="default">
+        <caption><?= _('Meine Portfolios') ?>
         <span class="actions">
           <a data-dialog="size=auto;reload-on-close"
              href="<?= $controller->url_for('show/createportfolio') ?>">
-                    <?= Icon::create('add', Icon::ROLE_CLICKABLE, tooltip2(_("Neues Portfolio erstellen")) + ['style' => 'cursor: pointer']) ?>
+                    <?= Icon::create(
+                        'add',
+                        Icon::ROLE_CLICKABLE,
+                        tooltip2(_("Neues Portfolio erstellen")) + ['style' => 'cursor: pointer']
+                    ) ?>
         </a>
        </span>
-    </caption>
-    <colgroup>
-        <col width="45%">
-        <col width="35%">
-        <col width="10%">
-        <col width="10%">
-    </colgroup>
-    <thead>
+        </caption>
+        <colgroup>
+            <col width="45%">
+            <col width="35%">
+            <col width="10%">
+            <col width="10%">
+        </colgroup>
+        <thead>
         <tr class="sortable">
             <th><?= _('Portfolio-Name') ?></th>
             <th><?= _('Beschreibung') ?></th>
             <th style="text-align: center;"><?= _('Freigaben') ?></th>
             <th class="actions"><?= _('Aktionen') ?></th>
         </tr>
-    </thead>
-    <tbody>
+        </thead>
+        <tbody>
 
         <? if (!empty($my_portfolios)) foreach ($my_portfolios as $portfolio): ?>
             <tr>
                 <td>
                     <a href="<?= URLHelper::getUrl('plugins.php/courseware/courseware', [
-                        'cid'         => $portfolio->id,
-                        'return_to'   => 'overview'
+                        'cid'       => $portfolio->id,
+                        'return_to' => 'overview'
                     ]); ?>">
                         <?= htmlReady($portfolio->name); ?>
                     </a>
@@ -147,8 +141,8 @@
                 </td>
                 <td class="actions">
                     <a href="<?= URLHelper::getUrl('plugins.php/courseware/courseware', [
-                        'cid'         => $portfolio->id,
-                        'return_to'   => 'overview'
+                        'cid'       => $portfolio->id,
+                        'return_to' => 'overview'
                     ]); ?>"
                        title="<?= _('Portfolio bearbeiten') ?>"
                     >
@@ -157,32 +151,32 @@
                 </td>
             </tr>
         <? endforeach; ?>
-    </tbody>
-</table>
+        </tbody>
+    </table>
 <? if (empty($my_portfolios)) : ?>
     <?= MessageBox::info('Bisher sind keine eigenen Portfolios vorhanden.') ?>
 <? endif ?>
 
-<br>
-<table class="default">
-    <caption><?= _('Für mich freigegebene Portfolios') ?></caption>
-    <colgroup>
-        <col width="80%">
-        <col width="20%">
-    </colgroup>
-    <thead>
+    <br>
+    <table class="default">
+        <caption><?= _('Für mich freigegebene Portfolios') ?></caption>
+        <colgroup>
+            <col width="80%">
+            <col width="20%">
+        </colgroup>
+        <thead>
         <tr class="sortable">
             <th><?= _('Portfolio-Name') ?></th>
             <th><?= _('Besitzer/in') ?></th>
         </tr>
-    </thead>
-    <tbody>
+        </thead>
+        <tbody>
         <? foreach ($accessible_portfolios as $portfolio): ?>
             <tr class="insert_tr">
                 <td>
                     <a href="<?= URLHelper::getUrl('plugins.php/courseware/courseware', [
-                        'cid'         => $portfolio->seminar_id,
-                        'return_to'   => 'overview'
+                        'cid'       => $portfolio->seminar_id,
+                        'return_to' => 'overview'
                     ]); ?>">
                         <?= Course::find($portfolio->group_id)->name
                             ?: Course::find($portfolio->seminar_id)->name; ?>
@@ -193,8 +187,8 @@
                 </td>
             </tr>
         <? endforeach; ?>
-    </tbody>
-</table>
+        </tbody>
+    </table>
 
 <? if (empty($accessible_portfolios)) : ?>
     <?= MessageBox::info('Bisher wurden keine Portfolios für Sie freigegeben.') ?>
@@ -213,56 +207,56 @@
             <?= _('Archivierte Portfolio Vorlagen') ?>
         </caption>
         <thead>
-            <tr class="sortable">
-                <th><?= _('Name') ?></th>
-                <th><?= _('Beschreibung') ?></th>
-                <th class="actions"><?= _('Aktionen') ?></th>
-            </tr>
+        <tr class="sortable">
+            <th><?= _('Name') ?></th>
+            <th><?= _('Beschreibung') ?></th>
+            <th class="actions"><?= _('Aktionen') ?></th>
+        </tr>
         </thead>
         <tbody>
-            <? foreach ($archived as $portfolio): ?>
-                <tr>
-                    <td>
-                        <a href="<?= URLHelper::getUrl('plugins.php/courseware/courseware', [
-                            'cid'         => $portfolio->id,
-                            'return_to'   => 'overview'
-                        ]); ?>"
-                           title="<?= _('Portfolio-Vorlage bearbeiten') ?>">
-                            <?= htmlReady($portfolio->name); ?>
-                        </a>
-                    </td>
-                    <td><?= htmlReady($portfolio->beschreibung)?></td>
-                    <td class="actions">
-                        <?php
-                        $actionMenu = ActionMenu::get();
-                        $actionMenu->addLink(
-                            URLHelper::getUrl('plugins.php/courseware/courseware', [
-                                'cid'         => $portfolio->id,
-                                'return_to'   => 'overview'
-                            ]),
-                            _('Portfolio-Vorlage bearbeiten'),
-                            Icon::create('edit')
-                        );
+        <? foreach ($archived as $portfolio): ?>
+            <tr>
+                <td>
+                    <a href="<?= URLHelper::getUrl('plugins.php/courseware/courseware', [
+                        'cid'       => $portfolio->id,
+                        'return_to' => 'overview'
+                    ]); ?>"
+                       title="<?= _('Portfolio-Vorlage bearbeiten') ?>">
+                        <?= htmlReady($portfolio->name); ?>
+                    </a>
+                </td>
+                <td><?= htmlReady($portfolio->beschreibung) ?></td>
+                <td class="actions">
+                    <?php
+                    $actionMenu = ActionMenu::get();
+                    $actionMenu->addLink(
+                        URLHelper::getUrl('plugins.php/courseware/courseware', [
+                            'cid'       => $portfolio->id,
+                            'return_to' => 'overview'
+                        ]),
+                        _('Portfolio-Vorlage bearbeiten'),
+                        Icon::create('edit')
+                    );
 
-                        $actionMenu->addLink(
-                            $controller->url_for('show/unarchive/' . $portfolio->id),
-                            _('Portfolio-Vorlage wiederherstellen'),
-                            Icon::create('archive')
-                        );
+                    $actionMenu->addLink(
+                        $controller->url_for('show/unarchive/' . $portfolio->id),
+                        _('Portfolio-Vorlage wiederherstellen'),
+                        Icon::create('archive')
+                    );
 
-                        if (!empty(EportfolioGroupTemplates::findBySeminar_id($portfolio->id))) {
-                            $actionMenu->addLink(
-                                $controller->url_for('show/list_seminars/' . $portfolio->id),
-                                _('Verteilt in Veranstaltungen'),
-                                Icon::create('info'),
-                                ['data-dialog' => 'size=auto']
-                            );
-                        }
-                        ?>
-                        <?= $actionMenu->render() ?>
-                    </td>
-                </tr>
-            <? endforeach; ?>
+                    if (!empty(EportfolioGroupTemplates::findBySeminar_id($portfolio->id))) {
+                        $actionMenu->addLink(
+                            $controller->url_for('show/list_seminars/' . $portfolio->id),
+                            _('Verteilt in Veranstaltungen'),
+                            Icon::create('info'),
+                            ['data-dialog' => 'size=auto']
+                        );
+                    }
+                    ?>
+                    <?= $actionMenu->render() ?>
+                </td>
+            </tr>
+        <? endforeach; ?>
         </tbody>
     </table>
 <? endif; ?>

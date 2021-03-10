@@ -28,6 +28,11 @@ class ShowController extends PluginController
 
     public function index_action()
     {
+        PageLayout::setTitle(_('Meine Portfolios'));
+        Helpbar::get()->addPlainText(
+            _('Hier finden Sie alle ePortfolios, die Sie angelegt haben oder die andere f&uuml;r Sie freigegeben haben.'),
+            'icons/white/info-circle.svg'
+        );
         $this->my_portfolios = EportfolioModel::getMyPortfolios();
 
         $courses = EportfolioModel::getPortfolioVorlagen();
@@ -158,7 +163,16 @@ class ShowController extends PluginController
         $avatar   = CourseAvatar::getAvatar($sem_id);
         $filename = sprintf('%s/%s', $this->plugin->getpluginPath(), 'assets/images/avatare/vorlage.png');
         $avatar->createFrom($filename);
-
+        @file_get_contents(
+            URLHelper::getUrl($GLOBALS['ABSOLUTE_URI_STUDIP'] .'/plugins.php/courseware/courseware', [
+                'cid'       => $sem->Seminar_id,
+                'return_to' => 'overview'
+            ])
+        );
+        DBManager::get()->execute(
+            'UPDATE `mooc_blocks` SET `title` = "Vorlage" WHERE `seminar_id` = ? AND `parent_id` IS NULL AND `type` = "Courseware"',
+            [$sem->Seminar_id]
+        );
         PageLayout::postSuccess(sprintf(_('Vorlage "%s" wurde angelegt.'), htmlReady($sem_name)));
 
         $this->response->add_header('X-Dialog-Close', '1');
@@ -195,14 +209,12 @@ class ShowController extends PluginController
         $filename = sprintf('%s/%s', $this->plugin->getpluginPath(), 'assets/images/avatare/eportfolio.png');
         $avatar->createFrom($filename);
 
-        $eportfolio    = new Seminar();
-
-        //table eportfolio
-        $values    = ['sem_id' => $sem_id, 'userid' => $userid];
-        $query     = "INSERT INTO eportfolio (Seminar_id, owner_id, group_id) VALUES (:sem_id, :userid, '')";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute($values);
-
+        EportfolioModel::create(
+            [
+                'Seminar_id' => $sem_id,
+                'owner_id' => $userid
+            ]
+        );
         PageLayout::postSuccess(sprintf(_('Portfolio "%s" wurde angelegt.'), htmlReady($sem_name)));
 
         $this->response->add_header('X-Dialog-Close', '1');
