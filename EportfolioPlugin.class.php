@@ -17,6 +17,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         $navigation = new Navigation(_('ePortfolios'));
         $navigation->setURL(PluginEngine::getURL($this));
         $this->context = Course::findCurrent();
+
         if (
             (!Request::get('username') || Request::get('username') == $GLOBALS['user']->username)
             && !$GLOBALS['perm']->have_studip_perm('admin', $this->context->id)
@@ -316,13 +317,27 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         if ($this->isVorlage()) {
             Navigation::removeItem('/course/members');
         }
+
+        PageLayout::addScript($this->getPluginURL() . '/assets/application.js');
     }
 
     public function prevent_settings_access($event, $path)
     {
-        if (($this->isPortfolio() || $this->isVorlage())
-            && $path == '/course/mooc_courseware/settings') {
-            throw new AccessDeniedException();
+        if (($this->isPortfolio() || $this->isVorlage())) {
+
+            if(mb_stripos($path, '/course/mooc_courseware') !== false) {
+                if (Navigation::hasItem('/course/mooc_courseware/settings')) {
+                    Navigation::removeItem('/course/mooc_courseware/settings');
+                }
+                PageLayout::addHeadElement('meta', [
+                    'name'    => 'is_eportfolio',
+                    'content' => 'true',
+                ]);
+            }
+
+            if($path === '/course/mooc_courseware/settings') {
+                throw new AccessDeniedException();
+            }
         }
     }
 
