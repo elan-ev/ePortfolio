@@ -182,7 +182,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
             $url = 'showstudent';
         }
 
-        $icon = new AutoNavigation(
+        $icon = new Navigation(
             'Portfolio-Arbeit',
             PluginEngine::getURL($this, ['cid' => $course_id, 'iconnav' => 'true'], $url, true)
         );

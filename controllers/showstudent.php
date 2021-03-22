@@ -39,7 +39,6 @@ class ShowstudentController extends PluginController
             $template_list_not_shared = EportfolioGroupTemplates::getGroupTemplates($group_id);
 
         } else {
-
             $portfolio_id = $portfolio_id[0];
             /**
              * Welche Templates wurden dem Nutzer noch nicht Verteilt?

@@ -22,7 +22,7 @@ class EportfolioGroupTemplates extends SimpleORMap
      **/
     public static function setDeadline($group_id, $template_id, $date)
     {
-        $query     = "UPDATE eportfolio_group_templates SET abgabe_datum = :datum WHERE group_id = :group_id AND Seminar_id = :template_id";
+        $query = "UPDATE eportfolio_group_templates SET abgabe_datum = :datum WHERE group_id = :group_id AND Seminar_id = :template_id";
         $statement = DBManager::get()->prepare($query);
         $statement->execute([':datum' => $date, ':group_id' => $group_id, ':template_id' => $template_id]);
     }
@@ -49,7 +49,7 @@ class EportfolioGroupTemplates extends SimpleORMap
         return DBManager::get()->fetchAll($query, [Config::get()->SEM_CLASS_PORTFOLIO_VORLAGE, $groupId], 'Course::buildExisting');
     }
 
-        /**EportfolioGroupTemplates::getGroupTemplates
+    /**EportfolioGroupTemplates::getGroupTemplates
      * Liefert alle verteilten Templates einer Gruppe
      **/
     public static function getGroupTemplatesUser($group_id)
@@ -127,7 +127,7 @@ class EportfolioGroupTemplates extends SimpleORMap
      */
     public static function checkMissingTemplate($groupId, $userPortfolioId, $groupChapters)
     {
-        if(!$userPortfolioId) {
+        if (!$userPortfolioId) {
             return true;
         }
 
@@ -140,7 +140,7 @@ class EportfolioGroupTemplates extends SimpleORMap
             AND eportfolio_block_infos.Seminar_id = :seminarId",
             [":groupId" => $groupId, ":seminarId" => $userPortfolioId]);
 
-        if($groupChapters > $userChapters) {
+        if ($groupChapters > $userChapters) {
             return true;
         }
         return false;
@@ -148,7 +148,7 @@ class EportfolioGroupTemplates extends SimpleORMap
 
     public static function getGroupTemplateInformation($groupId, $portfolios)
     {
-        $portfolioIds = array_map(function($portfolio) {
+        $portfolioIds = array_map(function ($portfolio) {
             return $portfolio->id;
         }, $portfolios);
 
@@ -161,9 +161,9 @@ class EportfolioGroupTemplates extends SimpleORMap
         $portfoliosData = [];
         foreach ($data as $portfolioData) {
             $portfolio['distributionDate'] = $portfolioData['mkdate'];
-            $portfolio['deadline']         = $portfolioData['abgabe_datum'];
-            $portfolio['seminarId']        = $portfolioData['Seminar_id'];
-            $portfolio['portfolio']        = $portfolios[array_search($portfolio['seminarId'], array_column($portfolios, 'id'))];
+            $portfolio['deadline'] = $portfolioData['abgabe_datum'];
+            $portfolio['seminarId'] = $portfolioData['Seminar_id'];
+            $portfolio['portfolio'] = $portfolios[array_search($portfolio['seminarId'], array_column($portfolios, 'id'))];
 
             if (!$portfolioData['verteilt_durch']) {
                 $portfolio['creatorName'] = "Unknown";
@@ -189,10 +189,10 @@ class EportfolioGroupTemplates extends SimpleORMap
             [":group_id" => $group_id, ":cid" => $cid]
         );
 
-        $templates = array();
+        $templates = [];
 
         foreach ($vars as $var) {
-            if(!$templates[$var['Seminar_id']]) {
+            if (!$templates[$var['Seminar_id']]) {
                 $templates[$var['Seminar_id']] = [];
             }
             array_push($templates[$var['Seminar_id']], $var);
@@ -201,12 +201,12 @@ class EportfolioGroupTemplates extends SimpleORMap
         return $templates;
     }
 
-    public function isDistributed($portfolio_id) {
-        $isDistributed = DBManager::get()->fetchAll(
+    public function isDistributed($portfolio_id)
+    {
+        return DBManager::get()->fetchAll(
             "SELECT eportfolio_group_templates.Seminar_id FROM eportfolio_group_templates
             WHERE eportfolio_group_templates.Seminar_id = :portfolio_id LIMIT 1",
             [":portfolio_id" => $portfolio_id]
         );
-        return $isDistributed;
     }
 }

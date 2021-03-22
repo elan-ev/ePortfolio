@@ -37,8 +37,6 @@ class ShowsupervisorController extends PluginController
 
             $this->distributedPortfolios = EportfolioGroupTemplates::getGroupTemplates($this->groupId);
         }
-
-
     }
 
     public function index_action()
@@ -48,13 +46,7 @@ class ShowsupervisorController extends PluginController
         Navigation::activateItem('/course/eportfolioplugin/supervision');
 
         $this->member     = EportfolioModel::getGroupMembers($this->course_id);
-        $this->portfolios = EportfolioModel::getPortfolioVorlagen();
-
-        /* remove archived portfolios from list */
-        $this->portfolios = array_filter($this->portfolios, function($portfolios) use ($id) {
-            return @empty(EportfolioArchive::find($portfolios->id));
-        });
-
+        $this->portfolios = EportfolioModel::getPortfolioVorlagen(true);
         $this->portfolioChapters = EportfolioModel::getAnzahlAllerKapitel($this->groupId);
     }
 
@@ -70,7 +62,6 @@ class ShowsupervisorController extends PluginController
          * **/
 
         foreach ($members as $member) {
-
             /**
              * Überprüfen ob es für den Nutzer schon ein Portfolio-Seminar gibt
              * **/
@@ -79,27 +70,26 @@ class ShowsupervisorController extends PluginController
             ]);
 
             if (!empty($portfolio->Seminar_id)) {
-
                 /**
                  * Wenn ja: Template einfach wie gehabt Kopieren
                  * bzw. in die seminar_list anfügen und später triggern
                  * **/
-
                 array_push($this->seminar_list, $portfolio->Seminar_id);
-
             } else {
 
                 /**
                  * Wenn nein: Neues Portfolio-Seminar für den User anlegen und ausgewähltes Template kopieren
                  * in seminar_list anfügen
                  * **/
-                $portfolio_id_add = EportfolioModel::createPortfolioForUser($this->supervisorGroupId, $member->id, $this->dispatcher->current_plugin);
+                $portfolio_id_add = EportfolioModel::createPortfolioForUser(
+                    $this->supervisorGroupId,
+                    $member->id,
+                    $this->dispatcher->current_plugin
+                );
                 array_push($this->seminar_list, $portfolio_id_add);
-
             }
-
         }
-
+        EportfolioActivity::addVorlagenActivity($this->course_id, User::findCurrent()->id);
         // create template for group
         $template_entry                 = new EportfolioGroupTemplates();
         $template_entry->group_id       = $this->course_id;
@@ -108,9 +98,9 @@ class ShowsupervisorController extends PluginController
         $template_entry->store();
 
         VorlagenCopy::copyCourseware(new Seminar($this->masterid), $this->seminar_list);
-        EportfolioActivity::addVorlagenActivity($this->course_id, User::findCurrent()->id);
 
-        PageLayout::postMessage(MessageBox::success('Vorlage wurde verteilt.'));
+
+        PageLayout::postSuccess(_('Vorlage wurde verteilt.'));
         $this->redirect('showsupervisor?cid=' . $this->course_id);
     }
 
@@ -286,7 +276,6 @@ class ShowsupervisorController extends PluginController
             echo NL;
         }
 
-
         die;
     }
 
@@ -313,7 +302,6 @@ class ShowsupervisorController extends PluginController
 
     public function createlateportfolio_action($group_id, $user_id, $userPortfolioId)
     {
-
         /**
          *     1.   Hat ein nutzer überhaput schon ein Portfolio in der Gruppe ?
          *          Wenn nicht, muss eins erstellt werden.

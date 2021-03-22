@@ -110,7 +110,7 @@ class EportfolioActivity extends SimpleORMap
     {                
         if ($GLOBALS['perm']->have_studip_perm('dozent', $seminar_id)) {
             return EportfolioActivity::findBySQL(
-                'group_id = ?  AND mk_date > ? AND user_id != ? AND type IN ("freigabe", "supervisor-notiz") ORDER BY mk_date DESC',
+                'group_id = ?  AND mk_date > ? AND user_id != ? AND type IN ("vorlage-erhalten", "freigabe", "supervisor-notiz") ORDER BY mk_date DESC',
                 [$seminar_id, object_get_visit($seminar_id, 'sem'), $GLOBALS['user']->id]);
         } else {
             return EportfolioActivity::findBySQL(

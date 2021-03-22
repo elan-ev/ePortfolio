@@ -27,7 +27,7 @@ class EportfolioModel extends SimpleORMap
         parent::configure($config);
     }
 
-    public static function getPortfolioVorlagen()
+    public static function getPortfolioVorlagen($filter_archived = false)
     {
         $query = "
             SELECT  DISTINCT `seminare`.*
@@ -35,8 +35,11 @@ class EportfolioModel extends SimpleORMap
             JOIN `seminar_user` USING(`Seminar_id`)
             WHERE `seminare`.`status` = ? AND `seminar_user`.`status` IN ('autor', 'tutor', 'dozent')
             AND `seminar_user`.`user_id` = ?
-            ORDER BY `mkdate` DESC
         ";
+        if($filter_archived) {
+            $query .= ' AND NOT EXISTS(SELECT * FROM `eportfolio_archive` WHERE `eportfolio_id` = `Seminar_id`)';
+        }
+        $query .= ' ORDER BY `mkdate` DESC';
         return DBManager::get()->fetchAll($query, [Config::get()->SEM_CLASS_PORTFOLIO_VORLAGE, User::findCurrent()->id], 'Course::buildExisting');
     }
 
@@ -420,7 +423,6 @@ class EportfolioModel extends SimpleORMap
         $owner_fullname   = $owner['Vorname'] . ' ' . $owner['Nachname'];
         $sem_name         = "Veranstaltungsportfolio: " . $groupname->getName() . " (" . $owner_fullname . ")";
         $sem_description  = "Dieses Portfolio wurde Ihnen von einem Supervisor zugeteilt";
-        $current_semester = Semester::findCurrent();
 
         $sem              = new Seminar();
         $sem->Seminar_id  = $sem->createId();
@@ -444,7 +446,7 @@ class EportfolioModel extends SimpleORMap
          * **/
 
         foreach ($group->user as $supervisor) {
-            $sem->addMember($supervisor->user_id, 'autor');
+            $sem->addMember($supervisor->user_id);
         }
 
         $sem->store();
@@ -460,7 +462,7 @@ class EportfolioModel extends SimpleORMap
 
         if (!$sgroup = Statusgruppen::find($id)) {
             // create new statusgroup
-            $sgroup = Statusgruppen::create([
+            Statusgruppen::create([
                 'statusgruppe_id' => $id,
                 'name'            => 'Berechtigte für Portfolioarbeit',
                 'range_id'        => $sem_id
@@ -526,16 +528,9 @@ class EportfolioModel extends SimpleORMap
 
     public static function getGroupMembers($course_id)
     {
-        $users   = [];
-
-        $course = Course::find($course_id);
-        $user_ids = $course->members->filter(function ($a) {
-            return $a['status'] === 'autor';
-        })->pluck('user_id');
-
-        $users = User::findMany($user_ids, "ORDER BY Nachname, Vorname");
-
-        return $users;
+        return SimpleCollection::createFromArray(
+            CourseMember::findByCourseAndStatus($course_id, 'autor')
+        )->pluck('user');
     }
 
     /**

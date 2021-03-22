@@ -25,7 +25,6 @@ class SupervisorgroupController extends PluginController
             $this->supervisorGroup = SupervisorGroup::findOnebySQL('seminar_id = :id',
                 [':id' => $this->course->id]
             );
-
         }
     }
 
