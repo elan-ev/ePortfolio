@@ -54,7 +54,11 @@ class VorlagenCopy
             $containerImport["cid"] = $cid; //new course cid
             $coursewareImport       = $containerImport["current_courseware"];
             $import                 = new Mooc\Import\XmlImport($containerImport['block_factory']);
-            $import->import($tempDir, $coursewareImport, $install_folder);
+            try {
+                $import->import($tempDir, $coursewareImport, $install_folder);
+            } catch (Exception $e) {
+                
+            }
         }
         //delete xml-data file
         self::deleteRecursively($tempDir);
