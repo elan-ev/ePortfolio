@@ -57,16 +57,25 @@ class VorlagenCopy
             try {
                 $import->import($tempDir, $coursewareImport, $install_folder);
             } catch (Exception $e) {
-                
+
             }
         }
         //delete xml-data file
         self::deleteRecursively($tempDir);
+        self::cleanXMLTags();
 
         self::lockBlocks($master, $semList);
 
     }
 
+    private function cleanXMLTags()
+    {
+        $stmt = DBManager::get()->prepare("UPDATE mooc_fields
+            SET json_data = ''
+            WHERE json_data = ?");
+
+        $stmt->execute(['"<!DOCTYPE html PUBLIC \"-\/\/W3C\/\/DTD HTML 4.0 Transitional\/\/EN\" \"http:\/\/www.w3.org\/TR\/REC-html40\/loose.dtd\">\n<?xml encoding=\"utf-8\" ?>\n"']);
+    }
 
     private function deleteRecursively($path)
     {
