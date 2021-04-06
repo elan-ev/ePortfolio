@@ -420,7 +420,6 @@ class EportfolioModel extends SimpleORMap
         $owner_fullname   = $owner['Vorname'] . ' ' . $owner['Nachname'];
         $sem_name         = "Veranstaltungsportfolio: " . $groupname->getName() . " (" . $owner_fullname . ")";
         $sem_description  = "Dieses Portfolio wurde Ihnen von einem Supervisor zugeteilt";
-        $current_semester = Semester::findCurrent();
 
         $sem              = new Seminar();
         $sem->Seminar_id  = $sem->createId();
@@ -444,7 +443,7 @@ class EportfolioModel extends SimpleORMap
          * **/
 
         foreach ($group->user as $supervisor) {
-            $sem->addMember($supervisor->user_id, 'autor');
+            $sem->addMember($supervisor->user_id, 'tutor');
         }
 
         $sem->store();
@@ -526,8 +525,6 @@ class EportfolioModel extends SimpleORMap
 
     public static function getGroupMembers($course_id)
     {
-        $users   = [];
-
         $course = Course::find($course_id);
         $user_ids = $course->members->filter(function ($a) {
             return $a['status'] === 'autor';

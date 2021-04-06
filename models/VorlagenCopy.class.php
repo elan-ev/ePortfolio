@@ -1,4 +1,4 @@
-<?
+<?php
 
 class VorlagenCopy
 {
@@ -9,14 +9,14 @@ class VorlagenCopy
 
         // create a temporary directory
         $tempDir = $GLOBALS['TMP_PATH'] . '/' . uniqid();
-        mkdir($tempDir);
+        @mkdir($tempDir);
 
         //export from master course
-        $containerExport        = new Courseware\Container(null);
+        $containerExport = new Courseware\Container(null);
         $containerExport["cid"] = $master->id; //Master cid
-        $export                 = new Mooc\Export\XmlExport($containerExport['block_factory']);
-        $coursewareExport       = $containerExport["current_courseware"];
-        $xml                    = $export->export($coursewareExport);
+        $export = new Mooc\Export\XmlExport($containerExport['block_factory']);
+        $coursewareExport = $containerExport["current_courseware"];
+        $xml = $export->export($coursewareExport);
 
         foreach ($containerExport['current_courseware']->getFiles() as $file) {
             if (trim($file['url']) !== '') {
@@ -24,48 +24,51 @@ class VorlagenCopy
             }
 
             $destination = $tempDir . '/' . $file['id'];
-            mkdir($destination);
-            if(file_exists($file['path'])) {
-                copy($file['path'], $destination . '/' . $file['filename']);
+            @mkdir($destination);
+            if (file_exists($file['path'])) {
+                @copy($file['path'], $destination . '/' . $file['filename']);
             }
         }
 
         //write export xml-data file
         $destination = $tempDir . "/data.xml";
-        $file        = fopen($destination, "w+");
+
+        $file = fopen($destination, "w+");
         fputs($file, $xml);
         fclose($file);
 
         foreach ($semList as $user_id => $cid) {
 
-            $root_folder   = Folder::findTopFolder($cid);
+            $root_folder = Folder::findTopFolder($cid);
             $parent_folder = FileManager::getTypedFolder($root_folder->id);
+
             // create new folder for import
-            $request    = ['name' => 'Courseware-Import ' . date("d.m.Y", time()), 'description' => 'folder for imported courseware content'];
+            $request = [
+                'name'        => 'Courseware-Import ' . date("d.m.Y", time()),
+                'description' => 'folder for imported courseware content'
+            ];
             $new_folder = new StandardFolder();
             $new_folder->setDataFromEditTemplate($request);
             $new_folder->user_id = User::findCurrent()->id;
-            $courseware_folder   = $parent_folder->createSubfolder($new_folder);
+            $courseware_folder = $parent_folder->createSubfolder($new_folder);
 
             $install_folder = FileManager::getTypedFolder($courseware_folder->id);
 
             //import in new course
-            $containerImport        = new Courseware\Container(null);
+            $containerImport = new Courseware\Container(null);
             $containerImport["cid"] = $cid; //new course cid
-            $coursewareImport       = $containerImport["current_courseware"];
-            $import                 = new Mooc\Import\XmlImport($containerImport['block_factory']);
+            $coursewareImport = $containerImport["current_courseware"];
+            $import = new Mooc\Import\XmlImport($containerImport['block_factory']);
             try {
                 $import->import($tempDir, $coursewareImport, $install_folder);
             } catch (Exception $e) {
-
+                var_dump($e);die;
             }
         }
         //delete xml-data file
         self::deleteRecursively($tempDir);
         self::cleanXMLTags();
-
         self::lockBlocks($master, $semList);
-
     }
 
     private static function cleanXMLTags()
@@ -107,14 +110,13 @@ class VorlagenCopy
     private static function lockBlocks(Seminar $master, array $semList)
     {
         $masterBlocks = EportfolioModel::getAllBlocksInOrder($master->id);
-        $stmt_read    = DBManager::get()->prepare("UPDATE mooc_blocks
+        $stmt_read = DBManager::get()->prepare("UPDATE mooc_blocks
             SET approval = ? WHERE id = ?");
         $approval = ['settings' => ['defaultRead' => false]];
         //hier können potentiell beleibige infos von den Vorlagen Blöcken auf die Block-Kopien übertragen werden
         foreach ($semList as $user_id => $cid) {
             $seminarBlocks = EportfolioModel::getAllBlocksInOrder($cid);
-            $newBlocks     = array_slice($seminarBlocks, -count($masterBlocks));
-
+            $newBlocks = array_slice($seminarBlocks, -count($masterBlocks));
             //Mapping von neuen Blöcken auf Vorlagen-Blöcke
             for ($i = 0; $i < count($masterBlocks); $i++) {
                 BlockInfo::createEntry($cid, $newBlocks[$i], $masterBlocks[$i], $master->id);

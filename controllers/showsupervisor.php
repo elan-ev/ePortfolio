@@ -90,12 +90,17 @@ class ShowsupervisorController extends PluginController
                  * Wenn nein: Neues Portfolio-Seminar für den User anlegen und ausgewähltes Template kopieren
                  * in seminar_list anfügen
                  * **/
-                $portfolio_id_add = EportfolioModel::createPortfolioForUser($this->supervisorGroupId, $member->id, $this->dispatcher->current_plugin);
+                $portfolio_id_add = EportfolioModel::createPortfolioForUser(
+                    $this->supervisorGroupId,
+                    $member->id,
+                    $this->dispatcher->current_plugin
+                );
                 array_push($this->seminar_list, $portfolio_id_add);
 
             }
 
         }
+
         $template_entry = EportfolioGroupTemplates::find([$this->course_id, $this->masterid]);
 
         if (!$template_entry) {

@@ -144,8 +144,8 @@ class ShowController extends PluginController
     {
         $sem_type_id      = Config::get()->SEM_CLASS_PORTFOLIO_VORLAGE;
         $userid          = $GLOBALS["user"]->id; //get userid
-        $sem_name        = strip_tags(Request::get('name'));
-        $sem_description = strip_tags(Request::get('beschreibung'));
+        $sem_name        = Request::get('name');
+        $sem_description = Request::get('beschreibung');
 
         $sem              = new Seminar();
         $sem->name        = $sem_name;

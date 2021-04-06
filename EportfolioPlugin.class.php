@@ -29,7 +29,7 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
         NotificationCenter::addObserver($this, 'store_activity', 'UserDidPostSupervisorNotiz');
         NotificationCenter::addObserver($this, 'store_activity', 'SupervisorDidPostAnswer');
         NotificationCenter::addObserver($this, 'store_activity', 'UserDidPostNotiz');
-        NotificationCenter::addObserver($this, 'set_permissions', 'PluginForSeminarDidEnabled');
+        NotificationCenter::addObserver($this, 'set_permissions', 'PluginDidActivate');
         NotificationCenter::addObserver($this, 'prevent_settings_access', 'NavigationDidActivateItem');
 
         // generate css to hide all portfolio seminars on the my_realm page - DIRTY HACK, i know
@@ -353,7 +353,6 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
             if (!$course) {
                 return;
             }
-
             $group = SupervisorGroup::findOneBySQL('Seminar_id = ?', [$course->id]);
 
             if (!$group) {

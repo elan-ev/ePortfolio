@@ -54,5 +54,4 @@ class SupervisorGroupUser extends SimpleORMap
             $currentUser->delete();
         }
     }
-
 }
