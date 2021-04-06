@@ -20,7 +20,7 @@ class ShowsupervisorController extends PluginController
         }
 
         if ($this->course) {
-            $this->userId  = $GLOBALS['user']->id;
+            $this->userId = $GLOBALS['user']->id;
 
             $this->groupId = $this->course->id;
             $this->group = SupervisorGroup::findOneBySQL('seminar_id = ?', [$this->groupId]);
@@ -44,11 +44,11 @@ class ShowsupervisorController extends PluginController
 
         Navigation::activateItem('/course/eportfolioplugin/supervision');
 
-        $this->member     = EportfolioModel::getGroupMembers($this->course_id);
+        $this->member = EportfolioModel::getGroupMembers($this->course_id);
         $this->portfolios = EportfolioModel::getPortfolioVorlagen();
 
         /* remove archived portfolios from list */
-        $this->portfolios = array_filter($this->portfolios, function($portfolios)  {
+        $this->portfolios = array_filter($this->portfolios, function ($portfolios) {
             return @empty(EportfolioArchive::find($portfolios->id));
         });
 
@@ -58,9 +58,9 @@ class ShowsupervisorController extends PluginController
     public function createportfolio_action($master)
     {
         $this->seminar_list = [];
-        $this->masterid  = $master;
+        $this->masterid = $master;
 
-        $members    = EportfolioModel::getGroupMembers($this->course_id);
+        $members = EportfolioModel::getGroupMembers($this->course_id);
 
         /**
          * Jeden User in der Gruppe einzeln behandeln
@@ -96,13 +96,17 @@ class ShowsupervisorController extends PluginController
             }
 
         }
+        $template_entry = EportfolioGroupTemplates::find([$this->course_id, $this->masterid]);
 
-        // create template for group
-        $template_entry                 = new EportfolioGroupTemplates();
-        $template_entry->group_id       = $this->course_id;
-        $template_entry->Seminar_id     = $this->masterid;
-        $template_entry->verteilt_durch = $GLOBALS["user"]->id;
-        $template_entry->store();
+        if (!$template_entry) {
+            $template_entry = EportfolioGroupTemplates::create(
+                [
+                    'group_id'   => $this->course_id,
+                    'Seminar_id' => $this->masterid,
+                    'verteilt_durch' => $GLOBALS["user"]->id,
+                ]
+            );
+        }
 
         VorlagenCopy::copyCourseware(new Seminar($this->masterid), $this->seminar_list);
         EportfolioActivity::addVorlagenActivity($this->course_id, User::findCurrent()->id);
@@ -119,8 +123,8 @@ class ShowsupervisorController extends PluginController
 
         $seminar = Seminar::getInstance($vorlage_id);
 
-        if(Request::submitted('updatevorlage')) {
-            $sem_name        = strip_tags(Request::get('name'));
+        if (Request::submitted('updatevorlage')) {
+            $sem_name = strip_tags(Request::get('name'));
             $sem_description = strip_tags(Request::get('description'));
 
             $seminar->name = $sem_name;
@@ -140,18 +144,18 @@ class ShowsupervisorController extends PluginController
 
     public function memberdetail_action($group_id, $user_id)
     {
-        $this->group_id     = $group_id;
-        $this->group_title  = Course::findCurrent()->name;
+        $this->group_id = $group_id;
+        $this->group_title = Course::findCurrent()->name;
 
-        $this->user         = new User($user_id);
-        $this->user_id      = $user_id;
+        $this->user = new User($user_id);
+        $this->user_id = $user_id;
 
         $this->portfolio_id = EportfolioModel::getPortfolioIdOfUserInGroup($user_id, $group_id);
-        $this->templates    = EportfolioGroupTemplates::getUserChapterInfos($group_id, $this->portfolio_id);
+        $this->templates = EportfolioGroupTemplates::getUserChapterInfos($group_id, $this->portfolio_id);
 
         $this->portfolioSharedChapters = EportfolioFreigabe::sharedChapters($this->course_id, $this->templates);
         $this->chapterCount = EportfolioModel::getAnzahlAllerKapitel($this->groupId);
-        $this->notesCount   = EportfolioUser::getAnzahlNotizen($this->portfolio_id);
+        $this->notesCount = EportfolioUser::getAnzahlNotizen($this->portfolio_id);
 
         // check, if current user is in supervisor group
         $this->userIsSupervisor = sizeof($this->group->user->findBy('user_id', $GLOBALS['user']->id)) ? true : false;
@@ -167,8 +171,8 @@ class ShowsupervisorController extends PluginController
         $chapters = array_column($chapters, null, 'id');
 
 
-        $this->chapterInfos = array();
-        foreach($chapters as $key => $val) {
+        $this->chapterInfos = [];
+        foreach ($chapters as $key => $val) {
             $this->chapterInfos[$key] = array_key_exists($key, $portfolioInformation) ? array_merge($val, $portfolioInformation[$key]) : $val;
 
             if (is_array($this->templates[$this->chapterInfos[$key]['template_id']])) {
@@ -186,7 +190,7 @@ class ShowsupervisorController extends PluginController
     public function activityfeed_action()
     {
         Navigation::activateItem('/course/eportfolioplugin/portfoliofeed');
-        $this->activities      = EportfolioActivity::getActivitiesForGroup($this->course_id);
+        $this->activities = EportfolioActivity::getActivitiesForGroup($this->course_id);
         $this->countActivities = sizeof(EportfolioActivity::newActivities($this->course_id) ?: []);
 
         // Sidebar
@@ -213,8 +217,8 @@ class ShowsupervisorController extends PluginController
         $stmt = DBManager::get()->prepare("SELECT title FROM mooc_blocks
             WHERE id = ?");
 
-        define ('NL', "\n");  // if we need to change the newline-marker
-        define ('TR', ';');   // divider for entrys
+        define('NL', "\n");  // if we need to change the newline-marker
+        define('TR', ';');   // divider for entrys
 
         // set correct header
         session_write_close();
@@ -279,7 +283,7 @@ class ShowsupervisorController extends PluginController
 
             $row[] = date('d.m.Y, H:i:s', $activity->mk_date);
 
-            echo '"'. implode('"'. TR .'"', $row) .'"';
+            echo '"' . implode('"' . TR . '"', $row) . '"';
             echo NL;
         }
 
@@ -289,10 +293,10 @@ class ShowsupervisorController extends PluginController
 
     public function templatedates_action($group_id, $template_id)
     {
-        $this->group_id    = $group_id;
+        $this->group_id = $group_id;
         $this->template_id = $template_id;
 
-        $timestamp    = EportfolioGroupTemplates::getDeadline($group_id, $template_id);
+        $timestamp = EportfolioGroupTemplates::getDeadline($group_id, $template_id);
         $this->abgabe = date('Y-m-d', $timestamp ?: time());
     }
 
@@ -301,7 +305,7 @@ class ShowsupervisorController extends PluginController
         if (!Request::get('begin')) {
             $timestamp = 0;
         } else {
-            $dtime     = DateTime::createFromFormat("Y-m-d", Request::get('begin'));
+            $dtime = DateTime::createFromFormat("Y-m-d", Request::get('begin'));
             $timestamp = $dtime->getTimestamp();
         }
         EportfolioGroupTemplates::setDeadline($group_id, $template_id, $timestamp);
