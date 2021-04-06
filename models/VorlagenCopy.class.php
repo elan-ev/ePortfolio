@@ -68,7 +68,7 @@ class VorlagenCopy
 
     }
 
-    private function cleanXMLTags()
+    private static function cleanXMLTags()
     {
         $stmt = DBManager::get()->prepare("UPDATE mooc_fields
             SET json_data = ''
@@ -77,7 +77,7 @@ class VorlagenCopy
         $stmt->execute(['"<!DOCTYPE html PUBLIC \"-\/\/W3C\/\/DTD HTML 4.0 Transitional\/\/EN\" \"http:\/\/www.w3.org\/TR\/REC-html40\/loose.dtd\">\n<?xml encoding=\"utf-8\" ?>\n"']);
     }
 
-    private function deleteRecursively($path)
+    private static function deleteRecursively($path)
     {
         if (is_dir($path)) {
             $files = new RecursiveIteratorIterator(
@@ -104,7 +104,7 @@ class VorlagenCopy
         }
     }
 
-    private function lockBlocks(Seminar $master, array $semList)
+    private static function lockBlocks(Seminar $master, array $semList)
     {
         $masterBlocks = EportfolioModel::getAllBlocksInOrder($master->id);
         $stmt_read    = DBManager::get()->prepare("UPDATE mooc_blocks
