@@ -108,9 +108,8 @@ class VorlagenCopy
     {
         $masterBlocks = EportfolioModel::getAllBlocksInOrder($master->id);
         $stmt_read    = DBManager::get()->prepare("UPDATE mooc_blocks
-            SET approval = '{\"settings\":{\"defaultRead\":false}}'
-            WHERE id = ?");
-
+            SET approval = ? WHERE id = ?");
+        $approval = ['settings' => ['defaultRead' => false]];
         //hier können potentiell beleibige infos von den Vorlagen Blöcken auf die Block-Kopien übertragen werden
         foreach ($semList as $user_id => $cid) {
             $seminarBlocks = EportfolioModel::getAllBlocksInOrder($cid);
@@ -121,7 +120,7 @@ class VorlagenCopy
                 BlockInfo::createEntry($cid, $newBlocks[$i], $masterBlocks[$i], $master->id);
 
                 // set default read to false
-                $stmt_read->execute([$newBlocks[$i]]);
+                $stmt_read->execute([json_encode($approval), $newBlocks[$i]]);
             }
         }
     }
