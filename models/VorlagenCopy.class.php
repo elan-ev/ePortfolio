@@ -2,7 +2,7 @@
 
 class VorlagenCopy
 {
-    public function copyCourseware(Seminar $master, array $semList)
+    public static function copyCourseware(Seminar $master, array $semList)
     {
         $plugin_courseware = PluginManager::getInstance()->getPlugin('Courseware');
         require_once 'public/' . $plugin_courseware->getPluginPath() . '/vendor/autoload.php';
