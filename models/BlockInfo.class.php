@@ -30,17 +30,18 @@ class BlockInfo extends SimpleORMap
      */
     public static function createEntry($portfolio_id, $block_id, $vorlagen_block_id, $template_id)
     {
+        $data = [
+            'block_id'          => $block_id,
+            'vorlagen_block_id' => $vorlagen_block_id,
+            'Seminar_id'        => $portfolio_id,
+            'template_id'       => $template_id,
+        ];
         $entry = self::find($block_id);
-        if(!$entry) {
-            $data = [
-                'block_id'=> $block_id,
-                'vorlagen_block_id' => $vorlagen_block_id,
-                'Seminar_id' => $portfolio_id,
-                'template_id' => $template_id,
-            ];
+        if (!$entry) {
             return self::create($data);
         }
-
+        $entry->setData($data);
+        return $entry->store();
     }
 
     /**
