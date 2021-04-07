@@ -62,7 +62,7 @@ class VorlagenCopy
             try {
                 $import->import($tempDir, $coursewareImport, $install_folder);
             } catch (Exception $e) {
-                var_dump($e);die;
+
             }
         }
         //delete xml-data file
