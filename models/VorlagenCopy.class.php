@@ -122,8 +122,8 @@ class VorlagenCopy
             $seminar = Seminar::GetInstance($cid);
             if ($users) {
                 foreach ($users as $supervisor) {
-                    $seminar->deleteMember($supervisor);
-                    $seminar->addMember($supervisor);
+                    $seminar->deleteMember($supervisor->user_id);
+                    $seminar->addMember($supervisor->user_id);
                 }
             }
             $seminarBlocks = EportfolioModel::getAllBlocksInOrder($cid);
