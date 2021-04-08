@@ -113,7 +113,11 @@ class ShowsupervisorController extends PluginController
             );
         }
 
-        VorlagenCopy::copyCourseware(new Seminar($this->masterid), $this->seminar_list);
+        VorlagenCopy::copyCourseware(
+            Seminar::GetInstance($this->masterid),
+            $this->seminar_list,
+            $this->supervisorGroupId
+        );
         EportfolioActivity::addVorlagenActivity($this->course_id, User::findCurrent()->id);
 
         PageLayout::postSuccess(_('Vorlage wurde verteilt.'));

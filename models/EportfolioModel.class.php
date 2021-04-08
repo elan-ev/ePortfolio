@@ -440,6 +440,7 @@ class EportfolioModel extends SimpleORMap
 
         /**
          * Alle Supervisoren hinzufügen
+         * Temporär als tutor
          * **/
 
         foreach ($group->user as $supervisor) {

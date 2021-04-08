@@ -2,7 +2,7 @@
 
 class VorlagenCopy
 {
-    public static function copyCourseware(Seminar $master, array $semList)
+    public static function copyCourseware(Seminar $master, array $semList, string $supervisorGroupId = "")
     {
         $plugin_courseware = PluginManager::getInstance()->getPlugin('Courseware');
         require_once 'public/' . $plugin_courseware->getPluginPath() . '/vendor/autoload.php';
@@ -68,7 +68,7 @@ class VorlagenCopy
         //delete xml-data file
         self::deleteRecursively($tempDir);
         self::cleanXMLTags();
-        self::lockBlocks($master, $semList);
+        self::lockBlocks($master, $semList, $supervisorGroupId);
     }
 
     private static function cleanXMLTags()
@@ -107,14 +107,25 @@ class VorlagenCopy
         }
     }
 
-    private static function lockBlocks(Seminar $master, array $semList)
+    private static function lockBlocks(Seminar $master, array $semList, string $supervisorGroupId = "")
     {
+        if ($supervisorGroupId !== "") {
+            $group = SupervisorGroup::findOneById($supervisorGroupId);
+            $users = $group->user;
+        }
         $masterBlocks = EportfolioModel::getAllBlocksInOrder($master->id);
         $stmt_read = DBManager::get()->prepare("UPDATE mooc_blocks
             SET approval = ? WHERE id = ?");
         $approval = ['settings' => ['defaultRead' => false]];
         //hier können potentiell beleibige infos von den Vorlagen Blöcken auf die Block-Kopien übertragen werden
         foreach ($semList as $user_id => $cid) {
+            $seminar = Seminar::GetInstance($cid);
+            if ($users) {
+                foreach ($users as $supervisor) {
+                    $seminar->deleteMember($supervisor);
+                    $seminar->addMember($supervisor);
+                }
+            }
             $seminarBlocks = EportfolioModel::getAllBlocksInOrder($cid);
             $newBlocks = array_slice($seminarBlocks, -count($masterBlocks));
             //Mapping von neuen Blöcken auf Vorlagen-Blöcke
