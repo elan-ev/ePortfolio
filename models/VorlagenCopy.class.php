@@ -137,4 +137,106 @@ class VorlagenCopy
             }
         }
     }
+
+    public static function fixBlocks($course_id)
+    {
+        $stmt_read = DBManager::get()->prepare("UPDATE mooc_blocks
+            SET approval = ? WHERE id = ?");
+        $approval = ['settings' => ['defaultRead' => false]];
+
+        // get all user portfolios (aka seminars)
+        $seminar_list = [];
+        $members = EportfolioModel::getGroupMembers($course_id);
+
+        foreach ($members as $member) {
+
+            // Überprüfen ob es für den Nutzer schon ein Portfolio-Seminar gibt
+            $portfolio = EportfolioModel::findOneBySQL('owner_id = ? AND group_id = ?', [
+                $member->id, $course_id
+            ]);
+
+            if (!empty($portfolio->Seminar_id)) {
+                array_push($seminar_list, $portfolio->Seminar_id);
+            }
+        }
+
+        // get master
+        $masterBlocks = [];
+        $templates = EportfolioGroupTemplates::getGroupTemplates($course_id);
+
+        foreach (array_reverse($templates) as $template) {
+            // iterate over courses to get the correct master and try to remap them,
+            // starting with the oldest one to remap from top to bottom
+            array_push($masterBlocks, ...self::getOrderedBlocks($template->id));
+        }
+
+        foreach ($seminar_list as $sem_id) {
+            $seminarBlocks = self::getOrderedBlocks($sem_id);
+
+            if (sizeof($masterBlocks) > $seminarBlocks) {
+                PageLayout::postError(
+                    'Zuordnung nicht möglich, fehlende Blocks in Zielportfolio, Seminar-ID: '
+                    . $sem_id
+                );
+            }
+            foreach ($masterBlocks as $mblock) {
+                $currentBlock = array_shift($seminarBlocks);
+
+                if ($mblock['title'] == $currentBlock['title']) {
+                    BlockInfo::createEntry($sem_id, $currentBlock['id'], $mblock['id'], $mblock['cid']);
+
+                    // set default read to false
+                    $stmt_read->execute([json_encode($approval), $currentBlock['id']]);
+                }
+            }
+        }
+    }
+
+    private static function getOrderedBlocks($id)
+    {
+        $db        = DBManager::get();
+        $blocks    = [];
+        $query     = "SELECT title, id FROM mooc_blocks WHERE seminar_id = :id AND type = 'Chapter' AND parent_id != '0' ORDER BY position ASC";
+        $statement = $db->prepare($query);
+        $statement->execute([':id' => $id]);
+        foreach ($statement->fetchAll() as $chapter) {
+            array_push($blocks, [
+                'id'    => $chapter['id'],
+                'title' => $chapter['title'],
+                'cid'   => $id
+            ]);
+            $query     = "SELECT title, id FROM mooc_blocks WHERE parent_id = :id ORDER BY position ASC";
+            $statement = $db->prepare($query);
+            $statement->execute([':id' => $chapter['id']]);
+            foreach ($statement->fetchAll() as $subchapter) {
+                array_push($blocks, [
+                    'id'    => $subchapter['id'],
+                    'title' => $subchapter['title'],
+                    'cid'   => $id
+                ]);
+                $query     = "SELECT title, id FROM mooc_blocks WHERE parent_id = :id ORDER BY position ASC";
+                $statement = $db->prepare($query);
+                $statement->execute([':id' => $subchapter['id']]);
+                foreach ($statement->fetchAll() as $section) {
+                    array_push($blocks, [
+                        'id'    => $section['id'],
+                        'title' => $section['title'],
+                        'cid'   => $id
+                    ]);
+                    $query     = "SELECT title, id FROM mooc_blocks WHERE parent_id = :id ORDER BY position ASC";
+                    $statement = $db->prepare($query);
+                    $statement->execute([':id' => $section['id']]);
+                    foreach ($statement->fetchAll() as $block) {
+                        array_push($blocks, [
+                            'id'    => $block['id'],
+                            'title' => $block['title'],
+                            'cid'   => $id
+                        ]);
+                    }
+                }
+            }
+        }
+
+        return $blocks;
+    }
 }

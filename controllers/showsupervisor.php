@@ -53,6 +53,30 @@ class ShowsupervisorController extends PluginController
         });
 
         $this->portfolioChapters = EportfolioModel::getAnzahlAllerKapitel($this->groupId);
+
+        // Sidebar
+        if ($GLOBALS['perm']->have_perm('root')) {
+            $sidebar = Sidebar::get();
+
+            $navcreate = new LinksWidget();
+            $navcreate->setTitle(_('Aktionen'));
+            $navcreate->addLink(
+                'Blockzuordnungen reparieren',
+                $this->url_for('showsupervisor/fixportfolio'),
+                Icon::create('admin')
+            );
+
+            $sidebar->addWidget($navcreate);
+        }
+    }
+
+    public function fixportfolio_action()
+    {
+        VorlagenCopy::fixBlocks($this->course_id);
+
+        PageLayout::postSuccess('Blöcke wurden zugeordnet/korrigiert.');
+
+        $this->redirect('showsupervisor');
     }
 
     public function createportfolio_action($master)
