@@ -55,6 +55,7 @@ class ShowsupervisorController extends PluginController
         $this->portfolioChapters = EportfolioModel::getAnzahlAllerKapitel($this->groupId);
 
         // Sidebar
+        /*
         if ($GLOBALS['perm']->have_perm('root')) {
             $sidebar = Sidebar::get();
 
@@ -68,8 +69,10 @@ class ShowsupervisorController extends PluginController
 
             $sidebar->addWidget($navcreate);
         }
+        */
     }
 
+    /*
     public function fixportfolio_action()
     {
         VorlagenCopy::fixBlocks($this->course_id);
@@ -78,6 +81,7 @@ class ShowsupervisorController extends PluginController
 
         $this->redirect('showsupervisor');
     }
+    */
 
     public function createportfolio_action($master)
     {

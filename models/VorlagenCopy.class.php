@@ -137,6 +137,7 @@ class VorlagenCopy
         }
     }
 
+    /*
     public static function fixBlocks($course_id)
     {
         $stmt_read = DBManager::get()->prepare("UPDATE mooc_blocks
@@ -238,4 +239,5 @@ class VorlagenCopy
 
         return $blocks;
     }
+    */
 }
