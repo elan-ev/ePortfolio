@@ -84,6 +84,23 @@ class ShowsupervisorController extends PluginController
         $this->seminar_list = [];
         $this->masterid = $master;
 
+        $this->groupId = $this->course->id;
+        $this->group = SupervisorGroup::findOneBySQL('seminar_id = ?', [$this->groupId]);
+
+        $user_found = false;
+        foreach($this->group->user as $rel) {
+            if ($rel->user_id == $GLOBALS['user']->id) {
+                $user_found = true;
+            }
+        }
+
+        if (!$user_found) {
+            PageLayout::postError('Sie sind nicht in der Gruppe der Berechtigten für die '
+                . 'Portfolioarbeit und können deshalb keine Vorlage verteilen!');
+            $this->redirect('showsupervisor');
+            return;
+        }
+
         $members = EportfolioModel::getGroupMembers($this->course_id);
 
         /**
