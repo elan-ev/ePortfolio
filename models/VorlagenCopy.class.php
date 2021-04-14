@@ -59,11 +59,8 @@ class VorlagenCopy
             $containerImport["cid"] = $cid; //new course cid
             $coursewareImport = $containerImport["current_courseware"];
             $import = new Mooc\Import\XmlImport($containerImport['block_factory']);
-            try {
-                $import->import($tempDir, $coursewareImport, $install_folder);
-            } catch (Exception $e) {
 
-            }
+            $import->import($tempDir, $coursewareImport, $install_folder);
         }
         //delete xml-data file
         self::deleteRecursively($tempDir);
@@ -119,13 +116,15 @@ class VorlagenCopy
         $approval = ['settings' => ['defaultRead' => false]];
         //hier können potentiell beleibige infos von den Vorlagen Blöcken auf die Block-Kopien übertragen werden
         foreach ($semList as $user_id => $cid) {
-            $seminar = Seminar::GetInstance($cid);
-            if ($users) {
-                foreach ($users as $supervisor) {
-                    $seminar->deleteMember($supervisor->user_id);
-                    $seminar->addMember($supervisor->user_id);
-                }
+            // demote supervisors to autor
+            $set_autor = DBManager::get()->prepare("REPLACE INTO
+                seminar_user (Seminar_id, user_id, status)
+                VALUES (?, ?, 'autor')");
+
+            foreach ($users as $supervisor) {
+                $set_autor->execute([$cid, $supervisor->user_id]);
             }
+
             $seminarBlocks = EportfolioModel::getAllBlocksInOrder($cid);
             $newBlocks = array_slice($seminarBlocks, -count($masterBlocks));
             //Mapping von neuen Blöcken auf Vorlagen-Blöcke

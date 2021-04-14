@@ -154,6 +154,17 @@ class ShowsupervisorController extends PluginController
             );
         }
 
+        // make sure that every eportfolio has the members of the portfolio group as tutor
+        $add_tutor = DBManager::get()->prepare("REPLACE INTO
+            seminar_user (Seminar_id, user_id, status)
+            VALUES (?, ?, 'tutor')");
+
+        foreach ($this->seminar_list as $semid) {
+            foreach ($this->group->user as $supervisor) {
+                $add_tutor->execute([$semid, $supervisor->user_id]);
+            }
+        }
+
         VorlagenCopy::copyCourseware(
             Seminar::GetInstance($this->masterid),
             $this->seminar_list,
