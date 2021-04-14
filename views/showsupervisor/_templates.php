@@ -154,6 +154,16 @@
                                 ]
                             );
                         }
+
+                        if ($member && $hasTemplate) {
+                            $actionMenu->addLink(
+                                PluginEngine::getLink($this->plugin, [], 'showsupervisor/createportfolio/' . ($hasTemplate ? $portfolio['portfolio']->id : $portfolio->id)),
+                                _('Vorlage erneut verteilen'),
+                                Icon::create('share', 'clickable'),
+                                ['data-confirm' => _('Sie sollten eine Vorlage nur im Notfall erneut verteilen! Alle Inhalte werden ERNEUT hinzugefügt und schlimmstenfalls gedoppelt! Sind sie sicher?'),
+                                ]
+                            );
+                        }
                     ?>
                     <?= $actionMenu->render() ?>
                 </td>
