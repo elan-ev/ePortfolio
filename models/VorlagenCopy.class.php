@@ -110,6 +110,7 @@ class VorlagenCopy
             $group = SupervisorGroup::findOneById($supervisorGroupId);
             $users = $group->user;
         }
+
         $masterBlocks = EportfolioModel::getAllBlocksInOrder($master->id);
         $stmt_read = DBManager::get()->prepare("UPDATE mooc_blocks
             SET approval = ? WHERE id = ?");

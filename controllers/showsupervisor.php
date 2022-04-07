@@ -106,7 +106,6 @@ class ShowsupervisorController extends PluginController
         }
 
         $members = EportfolioModel::getGroupMembers($this->course_id);
-
         /**
          * Jeden User in der Gruppe einzeln behandeln
          * **/
@@ -159,13 +158,25 @@ class ShowsupervisorController extends PluginController
         }
 
         // make sure that every eportfolio has the members of the portfolio group as tutor
+        $add_teacher = DBManager::get()->prepare("REPLACE INTO
+            seminar_user (Seminar_id, user_id, status)
+            VALUES (?, ?, 'dozent')");
         $add_tutor = DBManager::get()->prepare("REPLACE INTO
             seminar_user (Seminar_id, user_id, status)
             VALUES (?, ?, 'tutor')");
+        $tutors = $this->group->user->toArray();
 
+        $owner_teacher = DBManager::get()->fetchColumn('SELECT user_id FROM seminar_user WHERE status = "dozent" and seminar_id = ?', [$master]);
+
+        // Add Supervervisors
+        foreach($tutors as $tutor) {
+            if($tutor['user_id'] !== $owner_teacher) {
+                $add_teacher->execute([$master, $tutor['user_id']]);
+            }
+        }
         foreach ($this->seminar_list as $semid) {
-            foreach ($this->group->user as $supervisor) {
-                $add_tutor->execute([$semid, $supervisor->user_id]);
+            foreach ($tutors as $supervisor) {
+                $add_tutor->execute([$semid, $supervisor['user_id']]);
             }
         }
 
