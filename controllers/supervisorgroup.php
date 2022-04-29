@@ -58,10 +58,13 @@ class SupervisorgroupController extends PluginController
                 )
             ORDER BY Vorname, Nachname ",
             _("Teilnehmer suchen"), "username");
-
         $course_users = $this->course->members->filter(function ($value) {
             return $value['status'] == 'dozent';
         })->pluck('user_id');
+        $deputies = $this->course->deputies->pluck('user_id');
+        if(!empty($deputies)) {
+            $course_users = array_merge($course_users, $deputies);
+        }
 
         $this->mp = MultiPersonSearch::get('supervisorgroupSelectUsers')
             ->setLinkText(_('Weitere Zugriffsrechte vergeben'))

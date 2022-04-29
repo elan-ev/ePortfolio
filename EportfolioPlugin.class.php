@@ -366,6 +366,12 @@ class EportfolioPlugin extends StudIPPlugin implements StandardPlugin, SystemPlu
             foreach ($course->getMembersWithStatus('dozent') as $member) {
                 $group->addUser($member->user_id);
             }
+            $deputies = $course->deputies->pluck('user_id');
+            if (!empty($deputies)) {
+                foreach ($deputies as $deputy) {
+                    $group->addUser($deputy);
+                }
+            }
         }
     }
 }
